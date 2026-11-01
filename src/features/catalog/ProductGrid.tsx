@@ -1,14 +1,13 @@
 import type { ReactElement } from 'react';
 import { ActivityIndicator, FlatList, StyleSheet, View, useWindowDimensions } from 'react-native';
 
-import type { ProductListItem } from '@/api/models';
 import { Skeleton } from '@/components/Skeleton';
 import { theme } from '@/theme';
 
-import { ProductCard } from './ProductCard';
+import { ProductCard, type CardProduct } from './ProductCard';
 
 interface ProductGridProps {
-  items: readonly ProductListItem[];
+  items: readonly CardProduct[];
   onPressItem: (id: string) => void;
   /** Rendered above the grid (greeting, filters). */
   header: ReactElement;

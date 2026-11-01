@@ -4,11 +4,20 @@ import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import type { ProductListItem } from '@/api/models';
 import { Icon } from '@/components/Icon';
 import { tr } from '@/i18n/tr';
+import { SaveButton } from '@/features/saved/SaveButton';
 import { theme } from '@/theme';
 import { formatTry, toNumber } from '@/utils/money';
 
+import { matchBadgeScore } from './matchBadge';
+
+/** What a card needs: a list item, or a saved product (no match score, but it may be off the market). */
+export type CardProduct = Omit<ProductListItem, 'matchScore'> & {
+  matchScore?: ProductListItem['matchScore'];
+  isActive?: boolean;
+};
+
 interface ProductCardProps {
-  product: ProductListItem;
+  product: CardProduct;
   width: number;
   onPress: (id: string) => void;
 }
@@ -21,6 +30,8 @@ export function ProductCard({ product, width, onPress }: ProductCardProps) {
   const discount = toNumber(product.discountPercent);
   const offerCount = toNumber(product.offerCount);
   const showImage = Boolean(product.primaryImageUrl) && !imageFailed;
+  const match = matchBadgeScore(product.matchScore);
+  const inactive = product.isActive === false;
 
   return (
     <Pressable
@@ -46,6 +57,17 @@ export function ProductCard({ product, width, onPress }: ProductCardProps) {
             <Text style={styles.discountText}>{`−${discount}%`}</Text>
           </View>
         ) : null}
+        {match !== null ? (
+          <View style={styles.matchPill} testID={`match-badge-${product.id}`}>
+            <Text style={styles.matchText}>{tr.productMatch(match)}</Text>
+          </View>
+        ) : null}
+        {inactive ? (
+          <View style={styles.inactiveOverlay} testID={`inactive-${product.id}`}>
+            <Text style={styles.inactiveText}>{tr.trackSavedInactive}</Text>
+          </View>
+        ) : null}
+        <SaveButton productId={product.id} variant="card" style={styles.save} />
       </View>
       <View style={styles.info}>
         <Text style={styles.brand} numberOfLines={1}>
@@ -101,6 +123,36 @@ const styles = StyleSheet.create({
   discountText: {
     ...theme.typography.captionMedium,
     color: theme.colors.onInk,
+  },
+  matchPill: {
+    position: 'absolute',
+    top: theme.spacing.md,
+    right: theme.spacing.md,
+    backgroundColor: theme.colors.surface,
+    borderRadius: theme.radius.pill,
+    paddingHorizontal: theme.spacing.sm,
+    paddingVertical: theme.spacing.xs,
+  },
+  matchText: {
+    ...theme.typography.captionMedium,
+    color: theme.colors.ink,
+  },
+  save: {
+    position: 'absolute',
+    right: theme.spacing.md,
+    bottom: theme.spacing.md,
+  },
+  inactiveOverlay: {
+    ...StyleSheet.absoluteFill,
+    backgroundColor: theme.colors.scrim,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: theme.spacing.md,
+  },
+  inactiveText: {
+    ...theme.typography.bodyStrong,
+    color: theme.colors.onInk,
+    textAlign: 'center',
   },
   info: {
     gap: 2,

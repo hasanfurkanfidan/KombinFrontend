@@ -45,6 +45,17 @@ export const sizes = {
   chartMiniWidth: 120,
   chartMiniHeight: 34,
   chartFullHeight: 200,
+  /** Round white bookmark button drawn over a product image. */
+  bookmarkButton: 32,
+  /** Alert row thumbnail (design screen 10). */
+  thumbWidth: 64,
+  thumbHeight: 72,
+  swipeButtonLarge: 64,
+  swipeButtonSmall: 48,
+  swipeCardHeight: 380,
+  personaSwatchWidth: 12,
+  personaSwatchHeight: 36,
+  avatar: 56,
 } as const;
 
 export const shadows = {

@@ -1,6 +1,7 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import type { Offer } from '@/api/models';
+import { Icon } from '@/components/Icon';
 import { tr } from '@/i18n/tr';
 import { theme } from '@/theme';
 import { formatAmount, formatTry, toNumber } from '@/utils/money';
@@ -64,6 +65,19 @@ export function OfferRow({ offer, highlighted, onPress }: OfferRowProps) {
       <Text style={[styles.price, !sellable && styles.priceMuted]} numberOfLines={1}>
         {formatTry(offer.currentPrice)}
       </Text>
+      {sellable ? (
+        <Pressable
+          accessibilityRole="link"
+          accessibilityLabel={`${offer.seller.name}: ${tr.productGo}`}
+          onPress={() => onPress(offer)}
+          hitSlop={theme.spacing.sm}
+          style={styles.go}
+          testID={`offer-go-${offer.id}`}
+        >
+          <Text style={styles.goText}>{tr.productGo}</Text>
+          <Icon name="arrowUpRight" size={14} />
+        </Pressable>
+      ) : null}
     </Pressable>
   );
 }
@@ -128,5 +142,15 @@ const styles = StyleSheet.create({
   },
   priceMuted: {
     color: theme.colors.inkMuted,
+  },
+  go: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 2,
+  },
+  goText: {
+    ...theme.typography.captionMedium,
+    color: theme.colors.ink,
+    textDecorationLine: 'underline',
   },
 });

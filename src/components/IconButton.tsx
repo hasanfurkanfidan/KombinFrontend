@@ -11,10 +11,19 @@ interface IconButtonProps {
   onPress?: () => void;
   /** `plain` is white (used over images), `tinted` uses the card background. */
   tone?: 'plain' | 'tinted';
+  /** Fills the icon (e.g. a bell that already has an alert). */
+  filled?: boolean;
   testID?: string;
 }
 
-export function IconButton({ icon, label, onPress, tone = 'plain', testID }: IconButtonProps) {
+export function IconButton({
+  icon,
+  label,
+  onPress,
+  tone = 'plain',
+  filled = false,
+  testID,
+}: IconButtonProps) {
   return (
     <Pressable
       accessibilityRole="button"
@@ -27,7 +36,7 @@ export function IconButton({ icon, label, onPress, tone = 'plain', testID }: Ico
         pressed && styles.pressed,
       ]}
     >
-      <Icon name={icon} size={22} />
+      <Icon name={icon} size={22} filled={filled} />
     </Pressable>
   );
 }

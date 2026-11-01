@@ -20,6 +20,9 @@ export type PriceSummary = Schemas['PriceSummary'];
 export type OfferSeries = Schemas['OfferSeries'];
 export type PricePoint = Schemas['PricePoint'];
 
+export type Brand = Schemas['BrandItem'];
+export type BrandPage = Schemas['PagedResponseOfBrandItem'];
+
 export type Audience = Schemas['Audience'];
 export type ProductColor = Schemas['ProductColor'];
 export type StockStatus = Schemas['StockStatus'];
@@ -32,3 +35,34 @@ export type ProblemBody = Schemas['ProblemDetails'] & {
   errorCode?: string;
   errors?: Record<string, string[]>;
 };
+
+export type SizeHint = Schemas['SizeHintResponse'];
+export type SizeSource = Schemas['SizeSource'];
+export type SizeGroup = Schemas['SizeGroup'];
+
+export type Profile = Schemas['ProfileResponse'];
+export type UpdateProfileRequest = Schemas['UpdateProfileRequest'];
+export type Persona = Schemas['PersonaResponse'];
+export type PersonaList = Schemas['PersonaListResponse'];
+export type CreatePersonaRequest = Schemas['CreatePersonaRequest'];
+export type UpdatePersonaRequest = Schemas['UpdatePersonaRequest'];
+export type StyleSummary = Schemas['StyleSummary'];
+export type StyleCard = Schemas['StyleCardItem'];
+export type StyleCards = Schemas['StyleCardsResponse'];
+export type StyleFamily = Schemas['StyleFamily'];
+export type SwipeItem = Schemas['SwipeItem'];
+export type SubmitSwipesResponse = Schemas['SubmitSwipesResponse'];
+export type SizeEntry = Schemas['SizeEntryResponse'];
+export type SizeList = Schemas['SizeListResponse'];
+export type UpsertSizeRequest = Schemas['UpsertSizeRequest'];
+
+export type SavedProduct = Schemas['SavedProductItem'];
+export type SavedPage = Schemas['PagedResponseOfSavedProductItem'];
+export type SavedIds = Schemas['SavedIdsResponse'];
+export type Alert = Schemas['AlertResponse'];
+export type AlertList = Schemas['ListAlertsResponse'];
+export type AlertKind = Schemas['AlertKind'];
+export type CreateAlertRequest = Schemas['CreateAlertRequest'];
+export type UpdateAlertRequest = Schemas['UpdateAlertRequest'];
+export type AlertTrigger = Schemas['TriggerResponse'];
+export type TriggerPage = Schemas['PagedResponseOfTriggerResponse'];

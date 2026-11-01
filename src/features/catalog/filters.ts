@@ -6,7 +6,7 @@ import type { Audience, ListProductsQuery, ProductColor } from '@/api/models';
 export const PAGE_SIZE = 20;
 
 /** The contract types `Sort` as a free string; these are the values the backend accepts. */
-export const SORT_VALUES = ['relevance', 'priceAsc', 'priceDesc', 'newest'] as const;
+export const SORT_VALUES = ['match', 'relevance', 'priceAsc', 'priceDesc', 'newest'] as const;
 export type SortValue = (typeof SORT_VALUES)[number];
 
 export interface ProductFilters {
@@ -14,9 +14,12 @@ export interface ProductFilters {
   color?: ProductColor;
   audience?: Audience;
   sort?: SortValue;
+  /** The active persona: adds match scores and makes `sort=match` available. Not a user-facing filter. */
+  personaId?: string;
 }
 
 export const sortLabels: Record<SortValue, string> = {
+  match: tr.sortMatch,
   relevance: tr.sortRelevance,
   priceAsc: tr.sortPriceAsc,
   priceDesc: tr.sortPriceDesc,
@@ -60,8 +63,28 @@ export function toListQuery(filters: ProductFilters, page?: number): ListProduct
     Color: filters.color,
     Audience: filters.audience,
     Sort: filters.sort,
+    PersonaId: filters.personaId,
     Page: page,
     PageSize: PAGE_SIZE,
+  };
+}
+
+/** `match` is the default order while a persona is active; without one the backend rejects it. */
+export function defaultSort(personaId: string | undefined): SortValue {
+  return personaId ? 'match' : 'relevance';
+}
+
+/** Filters as the product query sees them: the persona joined in, and the sort resolved to a usable value. */
+export function withPersona(
+  filters: ProductFilters,
+  personaId: string | undefined,
+): ProductFilters {
+  const requested = filters.sort;
+  const sort = requested === 'match' && !personaId ? undefined : requested;
+  return {
+    ...filters,
+    personaId,
+    sort: sort ?? (personaId ? 'match' : undefined),
   };
 }
 

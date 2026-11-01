@@ -2,6 +2,7 @@ import type { ReactElement } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { render } from '@testing-library/react-native';
 import * as SecureStore from 'expo-secure-store';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { useSessionStore } from '@/session/sessionStore';
 
@@ -59,9 +60,18 @@ export async function signedInSession(suffix = 'old', expiresInSeconds = 900) {
 
 export function renderWithQuery(ui: ReactElement) {
   const client = new QueryClient({
-    defaultOptions: { queries: { retry: false, gcTime: Infinity } },
+    // `gcTime: Infinity` also keeps react-query from leaving 5-minute garbage-collection timers behind.
+    defaultOptions: {
+      queries: { retry: false, gcTime: Infinity },
+      mutations: { gcTime: Infinity },
+    },
   });
-  return render(<QueryClientProvider client={client}>{ui}</QueryClientProvider>);
+  // The app root provides the gesture root view; gesture components in a screen need it in tests too.
+  return render(
+    <GestureHandlerRootView>
+      <QueryClientProvider client={client}>{ui}</QueryClientProvider>
+    </GestureHandlerRootView>,
+  );
 }
 
 export function authHeader(call: unknown[]): string | undefined {

@@ -2,7 +2,19 @@
 
 Kombin is a mobile app that learns a user's style(s), manages their wardrobe, suggests outfits, compares prices across Turkish retailers (Trendyol, Hepsiburada, brand sites) and redirects users to buy through affiliate links. **The app never sells anything itself.** The backend is a .NET Minimal API (`../kombin-backend`); its contract is `docs/openapi.json`.
 
-This repo is the Expo (React Native) client. Implemented so far: shared foundation (theme, navigation, API client, session), **Auth** (register, login, session persistence, token refresh, logout) and **Catalog** (Keşfet product list with filters, product detail with offers and price history). Nothing else exists yet; do not scaffold screens for features the backend does not have.
+This repo is the Expo (React Native) client. Implemented so far:
+
+- shared foundation (theme, navigation, API client, session);
+- **Auth** (register, login, session persistence, token refresh, logout);
+- **Catalog** (Keşfet product list with filters, product detail with offers and price history);
+- **Personas & onboarding** (audience → persona name → swipe → summary; persona chips on Keşfet; match scores);
+- **Saved products** (bookmark on cards and detail, Kaydedilenler grid);
+- **Price/stock alerts** (alert sheet on detail, **Takip** tab with stats, status lines and swipe-to-delete);
+- **Profile** (persona list and actions) and the **size map** (measurements, per-brand sizes, size hint on detail);
+- **Buying** through the backend `/go` redirect;
+- **Push groundwork** (permission + Expo push token only, see below).
+
+Nothing else exists yet (wardrobe, outfits, social feed, notifications screen, visual search); do not scaffold screens for features the backend does not have.
 
 ## Stack and hard constraints
 
@@ -16,16 +28,18 @@ This repo is the Expo (React Native) client. Implemented so far: shared foundati
 - Lint/format: ESLint (`eslint-config-expo`) + Prettier. `npm run lint` (zero warnings) and `npm run typecheck` must pass.
 - Tests: Jest (`jest-expo`) + React Native Testing Library.
 - All code, comments and docs are English. **All user-facing copy is Turkish** and lives in `src/i18n/tr.ts` (one flat object, no i18n library).
-- Do not add a package unless it is strictly required; say why in the PR/summary.
+- Do not add a package unless it is strictly required; say why in the PR/summary. Added for personas/alerts: `expo-notifications` + `expo-device` (push permission and token), `react-native-gesture-handler` + `react-native-reanimated` + `react-native-worklets` (the swipe deck and swipe-to-delete rows; `worklets` is reanimated 4's required peer).
+- Installing those needed `npm install --legacy-peer-deps` once (npm tried to resolve the optional `react-dom` peer to a version that wants a newer React). Afterwards a plain `npm install` works.
 
 ## Layout: `app/` vs `src/`
 
-- `app/` holds **Expo Router route files only**. A route file wires a route to a screen component from `src/` (usually a one-line re-export). No logic, no UI, no styles in `app/`. The one non-trivial file is `app/_layout.tsx`, and even that only composes `src/components/AppProviders`.
+- `app/` holds **Expo Router route files only** (groups: `(tabs)`, `(auth)` modal, `(onboarding)` modal; plus `product/[id]` and `profile/sizes`). A route file wires a route to a screen component from `src/` (usually a one-line re-export). No logic, no UI, no styles in `app/`. The one non-trivial file is `app/_layout.tsx`, and even that only composes `src/components/AppProviders`.
 - All logic and UI live in `src/`:
   - `src/theme` — tokens, spacing, typography (`import { theme } from '@/theme'`).
   - `src/api` — `client.ts`, `endpoints/*`, `queryKeys.ts`, `queryClient.ts`, `models.ts`, `types.gen.ts` (generated).
   - `src/session` — Zustand `sessionStore`, secure-store `tokenStorage`, `useSession` (bootstrap, sign-in/out helpers).
-  - `src/features/<feature>` — screens, components and hooks of one feature (`auth`, `catalog`, `profile`, `placeholder`).
+  - `src/features/<feature>` — screens, components and hooks of one feature (`auth`, `catalog`, `onboarding`, `personas`, `saved`, `alerts`, `tracking`, `sizes`, `profile`, `placeholder`).
+  - `src/push` — push groundwork (permission, token, settings link). `src/session/prefsStore.ts` — small Zustand store for local preferences.
   - `src/components` — shared, feature-agnostic UI (`Button`, `TextField`, `Chip`, `Screen`, …).
   - `src/i18n/tr.ts`, `src/utils`.
 - `@/` is an alias for `src/` (tsconfig paths + Jest `moduleNameMapper`).
@@ -41,6 +55,30 @@ No hard-coded colours, font sizes, radii or spacing in components. Use `theme.co
 
 - Decimals/ints are typed `number | string` (OpenAPI 3.1 from .NET); the API really sends numbers. Normalize with `toNumber()` from `src/utils/money.ts` before doing arithmetic or formatting.
 - `ProblemDetails` in the contract has no `errorCode`/`errors`; the backend adds them. `ProblemBody` in `models.ts` extends the generated type with those two extensions.
+
+## Personas, `personaId` and match scores
+
+- A **persona** is one of the user's styles (Ofis, Hafta sonu, …; at most 6, `MAX_PERSONAS`). Exactly one is _active_ (`GET /me/personas` → `isActive`); the backend activates the first one automatically, later ones are created inactive and activated with `PUT /me/personas/{id}/activate`.
+- **`personaId` convention:** the active persona's id is the only thing that makes the backend personalise. Send it as `PersonaId` on `GET /catalog/products` (adds `matchScore`, allows `sort=match`) and as `personaId` on `GET /catalog/products/{id}` and on the `/go` link. It needs a bearer token, so calls that carry it use `auth: true`. Logged out, or without personas, send none: Keşfet and detail must keep working.
+- `usePersonas()` / `useActivePersona()` (`features/personas/hooks`) are the one way to read it. Signed-in screens wait for the persona query before fetching products, so a list is fetched once, already scored. `withPersona(filters, personaId)` (`features/catalog/filters`) joins it into the query and makes `match` ("Sana göre") the default order; `sort=match` without a persona is dropped (the backend answers 400).
+- Match badge: shown only when `matchScore ≥ 40` (`matchBadgeScore`); below that nothing is shown.
+- `PUT /me/profile` **replaces** the measurements (a field left out is cleared) and keeps the audience when it is `null`. Always build the body with `toUpdateRequest(profile, patch)` (`features/profile/hooks`).
+- Swipes: `createSwipeOutbox` (`features/onboarding/swipeOutbox`) batches every 5 swipes, flushes when the screen is left, retries a failed batch once and then drops it silently. Only the first run moves on as soon as the backend says `onboardingCompleted`; re-training a persona runs until the cards are used up.
+
+## Onboarding entry rule
+
+`OnboardingGate` (mounted in `AppProviders`) fires **once per sign-in**: when `GET /me/profile` says `personaCount === 0`, the user is sent to `/audience` (`app/(onboarding)`) instead of the tabs. It does not fire again later in the session (e.g. after archiving the last persona), while already inside onboarding, or after "Atla". Skipping creates nothing and sets `prefsStore.onboardingSkipped`, which is **kept in memory only**: a skipped onboarding is asked again on the next launch. The same screens run as a modal for "+" on Keşfet and "Yeni tarz oluştur" on Profil (`flow=new`) and for "Tarzını yeniden öğret" (`flow=retrain`); `flow`/`returnTo` are route params (`features/onboarding/flow`).
+
+## Buying: `goPath` only
+
+The app never builds or opens a seller URL. Every buy action (the detail bar button and the "Git" link on each offer) opens `EXPO_PUBLIC_API_URL + offer.goPath + '?src=product_detail' (+ '&personaId=…')` in `expo-web-browser`; the backend records the click and answers `302` to the affiliate URL, which the browser follows. Use `openOffer` / `buildGoUrl` (`features/catalog/buy`); the contract's `OfferResponse` has no seller `url` on purpose.
+
+## Push groundwork (`src/push`)
+
+- `requestPushPermission()` asks for the OS permission (skipped on simulators via `expo-device`) and, on grant, stores the Expo push token in `prefsStore.pushToken`. It is only called from the contextual sheet "Fiyat düşünce haber verelim mi?", shown **once after the user's first alert** (`usePushPrimer`), never on app start.
+- `registerPushToken()` currently only logs in dev. **TODO(backend): `POST /me/devices { token, platform }` once the endpoint exists**, then call it from there (and on token refresh).
+- `openNotificationSettings()` opens the OS settings page for the denied state; the "Bildirim tercihleri" row on Profil is a "Yakında" placeholder that will use it.
+- There is no EAS project id yet, so on a real device `getExpoPushTokenAsync` may fail until `extra.eas.projectId` is configured; the app then simply has no token.
 
 ## Session and refresh behaviour (summary)
 
@@ -80,7 +118,8 @@ Configure the backend URL in `.env` (`EXPO_PUBLIC_API_URL`, see `.env.example`).
 - **Do not abstract until the third repetition.** Two similar pieces of code are fine; extract on the third.
 - **Do not commit unless asked.** Leave the working tree for review.
 - Keep `npm run lint`, `npm run typecheck` and `npm test` green before declaring work done.
+- Jest cannot run Reanimated/worklets natively: `jest.config.js` uses Reanimated's resolver, `jest.setup.ts` mocks Reanimated (its official mock), the worklets runtime holder and `ReanimatedSwipeable`, and `renderWithQuery` wraps screens in `GestureHandlerRootView`. The deck's drag gesture therefore is not covered by tests (the buttons path is); check it on a device.
 
 ## Out of scope (do not add)
 
-Push notifications, offline cache/persisted queries, analytics/crash reporting, deep links/universal links, any UI kit or styling library, Redux/MobX or context-based global stores, i18n libraries, `expo prebuild`/native code, social login, dark mode.
+Push _delivery_ and a notifications screen (only the permission/token groundwork above exists), offline cache/persisted queries, analytics/crash reporting, deep links/universal links, any UI kit or styling library, Redux/MobX or context-based global stores, i18n libraries, `expo prebuild`/native code, social login, dark mode.

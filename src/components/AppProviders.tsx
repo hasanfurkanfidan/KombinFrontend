@@ -6,10 +6,15 @@ import { useRouter } from 'expo-router';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
+import { StyleSheet } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { queryClient } from '@/api/queryClient';
+import { OnboardingGate } from '@/features/onboarding/OnboardingGate';
 import { useSessionStore } from '@/session/sessionStore';
 import { useBootstrapSession } from '@/session/useSession';
+
+import { ToastHost } from './ToastHost';
 
 // Keep the native splash up until fonts and the session are ready, so a logged-in user never sees the login screen.
 SplashScreen.preventAutoHideAsync().catch(() => undefined);
@@ -53,10 +58,20 @@ export function AppProviders({ children }: { children: ReactNode }) {
   }
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <StatusBar style="dark" />
-      <SessionExpiryRedirect />
-      {children}
-    </QueryClientProvider>
+    <GestureHandlerRootView style={styles.root}>
+      <QueryClientProvider client={queryClient}>
+        <StatusBar style="dark" />
+        <SessionExpiryRedirect />
+        <OnboardingGate />
+        {children}
+        <ToastHost />
+      </QueryClientProvider>
+    </GestureHandlerRootView>
   );
 }
+
+const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+  },
+});

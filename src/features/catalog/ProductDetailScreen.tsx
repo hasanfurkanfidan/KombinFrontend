@@ -10,7 +10,6 @@ import {
   useWindowDimensions,
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import * as WebBrowser from 'expo-web-browser';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ApiError } from '@/api/client';
@@ -20,12 +19,22 @@ import { ErrorState } from '@/components/ErrorState';
 import { Icon } from '@/components/Icon';
 import { IconButton } from '@/components/IconButton';
 import { Skeleton } from '@/components/Skeleton';
+import { AlertSheet } from '@/features/alerts/AlertSheet';
+import { useHasAlert } from '@/features/alerts/hooks';
+import { PushPrimerSheet, usePushPrimer } from '@/features/alerts/PushPrimer';
+import { useActivePersona, usePersonas } from '@/features/personas/hooks';
+import { SaveButton } from '@/features/saved/SaveButton';
+import { sizePill } from '@/features/sizes/sizeHint';
+import { SizeSheet } from '@/features/sizes/SizeSheet';
 import { tr } from '@/i18n/tr';
+import { useSession } from '@/session/useSession';
 import { theme } from '@/theme';
 import { formatTry } from '@/utils/money';
 import { withAblative } from '@/utils/turkish';
 
+import { openOffer } from './buy';
 import { usePriceHistory, useProduct } from './hooks';
+import { matchBadgeScore } from './matchBadge';
 import { isSellable, OfferRow } from './OfferRow';
 import { buildPricePoints } from './priceHistory';
 import { PriceSummary } from './PriceSummary';
@@ -39,8 +48,16 @@ interface ProductDetailScreenProps {
 export function ProductDetailScreen({ id }: ProductDetailScreenProps) {
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const product = useProduct(id);
+  const { isSignedIn } = useSession();
+  // Signed-in users wait for their personas so the detail is fetched once, already scored for the active one.
+  const personas = usePersonas();
+  const personaId = useActivePersona()?.id;
+  const product = useProduct(id, personaId, !isSignedIn || !personas.isPending);
   const history = usePriceHistory(id);
+  const hasAlert = useHasAlert(id);
+  const pushPrimer = usePushPrimer();
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [sizeOpen, setSizeOpen] = useState(false);
 
   const points = useMemo(
     () => (history.data ? buildPricePoints(history.data) : []),
@@ -53,13 +70,8 @@ export function ProductDetailScreen({ id }: ProductDetailScreenProps) {
 
   const goBack = () => (router.canGoBack() ? router.back() : router.replace('/'));
 
-  const openOffer = async (offer: Offer) => {
-    try {
-      await WebBrowser.openBrowserAsync(offer.url);
-    } catch {
-      // The in-app browser could not be opened; the offer list stays usable.
-    }
-  };
+  const buy = (offer: Offer) => openOffer(offer, { source: 'product_detail', personaId });
+  const requireSignIn = (action: () => void) => (isSignedIn ? action() : router.push('/login'));
 
   const barHeight = theme.sizes.buttonHeight + BAR_PADDING * 2 + insets.bottom;
   const cheapest = product.data?.offers.find(isSellable);
@@ -83,9 +95,18 @@ export function ProductDetailScreen({ id }: ProductDetailScreenProps) {
         >
           <ProductImages product={product.data} />
           <View style={styles.body}>
-            <View style={styles.titleBlock}>
-              <Text style={styles.brand}>{product.data.brand.name}</Text>
-              <Text style={styles.name}>{product.data.name}</Text>
+            <View style={styles.titleRow}>
+              <View style={styles.titleBlock}>
+                <View style={styles.brandRow}>
+                  <Text style={styles.brand}>{product.data.brand.name}</Text>
+                  <MatchPill score={product.data.matchScore} />
+                </View>
+                <Text style={styles.name}>{product.data.name}</Text>
+              </View>
+              <SizeSlot
+                product={product.data}
+                onAdd={() => requireSignIn(() => setSizeOpen(true))}
+              />
             </View>
             <PriceSummary summary={product.data.priceSummary} history={historyState} />
             <View style={styles.offers}>
@@ -101,7 +122,7 @@ export function ProductDetailScreen({ id }: ProductDetailScreenProps) {
                       <OfferRow
                         offer={offer}
                         highlighted={offer.id === cheapest?.id}
-                        onPress={openOffer}
+                        onPress={buy}
                       />
                     </View>
                   ))}
@@ -114,18 +135,20 @@ export function ProductDetailScreen({ id }: ProductDetailScreenProps) {
 
       <View style={[styles.topBar, { top: insets.top + theme.spacing.sm }]}>
         <IconButton icon="arrowLeft" label={tr.back} onPress={goBack} testID="detail-back" />
-        {product.data ? <IconButton icon="bookmark" label={tr.productSave} /> : null}
+        {product.data ? (
+          <IconButton
+            icon="bell"
+            label={hasAlert ? tr.productAlertActive : tr.productAlertBell}
+            filled={hasAlert}
+            onPress={() => requireSignIn(() => setAlertOpen(true))}
+            testID="detail-bell"
+          />
+        ) : null}
       </View>
 
       {product.data ? (
         <View style={[styles.bar, { paddingBottom: BAR_PADDING + insets.bottom }]}>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel={tr.productSave}
-            style={styles.saveButton}
-          >
-            <Icon name="bookmark" size={22} />
-          </Pressable>
+          <SaveButton productId={product.data.id} variant="bar" />
           {cheapest ? (
             <Button
               label={tr.productBuy(
@@ -133,7 +156,7 @@ export function ProductDetailScreen({ id }: ProductDetailScreenProps) {
                 formatTry(cheapest.currentPrice),
               )}
               trailingIcon="arrowUpRight"
-              onPress={() => void openOffer(cheapest)}
+              onPress={() => void buy(cheapest)}
               style={styles.buyButton}
               testID="buy-button"
             />
@@ -147,6 +170,71 @@ export function ProductDetailScreen({ id }: ProductDetailScreenProps) {
           )}
         </View>
       ) : null}
+
+      {product.data ? (
+        <>
+          <AlertSheet
+            visible={alertOpen}
+            onClose={() => setAlertOpen(false)}
+            product={product.data}
+            onCreated={() => void pushPrimer.maybePrompt()}
+          />
+          <SizeSheet
+            visible={sizeOpen}
+            onClose={() => setSizeOpen(false)}
+            initial={{
+              brand: { slug: product.data.brand.slug, name: product.data.brand.name },
+              group: product.data.sizeHint?.group,
+            }}
+          />
+          <PushPrimerSheet
+            visible={pushPrimer.visible}
+            onAllow={() => void pushPrimer.allow()}
+            onDismiss={pushPrimer.dismiss}
+          />
+        </>
+      ) : null}
+    </View>
+  );
+}
+
+/** "%94 uyum" next to the brand line; absent when there is no persona or the score is too low to show. */
+function MatchPill({ score }: { score: Product['matchScore'] }) {
+  const value = matchBadgeScore(score);
+  if (value === null) {
+    return null;
+  }
+  return (
+    <View style={styles.matchPill} testID="detail-match">
+      <Text style={styles.matchText}>{tr.productMatch(value)}</Text>
+    </View>
+  );
+}
+
+/** Top-right of the title block: the user's size as a pill, a guess with "?", or a link to add one. */
+function SizeSlot({ product, onAdd }: { product: Product; onAdd: () => void }) {
+  const pill = sizePill(product.sizeHint);
+  if (pill.kind === 'none') {
+    return (
+      <Pressable
+        accessibilityRole="link"
+        onPress={onAdd}
+        hitSlop={theme.spacing.sm}
+        testID="size-add"
+      >
+        <Text style={styles.sizeLink}>{tr.productSizeAdd}</Text>
+      </Pressable>
+    );
+  }
+  const known = pill.kind === 'known';
+  return (
+    <View style={styles.sizeSlot} testID={known ? 'size-pill' : 'size-pill-inferred'}>
+      <Text style={styles.sizeCaption}>{known ? tr.productSizeYours : tr.productSizeInferred}</Text>
+      <View style={[styles.sizePill, known ? styles.sizePillKnown : styles.sizePillInferred]}>
+        <Text style={[styles.sizePillText, known && styles.sizePillTextKnown]}>
+          {known ? pill.size : `${pill.size}?`}
+        </Text>
+      </View>
     </View>
   );
 }
@@ -266,12 +354,69 @@ const styles = StyleSheet.create({
     paddingTop: theme.spacing.xl,
     gap: theme.spacing.xl,
   },
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    gap: theme.spacing.md,
+  },
   titleBlock: {
+    flex: 1,
     gap: theme.spacing.xs,
+  },
+  brandRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: theme.spacing.sm,
   },
   brand: {
     ...theme.typography.caption,
     color: theme.colors.inkMuted,
+  },
+  matchPill: {
+    backgroundColor: theme.colors.surfaceAlt,
+    borderRadius: theme.radius.pill,
+    paddingHorizontal: theme.spacing.sm,
+    paddingVertical: 2,
+  },
+  matchText: {
+    ...theme.typography.captionMedium,
+    color: theme.colors.ink,
+  },
+  sizeSlot: {
+    alignItems: 'flex-end',
+    gap: theme.spacing.xs,
+  },
+  sizeCaption: {
+    ...theme.typography.caption,
+    color: theme.colors.inkMuted,
+  },
+  sizePill: {
+    minWidth: 36,
+    height: 36,
+    paddingHorizontal: theme.spacing.sm,
+    borderRadius: theme.radius.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  sizePillKnown: {
+    backgroundColor: theme.colors.ink,
+  },
+  sizePillInferred: {
+    borderWidth: 1,
+    borderColor: theme.colors.borderStrong,
+  },
+  sizePillText: {
+    ...theme.typography.bodyStrong,
+    color: theme.colors.ink,
+  },
+  sizePillTextKnown: {
+    color: theme.colors.onInk,
+  },
+  sizeLink: {
+    ...theme.typography.captionMedium,
+    color: theme.colors.ink,
+    textDecorationLine: 'underline',
   },
   name: {
     ...theme.typography.headingLarge,
@@ -310,15 +455,6 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.surface,
     borderTopWidth: 1,
     borderTopColor: theme.colors.border,
-  },
-  saveButton: {
-    width: theme.sizes.buttonHeight,
-    height: theme.sizes.buttonHeight,
-    borderRadius: theme.radius.lg,
-    borderWidth: 1,
-    borderColor: theme.colors.borderStrong,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   buyButton: {
     flex: 1,

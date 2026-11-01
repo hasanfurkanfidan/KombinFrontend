@@ -1,3 +1,6 @@
+// Gesture handler's own mocks for its native module and components.
+import 'react-native-gesture-handler/jestSetup';
+
 // In-memory stand-in for the OS keystore.
 jest.mock('expo-secure-store', () => {
   const store = new Map<string, string>();
@@ -35,7 +38,44 @@ jest.mock('expo-router', () => {
     dismissTo: jest.fn(),
     setParams: jest.fn(),
   };
-  return { router, useRouter: () => router, useLocalSearchParams: jest.fn(() => ({})) };
+  return {
+    router,
+    useRouter: () => router,
+    useLocalSearchParams: jest.fn(() => ({})),
+    useSegments: jest.fn(() => []),
+  };
+});
+
+jest.mock('expo-device', () => ({ isDevice: true }));
+
+jest.mock('expo-notifications', () => ({
+  AndroidImportance: { DEFAULT: 3 },
+  getPermissionsAsync: jest.fn(async () => ({ status: 'undetermined' })),
+  requestPermissionsAsync: jest.fn(async () => ({ status: 'granted' })),
+  getExpoPushTokenAsync: jest.fn(async () => ({ data: 'ExponentPushToken[test-token]' })),
+  setNotificationChannelAsync: jest.fn(async () => undefined),
+}));
+
+// Reanimated's own jest mock: no native runtime, animations resolve immediately. The deck is driven through
+// its buttons in tests; the drag gesture itself needs a device.
+jest.mock('react-native-reanimated', () => jest.requireActual('react-native-reanimated/mock'));
+
+// Worklets runs its JS (web) implementation under Jest, which has no UI runtime: the two calls that need one are
+// stubbed (gesture-handler asks for the runtime holder, the deck schedules callbacks back to the JS thread).
+jest.mock('react-native-worklets', () => ({
+  ...jest.requireActual('react-native-worklets'),
+  getUIRuntimeHolder: () => ({}),
+  scheduleOnRN: (fn: (...args: unknown[]) => void, ...args: unknown[]) => fn(...args),
+}));
+
+// The swipe-to-reveal wrapper is driven by shared values; in tests the actions are simply always rendered.
+jest.mock('react-native-gesture-handler/ReanimatedSwipeable', () => {
+  const { createElement } = jest.requireActual('react');
+  const { View } = jest.requireActual('react-native');
+  function Swipeable(props: { children?: unknown; renderRightActions?: () => unknown }) {
+    return createElement(View, null, props.children, props.renderRightActions?.());
+  }
+  return { __esModule: true, default: Swipeable };
 });
 
 process.env.EXPO_PUBLIC_API_URL = 'http://api.test';
