@@ -180,10 +180,334 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/me/saved": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ListSaved"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/saved/ids": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ListSavedIds"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/saved/{productId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["SaveProduct"];
+        post?: never;
+        delete: operations["UnsaveProduct"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/alerts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ListAlerts"];
+        put?: never;
+        post: operations["CreateAlert"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/alerts/triggers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ListAlertTriggers"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/alerts/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["DeleteAlert"];
+        options?: never;
+        head?: never;
+        patch: operations["UpdateAlert"];
+        trace?: never;
+    };
+    "/api/v1/me/clicks": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ListClicks"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/go/{offerId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["GoToOffer"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/profile": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["GetProfile"];
+        put: operations["UpdateProfile"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/personas": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ListPersonas"];
+        put?: never;
+        post: operations["CreatePersona"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/personas/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["ArchivePersona"];
+        options?: never;
+        head?: never;
+        patch: operations["UpdatePersona"];
+        trace?: never;
+    };
+    "/api/v1/me/personas/{id}/activate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["ActivatePersona"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/personas/{id}/style-cards": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ListStyleCards"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/personas/{id}/swipes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["SubmitSwipes"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/personas/{id}/style": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["GetStyle"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/sizes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ListSizes"];
+        put: operations["UpsertSize"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/sizes/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["DeleteSize"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/sizes/hint": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["GetSizeHint"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/sizes/confirm": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ConfirmSize"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** @enum {unknown} */
+        AlertKind: "PriceDrop" | "BackInStock" | "AnyChange";
+        AlertResponse: {
+            /** Format: uuid */
+            id: string;
+            kind: components["schemas"]["AlertKind"];
+            /** Format: double */
+            targetPrice: null | number | string;
+            sizes: string[];
+            isActive: boolean;
+            /** Format: int32 */
+            triggerCount: number | string;
+            /** Format: date-time */
+            lastTriggeredAt: null | string;
+            /** Format: double */
+            lastPriceAfter: null | number | string;
+            /** Format: date-time */
+            createdAt: string;
+            product: components["schemas"]["ProductSummary"];
+        };
         /** @enum {unknown} */
         Audience: "Women" | "Men" | "Unisex" | "Kids";
         AuthTokensResponse: {
@@ -218,6 +542,58 @@ export interface components {
             id: string;
             slug: string;
         };
+        ClickResponse: {
+            /** Format: int64 */
+            id: number | string;
+            /** Format: uuid */
+            offerId: string;
+            product: components["schemas"]["ProductSummary"];
+            seller: components["schemas"]["ClickSellerRef"];
+            source: string;
+            /** Format: date-time */
+            clickedAt: string;
+        };
+        ClickSellerRef: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            slug: string;
+        };
+        ConfirmSizeRequest: {
+            /** Format: uuid */
+            productId: string;
+            size: string;
+            fitted: null | boolean;
+        };
+        CreateAlertRequest: {
+            /** Format: uuid */
+            productId: string;
+            kind: string;
+            /** Format: double */
+            targetPrice: null | number | string;
+            sizes: null | string[];
+        };
+        /** @description Every field but the name and icon is optional. Seasons default to all four, formality to 1-5. */
+        CreatePersonaRequest: {
+            name: string;
+            icon: string;
+            /** Format: double */
+            budgetMin: null | number | string;
+            /** Format: double */
+            budgetMax: null | number | string;
+            /** Format: int32 */
+            formalityMin: null | number | string;
+            /** Format: int32 */
+            formalityMax: null | number | string;
+            preferredColors: null | string[];
+            avoidedColors: null | string[];
+            preferredFits: null | string[];
+            seasons: null | string[];
+        };
+        JsonElement: unknown;
+        ListAlertsResponse: {
+            items: components["schemas"]["AlertResponse"][];
+        };
         LoginRequest: {
             email: string;
             password: string;
@@ -234,11 +610,15 @@ export interface components {
             /** Format: date-time */
             createdAt: string;
         };
+        /**
+         * @description `GoPath` (`/api/v1/go/{offerId}`) is the only way to open an offer: the redirect records the click and adds the affiliate
+         *     parameters. The seller's own URL is never part of the response.
+         */
         OfferResponse: {
             /** Format: uuid */
             id: string;
             seller: components["schemas"]["SellerRef"];
-            url: string;
+            goPath: string;
             /** Format: double */
             currentPrice: number | string;
             /** Format: double */
@@ -272,6 +652,17 @@ export interface components {
             /** Format: int32 */
             totalPages?: number | string;
         };
+        PagedResponseOfClickResponse: {
+            items: components["schemas"]["ClickResponse"][];
+            /** Format: int32 */
+            page: number | string;
+            /** Format: int32 */
+            pageSize: number | string;
+            /** Format: int32 */
+            totalCount: number | string;
+            /** Format: int32 */
+            totalPages?: number | string;
+        };
         PagedResponseOfProductListItem: {
             items: components["schemas"]["ProductListItem"][];
             /** Format: int32 */
@@ -282,6 +673,59 @@ export interface components {
             totalCount: number | string;
             /** Format: int32 */
             totalPages?: number | string;
+        };
+        PagedResponseOfSavedProductItem: {
+            items: components["schemas"]["SavedProductItem"][];
+            /** Format: int32 */
+            page: number | string;
+            /** Format: int32 */
+            pageSize: number | string;
+            /** Format: int32 */
+            totalCount: number | string;
+            /** Format: int32 */
+            totalPages?: number | string;
+        };
+        PagedResponseOfTriggerResponse: {
+            items: components["schemas"]["TriggerResponse"][];
+            /** Format: int32 */
+            page: number | string;
+            /** Format: int32 */
+            pageSize: number | string;
+            /** Format: int32 */
+            totalCount: number | string;
+            /** Format: int32 */
+            totalPages?: number | string;
+        };
+        PersonaListResponse: {
+            items: components["schemas"]["PersonaResponse"][];
+        };
+        PersonaRef: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            icon: string;
+        };
+        PersonaResponse: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            icon: string;
+            /** Format: int32 */
+            sortOrder: number | string;
+            /** Format: double */
+            budgetMin: null | number | string;
+            /** Format: double */
+            budgetMax: null | number | string;
+            /** Format: int32 */
+            formalityMin: number | string;
+            /** Format: int32 */
+            formalityMax: number | string;
+            preferredColors: string[];
+            avoidedColors: string[];
+            preferredFits: string[];
+            seasons: string[];
+            isActive: boolean;
+            styleSummary: components["schemas"]["StyleSummary"];
         };
         PricePoint: {
             /** Format: date */
@@ -312,7 +756,7 @@ export interface components {
         ProductColor: "Black" | "White" | "Grey" | "Navy" | "Blue" | "Green" | "Beige" | "Brown" | "Red" | "Pink" | "Purple" | "Yellow" | "Orange" | "Multi" | "Other";
         /** @enum {unknown} */
         ProductFit: "Slim" | "Regular" | "Relaxed" | "Oversized" | "Unknown";
-        /** @description Prices are those of the product's lowest active, in-stock offer. */
+        /** @description Prices are those of the product's lowest active, in-stock offer. `MatchScore` (0-100) is present only when the request named a persona. */
         ProductListItem: {
             /** Format: uuid */
             id: string;
@@ -330,9 +774,12 @@ export interface components {
             offerCount: number | string;
             /** Format: int32 */
             discountPercent: number | string;
+            /** Format: int32 */
+            matchScore?: null | number | string;
         };
         /** @enum {unknown} */
         ProductPattern: "Solid" | "Striped" | "Checked" | "Printed" | "Textured" | "Other";
+        /** @description `MatchScore` is present when the request named a persona; `SizeHint` when the caller is signed in. Both are left out otherwise. */
         ProductResponse: {
             /** Format: uuid */
             id: string;
@@ -355,6 +802,42 @@ export interface components {
             images: string[];
             offers: components["schemas"]["OfferResponse"][];
             priceSummary: components["schemas"]["PriceSummary"];
+            /** Format: int32 */
+            matchScore: null | number | string;
+            sizeHint: null | components["schemas"]["SizeHintResponse"];
+        };
+        /** @description The few product fields every engagement list shows next to its own data. `LowestPrice` is null when nothing can be bought. */
+        ProductSummary: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            brandName: string;
+            primaryImageUrl: null | string;
+            /** Format: double */
+            lowestPrice: null | number | string;
+        };
+        ProfileResponse: {
+            audience: components["schemas"]["Audience"];
+            /** Format: int32 */
+            birthYear: null | number | string;
+            /** Format: int32 */
+            heightCm: null | number | string;
+            /** Format: double */
+            weightKg: null | number | string;
+            /** Format: int32 */
+            chestCm: null | number | string;
+            /** Format: int32 */
+            waistCm: null | number | string;
+            /** Format: int32 */
+            hipCm: null | number | string;
+            /** Format: double */
+            shoeSizeEu: null | number | string;
+            activePersona: null | components["schemas"]["PersonaRef"];
+            /** Format: int32 */
+            personaCount: number | string;
+            onboardingCompleted: boolean;
+            /** Format: date-time */
+            onboardingCompletedAt: null | string;
         };
         RefreshRequest: {
             refreshToken: string;
@@ -363,6 +846,34 @@ export interface components {
             email: string;
             password: string;
             displayName: string;
+        };
+        SavedIdsResponse: {
+            productIds: string[];
+        };
+        /**
+         * @description The catalog's ProductListItem fields, flattened, plus `isActive` (saved products stay in the list after they
+         *     are delisted) and `savedAt`. A product nobody sells has `offerCount` 0 and `lowestPrice` 0.
+         */
+        SavedProductItem: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            slug: string;
+            brand: components["schemas"]["BrandRef"];
+            category: components["schemas"]["CategoryRef"];
+            primaryImageUrl: null | string;
+            primaryColor: components["schemas"]["ProductColor"];
+            /** Format: double */
+            lowestPrice: number | string;
+            /** Format: double */
+            lowestOriginalPrice: null | number | string;
+            /** Format: int32 */
+            offerCount: number | string;
+            /** Format: int32 */
+            discountPercent: number | string;
+            isActive: boolean;
+            /** Format: date-time */
+            savedAt: string;
         };
         /** @enum {unknown} */
         SellerKind: "Marketplace" | "BrandStore";
@@ -373,8 +884,187 @@ export interface components {
             slug: string;
             kind: components["schemas"]["SellerKind"];
         };
+        SizeEntryResponse: {
+            /** Format: uuid */
+            id: string;
+            brand: components["schemas"]["BrandRef"];
+            group: components["schemas"]["SizeGroup"];
+            size: string;
+            source: components["schemas"]["SizeSource"];
+            /** Format: double */
+            confidence: number | string;
+            /** Format: date-time */
+            updatedAt: string;
+        };
+        /** @enum {unknown} */
+        SizeGroup: "Tops" | "Bottoms" | "Outerwear" | "Shoes" | "Accessories";
+        /**
+         * @description Which size to buy. `Size`, `Source` and `Confidence` are the user's own entry for the product's brand and group, when
+         *     there is one. Without it `Suggestion` may carry a guess from the user's sizes at other brands (not stored).
+         */
+        SizeHintResponse: {
+            group: components["schemas"]["SizeGroup"];
+            size: null | string;
+            source: null | components["schemas"]["SizeSource"];
+            /** Format: double */
+            confidence: null | number | string;
+            suggestion: null | components["schemas"]["SizeSuggestion"];
+        };
+        SizeListResponse: {
+            items: components["schemas"]["SizeEntryResponse"][];
+        };
+        /** @enum {unknown} */
+        SizeSource: "UserEntered" | "Inferred" | "Confirmed" | null;
+        /** @description A guess, not stored anywhere: what the user probably wears at a brand they have not told us about. */
+        SizeSuggestion: {
+            size: string;
+            source: components["schemas"]["SizeSource"];
+            /** Format: double */
+            confidence: number | string;
+        };
         /** @enum {unknown} */
         StockStatus: "InStock" | "LowStock" | "OutOfStock" | "Unknown";
+        StyleCardItem: {
+            /** Format: uuid */
+            id: string;
+            title: string;
+            imageUrl: string;
+            audience: components["schemas"]["Audience"];
+            family: components["schemas"]["StyleFamily"];
+        };
+        /** @description `Remaining` counts the unswiped cards that did not fit into this response. */
+        StyleCardsResponse: {
+            items: components["schemas"]["StyleCardItem"][];
+            /** Format: int32 */
+            remaining: number | string;
+        };
+        /**
+         * @description The broad style families a style card (and, heuristically, a product) belongs to.
+         * @enum {unknown}
+         */
+        StyleFamily: "Minimal" | "Classic" | "Street" | "Sporty" | "Boho" | "Formal" | "Romantic" | "Edgy";
+        /** @description The whole derived style profile, weights included. For debugging and the app's "tarzın" screen. */
+        StyleResponse: {
+            /** Format: uuid */
+            personaId: string;
+            colorWeights: {
+                [key: string]: number | string;
+            };
+            familyWeights: {
+                [key: string]: number | string;
+            };
+            fitWeights: {
+                [key: string]: number | string;
+            };
+            /** Format: double */
+            formalityMean: number | string;
+            seasonWeights: {
+                [key: string]: number | string;
+            };
+            /** Format: int32 */
+            likeCount: number | string;
+            /** Format: int32 */
+            dislikeCount: number | string;
+            /** Format: double */
+            confidence: number | string;
+            /** Format: date-time */
+            updatedAt: string;
+        };
+        /** @description What the app shows about a persona's learned taste. `TopColors` has up to 3 names, `TopFamilies` up to 2. */
+        StyleSummary: {
+            /** Format: double */
+            confidence: number | string;
+            /** Format: int32 */
+            likeCount: number | string;
+            topColors: string[];
+            /** Format: double */
+            formalityMean: number | string;
+            topFamilies: string[];
+        };
+        SubmitSwipesRequest: {
+            swipes: components["schemas"]["SwipeItem"][];
+        };
+        /** @description `OnboardingCompleted` turns true once any persona has reached int SubmitSwipesEndpoint.OnboardingLikes likes. */
+        SubmitSwipesResponse: {
+            styleSummary: components["schemas"]["StyleSummary"];
+            onboardingCompleted: boolean;
+        };
+        SwipeItem: {
+            /** Format: uuid */
+            styleCardId: string;
+            decision: string;
+        };
+        /** @description `AlertId` is null once the alert has been deleted. */
+        TriggerResponse: {
+            /** Format: int64 */
+            id: number | string;
+            /** Format: uuid */
+            alertId: null | string;
+            kind: components["schemas"]["AlertKind"];
+            product: components["schemas"]["ProductSummary"];
+            /** Format: uuid */
+            offerId: string;
+            /** Format: double */
+            priceBefore: null | number | string;
+            /** Format: double */
+            priceAfter: null | number | string;
+            payload: components["schemas"]["JsonElement"];
+            /** Format: date-time */
+            triggeredAt: string;
+            /** Format: date-time */
+            consumedAt: null | string;
+        };
+        /** @description A partial update: a null field is left as it is. `Sizes: []` clears the size filter. */
+        UpdateAlertRequest: {
+            /** Format: double */
+            targetPrice: null | number | string;
+            sizes: null | string[];
+            isActive: null | boolean;
+        };
+        /**
+         * @description A partial update: a null field is left as it is, and a given list replaces the stored one (`[]` clears preferred/avoided
+         *     lists, but not seasons). `ClearBudget: true` removes both budget bounds.
+         */
+        UpdatePersonaRequest: {
+            name: null | string;
+            icon: null | string;
+            /** Format: int32 */
+            sortOrder: null | number | string;
+            /** Format: double */
+            budgetMin: null | number | string;
+            /** Format: double */
+            budgetMax: null | number | string;
+            clearBudget: null | boolean;
+            /** Format: int32 */
+            formalityMin: null | number | string;
+            /** Format: int32 */
+            formalityMax: null | number | string;
+            preferredColors: null | string[];
+            avoidedColors: null | string[];
+            preferredFits: null | string[];
+            seasons: null | string[];
+        };
+        /**
+         * @description Replaces the measurements: a field that is left out is cleared. `Audience` is the exception, a null keeps the current one
+         *     (a profile always has an audience).
+         */
+        UpdateProfileRequest: {
+            audience: null | string;
+            /** Format: int32 */
+            birthYear: null | number | string;
+            /** Format: int32 */
+            heightCm: null | number | string;
+            /** Format: double */
+            weightKg: null | number | string;
+            /** Format: int32 */
+            chestCm: null | number | string;
+            /** Format: int32 */
+            waistCm: null | number | string;
+            /** Format: int32 */
+            hipCm: null | number | string;
+            /** Format: double */
+            shoeSizeEu: null | number | string;
+        };
         UpsertItemError: {
             /** Format: int32 */
             index: number | string;
@@ -429,6 +1119,11 @@ export interface components {
             description: null | string;
             /** Format: uuid */
             canonicalProductId: null | string;
+        };
+        UpsertSizeRequest: {
+            brandSlug: string;
+            group: string;
+            size: string;
         };
     };
     responses: never;
@@ -671,6 +1366,7 @@ export interface operations {
                 MinPrice?: number | string;
                 MaxPrice?: number | string;
                 Sort?: string;
+                PersonaId?: string;
                 Page?: number | string;
                 PageSize?: number | string;
             };
@@ -711,7 +1407,9 @@ export interface operations {
     };
     GetProduct: {
         parameters: {
-            query?: never;
+            query?: {
+                personaId?: string;
+            };
             header?: never;
             path: {
                 id: string;
@@ -794,6 +1492,1052 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["UpsertOffersResponse"];
                 };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    ListSaved: {
+        parameters: {
+            query?: {
+                Page?: number | string;
+                PageSize?: number | string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PagedResponseOfSavedProductItem"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    ListSavedIds: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SavedIdsResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    SaveProduct: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                productId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    UnsaveProduct: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                productId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    ListAlerts: {
+        parameters: {
+            query?: {
+                active?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ListAlertsResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    CreateAlert: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateAlertRequest"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AlertResponse"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    ListAlertTriggers: {
+        parameters: {
+            query?: {
+                Page?: number | string;
+                PageSize?: number | string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PagedResponseOfTriggerResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    DeleteAlert: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    UpdateAlert: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateAlertRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AlertResponse"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    ListClicks: {
+        parameters: {
+            query?: {
+                Page?: number | string;
+                PageSize?: number | string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PagedResponseOfClickResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    GoToOffer: {
+        parameters: {
+            query?: {
+                src?: string;
+                personaId?: string;
+            };
+            header?: never;
+            path: {
+                offerId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Found */
+            302: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    GetProfile: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProfileResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    UpdateProfile: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateProfileRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProfileResponse"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    ListPersonas: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PersonaListResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    CreatePersona: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreatePersonaRequest"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PersonaResponse"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    ArchivePersona: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    UpdatePersona: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdatePersonaRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PersonaResponse"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    ActivatePersona: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    ListStyleCards: {
+        parameters: {
+            query?: {
+                limit?: number | string;
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StyleCardsResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    SubmitSwipes: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SubmitSwipesRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SubmitSwipesResponse"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    GetStyle: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StyleResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    ListSizes: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SizeListResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    UpsertSize: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpsertSizeRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SizeEntryResponse"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    DeleteSize: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    GetSizeHint: {
+        parameters: {
+            query: {
+                productId: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SizeHintResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    ConfirmSize: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ConfirmSizeRequest"];
+            };
+        };
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description Bad Request */
             400: {

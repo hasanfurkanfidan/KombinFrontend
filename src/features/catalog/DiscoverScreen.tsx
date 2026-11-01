@@ -3,33 +3,23 @@ import { StyleSheet, Text, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 
 import { Button } from '@/components/Button';
-import { Chip } from '@/components/Chip';
 import { EmptyState } from '@/components/EmptyState';
 import { ErrorState } from '@/components/ErrorState';
 import { IconButton } from '@/components/IconButton';
 import { Screen } from '@/components/Screen';
 import { tr } from '@/i18n/tr';
+import { useActivePersona, usePersonas } from '@/features/personas/hooks';
+import { PersonaChips } from '@/features/personas/PersonaChips';
 import { useMe } from '@/features/profile/hooks';
+import { useSession } from '@/session/useSession';
 import { theme } from '@/theme';
-import { dayPart, formatLongDay } from '@/utils/dates';
+import { formatLongDay } from '@/utils/dates';
 
 import { FilterBar } from './FilterBar';
-import { hasActiveFilters, parseFilters, type ProductFilters } from './filters';
+import { hasActiveFilters, parseFilters, withPersona, type ProductFilters } from './filters';
+import { buildGreeting } from './greeting';
 import { useProducts } from './hooks';
 import { ProductGrid, ProductGridSkeleton } from './ProductGrid';
-
-const GREETINGS = {
-  morning: tr.discoverGreetingMorning,
-  afternoon: tr.discoverGreetingAfternoon,
-  evening: tr.discoverGreetingEvening,
-} as const;
-
-const PERSONAS = [
-  tr.discoverPersonaOffice,
-  tr.discoverPersonaWeekend,
-  tr.discoverPersonaNight,
-  tr.discoverPersonaSport,
-];
 
 export function DiscoverScreen() {
   const router = useRouter();
@@ -54,18 +44,25 @@ export function DiscoverScreen() {
       sort: next.sort ?? '',
     });
 
-  const products = useProducts(filters);
+  // Signed-in users wait for their personas, so the list is fetched once, already scored for the active one.
+  const { isSignedIn } = useSession();
+  const personas = usePersonas();
+  const personaId = useActivePersona()?.id;
+  const personasReady = !isSignedIn || !personas.isPending;
+  const products = useProducts(withPersona(filters, personaId), personasReady);
   const items = useMemo(
     () => products.data?.pages.flatMap((page) => page.items) ?? [],
     [products.data],
   );
 
-  const header = <DiscoverHeader filters={filters} onChangeFilters={setFilters} />;
+  const header = (
+    <DiscoverHeader filters={filters} onChangeFilters={setFilters} personaId={personaId} />
+  );
 
   let placeholder = <ProductGridSkeleton />;
   if (products.isError && !products.isFetchingNextPage && items.length === 0) {
     placeholder = <ErrorState onRetry={() => void products.refetch()} />;
-  } else if (!products.isPending && items.length === 0) {
+  } else if (!products.isPending && personasReady && items.length === 0) {
     placeholder = (
       <EmptyState
         title={tr.discoverEmptyTitle}
@@ -122,12 +119,12 @@ export function DiscoverScreen() {
 interface DiscoverHeaderProps {
   filters: ProductFilters;
   onChangeFilters: (next: ProductFilters) => void;
+  personaId: string | undefined;
 }
 
-function DiscoverHeader({ filters, onChangeFilters }: DiscoverHeaderProps) {
+function DiscoverHeader({ filters, onChangeFilters, personaId }: DiscoverHeaderProps) {
   const me = useMe();
   const now = new Date();
-  const firstName = me.data?.displayName.trim().split(/\s+/)[0];
 
   return (
     <View style={styles.header}>
@@ -135,18 +132,14 @@ function DiscoverHeader({ filters, onChangeFilters }: DiscoverHeaderProps) {
         <View style={styles.greeting}>
           <Text style={styles.date}>{formatLongDay(now)}</Text>
           <Text style={styles.hello} numberOfLines={1}>
-            {firstName ? `${GREETINGS[dayPart(now)]}, ${firstName}` : GREETINGS[dayPart(now)]}
+            {buildGreeting(now, me.data?.displayName)}
           </Text>
         </View>
         <IconButton icon="bell" label={tr.comingSoon} tone="tinted" />
       </View>
 
-      {/* Placeholders: personas and the "tomorrow" card arrive with the outfit features. */}
-      <View style={styles.personas}>
-        {PERSONAS.map((label) => (
-          <Chip key={label} label={label} disabled />
-        ))}
-      </View>
+      <PersonaChips />
+      {/* Placeholder: the "tomorrow" card arrives with the outfit features. */}
       <View style={styles.tomorrow}>
         <View style={styles.tomorrowText}>
           <Text style={styles.tomorrowLabel}>{tr.discoverTomorrowLabel}</Text>
@@ -159,7 +152,7 @@ function DiscoverHeader({ filters, onChangeFilters }: DiscoverHeaderProps) {
 
       <Text style={styles.sectionTitle}>{tr.discoverForYou}</Text>
       <View style={styles.filters}>
-        <FilterBar filters={filters} onChange={onChangeFilters} />
+        <FilterBar filters={filters} onChange={onChangeFilters} personaId={personaId} />
       </View>
     </View>
   );
@@ -188,12 +181,6 @@ const styles = StyleSheet.create({
   hello: {
     ...theme.typography.display,
     color: theme.colors.ink,
-  },
-  personas: {
-    flexDirection: 'row',
-    gap: theme.spacing.sm,
-    paddingHorizontal: theme.screenPaddingX,
-    opacity: 0.6,
   },
   tomorrow: {
     marginHorizontal: theme.screenPaddingX,

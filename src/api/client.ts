@@ -50,7 +50,8 @@ export interface RequestOptions {
   signal?: AbortSignal;
 }
 
-function baseUrl(): string {
+/** The API origin without a trailing slash; also the base of every `goPath` buy link. */
+export function baseUrl(): string {
   const url = process.env.EXPO_PUBLIC_API_URL;
   if (!url) {
     throw new Error('EXPO_PUBLIC_API_URL is not set. Copy .env.example to .env.');

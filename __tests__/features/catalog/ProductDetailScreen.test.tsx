@@ -49,14 +49,16 @@ describe('ProductDetailScreen', () => {
     expect(screen.queryByTestId('price-chart-mini')).toBeNull();
   });
 
-  it('opens the offer link in the in-app browser', async () => {
+  it('opens the /go redirect (never the seller URL) in the in-app browser', async () => {
     getProductMock.mockResolvedValue(product());
     getPriceHistoryMock.mockResolvedValue(history);
 
     await renderWithQuery(<ProductDetailScreen id="p1" />);
     await fireEvent.press(await screen.findByTestId('buy-button'));
 
-    expect(WebBrowser.openBrowserAsync).toHaveBeenCalledWith(trendyol.url);
+    expect(WebBrowser.openBrowserAsync).toHaveBeenCalledWith(
+      'http://api.test/api/v1/go/o1?src=product_detail',
+    );
   });
 
   it('expands the full chart when the history card is pressed', async () => {

@@ -9,6 +9,7 @@ import { theme } from '@/theme';
 import {
   audienceLabels,
   colorLabels,
+  defaultSort,
   SORT_VALUES,
   sortLabels,
   type ProductFilters,
@@ -20,6 +21,8 @@ import { OptionSheet, type Option } from './OptionSheet';
 interface FilterBarProps {
   filters: ProductFilters;
   onChange: (next: ProductFilters) => void;
+  /** The active persona; "Sana göre" is offered (and is the default order) only while there is one. */
+  personaId?: string;
 }
 
 type Picker = 'color' | 'audience' | 'sort';
@@ -42,13 +45,15 @@ const audienceOptions: Option<Audience | typeof ALL>[] = [
     label: audienceLabels[value],
   })),
 ];
-const sortOptions: Option<SortValue>[] = SORT_VALUES.map((value) => ({
-  value,
-  label: sortLabels[value],
-}));
+const sortOptionsFor = (personaId: string | undefined): Option<SortValue>[] =>
+  SORT_VALUES.filter((value) => value !== 'match' || personaId).map((value) => ({
+    value,
+    label: sortLabels[value],
+  }));
 
-export function FilterBar({ filters, onChange }: FilterBarProps) {
+export function FilterBar({ filters, onChange, personaId }: FilterBarProps) {
   const [picker, setPicker] = useState<Picker | null>(null);
+  const fallbackSort = defaultSort(personaId);
   const categories = useCategories();
   const close = () => setPicker(null);
 
@@ -128,10 +133,10 @@ export function FilterBar({ filters, onChange }: FilterBarProps) {
       <OptionSheet
         visible={picker === 'sort'}
         title={tr.filterSort}
-        options={sortOptions}
-        selected={filters.sort ?? 'relevance'}
+        options={sortOptionsFor(personaId)}
+        selected={filters.sort ?? fallbackSort}
         onSelect={(value) => {
-          onChange({ ...filters, sort: value === 'relevance' ? undefined : value });
+          onChange({ ...filters, sort: value === fallbackSort ? undefined : value });
           close();
         }}
         onClose={close}

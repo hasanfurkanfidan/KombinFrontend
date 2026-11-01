@@ -1,10 +1,17 @@
 import type {
+  Alert,
+  AlertTrigger,
   CategoryNode,
   Offer,
   OfferSeries,
+  Persona,
   Product,
   ProductListItem,
   ProductPage,
+  Profile,
+  SavedProduct,
+  SizeEntry,
+  StyleCard,
 } from '@/api/models';
 
 const brand = { id: 'b1', name: 'Mavi', slug: 'mavi' };
@@ -27,6 +34,7 @@ export function listItem(overrides: Partial<ProductListItem> = {}): ProductListI
     lowestOriginalPrice: 2999,
     offerCount: 3,
     discountPercent: 28,
+    matchScore: null,
     ...overrides,
   };
 }
@@ -37,7 +45,7 @@ export function page(items: ProductListItem[], overrides: Partial<ProductPage> =
 
 function offer(overrides: Partial<Offer> & Pick<Offer, 'id' | 'seller'>): Offer {
   return {
-    url: `https://shop.example/${overrides.id}`,
+    goPath: `/api/v1/go/${overrides.id}`,
     currentPrice: 2149,
     originalPrice: null,
     currency: 'TRY',
@@ -96,6 +104,8 @@ export function product(overrides: Partial<Product> = {}): Product {
       highestLast90Days: 2999,
       isLowestOfLast90Days: true,
     },
+    matchScore: null,
+    sizeHint: null,
     ...overrides,
   };
 }
@@ -111,3 +121,118 @@ export const history: OfferSeries[] = [
     ],
   },
 ];
+
+export function persona(overrides: Partial<Persona> = {}): Persona {
+  return {
+    id: 'pe1',
+    name: 'Ofis',
+    icon: 'office',
+    sortOrder: 0,
+    budgetMin: 800,
+    budgetMax: 2500,
+    formalityMin: 2,
+    formalityMax: 4,
+    preferredColors: [],
+    avoidedColors: [],
+    preferredFits: [],
+    seasons: [],
+    isActive: true,
+    styleSummary: {
+      confidence: 0.8,
+      likeCount: 9,
+      topColors: ['Green', 'Black', 'Beige', 'White'],
+      formalityMean: 3.2,
+      topFamilies: ['Minimal', 'Classic'],
+    },
+    ...overrides,
+  };
+}
+
+export function profile(overrides: Partial<Profile> = {}): Profile {
+  return {
+    audience: 'Women',
+    birthYear: null,
+    heightCm: 178,
+    weightKg: 76,
+    chestCm: 100,
+    waistCm: 84,
+    hipCm: null,
+    shoeSizeEu: null,
+    activePersona: { id: 'pe1', name: 'Ofis', icon: 'office' },
+    personaCount: 1,
+    onboardingCompleted: true,
+    onboardingCompletedAt: '2026-11-01T10:00:00Z',
+    ...overrides,
+  };
+}
+
+export function styleCard(id: string, overrides: Partial<StyleCard> = {}): StyleCard {
+  return {
+    id,
+    title: `Kart ${id}`,
+    imageUrl: `https://img.example/${id}.jpg`,
+    audience: 'Women',
+    family: 'Minimal',
+    ...overrides,
+  };
+}
+
+export function savedProduct(overrides: Partial<SavedProduct> = {}): SavedProduct {
+  return {
+    ...listItem(),
+    isActive: true,
+    savedAt: '2026-11-01T09:00:00Z',
+    ...overrides,
+  } as SavedProduct;
+}
+
+export function alert(overrides: Partial<Alert> = {}): Alert {
+  return {
+    id: 'a1',
+    kind: 'PriceDrop',
+    targetPrice: 2300,
+    sizes: [],
+    isActive: true,
+    triggerCount: 0,
+    lastTriggeredAt: null,
+    lastPriceAfter: null,
+    createdAt: '2026-10-20T10:00:00Z',
+    product: {
+      id: 'p1',
+      name: 'Yün karışımlı blazer',
+      brandName: 'Mavi',
+      primaryImageUrl: null,
+      lowestPrice: 2149,
+    },
+    ...overrides,
+  };
+}
+
+export function trigger(overrides: Partial<AlertTrigger> = {}): AlertTrigger {
+  return {
+    id: 1,
+    alertId: 'a1',
+    kind: 'PriceDrop',
+    product: alert().product,
+    offerId: 'o1',
+    priceBefore: 2999,
+    priceAfter: 2149,
+    payload: {},
+    triggeredAt: '2026-10-30T10:00:00Z',
+    consumedAt: null,
+    ...overrides,
+  };
+}
+
+export function sizeEntry(overrides: Partial<SizeEntry> = {}): SizeEntry {
+  return {
+    id: 's1',
+    brand: { id: 'b1', name: 'Mavi', slug: 'mavi' },
+    group: 'Tops',
+    size: 'L',
+    source: 'UserEntered',
+    confidence: 1,
+    updatedAt: '2026-11-01T10:00:00Z',
+    ...overrides,
+  };
+}
