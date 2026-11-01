@@ -1,0 +1,7 @@
+node_modules
+dist
+.expo
+coverage
+docs/openapi.json
+src/api/types.gen.ts
+package-lock.json
