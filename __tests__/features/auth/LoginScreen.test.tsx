@@ -51,7 +51,12 @@ describe('LoginScreen', () => {
     await fill('ayse@example.com', 'sifre1234');
 
     await waitFor(() => expect(router.dismissTo).toHaveBeenCalledWith('/'));
-    expect(loginMock).toHaveBeenCalledWith({ email: 'ayse@example.com', password: 'sifre1234' });
+    // The device's analytics id travels with the credentials so pre-login events join the user.
+    expect(loginMock).toHaveBeenCalledWith({
+      email: 'ayse@example.com',
+      password: 'sifre1234',
+      anonymousId: expect.any(String),
+    });
     expect(await SecureStore.getItemAsync('kombin.refreshToken')).toBe('refresh-a');
     expect(useSessionStore.getState().status).toBe('signedIn');
   });

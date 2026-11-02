@@ -599,6 +599,216 @@
         }
       }
     },
+    "/api/v1/internal/catalog/offers/sweep": {
+      "post": {
+        "tags": [
+          "Catalog (internal)"
+        ],
+        "operationId": "SweepOffers",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "$ref": "#/components/schemas/SweepOffersRequest"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SweepOffersResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/internal/catalog/sellers/{sellerSlug}/offers": {
+      "get": {
+        "tags": [
+          "Catalog (internal)"
+        ],
+        "operationId": "ListSellerOffers",
+        "parameters": [
+          {
+            "name": "sellerSlug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "UpdatedAfter",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "Page",
+            "in": "query",
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": [
+                "integer",
+                "string"
+              ],
+              "format": "int32",
+              "default": 1
+            }
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": [
+                "integer",
+                "string"
+              ],
+              "format": "int32",
+              "default": 100
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PagedResponseOfSellerOfferItem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/internal/catalog/sellers/{sellerSlug}": {
+      "put": {
+        "tags": [
+          "Catalog (internal)"
+        ],
+        "operationId": "PutSeller",
+        "parameters": [
+          {
+            "name": "sellerSlug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PutSellerRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PutSellerResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/me/saved": {
       "get": {
         "tags": [
@@ -1910,6 +2120,456 @@
           }
         }
       }
+    },
+    "/api/v1/me/devices": {
+      "put": {
+        "tags": [
+          "Devices"
+        ],
+        "operationId": "RegisterDevice",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterDeviceRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/me/devices/{token}": {
+      "delete": {
+        "tags": [
+          "Devices"
+        ],
+        "operationId": "DeleteDevice",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/me/notification-preferences": {
+      "get": {
+        "tags": [
+          "Notifications"
+        ],
+        "operationId": "GetNotificationPreferences",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PreferencesResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Notifications"
+        ],
+        "operationId": "UpdateNotificationPreferences",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePreferencesRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PreferencesResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/me/notifications": {
+      "get": {
+        "tags": [
+          "Notifications"
+        ],
+        "operationId": "ListNotifications",
+        "parameters": [
+          {
+            "name": "Page",
+            "in": "query",
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": [
+                "integer",
+                "string"
+              ],
+              "format": "int32",
+              "default": 1
+            }
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": [
+                "integer",
+                "string"
+              ],
+              "format": "int32",
+              "default": 20
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PagedResponseOfNotificationResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/me/notifications/unread-count": {
+      "get": {
+        "tags": [
+          "Notifications"
+        ],
+        "operationId": "GetUnreadNotificationCount",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnreadCountResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/me/notifications/{id}/read": {
+      "post": {
+        "tags": [
+          "Notifications"
+        ],
+        "operationId": "MarkNotificationRead",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/me/notifications/read-all": {
+      "post": {
+        "tags": [
+          "Notifications"
+        ],
+        "operationId": "MarkAllNotificationsRead",
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/internal/notifications/test": {
+      "post": {
+        "tags": [
+          "Notifications (internal)"
+        ],
+        "operationId": "SendTestNotification",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendTestRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SendTestResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/events": {
+      "post": {
+        "tags": [
+          "Analytics"
+        ],
+        "operationId": "RecordEvents",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RecordEventsRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "description": "Accepted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecordEventsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/internal/analytics/weekly": {
+      "get": {
+        "tags": [
+          "Analytics (internal)"
+        ],
+        "operationId": "GetWeeklyMetrics",
+        "parameters": [
+          {
+            "name": "From",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WeeklyMetricsResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -2336,6 +2996,52 @@
         },
         "description": "Every field but the name and icon is optional. Seasons default to all four, formality to 1-5."
       },
+      "EventItem": {
+        "required": [
+          "name",
+          "properties",
+          "sessionId",
+          "platform",
+          "appVersion",
+          "occurredAt",
+          "anonymousId"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "properties": {
+            "type": [
+              "null",
+              "object"
+            ]
+          },
+          "sessionId": {
+            "type": "string"
+          },
+          "platform": {
+            "type": "string"
+          },
+          "appVersion": {
+            "type": "string"
+          },
+          "occurredAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "anonymousId": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        },
+        "description": "One event as the app sends it. `AnonymousId` is the device's pre-login ID; it is required while the caller is anonymous and\nrecommended after login. `Properties` is a flat object whose keys depend on `Name` (AnalyticsEventCatalog)."
+      },
       "JsonElement": { },
       "ListAlertsResponse": {
         "required": [
@@ -2369,8 +3075,15 @@
               "null",
               "string"
             ]
+          },
+          "anonymousId": {
+            "type": [
+              "null",
+              "string"
+            ]
           }
-        }
+        },
+        "description": "`AnonymousId` is the analytics ID the app used before login; its earlier events are attached to the user."
       },
       "LogoutRequest": {
         "required": [
@@ -2380,8 +3093,15 @@
         "properties": {
           "refreshToken": {
             "type": "string"
+          },
+          "expoPushToken": {
+            "type": [
+              "null",
+              "string"
+            ]
           }
-        }
+        },
+        "description": "`ExpoPushToken` is the phone's push token; when given, that device stops receiving pushes for this account."
       },
       "MeResponse": {
         "required": [
@@ -2407,6 +3127,73 @@
             "format": "date-time"
           }
         }
+      },
+      "NotificationKind": {
+        "enum": [
+          "PriceDrop",
+          "BackInStock",
+          "AnyChange",
+          "NewMatches",
+          "System"
+        ]
+      },
+      "NotificationResponse": {
+        "required": [
+          "id",
+          "kind",
+          "title",
+          "body",
+          "data",
+          "createdAt",
+          "readAt",
+          "status"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int64"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/NotificationKind"
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/components/schemas/JsonElement"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "readAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "status": {
+            "$ref": "#/components/schemas/NotificationStatus"
+          }
+        },
+        "description": "`Status` tells the app whether the push went out; the feed shows `Pending`, `Sent` and `Suppressed` alike."
+      },
+      "NotificationStatus": {
+        "enum": [
+          "Pending",
+          "Sent",
+          "Failed",
+          "Suppressed"
+        ]
       },
       "OfferResponse": {
         "required": [
@@ -2618,6 +3405,55 @@
           }
         }
       },
+      "PagedResponseOfNotificationResponse": {
+        "required": [
+          "items",
+          "page",
+          "pageSize",
+          "totalCount"
+        ],
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NotificationResponse"
+            }
+          },
+          "page": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "pageSize": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "totalCount": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "totalPages": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          }
+        }
+      },
       "PagedResponseOfProductListItem": {
         "required": [
           "items",
@@ -2680,6 +3516,55 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/SavedProductItem"
+            }
+          },
+          "page": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "pageSize": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "totalCount": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "totalPages": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          }
+        }
+      },
+      "PagedResponseOfSellerOfferItem": {
+        "required": [
+          "items",
+          "page",
+          "pageSize",
+          "totalCount"
+        ],
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SellerOfferItem"
             }
           },
           "page": {
@@ -2902,6 +3787,58 @@
           }
         }
       },
+      "PreferencesResponse": {
+        "required": [
+          "priceAlerts",
+          "stockAlerts",
+          "recommendations",
+          "maxRecommendationsPerWeek",
+          "quietHoursStart",
+          "quietHoursEnd",
+          "timeZone",
+          "updatedAt"
+        ],
+        "type": "object",
+        "properties": {
+          "priceAlerts": {
+            "type": "boolean"
+          },
+          "stockAlerts": {
+            "type": "boolean"
+          },
+          "recommendations": {
+            "type": "boolean"
+          },
+          "maxRecommendationsPerWeek": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "quietHoursStart": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "quietHoursEnd": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "timeZone": {
+            "type": "string"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "description": "What the preference endpoints return. Quiet hours are `HH:mm` local times in string PreferencesResponse.TimeZone."
+      },
       "PricePoint": {
         "required": [
           "date",
@@ -3047,7 +3984,8 @@
           "lowestPrice",
           "lowestOriginalPrice",
           "offerCount",
-          "discountPercent"
+          "discountPercent",
+          "cheapestSeller"
         ],
         "type": "object",
         "properties": {
@@ -3109,6 +4047,16 @@
             ],
             "format": "int32"
           },
+          "cheapestSeller": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/SellerRef"
+              }
+            ]
+          },
           "matchScore": {
             "pattern": "^-?(?:0|[1-9]\\d*)$",
             "type": [
@@ -3119,7 +4067,7 @@
             "format": "int32"
           }
         },
-        "description": "Prices are those of the product's lowest active, in-stock offer. `MatchScore` (0-100) is present only when the request named a persona."
+        "description": "Prices and `CheapestSeller` are those of the product's lowest active, in-stock offer. `MatchScore` (0-100) is present only when the request named a persona."
       },
       "ProductPattern": {
         "enum": [
@@ -3414,6 +4362,195 @@
           }
         }
       },
+      "PushDelivery": {
+        "required": [
+          "notificationId",
+          "deviceId",
+          "expoPushToken",
+          "status",
+          "ticketId",
+          "error"
+        ],
+        "type": "object",
+        "properties": {
+          "notificationId": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int64"
+          },
+          "deviceId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "expoPushToken": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "ticketId": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "error": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        },
+        "description": "What Expo said about one message (one notification to one device). `Status` is `ok`, `error` or `unreachable`."
+      },
+      "PutSellerRequest": {
+        "required": [
+          "name",
+          "kind",
+          "websiteUrl",
+          "affiliateNetwork",
+          "affiliateUrlTemplate",
+          "affiliateParams"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "websiteUrl": {
+            "type": "string"
+          },
+          "affiliateNetwork": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "affiliateUrlTemplate": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "affiliateParams": {
+            "type": [
+              "null",
+              "object"
+            ],
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "isActive": {
+            "type": "boolean",
+            "default": true
+          }
+        },
+        "description": "The whole seller: optional fields that are left out are cleared, as PUT means."
+      },
+      "PutSellerResponse": {
+        "required": [
+          "id",
+          "slug",
+          "name",
+          "kind",
+          "websiteUrl",
+          "affiliateNetwork",
+          "affiliateUrlTemplate",
+          "affiliateParams",
+          "isActive",
+          "created"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/SellerKind"
+          },
+          "websiteUrl": {
+            "type": "string"
+          },
+          "affiliateNetwork": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "affiliateUrlTemplate": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "affiliateParams": {
+            "type": [
+              "null",
+              "object"
+            ],
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "isActive": {
+            "type": "boolean"
+          },
+          "created": {
+            "type": "boolean"
+          }
+        }
+      },
+      "RecordEventsRequest": {
+        "required": [
+          "events"
+        ],
+        "type": "object",
+        "properties": {
+          "events": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EventItem"
+            }
+          }
+        }
+      },
+      "RecordEventsResponse": {
+        "required": [
+          "accepted",
+          "rejected"
+        ],
+        "type": "object",
+        "properties": {
+          "accepted": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "rejected": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RejectedEvent"
+            }
+          }
+        }
+      },
       "RefreshRequest": {
         "required": [
           "refreshToken"
@@ -3424,6 +4561,36 @@
             "type": "string"
           }
         }
+      },
+      "RegisterDeviceRequest": {
+        "required": [
+          "expoPushToken",
+          "platform",
+          "appVersion",
+          "deviceName"
+        ],
+        "type": "object",
+        "properties": {
+          "expoPushToken": {
+            "type": "string"
+          },
+          "platform": {
+            "type": "string"
+          },
+          "appVersion": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "deviceName": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        },
+        "description": "`Platform` is `Ios` or `Android`."
       },
       "RegisterRequest": {
         "required": [
@@ -3440,6 +4607,33 @@
             "type": "string"
           },
           "displayName": {
+            "type": "string"
+          },
+          "anonymousId": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        },
+        "description": "`AnonymousId` is the analytics ID the app used before registering; its earlier events are attached to the new user."
+      },
+      "RejectedEvent": {
+        "required": [
+          "index",
+          "reason"
+        ],
+        "type": "object",
+        "properties": {
+          "index": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "reason": {
             "type": "string"
           }
         }
@@ -3472,6 +4666,7 @@
           "lowestOriginalPrice",
           "offerCount",
           "discountPercent",
+          "cheapestSeller",
           "isActive",
           "savedAt"
         ],
@@ -3535,6 +4730,16 @@
             ],
             "format": "int32"
           },
+          "cheapestSeller": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/SellerRef"
+              }
+            ]
+          },
           "isActive": {
             "type": "boolean"
           },
@@ -3551,29 +4756,134 @@
           "BrandStore"
         ]
       },
-      "SellerRef": {
+      "SellerOfferItem": {
         "required": [
-          "id",
-          "name",
-          "slug",
-          "kind"
+          "externalId",
+          "productId",
+          "modelCode",
+          "currentPrice",
+          "stockStatus",
+          "lastSeenAt",
+          "isActive"
         ],
         "type": "object",
         "properties": {
-          "id": {
+          "externalId": {
+            "type": "string"
+          },
+          "productId": {
             "type": "string",
             "format": "uuid"
           },
+          "modelCode": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "currentPrice": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "stockStatus": {
+            "$ref": "#/components/schemas/StockStatus"
+          },
+          "lastSeenAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "isActive": {
+            "type": "boolean"
+          }
+        }
+      },
+      "SellerRef": {
+        "required": [
+          "name",
+          "slug"
+        ],
+        "type": "object",
+        "properties": {
           "name": {
             "type": "string"
           },
           "slug": {
             "type": "string"
+          }
+        },
+        "description": "The seller of the offer that defines `lowestPrice`, for the \"from X\" label next to the price."
+      },
+      "SendTestRequest": {
+        "required": [
+          "userId",
+          "title",
+          "body"
+        ],
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "format": "uuid"
           },
-          "kind": {
-            "$ref": "#/components/schemas/SellerKind"
+          "title": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "body": {
+            "type": [
+              "null",
+              "string"
+            ]
           }
         }
+      },
+      "SendTestResponse": {
+        "required": [
+          "notificationId",
+          "status",
+          "failureReason",
+          "ticketId",
+          "deliveries"
+        ],
+        "type": "object",
+        "properties": {
+          "notificationId": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int64"
+          },
+          "status": {
+            "$ref": "#/components/schemas/NotificationStatus"
+          },
+          "failureReason": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "ticketId": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "deliveries": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PushDelivery"
+            }
+          }
+        },
+        "description": "The notification as the push sender left it, and what Expo said about each device it was sent to."
       },
       "SizeEntryResponse": {
         "required": [
@@ -3978,6 +5288,55 @@
         },
         "description": "`OnboardingCompleted` turns true once any persona has reached int SubmitSwipesEndpoint.OnboardingLikes likes."
       },
+      "SweepOffersRequest": {
+        "required": [
+          "sellerSlug"
+        ],
+        "type": "object",
+        "properties": {
+          "sellerSlug": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        },
+        "description": "The body is optional; without a seller the whole catalog is swept."
+      },
+      "SweepOffersResponse": {
+        "required": [
+          "offersDeactivated",
+          "productsDeactivated",
+          "productsReactivated"
+        ],
+        "type": "object",
+        "properties": {
+          "offersDeactivated": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "productsDeactivated": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "productsReactivated": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          }
+        }
+      },
       "SwipeItem": {
         "required": [
           "styleCardId",
@@ -4068,6 +5427,22 @@
           }
         },
         "description": "`AlertId` is null once the alert has been deleted."
+      },
+      "UnreadCountResponse": {
+        "required": [
+          "count"
+        ],
+        "type": "object",
+        "properties": {
+          "count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          }
+        }
       },
       "UpdateAlertRequest": {
         "required": [
@@ -4223,6 +5598,66 @@
         },
         "description": "A partial update: a null field is left as it is, and a given list replaces the stored one (`[]` clears preferred/avoided\nlists, but not seasons). `ClearBudget: true` removes both budget bounds."
       },
+      "UpdatePreferencesRequest": {
+        "required": [
+          "priceAlerts",
+          "stockAlerts",
+          "recommendations",
+          "maxRecommendationsPerWeek",
+          "quietHoursStart",
+          "quietHoursEnd",
+          "clearQuietHours"
+        ],
+        "type": "object",
+        "properties": {
+          "priceAlerts": {
+            "type": [
+              "null",
+              "boolean"
+            ]
+          },
+          "stockAlerts": {
+            "type": [
+              "null",
+              "boolean"
+            ]
+          },
+          "recommendations": {
+            "type": [
+              "null",
+              "boolean"
+            ]
+          },
+          "maxRecommendationsPerWeek": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "quietHoursStart": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "quietHoursEnd": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "clearQuietHours": {
+            "type": [
+              "null",
+              "boolean"
+            ]
+          }
+        },
+        "description": "A partial update: a null field is left as it is. Quiet hours are `HH:mm` local times in Europe/Istanbul and come as a pair;\n`ClearQuietHours: true` removes them."
+      },
       "UpdateProfileRequest": {
         "required": [
           "audience",
@@ -4335,6 +5770,41 @@
             "type": "string"
           }
         }
+      },
+      "UpsertItemResult": {
+        "required": [
+          "index",
+          "externalId",
+          "productId",
+          "offerId",
+          "created"
+        ],
+        "type": "object",
+        "properties": {
+          "index": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "externalId": {
+            "type": "string"
+          },
+          "productId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "offerId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "created": {
+            "type": "boolean"
+          }
+        },
+        "description": "An item that was stored: the IDs let a worker reconcile its own records with ours."
       },
       "UpsertOfferItem": {
         "required": [
@@ -4452,6 +5922,7 @@
           "created",
           "updated",
           "snapshotsWritten",
+          "results",
           "errors"
         ],
         "type": "object",
@@ -4479,6 +5950,12 @@
               "string"
             ],
             "format": "int32"
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UpsertItemResult"
+            }
           },
           "errors": {
             "type": "array",
@@ -4575,6 +6052,18 @@
               "string"
             ],
             "format": "uuid"
+          },
+          "brandWebsiteUrl": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "brandLogoUrl": {
+            "type": [
+              "null",
+              "string"
+            ]
           }
         }
       },
@@ -4594,6 +6083,68 @@
           },
           "size": {
             "type": "string"
+          }
+        }
+      },
+      "WeeklyMetricItem": {
+        "required": [
+          "weekStart",
+          "metric",
+          "value",
+          "numerator",
+          "denominator",
+          "computedAt"
+        ],
+        "type": "object",
+        "properties": {
+          "weekStart": {
+            "type": "string",
+            "format": "date"
+          },
+          "metric": {
+            "type": "string"
+          },
+          "value": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "numerator": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int64"
+          },
+          "denominator": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int64"
+          },
+          "computedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "WeeklyMetricsResponse": {
+        "required": [
+          "items"
+        ],
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WeeklyMetricItem"
+            }
           }
         }
       }
@@ -4632,6 +6183,21 @@
     },
     {
       "name": "Sizes"
+    },
+    {
+      "name": "Devices"
+    },
+    {
+      "name": "Notifications"
+    },
+    {
+      "name": "Notifications (internal)"
+    },
+    {
+      "name": "Analytics"
+    },
+    {
+      "name": "Analytics (internal)"
     }
   ]
 }

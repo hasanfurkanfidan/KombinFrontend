@@ -2,12 +2,16 @@ import type { ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 
+import { track } from '@/analytics';
 import { Screen } from '@/components/Screen';
 import { tr } from '@/i18n/tr';
 import { usePrefsStore } from '@/session/prefsStore';
 import { theme } from '@/theme';
 
 import { leaveOnboarding, stepCount, type OnboardingFlow } from './flow';
+
+/** Names of the first run's steps (1-based `step` indexes into this), as reported with `onboarding_step`. */
+const FIRST_RUN_STEPS = ['audience', 'persona', 'swipe'] as const;
 
 interface OnboardingFrameProps {
   flow: OnboardingFlow;
@@ -35,6 +39,7 @@ export function OnboardingFrame({
   // Skipping creates nothing. In the first run it also stops the entry rule from asking again this launch.
   const skip = () => {
     if (flow === 'first') {
+      track('onboarding_step', { step: FIRST_RUN_STEPS[step - 1] ?? 'swipe', action: 'skip' });
       skipOnboarding();
     }
     leaveOnboarding(router, flow, returnTo);

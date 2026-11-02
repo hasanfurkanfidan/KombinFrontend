@@ -2,6 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';
 import { StyleSheet, Text, View } from 'react-native';
 
+import { getAnonymousId } from '@/analytics';
 import { ApiError } from '@/api/client';
 import { register } from '@/api/endpoints/auth';
 import { Button } from '@/components/Button';
@@ -30,7 +31,7 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
 
   const submit = handleSubmit(async (values) => {
     try {
-      await completeSignIn(await register(values));
+      await completeSignIn(await register({ ...values, anonymousId: await getAnonymousId() }));
       onSuccess();
     } catch (error) {
       if (!(error instanceof ApiError)) {

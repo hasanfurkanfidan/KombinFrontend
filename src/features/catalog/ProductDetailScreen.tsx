@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   FlatList,
   Image,
@@ -12,6 +12,7 @@ import {
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { track } from '@/analytics';
 import { ApiError } from '@/api/client';
 import type { Offer, Product } from '@/api/models';
 import { Button } from '@/components/Button';
@@ -37,15 +38,18 @@ import { usePriceHistory, useProduct } from './hooks';
 import { matchBadgeScore } from './matchBadge';
 import { isSellable, OfferRow } from './OfferRow';
 import { buildPricePoints } from './priceHistory';
+import type { ProductSource } from './productLink';
 import { PriceSummary } from './PriceSummary';
 
 const BAR_PADDING = theme.spacing.md;
 
 interface ProductDetailScreenProps {
   id: string;
+  /** Where the user came from, reported with `product_view`. */
+  source?: ProductSource;
 }
 
-export function ProductDetailScreen({ id }: ProductDetailScreenProps) {
+export function ProductDetailScreen({ id, source = 'direct' }: ProductDetailScreenProps) {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { isSignedIn } = useSession();
@@ -58,6 +62,16 @@ export function ProductDetailScreen({ id }: ProductDetailScreenProps) {
   const pushPrimer = usePushPrimer();
   const [alertOpen, setAlertOpen] = useState(false);
   const [sizeOpen, setSizeOpen] = useState(false);
+
+  // One `product_view` per opened detail, once the product (and so the persona it was scored for) is known.
+  const viewedId = useRef<string | null>(null);
+  const loadedId = product.data?.id;
+  useEffect(() => {
+    if (loadedId && viewedId.current !== loadedId) {
+      viewedId.current = loadedId;
+      track('product_view', { productId: loadedId, personaId, source });
+    }
+  }, [loadedId, personaId, source]);
 
   const points = useMemo(
     () => (history.data ? buildPricePoints(history.data) : []),

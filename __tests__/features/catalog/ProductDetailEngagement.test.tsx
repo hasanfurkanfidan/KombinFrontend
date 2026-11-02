@@ -2,6 +2,7 @@ import { fireEvent, screen, waitFor } from '@testing-library/react-native';
 import { router } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
 
+import { track } from '@/analytics';
 import { ApiError } from '@/api/client';
 import { getPriceHistory, getProduct } from '@/api/endpoints/catalog';
 import { createAlert, listAlerts, listSavedIds } from '@/api/endpoints/engagement';
@@ -157,6 +158,31 @@ describe('detail: match and size', () => {
   });
 });
 
+describe('detail: product_view', () => {
+  it('reports one product_view with the persona and where the user came from', async () => {
+    await signedInSession();
+
+    await renderWithQuery(<ProductDetailScreen id="p1" source="push" />);
+    await screen.findByTestId('buy-button');
+
+    const views = jest.mocked(track).mock.calls.filter(([name]) => name === 'product_view');
+    expect(views).toEqual([
+      ['product_view', { productId: 'p1', personaId: 'pe1', source: 'push' }],
+    ]);
+  });
+
+  it('defaults the source to "direct" and has no persona while signed out', async () => {
+    await renderWithQuery(<ProductDetailScreen id="p1" />);
+    await screen.findByTestId('buy-button');
+
+    expect(track).toHaveBeenCalledWith('product_view', {
+      productId: 'p1',
+      personaId: undefined,
+      source: 'direct',
+    });
+  });
+});
+
 describe('detail: buy through /go', () => {
   it('opens the redirect with the persona, never a seller URL', async () => {
     await signedInSession();
@@ -167,6 +193,7 @@ describe('detail: buy through /go', () => {
     expect(WebBrowser.openBrowserAsync).toHaveBeenCalledWith(
       'http://api.test/api/v1/go/o1?src=product_detail&personaId=pe1',
     );
+    expect(track).toHaveBeenCalledWith('buy_click', { offerId: 'o1', source: 'product_detail' });
   });
 
   it('gives every sellable offer a "Git" link that does the same with its own goPath', async () => {
@@ -238,6 +265,7 @@ describe('detail: alert sheet', () => {
     await waitFor(() =>
       expect(screen.getByTestId('detail-bell').props.accessibilityLabel).toBe('Alarmın kurulu'),
     );
+    expect(track).toHaveBeenCalledWith('alert_created', { kind: 'PriceDrop' });
   });
 
   it('validates the target: required, a number, and below the current price', async () => {

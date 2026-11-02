@@ -5,7 +5,9 @@ import { getMe, logout } from '@/api/endpoints/auth';
 import type { AuthTokens } from '@/api/models';
 import { queryClient } from '@/api/queryClient';
 import { queryKeys } from '@/api/queryKeys';
+import { resetPushRegistration } from '@/push';
 
+import { usePrefsStore } from './prefsStore';
 import { applyAuthTokens, endSession, useSessionStore } from './sessionStore';
 import { getRefreshToken } from './tokenStorage';
 
@@ -65,11 +67,13 @@ export async function signOut(): Promise<void> {
     await ensureFreshAccessToken();
     const refreshToken = await getRefreshToken();
     if (refreshToken) {
-      await logout(refreshToken);
+      // The push token makes the backend stop pushing to this phone for the account that is leaving.
+      await logout(refreshToken, usePrefsStore.getState().pushToken);
     }
   } catch {
     // Offline or already expired: the user still leaves, the server-side token ages out on its own.
   } finally {
+    resetPushRegistration();
     await endSession();
     queryClient.removeQueries({ queryKey: queryKeys.me });
   }

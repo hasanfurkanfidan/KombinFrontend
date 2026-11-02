@@ -21,12 +21,12 @@ describe('buy via /go', () => {
 
   it('opens the redirect in the in-app browser, and survives a browser failure', async () => {
     const open = jest.mocked(WebBrowser.openBrowserAsync);
-    await openOffer({ goPath: '/api/v1/go/o2' }, { personaId: 'pe1' });
+    await openOffer({ id: 'o2', goPath: '/api/v1/go/o2' }, { personaId: 'pe1' });
     expect(open).toHaveBeenLastCalledWith(
       'http://api.test/api/v1/go/o2?src=product_detail&personaId=pe1',
     );
 
     open.mockRejectedValueOnce(new Error('no browser'));
-    await expect(openOffer({ goPath: '/api/v1/go/o2' })).resolves.toBeUndefined();
+    await expect(openOffer({ id: 'o2', goPath: '/api/v1/go/o2' })).resolves.toBeUndefined();
   });
 });

@@ -66,3 +66,21 @@ export type CreateAlertRequest = Schemas['CreateAlertRequest'];
 export type UpdateAlertRequest = Schemas['UpdateAlertRequest'];
 export type AlertTrigger = Schemas['TriggerResponse'];
 export type TriggerPage = Schemas['PagedResponseOfTriggerResponse'];
+
+export type Notification = Schemas['NotificationResponse'];
+export type NotificationKind = Schemas['NotificationKind'];
+export type NotificationPage = Schemas['PagedResponseOfNotificationResponse'];
+export type NotificationPreferences = Schemas['PreferencesResponse'];
+export type UpdateNotificationPreferencesRequest = Schemas['UpdatePreferencesRequest'];
+export type RegisterDeviceRequest = Schemas['RegisterDeviceRequest'];
+export type LogoutRequest = Schemas['LogoutRequest'];
+
+/**
+ * `properties` is a free-form JSON object that openapi-typescript renders as `Record<string, never>`; events carry
+ * flat key/values (see the allow-list in `src/analytics/events.ts`), so it is widened here.
+ */
+export type EventItem = Omit<Schemas['EventItem'], 'properties'> & {
+  properties: Record<string, string | number | boolean> | null;
+};
+export type RecordEventsRequest = { events: EventItem[] };
+export type RecordEventsResponse = Schemas['RecordEventsResponse'];

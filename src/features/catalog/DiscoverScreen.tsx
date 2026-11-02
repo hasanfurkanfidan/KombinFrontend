@@ -1,25 +1,33 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 
+import { track } from '@/analytics';
 import { Button } from '@/components/Button';
 import { EmptyState } from '@/components/EmptyState';
 import { ErrorState } from '@/components/ErrorState';
-import { IconButton } from '@/components/IconButton';
 import { Screen } from '@/components/Screen';
 import { tr } from '@/i18n/tr';
 import { useActivePersona, usePersonas } from '@/features/personas/hooks';
 import { PersonaChips } from '@/features/personas/PersonaChips';
+import { NotificationBell } from '@/features/notifications/NotificationBell';
 import { useMe } from '@/features/profile/hooks';
 import { useSession } from '@/session/useSession';
 import { theme } from '@/theme';
 import { formatLongDay } from '@/utils/dates';
 
 import { FilterBar } from './FilterBar';
-import { hasActiveFilters, parseFilters, withPersona, type ProductFilters } from './filters';
+import {
+  filterNames,
+  hasActiveFilters,
+  parseFilters,
+  withPersona,
+  type ProductFilters,
+} from './filters';
 import { buildGreeting } from './greeting';
 import { useProducts } from './hooks';
 import { ProductGrid, ProductGridSkeleton } from './ProductGrid';
+import { productHref } from './productLink';
 
 export function DiscoverScreen() {
   const router = useRouter();
@@ -54,6 +62,23 @@ export function DiscoverScreen() {
     () => products.data?.pages.flatMap((page) => page.items) ?? [],
     [products.data],
   );
+
+  // One `product_list_view` per distinct filter set, once its first page is on screen.
+  const queryFilters = withPersona(filters, personaId);
+  const listKey = `${queryFilters.sort ?? ''}|${filterNames(filters)}`;
+  const viewedList = useRef<string | null>(null);
+  const listLoaded = products.data !== undefined;
+  useEffect(() => {
+    if (listLoaded && viewedList.current !== listKey) {
+      viewedList.current = listKey;
+      track('product_list_view', {
+        sort: queryFilters.sort ?? 'relevance',
+        filters: filterNames(filters),
+      });
+    }
+    // `queryFilters` and `filters` are derived from `listKey`'s inputs; the key is what decides a new view.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [listLoaded, listKey]);
 
   const header = (
     <DiscoverHeader filters={filters} onChangeFilters={setFilters} personaId={personaId} />
@@ -95,7 +120,7 @@ export function DiscoverScreen() {
     <Screen padded={false}>
       <ProductGrid
         items={items}
-        onPressItem={(id) => router.push(`/product/${id}`)}
+        onPressItem={(id) => router.push(productHref(id, 'discover'))}
         header={header}
         placeholder={placeholder}
         footer={footer}
@@ -135,7 +160,7 @@ function DiscoverHeader({ filters, onChangeFilters, personaId }: DiscoverHeaderP
             {buildGreeting(now, me.data?.displayName)}
           </Text>
         </View>
-        <IconButton icon="bell" label={tr.comingSoon} tone="tinted" />
+        <NotificationBell />
       </View>
 
       <PersonaChips />

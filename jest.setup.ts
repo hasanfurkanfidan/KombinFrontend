@@ -37,16 +37,28 @@ jest.mock('expo-router', () => {
     canGoBack: jest.fn(() => true),
     dismissTo: jest.fn(),
     setParams: jest.fn(),
+    navigate: jest.fn(),
   };
   return {
     router,
     useRouter: () => router,
     useLocalSearchParams: jest.fn(() => ({})),
     useSegments: jest.fn(() => []),
+    usePathname: jest.fn(() => '/'),
+    // Runs the effect once on mount, like a screen that is focused from the start.
+    useFocusEffect: (effect: () => void) => jest.requireActual('react').useEffect(effect, []),
   };
 });
 
-jest.mock('expo-device', () => ({ isDevice: true }));
+jest.mock('expo-device', () => ({ isDevice: true, deviceName: 'Test Phone' }));
+
+// Screens only report events; the real queue (and its flush timer) is exercised in __tests__/analytics via
+// `jest.requireActual('@/analytics')`.
+jest.mock('@/analytics', () => ({
+  track: jest.fn(),
+  flushAnalytics: jest.fn(async () => undefined),
+  getAnonymousId: jest.fn(async () => 'anon-test'),
+}));
 
 jest.mock('expo-notifications', () => ({
   AndroidImportance: { DEFAULT: 3 },
@@ -54,6 +66,10 @@ jest.mock('expo-notifications', () => ({
   requestPermissionsAsync: jest.fn(async () => ({ status: 'granted' })),
   getExpoPushTokenAsync: jest.fn(async () => ({ data: 'ExponentPushToken[test-token]' })),
   setNotificationChannelAsync: jest.fn(async () => undefined),
+  setNotificationHandler: jest.fn(),
+  addNotificationReceivedListener: jest.fn(() => ({ remove: jest.fn() })),
+  useLastNotificationResponse: jest.fn(() => null),
+  DEFAULT_ACTION_IDENTIFIER: 'expo.modules.notifications.actions.DEFAULT',
 }));
 
 // Reanimated's own jest mock: no native runtime, animations resolve immediately. The deck is driven through

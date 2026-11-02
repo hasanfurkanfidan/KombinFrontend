@@ -53,6 +53,7 @@ describe('RegisterScreen', () => {
       displayName: 'Ayşe',
       email: 'ayse@example.com',
       password: 'sifre1234',
+      anonymousId: expect.any(String),
     });
   });
 

@@ -12,6 +12,7 @@ import { MAX_PERSONAS, usePersonas } from '@/features/personas/hooks';
 import { personaCaption } from '@/features/personas/caption';
 import { PersonaSheet } from '@/features/personas/PersonaSheet';
 import { swatchColor } from '@/features/personas/swatches';
+import { PreferencesSheet } from '@/features/notifications/PreferencesSheet';
 import { useSavedIds } from '@/features/saved/hooks';
 import { useSizes } from '@/features/sizes/hooks';
 import { tr } from '@/i18n/tr';
@@ -34,6 +35,7 @@ export function ProfileScreen() {
   const sizes = useSizes();
   const [signingOut, setSigningOut] = useState(false);
   const [sheetPersona, setSheetPersona] = useState<Persona | null>(null);
+  const [preferencesOpen, setPreferencesOpen] = useState(false);
 
   const handleSignOut = async () => {
     setSigningOut(true);
@@ -125,7 +127,13 @@ export function ProfileScreen() {
               onPress={() => router.push('/profile/sizes')}
               testID="profile-size-map"
             />
-            <SettingsRow title={tr.profileNotifications} caption={tr.comingSoon} divider />
+            <SettingsRow
+              title={tr.profileNotifications}
+              caption={tr.profileNotificationsCaption}
+              onPress={() => setPreferencesOpen(true)}
+              divider
+              testID="profile-notifications"
+            />
             <SettingsRow title={tr.profileStores} caption={tr.comingSoon} divider />
           </View>
 
@@ -140,6 +148,7 @@ export function ProfileScreen() {
       )}
 
       <PersonaSheet persona={sheetPersona} onClose={() => setSheetPersona(null)} />
+      <PreferencesSheet visible={preferencesOpen} onClose={() => setPreferencesOpen(false)} />
     </Screen>
   );
 }

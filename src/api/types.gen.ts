@@ -180,6 +180,54 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/internal/catalog/offers/sweep": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["SweepOffers"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/internal/catalog/sellers/{sellerSlug}/offers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ListSellerOffers"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/internal/catalog/sellers/{sellerSlug}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["PutSeller"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/me/saved": {
         parameters: {
             query?: never;
@@ -484,6 +532,166 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/me/devices": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["RegisterDevice"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/devices/{token}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["DeleteDevice"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/notification-preferences": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["GetNotificationPreferences"];
+        put: operations["UpdateNotificationPreferences"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/notifications": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ListNotifications"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/notifications/unread-count": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["GetUnreadNotificationCount"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/notifications/{id}/read": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["MarkNotificationRead"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/notifications/read-all": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["MarkAllNotificationsRead"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/internal/notifications/test": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["SendTestNotification"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/events": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["RecordEvents"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/internal/analytics/weekly": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["GetWeeklyMetrics"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -590,17 +798,35 @@ export interface components {
             preferredFits: null | string[];
             seasons: null | string[];
         };
+        /**
+         * @description One event as the app sends it. `AnonymousId` is the device's pre-login ID; it is required while the caller is anonymous and
+         *     recommended after login. `Properties` is a flat object whose keys depend on `Name` (AnalyticsEventCatalog).
+         */
+        EventItem: {
+            name: string;
+            properties: null | Record<string, never>;
+            sessionId: string;
+            platform: string;
+            appVersion: string;
+            /** Format: date-time */
+            occurredAt: null | string;
+            anonymousId: null | string;
+        };
         JsonElement: unknown;
         ListAlertsResponse: {
             items: components["schemas"]["AlertResponse"][];
         };
+        /** @description `AnonymousId` is the analytics ID the app used before login; its earlier events are attached to the user. */
         LoginRequest: {
             email: string;
             password: string;
             deviceName?: null | string;
+            anonymousId?: null | string;
         };
+        /** @description `ExpoPushToken` is the phone's push token; when given, that device stops receiving pushes for this account. */
         LogoutRequest: {
             refreshToken: string;
+            expoPushToken?: null | string;
         };
         MeResponse: {
             /** Format: uuid */
@@ -610,6 +836,24 @@ export interface components {
             /** Format: date-time */
             createdAt: string;
         };
+        /** @enum {unknown} */
+        NotificationKind: "PriceDrop" | "BackInStock" | "AnyChange" | "NewMatches" | "System";
+        /** @description `Status` tells the app whether the push went out; the feed shows `Pending`, `Sent` and `Suppressed` alike. */
+        NotificationResponse: {
+            /** Format: int64 */
+            id: number | string;
+            kind: components["schemas"]["NotificationKind"];
+            title: string;
+            body: string;
+            data: components["schemas"]["JsonElement"];
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            readAt: null | string;
+            status: components["schemas"]["NotificationStatus"];
+        };
+        /** @enum {unknown} */
+        NotificationStatus: "Pending" | "Sent" | "Failed" | "Suppressed";
         /**
          * @description `GoPath` (`/api/v1/go/{offerId}`) is the only way to open an offer: the redirect records the click and adds the affiliate
          *     parameters. The seller's own URL is never part of the response.
@@ -663,6 +907,17 @@ export interface components {
             /** Format: int32 */
             totalPages?: number | string;
         };
+        PagedResponseOfNotificationResponse: {
+            items: components["schemas"]["NotificationResponse"][];
+            /** Format: int32 */
+            page: number | string;
+            /** Format: int32 */
+            pageSize: number | string;
+            /** Format: int32 */
+            totalCount: number | string;
+            /** Format: int32 */
+            totalPages?: number | string;
+        };
         PagedResponseOfProductListItem: {
             items: components["schemas"]["ProductListItem"][];
             /** Format: int32 */
@@ -676,6 +931,17 @@ export interface components {
         };
         PagedResponseOfSavedProductItem: {
             items: components["schemas"]["SavedProductItem"][];
+            /** Format: int32 */
+            page: number | string;
+            /** Format: int32 */
+            pageSize: number | string;
+            /** Format: int32 */
+            totalCount: number | string;
+            /** Format: int32 */
+            totalPages?: number | string;
+        };
+        PagedResponseOfSellerOfferItem: {
+            items: components["schemas"]["SellerOfferItem"][];
             /** Format: int32 */
             page: number | string;
             /** Format: int32 */
@@ -727,6 +993,19 @@ export interface components {
             isActive: boolean;
             styleSummary: components["schemas"]["StyleSummary"];
         };
+        /** @description What the preference endpoints return. Quiet hours are `HH:mm` local times in string PreferencesResponse.TimeZone. */
+        PreferencesResponse: {
+            priceAlerts: boolean;
+            stockAlerts: boolean;
+            recommendations: boolean;
+            /** Format: int32 */
+            maxRecommendationsPerWeek: number | string;
+            quietHoursStart: null | string;
+            quietHoursEnd: null | string;
+            timeZone: string;
+            /** Format: date-time */
+            updatedAt: string;
+        };
         PricePoint: {
             /** Format: date */
             date: string;
@@ -756,7 +1035,7 @@ export interface components {
         ProductColor: "Black" | "White" | "Grey" | "Navy" | "Blue" | "Green" | "Beige" | "Brown" | "Red" | "Pink" | "Purple" | "Yellow" | "Orange" | "Multi" | "Other";
         /** @enum {unknown} */
         ProductFit: "Slim" | "Regular" | "Relaxed" | "Oversized" | "Unknown";
-        /** @description Prices are those of the product's lowest active, in-stock offer. `MatchScore` (0-100) is present only when the request named a persona. */
+        /** @description Prices and `CheapestSeller` are those of the product's lowest active, in-stock offer. `MatchScore` (0-100) is present only when the request named a persona. */
         ProductListItem: {
             /** Format: uuid */
             id: string;
@@ -774,6 +1053,7 @@ export interface components {
             offerCount: number | string;
             /** Format: int32 */
             discountPercent: number | string;
+            cheapestSeller: null | components["schemas"]["SellerRef"];
             /** Format: int32 */
             matchScore?: null | number | string;
         };
@@ -839,13 +1119,74 @@ export interface components {
             /** Format: date-time */
             onboardingCompletedAt: null | string;
         };
+        /** @description What Expo said about one message (one notification to one device). `Status` is `ok`, `error` or `unreachable`. */
+        PushDelivery: {
+            /** Format: int64 */
+            notificationId: number | string;
+            /** Format: uuid */
+            deviceId: string;
+            expoPushToken: string;
+            status: string;
+            ticketId: null | string;
+            error: null | string;
+        };
+        /** @description The whole seller: optional fields that are left out are cleared, as PUT means. */
+        PutSellerRequest: {
+            name: string;
+            kind: string;
+            websiteUrl: string;
+            affiliateNetwork: null | string;
+            affiliateUrlTemplate: null | string;
+            affiliateParams: null | {
+                [key: string]: string;
+            };
+            /** @default true */
+            isActive: boolean;
+        };
+        PutSellerResponse: {
+            /** Format: uuid */
+            id: string;
+            slug: string;
+            name: string;
+            kind: components["schemas"]["SellerKind"];
+            websiteUrl: string;
+            affiliateNetwork: null | string;
+            affiliateUrlTemplate: null | string;
+            affiliateParams: null | {
+                [key: string]: string;
+            };
+            isActive: boolean;
+            created: boolean;
+        };
+        RecordEventsRequest: {
+            events: components["schemas"]["EventItem"][];
+        };
+        RecordEventsResponse: {
+            /** Format: int32 */
+            accepted: number | string;
+            rejected: components["schemas"]["RejectedEvent"][];
+        };
         RefreshRequest: {
             refreshToken: string;
         };
+        /** @description `Platform` is `Ios` or `Android`. */
+        RegisterDeviceRequest: {
+            expoPushToken: string;
+            platform: string;
+            appVersion: null | string;
+            deviceName: null | string;
+        };
+        /** @description `AnonymousId` is the analytics ID the app used before registering; its earlier events are attached to the new user. */
         RegisterRequest: {
             email: string;
             password: string;
             displayName: string;
+            anonymousId?: null | string;
+        };
+        RejectedEvent: {
+            /** Format: int32 */
+            index: number | string;
+            reason: string;
         };
         SavedIdsResponse: {
             productIds: string[];
@@ -871,18 +1212,44 @@ export interface components {
             offerCount: number | string;
             /** Format: int32 */
             discountPercent: number | string;
+            cheapestSeller: null | components["schemas"]["SellerRef"];
             isActive: boolean;
             /** Format: date-time */
             savedAt: string;
         };
         /** @enum {unknown} */
         SellerKind: "Marketplace" | "BrandStore";
-        SellerRef: {
+        SellerOfferItem: {
+            externalId: string;
             /** Format: uuid */
-            id: string;
+            productId: string;
+            modelCode: null | string;
+            /** Format: double */
+            currentPrice: number | string;
+            stockStatus: components["schemas"]["StockStatus"];
+            /** Format: date-time */
+            lastSeenAt: string;
+            isActive: boolean;
+        };
+        /** @description The seller of the offer that defines `lowestPrice`, for the "from X" label next to the price. */
+        SellerRef: {
             name: string;
             slug: string;
-            kind: components["schemas"]["SellerKind"];
+        };
+        SendTestRequest: {
+            /** Format: uuid */
+            userId: string;
+            title: null | string;
+            body: null | string;
+        };
+        /** @description The notification as the push sender left it, and what Expo said about each device it was sent to. */
+        SendTestResponse: {
+            /** Format: int64 */
+            notificationId: number | string;
+            status: components["schemas"]["NotificationStatus"];
+            failureReason: null | string;
+            ticketId: null | string;
+            deliveries: components["schemas"]["PushDelivery"][];
         };
         SizeEntryResponse: {
             /** Format: uuid */
@@ -989,6 +1356,18 @@ export interface components {
             styleSummary: components["schemas"]["StyleSummary"];
             onboardingCompleted: boolean;
         };
+        /** @description The body is optional; without a seller the whole catalog is swept. */
+        SweepOffersRequest: {
+            sellerSlug: null | string;
+        };
+        SweepOffersResponse: {
+            /** Format: int32 */
+            offersDeactivated: number | string;
+            /** Format: int32 */
+            productsDeactivated: number | string;
+            /** Format: int32 */
+            productsReactivated: number | string;
+        };
         SwipeItem: {
             /** Format: uuid */
             styleCardId: string;
@@ -1013,6 +1392,10 @@ export interface components {
             triggeredAt: string;
             /** Format: date-time */
             consumedAt: null | string;
+        };
+        UnreadCountResponse: {
+            /** Format: int32 */
+            count: number | string;
         };
         /** @description A partial update: a null field is left as it is. `Sizes: []` clears the size filter. */
         UpdateAlertRequest: {
@@ -1045,6 +1428,20 @@ export interface components {
             seasons: null | string[];
         };
         /**
+         * @description A partial update: a null field is left as it is. Quiet hours are `HH:mm` local times in Europe/Istanbul and come as a pair;
+         *     `ClearQuietHours: true` removes them.
+         */
+        UpdatePreferencesRequest: {
+            priceAlerts: null | boolean;
+            stockAlerts: null | boolean;
+            recommendations: null | boolean;
+            /** Format: int32 */
+            maxRecommendationsPerWeek: null | number | string;
+            quietHoursStart: null | string;
+            quietHoursEnd: null | string;
+            clearQuietHours: null | boolean;
+        };
+        /**
          * @description Replaces the measurements: a field that is left out is cleared. `Audience` is the exception, a null keeps the current one
          *     (a profile always has an audience).
          */
@@ -1071,6 +1468,17 @@ export interface components {
             externalId: string;
             errorCode: string;
             message: string;
+        };
+        /** @description An item that was stored: the IDs let a worker reconcile its own records with ours. */
+        UpsertItemResult: {
+            /** Format: int32 */
+            index: number | string;
+            externalId: string;
+            /** Format: uuid */
+            productId: string;
+            /** Format: uuid */
+            offerId: string;
+            created: boolean;
         };
         UpsertOfferItem: {
             externalId: string;
@@ -1101,6 +1509,7 @@ export interface components {
             updated: number | string;
             /** Format: int32 */
             snapshotsWritten: number | string;
+            results: components["schemas"]["UpsertItemResult"][];
             errors: components["schemas"]["UpsertItemError"][];
         };
         UpsertProductInfo: {
@@ -1119,11 +1528,29 @@ export interface components {
             description: null | string;
             /** Format: uuid */
             canonicalProductId: null | string;
+            brandWebsiteUrl?: null | string;
+            brandLogoUrl?: null | string;
         };
         UpsertSizeRequest: {
             brandSlug: string;
             group: string;
             size: string;
+        };
+        WeeklyMetricItem: {
+            /** Format: date */
+            weekStart: string;
+            metric: string;
+            /** Format: double */
+            value: number | string;
+            /** Format: int64 */
+            numerator: number | string;
+            /** Format: int64 */
+            denominator: number | string;
+            /** Format: date-time */
+            computedAt: string;
+        };
+        WeeklyMetricsResponse: {
+            items: components["schemas"]["WeeklyMetricItem"][];
         };
     };
     responses: never;
@@ -1513,6 +1940,145 @@ export interface operations {
             };
             /** @description Not Found */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    SweepOffers: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": null | components["schemas"]["SweepOffersRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SweepOffersResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    ListSellerOffers: {
+        parameters: {
+            query?: {
+                UpdatedAfter?: string;
+                Page?: number | string;
+                PageSize?: number | string;
+            };
+            header?: never;
+            path: {
+                sellerSlug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PagedResponseOfSellerOfferItem"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    PutSeller: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                sellerSlug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PutSellerRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PutSellerResponse"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Conflict */
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -2559,6 +3125,387 @@ export interface operations {
             };
             /** @description Not Found */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    RegisterDevice: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RegisterDeviceRequest"];
+            };
+        };
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    DeleteDevice: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                token: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    GetNotificationPreferences: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PreferencesResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    UpdateNotificationPreferences: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdatePreferencesRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PreferencesResponse"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    ListNotifications: {
+        parameters: {
+            query?: {
+                Page?: number | string;
+                PageSize?: number | string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PagedResponseOfNotificationResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    GetUnreadNotificationCount: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UnreadCountResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    MarkNotificationRead: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    MarkAllNotificationsRead: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    SendTestNotification: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SendTestRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SendTestResponse"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    RecordEvents: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RecordEventsRequest"];
+            };
+        };
+        responses: {
+            /** @description Accepted */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecordEventsResponse"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    GetWeeklyMetrics: {
+        parameters: {
+            query?: {
+                From?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WeeklyMetricsResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
                 headers: {
                     [name: string]: unknown;
                 };

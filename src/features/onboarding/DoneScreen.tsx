@@ -2,6 +2,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'expo-router';
 
+import { track } from '@/analytics';
 import { getProfile } from '@/api/endpoints/profile';
 import type { StyleSummary } from '@/api/models';
 import { queryKeys } from '@/api/queryKeys';
@@ -32,6 +33,7 @@ export function DoneScreen({ personaId }: DoneScreenProps) {
   const persona = personas.data?.find((item) => item.id === personaId);
 
   const goToDiscover = () => {
+    track('onboarding_step', { step: 'done', action: 'done' });
     // Warm what Keşfet opens with, so it renders from cache: the profile and the first page of the scored list.
     void queryClient.prefetchQuery({
       queryKey: queryKeys.profile,

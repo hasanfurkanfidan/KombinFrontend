@@ -1,7 +1,9 @@
 import { act, fireEvent, screen, waitFor } from '@testing-library/react-native';
 import { router, useSegments } from 'expo-router';
 
+import { track } from '@/analytics';
 import {
+  activatePersona,
   createPersona,
   getProfile,
   getStyleCards,
@@ -114,6 +116,20 @@ describe('step 1: audience', () => {
     );
   });
 
+  it('reports the step as next, and a skip as skip', async () => {
+    getProfileMock.mockResolvedValue(profile());
+    updateProfileMock.mockResolvedValue(profile({ audience: 'Women' }));
+
+    await renderWithQuery(<AudienceScreen />);
+    await fireEvent.press(await screen.findByTestId('audience-Women'));
+    await waitFor(() =>
+      expect(track).toHaveBeenCalledWith('onboarding_step', { step: 'audience', action: 'next' }),
+    );
+
+    await fireEvent.press(screen.getByTestId('onboarding-skip'));
+    expect(track).toHaveBeenCalledWith('onboarding_step', { step: 'audience', action: 'skip' });
+  });
+
   it('offers Kadın, Erkek and Hepsi, and "Atla" skips without creating anything', async () => {
     getProfileMock.mockResolvedValue(profile());
 
@@ -149,6 +165,43 @@ describe('step 2: persona name', () => {
         params: { personaId: 'new1', flow: 'first', returnTo: undefined },
       }),
     );
+  });
+
+  it('makes a new persona the active one, then goes on to train it', async () => {
+    createPersonaMock.mockResolvedValue(persona({ id: 'new3', name: 'Gece', isActive: false }));
+    jest.mocked(activatePersona).mockResolvedValue(undefined);
+
+    await renderWithQuery(<PersonaNameScreen flow="new" returnTo="/" />);
+    await fireEvent.changeText(screen.getByTestId('persona-name'), 'Gece');
+    await fireEvent.press(screen.getByTestId('persona-submit'));
+
+    await waitFor(() => expect(jest.mocked(activatePersona)).toHaveBeenCalledWith('new3'));
+    await waitFor(() => expect(router.push).toHaveBeenCalled());
+    // Only the first run is onboarding proper: a second persona does not report a step.
+    expect(track).not.toHaveBeenCalledWith('onboarding_step', expect.anything());
+  });
+
+  it('does not activate a persona the backend already activated (the first one)', async () => {
+    createPersonaMock.mockResolvedValue(persona({ id: 'first1', name: 'Ofis', isActive: true }));
+
+    await renderWithQuery(<PersonaNameScreen flow="first" />);
+    await fireEvent.changeText(screen.getByTestId('persona-name'), 'Ofis');
+    await fireEvent.press(screen.getByTestId('persona-submit'));
+
+    await waitFor(() => expect(router.push).toHaveBeenCalled());
+    expect(jest.mocked(activatePersona)).not.toHaveBeenCalled();
+    expect(track).toHaveBeenCalledWith('onboarding_step', { step: 'persona', action: 'next' });
+  });
+
+  it('still goes on when the activation fails: the chip row can switch later', async () => {
+    createPersonaMock.mockResolvedValue(persona({ id: 'new4', name: 'Tatil', isActive: false }));
+    jest.mocked(activatePersona).mockRejectedValue(new Error('offline'));
+
+    await renderWithQuery(<PersonaNameScreen flow="new" returnTo="/" />);
+    await fireEvent.changeText(screen.getByTestId('persona-name'), 'Tatil');
+    await fireEvent.press(screen.getByTestId('persona-submit'));
+
+    await waitFor(() => expect(router.push).toHaveBeenCalled());
   });
 
   it('uses the "custom" icon for free text and trims it', async () => {
@@ -238,6 +291,22 @@ describe('step 3: swipe (buttons only)', () => {
       { styleCardId: 'c5', decision: 'Like' },
     ]);
     expect(await screen.findByText('6 / 7')).toBeTruthy();
+  });
+
+  it('reports every swipe with the persona and the decision', async () => {
+    await renderWithQuery(<SwipeScreen personaId="pe1" flow="first" />);
+    await screen.findByTestId('swipe-card-c1');
+
+    await fireEvent.press(screen.getByTestId('swipe-like'));
+    await fireEvent.press(screen.getByTestId('swipe-dislike'));
+    await fireEvent.press(screen.getByTestId('swipe-skip'));
+
+    const swipes = jest.mocked(track).mock.calls.filter(([name]) => name === 'swipe');
+    expect(swipes).toEqual([
+      ['swipe', { personaId: 'pe1', decision: 'Like' }],
+      ['swipe', { personaId: 'pe1', decision: 'Dislike' }],
+      ['swipe', { personaId: 'pe1', decision: 'Skip' }],
+    ]);
   });
 
   it('sends the remainder and goes to the done step when the stack is empty', async () => {
@@ -358,6 +427,7 @@ describe('step 4: done', () => {
     await renderWithQuery(<DoneScreen personaId="pe1" />);
     await fireEvent.press(await screen.findByTestId('done-cta'));
 
+    expect(track).toHaveBeenCalledWith('onboarding_step', { step: 'done', action: 'done' });
     await waitFor(() => expect(getProfileMock).toHaveBeenCalled());
     await waitFor(() => expect(listProducts).toHaveBeenCalled());
     expect(listProducts.mock.calls[0]?.[0]).toMatchObject({ PersonaId: 'pe1', Sort: 'match' });
