@@ -4,7 +4,10 @@ import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import { AndroidImportance } from 'expo-notifications';
 
+import { registerDevice } from '@/api/endpoints/notifications';
 import { usePrefsStore } from '@/session/prefsStore';
+import { useSessionStore } from '@/session/sessionStore';
+import { apiPlatform, appVersion } from '@/utils/appInfo';
 
 export type PushPermission = 'granted' | 'denied' | 'undetermined' | 'unavailable';
 
@@ -63,24 +66,55 @@ export async function requestPushPermission(): Promise<PushPermission> {
   if (status === 'granted') {
     const token = await fetchExpoPushToken();
     usePrefsStore.getState().setPushToken(token);
-    registerPushToken();
+    await registerPushToken();
   }
   return status;
 }
 
+/** The token the backend already knows from this launch, so a re-render or a second call does not repeat the request. */
+let registeredToken: string | null = null;
+
 /**
- * Hands the device's push token to the backend.
- * TODO(backend): POST /me/devices { token, platform } once the endpoint exists. Until then this only logs in dev.
+ * Hands the device's push token to the backend (`PUT /me/devices`, idempotent). Needs a token and a signed-in user;
+ * best effort: a failure only means no push until the next launch registers again.
  */
-export function registerPushToken(): void {
+export async function registerPushToken(): Promise<void> {
   const token = usePrefsStore.getState().pushToken;
-  if (__DEV__) {
-    console.log(
-      token
-        ? `[push] token ready, not registered (no backend endpoint yet): ${token.slice(0, 24)}…`
-        : '[push] no push token to register',
-    );
+  if (!token || useSessionStore.getState().status !== 'signedIn' || registeredToken === token) {
+    return;
   }
+  try {
+    await registerDevice({
+      expoPushToken: token,
+      platform: apiPlatform(),
+      appVersion: appVersion(),
+      deviceName: Device.deviceName ?? null,
+    });
+    registeredToken = token;
+  } catch (error) {
+    if (__DEV__) {
+      console.warn('[push] could not register the device', error);
+    }
+  }
+}
+
+/** Forgets that the token was registered (sign-out): the next sign-in registers it again, for whoever signs in. */
+export function resetPushRegistration(): void {
+  registeredToken = null;
+}
+
+/**
+ * Cold start / sign-in: when the OS permission is already granted, reads the Expo push token (no prompt) and registers
+ * it. The token itself is not persisted; asking the OS for it again is cheap.
+ */
+export async function syncPushRegistration(): Promise<void> {
+  if ((await getPushPermission()) !== 'granted') {
+    return;
+  }
+  if (!usePrefsStore.getState().pushToken) {
+    usePrefsStore.getState().setPushToken(await fetchExpoPushToken());
+  }
+  await registerPushToken();
 }
 
 /** Opens the OS settings page of the app: the only way to turn notifications back on after a denial. */

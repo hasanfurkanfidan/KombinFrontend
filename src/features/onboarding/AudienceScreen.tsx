@@ -1,6 +1,7 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 
+import { track } from '@/analytics';
 import type { Audience } from '@/api/models';
 import { ErrorState } from '@/components/ErrorState';
 import { Skeleton } from '@/components/Skeleton';
@@ -28,7 +29,10 @@ export function AudienceScreen() {
       return;
     }
     update.mutate(toUpdateRequest(profile.data, { audience }), {
-      onSuccess: () => router.push({ pathname: '/persona', params: { flow: 'first' } }),
+      onSuccess: () => {
+        track('onboarding_step', { step: 'audience', action: 'next' });
+        router.push({ pathname: '/persona', params: { flow: 'first' } });
+      },
       onError: () => showToast(tr.errorBody),
     });
   };

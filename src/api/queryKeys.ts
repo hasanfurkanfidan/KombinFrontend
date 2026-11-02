@@ -23,4 +23,10 @@ export const queryKeys = {
   saved: ['saved', 'list'] as const,
   alerts: ['alerts', 'list'] as const,
   triggers: ['alerts', 'triggers'] as const,
+
+  /** Prefix of everything about notifications (feed, unread count, preferences). */
+  notificationsAll: ['notifications'] as const,
+  notifications: ['notifications', 'list'] as const,
+  unreadCount: ['notifications', 'unread-count'] as const,
+  notificationPreferences: ['notifications', 'preferences'] as const,
 };

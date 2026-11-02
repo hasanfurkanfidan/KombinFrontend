@@ -100,7 +100,7 @@ describe('ProfileScreen', () => {
     await fireEvent.press(await screen.findByTestId('profile-sign-out'));
 
     await waitFor(() => expect(screen.getByTestId('profile-sign-in')).toBeTruthy());
-    expect(logoutMock).toHaveBeenCalledWith('refresh-old');
+    expect(logoutMock).toHaveBeenCalledWith('refresh-old', null);
     expect(useSessionStore.getState().status).toBe('signedOut');
     expect(await SecureStore.getItemAsync('kombin.refreshToken')).toBeNull();
   });
@@ -226,7 +226,8 @@ describe('Tarzlarım', () => {
     await renderWithQuery(<ProfileScreen />);
 
     expect(await screen.findByText('2 marka tanımlı')).toBeTruthy();
-    expect(screen.getAllByText('Yakında')).toHaveLength(2);
+    // Only the stores row is still a placeholder; notification preferences open their own sheet.
+    expect(screen.getAllByText('Yakında')).toHaveLength(1);
     expect(screen.getByText('Bildirim tercihleri')).toBeTruthy();
     expect(screen.getByText('Bağlı mağazalar')).toBeTruthy();
 

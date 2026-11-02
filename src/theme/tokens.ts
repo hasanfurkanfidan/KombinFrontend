@@ -56,6 +56,10 @@ export const sizes = {
   personaSwatchWidth: 12,
   personaSwatchHeight: 36,
   avatar: 56,
+  /** Unread-count badge on the bell. */
+  badge: 18,
+  /** Leading icon square of a notification row (design screen 06). */
+  notificationIcon: 40,
 } as const;
 
 export const shadows = {

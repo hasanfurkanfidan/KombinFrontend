@@ -88,7 +88,9 @@ export function ProductCard({ product, width, onPress }: ProductCardProps) {
         </View>
         {offerCount > 1 ? (
           <Text style={styles.footer} numberOfLines={1}>
-            {tr.productCardCheapest(offerCount)}
+            {product.cheapestSeller
+              ? tr.productCardCheapestFrom(product.cheapestSeller.name, offerCount)
+              : tr.productCardCheapest(offerCount)}
           </Text>
         ) : null}
       </View>

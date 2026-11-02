@@ -2,6 +2,9 @@ import type {
   Alert,
   AlertTrigger,
   CategoryNode,
+  Notification,
+  NotificationPage,
+  NotificationPreferences,
   Offer,
   OfferSeries,
   Persona,
@@ -34,6 +37,7 @@ export function listItem(overrides: Partial<ProductListItem> = {}): ProductListI
     lowestOriginalPrice: 2999,
     offerCount: 3,
     discountPercent: 28,
+    cheapestSeller: null,
     matchScore: null,
     ...overrides,
   };
@@ -61,18 +65,18 @@ function offer(overrides: Partial<Offer> & Pick<Offer, 'id' | 'seller'>): Offer 
 
 export const trendyol = offer({
   id: 'o1',
-  seller: { id: 's1', name: 'Trendyol', slug: 'trendyol', kind: 'Marketplace' },
+  seller: { name: 'Trendyol', slug: 'trendyol' },
 });
 export const brandStore = offer({
   id: 'o2',
-  seller: { id: 's2', name: 'Marka sitesi', slug: 'mavi-store', kind: 'BrandStore' },
+  seller: { name: 'Marka sitesi', slug: 'mavi-store' },
   currentPrice: 2299,
   shippingCost: 49,
   effectivePrice: 2348,
 });
 export const hepsiburada = offer({
   id: 'o3',
-  seller: { id: 's3', name: 'Hepsiburada', slug: 'hepsiburada', kind: 'Marketplace' },
+  seller: { name: 'Hepsiburada', slug: 'hepsiburada' },
   currentPrice: 2449,
   effectivePrice: 2449,
   stockStatus: 'OutOfStock',
@@ -236,3 +240,38 @@ export function sizeEntry(overrides: Partial<SizeEntry> = {}): SizeEntry {
     ...overrides,
   };
 }
+
+let notificationCounter = 0;
+
+export function notification(overrides: Partial<Notification> = {}): Notification {
+  notificationCounter += 1;
+  return {
+    id: notificationCounter,
+    kind: 'PriceDrop',
+    title: 'Takip ettiğin blazer 850 ₺ düştü',
+    body: 'Mavi yün karışımlı blazer artık 2.149 ₺.',
+    data: { productId: 'p1', offerId: 'o1', deepLink: 'kombin://product/p1' },
+    createdAt: new Date().toISOString(),
+    readAt: null,
+    status: 'Sent',
+    ...overrides,
+  };
+}
+
+export function notificationPage(
+  items: Notification[],
+  overrides: Partial<NotificationPage> = {},
+): NotificationPage {
+  return { items, page: 1, pageSize: 30, totalCount: items.length, totalPages: 1, ...overrides };
+}
+
+export const preferences: NotificationPreferences = {
+  priceAlerts: true,
+  stockAlerts: true,
+  recommendations: true,
+  maxRecommendationsPerWeek: 3,
+  quietHoursStart: null,
+  quietHoursEnd: null,
+  timeZone: 'Europe/Istanbul',
+  updatedAt: '2026-11-02T10:00:00Z',
+};

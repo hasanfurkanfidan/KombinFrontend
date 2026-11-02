@@ -1,5 +1,6 @@
 import * as WebBrowser from 'expo-web-browser';
 
+import { track } from '@/analytics';
 import { baseUrl } from '@/api/client';
 import type { Offer } from '@/api/models';
 
@@ -23,9 +24,10 @@ export function buildGoUrl(
 
 /** Opens the in-app browser on the redirect; the browser follows the 302 to the seller. */
 export async function openOffer(
-  offer: Pick<Offer, 'goPath'>,
+  offer: Pick<Offer, 'id' | 'goPath'>,
   options: { source?: ClickSource; personaId?: string } = {},
 ): Promise<void> {
+  track('buy_click', { offerId: offer.id, source: options.source ?? 'product_detail' });
   try {
     await WebBrowser.openBrowserAsync(buildGoUrl(offer.goPath, options));
   } catch {

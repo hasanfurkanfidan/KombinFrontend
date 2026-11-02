@@ -3,6 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'expo-router';
 
+import { track } from '@/analytics';
 import { getStyleCards, submitSwipes } from '@/api/endpoints/profile';
 import { queryKeys } from '@/api/queryKeys';
 import { ErrorState } from '@/components/ErrorState';
@@ -52,6 +53,7 @@ export function SwipeScreen({ personaId, flow, returnTo }: SwipeScreenProps) {
         queryClient.invalidateQueries({ queryKey: queryKeys.productsAll }),
       ]);
       if (flow === 'first') {
+        track('onboarding_step', { step: 'swipe', action: 'next' });
         router.replace({ pathname: '/done', params: { personaId } });
       } else {
         leaveOnboarding(router, flow, returnTo);
@@ -110,7 +112,10 @@ export function SwipeScreen({ personaId, flow, returnTo }: SwipeScreenProps) {
       ) : (
         <SwipeDeck
           cards={items}
-          onSwipe={(card, decision) => outbox.push({ styleCardId: card.id, decision })}
+          onSwipe={(card, decision) => {
+            outbox.push({ styleCardId: card.id, decision });
+            track('swipe', { personaId, decision });
+          }}
           onFinish={() => void finish(() => outbox.flush())}
         />
       )}

@@ -89,6 +89,8 @@ export const tr = {
   // Product
   // The list endpoint does not say which seller is cheapest, so the card only states the seller count.
   productCardCheapest: (offerCount: number) => `${offerCount} satıcıda en ucuzu`,
+  productCardCheapestFrom: (seller: string, offerCount: number) =>
+    `En ucuzu ${seller} · ${offerCount} satıcı`,
   productNotFound: 'Ürün bulunamadı',
   productNotFoundBody: 'Bu ürün artık mevcut olmayabilir.',
   // Upper-cased by hand: `textTransform` would turn Turkish "i" into "I" instead of "İ".
@@ -123,6 +125,7 @@ export const tr = {
   profileSizeMap: 'Beden haritam',
   profileSizeMapCount: (count: number) => `${count} marka tanımlı`,
   profileNotifications: 'Bildirim tercihleri',
+  profileNotificationsCaption: 'Fiyat, stok ve öneri bildirimleri',
   profileStores: 'Bağlı mağazalar',
 
   // Common actions
@@ -302,4 +305,59 @@ export const tr = {
   trackAlertActive: 'Alarm açık',
   trackSavedInactive: 'Artık satışta değil',
   trackUpdateFailed: 'Güncellenemedi, tekrar dene',
+
+  // Notifications (design screen 06)
+  notifTitle: 'Bildirimler',
+  notifFilterAll: 'Tümü',
+  notifFilterPrice: 'Fiyat',
+  notifFilterStock: 'Stok',
+  notifFilterRecommendation: 'Öneri',
+  notifSectionToday: 'Bugün',
+  notifSectionYesterday: 'Dün',
+  notifSectionEarlier: 'Daha önce',
+  notifEmptyTitle: 'Henüz bildirimin yok',
+  notifEmptyBody: 'Fiyat ve stok alarmların tetiklenince burada görürsün.',
+  notifEmptyFilterBody: 'Bu başlık altında bildirim yok.',
+  notifSignedOutTitle: 'Bildirimler için giriş yap',
+  notifSignedOutBody: 'Alarmların ve önerilerin bildirimleri hesabında toplanır.',
+  notifLoadFailed: 'Bildirimlerin yüklenemedi',
+  notifPreferencesButton: 'Bildirim tercihleri',
+  notifMenuButton: 'Diğer işlemler',
+  notifMarkAllRead: 'Tümünü okundu işaretle',
+  notifBellLabel: (unread: number) =>
+    unread > 0 ? `Bildirimler, ${unread} okunmamış` : 'Bildirimler',
+  notifKindPrice: 'Fiyat alarmı',
+  notifKindStock: 'Stok alarmı',
+  notifKindAnyChange: 'Takip',
+  notifKindMatches: 'Haftalık seçki',
+  notifKindSystem: 'Kombin',
+  timeJustNow: 'Az önce',
+  timeMinutesAgo: (minutes: number) => `${minutes} dk önce`,
+  timeHoursAgo: (hours: number) => `${hours} sa önce`,
+  timeYesterday: 'Dün',
+
+  // Notification preferences
+  prefsPrice: 'Fiyat alarmları',
+  prefsPriceCaption: 'Takip ettiğin ürünün fiyatı düştüğünde',
+  prefsStock: 'Stok alarmları',
+  prefsStockCaption: 'Beklediğin beden tekrar stoğa girdiğinde',
+  prefsRecommendations: 'Öneriler',
+  prefsRecommendationsCaption: 'Tarzına uyan yeni parçalar',
+  prefsWeeklyMax: 'Haftalık en fazla öneri',
+  prefsWeeklyMaxValue: (count: number) => `Haftada ${count}`,
+  prefsQuietHours: 'Sessiz saatler',
+  prefsQuietHoursCaption: 'Bu saatlerde bildirim gönderilmez',
+  prefsQuietStart: 'Başlangıç',
+  prefsQuietEnd: 'Bitiş',
+  prefsHour: 'Saat',
+  prefsMinute: 'Dakika',
+  prefsDecrease: 'Azalt',
+  prefsIncrease: 'Artır',
+  prefsSave: 'Kaydet',
+  prefsSaved: 'Tercihlerin kaydedildi',
+  prefsSaveFailed: 'Kaydedilemedi, tekrar dene',
+  prefsPermissionDenied: 'Bildirimler cihaz ayarlarından kapalı. Açmak için ayarlara git.',
+  prefsPermissionUndetermined: 'Bildirim göndermemiz için izin vermen gerekiyor.',
+  prefsOpenSettings: 'Ayarları aç',
+  prefsAllow: 'İzin ver',
 } as const;

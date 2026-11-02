@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
+import { track } from '@/analytics';
 import {
   createAlert,
   deleteAlert,
@@ -44,6 +45,7 @@ export function useCreateAlert() {
   return useMutation({
     mutationFn: (body: CreateAlertRequest) => createAlert(body),
     onSuccess: (alert) => {
+      track('alert_created', { kind: alert.kind });
       queryClient.setQueryData<AlertList>(queryKeys.alerts, (current) => ({
         items: [alert, ...(current?.items ?? [])],
       }));

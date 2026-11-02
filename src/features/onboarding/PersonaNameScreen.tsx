@@ -5,6 +5,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { z } from 'zod';
 
+import { track } from '@/analytics';
 import { ApiError } from '@/api/client';
 import { Button } from '@/components/Button';
 import { Chip } from '@/components/Chip';
@@ -50,6 +51,9 @@ export function PersonaNameScreen({ flow, returnTo }: PersonaNameScreenProps) {
     const icon = preset && preset.label === name ? preset.key : CUSTOM_PERSONA_ICON;
     try {
       const persona = await createPersona.mutateAsync({ name, icon });
+      if (flow === 'first') {
+        track('onboarding_step', { step: 'persona', action: 'next' });
+      }
       router.push({ pathname: '/swipe', params: { personaId: persona.id, flow, returnTo } });
     } catch (error) {
       if (!(error instanceof ApiError)) {

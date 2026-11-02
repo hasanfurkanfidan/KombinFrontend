@@ -8,6 +8,7 @@ import { Screen } from '@/components/Screen';
 import { Skeleton } from '@/components/Skeleton';
 import { useAlerts, useTriggers } from '@/features/alerts/hooks';
 import { ProductGrid, ProductGridSkeleton } from '@/features/catalog/ProductGrid';
+import { productHref } from '@/features/catalog/productLink';
 import { useSavedProducts } from '@/features/saved/hooks';
 import { tr } from '@/i18n/tr';
 import { useSession } from '@/session/useSession';
@@ -110,7 +111,7 @@ function AlertsSection({ segment, onChangeSegment }: SectionProps) {
           alert={item}
           triggers={triggerItems}
           now={now}
-          onOpen={(productId) => router.push(`/product/${productId}`)}
+          onOpen={(productId) => router.push(productHref(productId, 'alert'))}
         />
       )}
       ItemSeparatorComponent={Separator}
@@ -153,7 +154,7 @@ function SavedSection({ segment, onChangeSegment }: SectionProps) {
   return (
     <ProductGrid
       items={items}
-      onPressItem={(id) => router.push(`/product/${id}`)}
+      onPressItem={(id) => router.push(productHref(id, 'saved'))}
       header={header}
       placeholder={
         saved.isError ? (

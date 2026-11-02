@@ -32,7 +32,7 @@ export function useActivePersona(): Persona | undefined {
 }
 
 /** Personas change which products match and how well, so everything derived from them is refetched. */
-async function refreshPersonaDependents(queryClient: QueryClient) {
+export async function refreshPersonaDependents(queryClient: QueryClient) {
   await Promise.all([
     queryClient.invalidateQueries({ queryKey: queryKeys.personas }),
     queryClient.invalidateQueries({ queryKey: queryKeys.profile }),
@@ -41,10 +41,25 @@ async function refreshPersonaDependents(queryClient: QueryClient) {
   ]);
 }
 
+/**
+ * Creates a persona and makes it the active one, so Keşfet switches to it while the user trains it. The backend already
+ * activates a first persona; a failed activation is not fatal (the chip row switches it later), so it is swallowed.
+ */
 export function useCreatePersona() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (input: { name: string; icon: string }) => createPersona(input),
+    mutationFn: async (input: { name: string; icon: string }) => {
+      const persona = await createPersona(input);
+      if (persona.isActive) {
+        return persona;
+      }
+      try {
+        await activatePersona(persona.id);
+        return { ...persona, isActive: true };
+      } catch {
+        return persona;
+      }
+    },
     onSuccess: () => refreshPersonaDependents(queryClient),
   });
 }

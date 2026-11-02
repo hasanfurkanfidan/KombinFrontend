@@ -154,7 +154,7 @@ describe('Takip: Alarmlar', () => {
     await renderWithQuery(<TrackingScreen />);
     await fireEvent.press(await screen.findByTestId('alert-row-a2'));
 
-    expect(router.push).toHaveBeenCalledWith('/product/p2');
+    expect(router.push).toHaveBeenCalledWith('/product/p2?source=alert');
   });
 
   it('deletes an alert from the swipe action', async () => {
@@ -247,7 +247,7 @@ describe('Takip: Kaydedilenler', () => {
     await fireEvent.press(await screen.findByTestId('segment-saved'));
     await fireEvent.press(await screen.findByTestId('product-card-p1'));
 
-    expect(router.push).toHaveBeenCalledWith('/product/p1');
+    expect(router.push).toHaveBeenCalledWith('/product/p1?source=saved');
   });
 
   it('shows an empty state without saved products', async () => {

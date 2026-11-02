@@ -9,8 +9,10 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
+import { AnalyticsTracker } from '@/analytics/AnalyticsTracker';
 import { queryClient } from '@/api/queryClient';
 import { OnboardingGate } from '@/features/onboarding/OnboardingGate';
+import { NotificationHandler, PushRegistration } from '@/push/PushLifecycle';
 import { useSessionStore } from '@/session/sessionStore';
 import { useBootstrapSession } from '@/session/useSession';
 
@@ -63,6 +65,9 @@ export function AppProviders({ children }: { children: ReactNode }) {
         <StatusBar style="dark" />
         <SessionExpiryRedirect />
         <OnboardingGate />
+        <AnalyticsTracker />
+        <PushRegistration />
+        <NotificationHandler />
         {children}
         <ToastHost />
       </QueryClientProvider>

@@ -56,6 +56,17 @@ export function hasActiveFilters(filters: ProductFilters): boolean {
   return Boolean(filters.categorySlug ?? filters.color ?? filters.audience ?? filters.sort);
 }
 
+/** Names (never values) of the filters in use, comma-separated: what `product_list_view` reports. */
+export function filterNames(filters: ProductFilters): string {
+  return [
+    filters.categorySlug ? 'category' : null,
+    filters.color ? 'color' : null,
+    filters.audience ? 'audience' : null,
+  ]
+    .filter(Boolean)
+    .join(',');
+}
+
 /** Maps app filters onto the contract's query parameters. */
 export function toListQuery(filters: ProductFilters, page?: number): ListProductsQuery {
   return {
