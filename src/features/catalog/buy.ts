@@ -5,7 +5,7 @@ import { baseUrl } from '@/api/client';
 import type { Offer } from '@/api/models';
 
 /** Where a buy click comes from; the backend records it with the click. */
-export type ClickSource = 'product_detail' | 'saved' | 'alert';
+export type ClickSource = 'product_detail' | 'saved' | 'alert' | 'outfit';
 
 /**
  * The only way the app sends a user to a seller: the backend's `/go` redirect, built from the offer's `goPath`.

@@ -29,4 +29,24 @@ export const queryKeys = {
   notifications: ['notifications', 'list'] as const,
   unreadCount: ['notifications', 'unread-count'] as const,
   notificationPreferences: ['notifications', 'preferences'] as const,
+
+  /** Prefix of everything about the wardrobe (items, stats, gaps). */
+  wardrobeAll: ['wardrobe'] as const,
+  wardrobeItems: (filters: { category?: string; color?: string }) =>
+    ['wardrobe', 'items', filters] as const,
+  /** Prefix of every cached item list, whatever filters it was fetched with. */
+  wardrobeItemsAll: ['wardrobe', 'items'] as const,
+  wardrobeItem: (id: string) => ['wardrobe', 'item', id] as const,
+  wardrobeStats: ['wardrobe', 'stats'] as const,
+  wardrobeGaps: ['wardrobe', 'gaps'] as const,
+
+  /** Prefix of everything about outfits (daily, how-to-wear, single, saved). */
+  outfitsAll: ['outfits'] as const,
+  dailyOutfit: (query: { date: string; occasion: string | null; seed: number }) =>
+    ['outfits', 'daily', query] as const,
+  dailyOutfitsAll: ['outfits', 'daily'] as const,
+  howToWear: (query: { productId: string | null; wardrobeItemId: string | null }) =>
+    ['outfits', 'how-to-wear', query] as const,
+  outfit: (id: string) => ['outfits', 'one', id] as const,
+  savedOutfits: ['outfits', 'saved'] as const,
 };

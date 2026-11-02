@@ -97,6 +97,8 @@ describe('SizeMapScreen', () => {
       waistCm: 84,
       hipCm: 98,
       shoeSizeEu: null,
+      // The backend clears a city that is left out of the PUT: it travels with every measurements update.
+      city: null,
     });
   });
 

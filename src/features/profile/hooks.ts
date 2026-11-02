@@ -29,8 +29,8 @@ export function useProfile() {
 }
 
 /**
- * `PUT /me/profile` replaces the measurements (a field left out is cleared) and keeps the audience when it is null,
- * so an update always carries the current measurements and only overrides what changed.
+ * `PUT /me/profile` replaces the measurements and the city (a field left out is cleared) and keeps the audience when
+ * it is null, so an update always carries the current measurements and city and only overrides what changed.
  */
 export function toUpdateRequest(
   profile: Profile,
@@ -45,6 +45,7 @@ export function toUpdateRequest(
     waistCm: profile.waistCm,
     hipCm: profile.hipCm,
     shoeSizeEu: profile.shoeSizeEu,
+    city: profile.city,
     ...patch,
   };
 }

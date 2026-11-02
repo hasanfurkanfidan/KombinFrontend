@@ -28,6 +28,14 @@
       "expo-notifications",
       "expo-font",
       [
+        "expo-image-picker",
+        {
+          "cameraPermission": "Dolabına parça eklemek için kıyafetinin fotoğrafını çekmemiz gerekiyor.",
+          "photosPermission": "Dolabına parça eklemek için galerinden kıyafet fotoğrafı seçmene izin ver.",
+          "microphonePermission": false
+        }
+      ],
+      [
         "expo-splash-screen",
         {
           "image": "./assets/splash-icon.png",

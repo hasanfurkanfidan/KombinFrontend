@@ -1,4 +1,4 @@
-import type { AlertKind, NotificationKind } from '@/api/models';
+import type { AlertKind, NotificationKind, OutfitCompleteness, OutfitKind } from '@/api/models';
 
 /**
  * The analytics allow-list, mirrored from the backend README ("Analytics" table, `AnalyticsEventCatalog`).
@@ -19,6 +19,14 @@ export interface EventProps {
   /** Only the length of what was typed, never the text. */
   search: { queryLength: number };
   notification_open: { notificationId: number; kind: NotificationKind };
+  wardrobe_add_start: { source: 'camera' | 'library' | 'catalog' };
+  /** `status` is how the add ended: `Ready`, `Failed` or `Timeout` (the analysis did not finish in time). */
+  wardrobe_add_done: { status: 'Ready' | 'Failed' | 'Timeout'; durationMs: number };
+  /** `status` is the outfit's completeness (`Complete`, `NeedsOne`, `CatalogOnly`): that is what the product learns from. */
+  outfit_view: { kind: OutfitKind; status: OutfitCompleteness; occasion?: string };
+  outfit_shuffle: Record<string, never>;
+  outfit_feedback: { action: 'Save' | 'Dismiss' | 'Worn' | 'Shuffle'; reason?: string };
+  outfit_gap_click: Record<string, never>;
 }
 
 export type EventName = keyof EventProps;
@@ -40,6 +48,12 @@ export const EVENT_KEYS: Record<EventName, KeySpec> = {
   buy_click: { required: ['offerId', 'source'], optional: [] },
   search: { required: ['queryLength'], optional: [] },
   notification_open: { required: ['notificationId', 'kind'], optional: [] },
+  wardrobe_add_start: { required: ['source'], optional: [] },
+  wardrobe_add_done: { required: ['status', 'durationMs'], optional: [] },
+  outfit_view: { required: ['kind', 'status'], optional: ['occasion'] },
+  outfit_shuffle: { required: [], optional: [] },
+  outfit_feedback: { required: ['action'], optional: ['reason'] },
+  outfit_gap_click: { required: [], optional: [] },
 };
 
 /** Property keys that name personal data; refused on every event. */

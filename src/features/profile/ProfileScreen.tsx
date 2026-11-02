@@ -128,6 +128,13 @@ export function ProfileScreen() {
               testID="profile-size-map"
             />
             <SettingsRow
+              title={tr.profileSavedOutfits}
+              caption={tr.profileSavedOutfitsCaption}
+              onPress={() => router.push('/outfits/saved')}
+              divider
+              testID="profile-saved-outfits"
+            />
+            <SettingsRow
               title={tr.profileNotifications}
               caption={tr.profileNotificationsCaption}
               onPress={() => setPreferencesOpen(true)}

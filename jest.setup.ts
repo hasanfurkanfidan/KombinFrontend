@@ -50,6 +50,18 @@ jest.mock('expo-router', () => {
   };
 });
 
+// Native camera/photo picker and image re-encoder: tests drive the add flow through its own seams instead.
+jest.mock('expo-image-picker', () => ({
+  requestCameraPermissionsAsync: jest.fn(async () => ({ granted: true })),
+  launchCameraAsync: jest.fn(async () => ({ canceled: true, assets: null })),
+  launchImageLibraryAsync: jest.fn(async () => ({ canceled: true, assets: null })),
+}));
+
+jest.mock('expo-image-manipulator', () => ({
+  SaveFormat: { JPEG: 'jpeg', PNG: 'png', WEBP: 'webp' },
+  manipulateAsync: jest.fn(async (uri: string) => ({ uri: `${uri}#resized`, width: 1, height: 1 })),
+}));
+
 jest.mock('expo-device', () => ({ isDevice: true, deviceName: 'Test Phone' }));
 
 // Screens only report events; the real queue (and its flush timer) is exercised in __tests__/analytics via

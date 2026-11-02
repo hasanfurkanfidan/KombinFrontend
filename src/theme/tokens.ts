@@ -60,6 +60,21 @@ export const sizes = {
   badge: 18,
   /** Leading icon square of a notification row (design screen 06). */
   notificationIcon: 40,
+  /** Drag handle on the outfit sheet. */
+  grabberWidth: 36,
+  grabberHeight: 4,
+  /** Round warning badge on a failed wardrobe card. */
+  statusBadge: 24,
+  /** Big cutout on the confirm sheet and the wardrobe item detail. */
+  itemCutoutHeight: 240,
+  /** Colour dot in the confirm sheet's swatch row (hit slop brings it to 44). */
+  colorSwatch: 34,
+  /** Small fifth tile (accessory) under the outfit grid. */
+  outfitAccessoryTile: 72,
+  /** Round shuffle / close buttons in the outfit header. */
+  outfitHeaderButton: 44,
+  /** Weather pill and piece thumbnails on the home card. */
+  homeCardThumbHeight: 84,
 } as const;
 
 export const shadows = {

@@ -123,6 +123,22 @@ export function ProductDetailScreen({ id, source = 'direct' }: ProductDetailScre
               />
             </View>
             <PriceSummary summary={product.data.priceSummary} history={historyState} />
+            <Pressable
+              accessibilityRole="button"
+              onPress={() =>
+                requireSignIn(() =>
+                  router.push(`/outfits/how-to-wear?productId=${product.data.id}`),
+                )
+              }
+              style={styles.howToWear}
+              testID="how-to-wear"
+            >
+              <View style={styles.howToWearText}>
+                <Text style={styles.howToWearTitle}>{tr.productHowToWear}</Text>
+                <Text style={styles.howToWearCaption}>{tr.productHowToWearCaption}</Text>
+              </View>
+              <Icon name="chevronRight" size={20} color={theme.colors.inkMuted} />
+            </Pressable>
             <View style={styles.offers}>
               <Text style={styles.offersTitle}>
                 {tr.productSellersFound(product.data.offers.length)}
@@ -435,6 +451,27 @@ const styles = StyleSheet.create({
   name: {
     ...theme.typography.headingLarge,
     color: theme.colors.ink,
+  },
+  howToWear: {
+    minHeight: theme.sizes.touch,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: theme.spacing.md,
+    padding: theme.spacing.lg,
+    borderRadius: theme.radius.lg,
+    backgroundColor: theme.colors.surfaceAlt,
+  },
+  howToWearText: {
+    flex: 1,
+    gap: 2,
+  },
+  howToWearTitle: {
+    ...theme.typography.bodyStrong,
+    color: theme.colors.ink,
+  },
+  howToWearCaption: {
+    ...theme.typography.caption,
+    color: theme.colors.inkMuted,
   },
   offers: {
     gap: theme.spacing.md,
