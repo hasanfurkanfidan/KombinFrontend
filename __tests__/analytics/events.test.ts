@@ -14,6 +14,13 @@ const BACKEND_TABLE: Record<string, { required: string[]; optional: string[] }> 
   buy_click: { required: ['offerId', 'source'], optional: [] },
   search: { required: ['queryLength'], optional: [] },
   notification_open: { required: ['notificationId', 'kind'], optional: [] },
+  // Wardrobe and outfits (Task 13): the backend allow-list gets the same six in its own follow-up.
+  wardrobe_add_start: { required: ['source'], optional: [] },
+  wardrobe_add_done: { required: ['status', 'durationMs'], optional: [] },
+  outfit_view: { required: ['kind', 'status'], optional: ['occasion'] },
+  outfit_shuffle: { required: [], optional: [] },
+  outfit_feedback: { required: ['action'], optional: ['reason'] },
+  outfit_gap_click: { required: [], optional: [] },
 };
 
 describe('event allow-list', () => {

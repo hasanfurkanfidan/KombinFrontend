@@ -692,10 +692,271 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/me/wardrobe/items/upload-url": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["CreateWardrobeUploadUrl"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/wardrobe/items/{id}/process": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ProcessWardrobeItem"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/wardrobe/items/from-product": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AddWardrobeItemFromProduct"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/wardrobe/items": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ListWardrobeItems"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/wardrobe/items/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["GetWardrobeItem"];
+        put?: never;
+        post?: never;
+        delete: operations["ArchiveWardrobeItem"];
+        options?: never;
+        head?: never;
+        patch: operations["UpdateWardrobeItem"];
+        trace?: never;
+    };
+    "/api/v1/me/wardrobe/items/{id}/wear": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["RecordWardrobeWear"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/wardrobe/items/{id}/wear/{date}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["UndoWardrobeWear"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/wardrobe/stats": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["GetWardrobeStats"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/wardrobe/gaps": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["GetWardrobeGaps"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/outfits/daily": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["GetDailyOutfit"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/outfits/how-to-wear": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["GetHowToWear"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/outfits/saved": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ListSavedOutfits"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/outfits/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["GetOutfit"];
+        put?: never;
+        post?: never;
+        delete: operations["DismissOutfit"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/outfits/{id}/save": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["SaveOutfit"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/outfits/{id}/worn": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["WearOutfit"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/outfits/{id}/feedback": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["RecordOutfitFeedback"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        AddFromProductRequest: {
+            /** Format: uuid */
+            productId: string;
+            size: null | string;
+        };
         /** @enum {unknown} */
         AlertKind: "PriceDrop" | "BackInStock" | "AnyChange";
         AlertResponse: {
@@ -738,6 +999,12 @@ export interface components {
             name: string;
             slug: string;
         };
+        /** @description `Slug` is the item's own (leaf) category slug; null counts the items without a category. */
+        CategoryCount: {
+            slug: null | string;
+            /** Format: int32 */
+            count: number | string;
+        };
         CategoryNode: {
             /** Format: uuid */
             id: string;
@@ -766,6 +1033,11 @@ export interface components {
             id: string;
             name: string;
             slug: string;
+        };
+        ColorCount: {
+            color: components["schemas"]["ProductColor"];
+            /** Format: int32 */
+            count: number | string;
         };
         ConfirmSizeRequest: {
             /** Format: uuid */
@@ -798,6 +1070,33 @@ export interface components {
             preferredFits: null | string[];
             seasons: null | string[];
         };
+        CreateUploadUrlRequest: {
+            contentType: null | string;
+            /** Format: int64 */
+            sizeBytes: number | string;
+        };
+        /** @description PUT the photo to `UploadUrl` with exactly `Headers` before `ExpiresAt`, then call `process`. */
+        CreateUploadUrlResponse: {
+            /** Format: uuid */
+            itemId: string;
+            uploadUrl: string;
+            headers: {
+                [key: string]: string;
+            };
+            /** Format: date-time */
+            expiresAt: string;
+        };
+        /**
+         * @description `Outfit` is null only when nothing wearable could be built (then `Message` says so). `WardrobeEmpty` means the outfits
+         *     are catalog shopping ideas (`kind` Shopping, `completeness` CatalogOnly). `Weather` is the forecast used, if any.
+         */
+        DailyOutfitResponse: {
+            outfit: null | components["schemas"]["OutfitResponse"];
+            alternatives: components["schemas"]["OutfitResponse"][];
+            weather: null | components["schemas"]["OutfitWeatherResponse"];
+            wardrobeEmpty: boolean;
+            message: null | string;
+        };
         /**
          * @description One event as the app sends it. `AnonymousId` is the device's pre-login ID; it is required while the caller is anonymous and
          *     recommended after login. `Properties` is a flat object whose keys depend on `Name` (AnalyticsEventCatalog).
@@ -811,6 +1110,21 @@ export interface components {
             /** Format: date-time */
             occurredAt: null | string;
             anonymousId: null | string;
+        };
+        /** @enum {unknown} */
+        FormalityBand: "Casual" | "Smart" | "Formal";
+        /**
+         * @description `Outfits` are built around the anchor (in every outfit with `role` Anchor), wardrobe pieces first; gaps come from the catalog
+         *     within the persona's budget, each with its cheapest offer, and `completionPrice` sums them. A product the user already owns is
+         *     anchored as the wardrobe item. `Message` explains an empty list or catalog-only ideas.
+         */
+        HowToWearResponse: {
+            /** Format: uuid */
+            productId: null | string;
+            /** Format: uuid */
+            wardrobeItemId: null | string;
+            outfits: components["schemas"]["OutfitResponse"][];
+            message: null | string;
         };
         JsonElement: unknown;
         ListAlertsResponse: {
@@ -837,6 +1151,8 @@ export interface components {
             createdAt: string;
         };
         /** @enum {unknown} */
+        NarrationProvider: "Template" | "Anthropic";
+        /** @enum {unknown} */
         NotificationKind: "PriceDrop" | "BackInStock" | "AnyChange" | "NewMatches" | "System";
         /** @description `Status` tells the app whether the push went out; the feed shows `Pending`, `Sent` and `Suppressed` alike. */
         NotificationResponse: {
@@ -854,6 +1170,8 @@ export interface components {
         };
         /** @enum {unknown} */
         NotificationStatus: "Pending" | "Sent" | "Failed" | "Suppressed";
+        /** @enum {unknown} */
+        Occasion: "Office" | "Weekend" | "Evening" | "Sport" | "Event" | null;
         /**
          * @description `GoPath` (`/api/v1/go/{offerId}`) is the only way to open an offer: the redirect records the click and adds the affiliate
          *     parameters. The seller's own URL is never part of the response.
@@ -885,6 +1203,110 @@ export interface components {
             seller: components["schemas"]["SellerRef"];
             points: components["schemas"]["PricePoint"][];
         };
+        /**
+         * @description How much of the outfit the user already owns. Honesty about gaps is part of the contract with the app.
+         * @enum {unknown}
+         */
+        OutfitCompleteness: "Complete" | "NeedsOne" | "CatalogOnly";
+        /**
+         * @description `Action`: Save, Dismiss, Worn or Shuffle. Save, Dismiss and Worn do what their own endpoints do; Shuffle ("another one") is only
+         *     recorded. `Reason` is for Dismiss only (default Other).
+         */
+        OutfitFeedbackRequest: {
+            action: string;
+            reason: null | string;
+        };
+        /** @enum {unknown} */
+        OutfitItemRole: "Anchor" | "Wardrobe" | "Gap";
+        /** @enum {unknown} */
+        OutfitKind: "Daily" | "HowToWear" | "Shopping";
+        OutfitNarrationResponse: {
+            text: string;
+            provider: components["schemas"]["NarrationProvider"];
+        };
+        /** @description A catalog piece's cheapest offer when it was suggested. `GoPath` is the only way to open it (the click is recorded). */
+        OutfitOfferResponse: {
+            /** Format: uuid */
+            offerId: string;
+            seller: null | components["schemas"]["SellerRef"];
+            /** Format: double */
+            price: number | string;
+            goPath: string;
+        };
+        /**
+         * @description One piece. A wardrobe piece has `WardrobeItemId` and its thumbnail; a catalog piece (`Role` Gap, or an Anchor from the
+         *     catalog) has `ProductId`, the product image and `Offer`.
+         */
+        OutfitPieceResponse: {
+            slot: components["schemas"]["OutfitSlot"];
+            role: components["schemas"]["OutfitItemRole"];
+            source: components["schemas"]["PieceSource"];
+            /** Format: uuid */
+            wardrobeItemId: null | string;
+            /** Format: uuid */
+            productId: null | string;
+            name: string;
+            categorySlug: null | string;
+            color: components["schemas"]["ProductColor"];
+            imageUrl: null | string;
+            offer: null | components["schemas"]["OutfitOfferResponse"];
+        };
+        /**
+         * @description An outfit. `CompletionPrice` is what the gap pieces cost (their cheapest offers, effective price), null when there are none;
+         *     `AnchorPrice` is the catalog anchor's price; `TotalPrice` both together. `Rule` names why it works.
+         */
+        OutfitResponse: {
+            /** Format: uuid */
+            id: string;
+            kind: components["schemas"]["OutfitKind"];
+            status: components["schemas"]["OutfitStatus"];
+            completeness: components["schemas"]["OutfitCompleteness"];
+            occasion: null | components["schemas"]["Occasion"];
+            /** Format: date */
+            date: string;
+            /** Format: int32 */
+            seed: number | string;
+            /** Format: int32 */
+            score: number | string;
+            rule: string;
+            /** Format: uuid */
+            personaId: null | string;
+            weather: null | components["schemas"]["OutfitWeatherResponse"];
+            pieces: components["schemas"]["OutfitPieceResponse"][];
+            /** Format: double */
+            completionPrice: null | number | string;
+            /** Format: double */
+            anchorPrice: null | number | string;
+            /** Format: double */
+            totalPrice: null | number | string;
+            narration: components["schemas"]["OutfitNarrationResponse"];
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            savedAt: null | string;
+            /** Format: date-time */
+            wornAt: null | string;
+        };
+        /** @enum {unknown} */
+        OutfitSlot: "Top" | "Bottom" | "Outerwear" | "Shoes" | "Accessory";
+        /** @enum {unknown} */
+        OutfitStatus: "Suggested" | "Saved" | "Worn" | "Dismissed";
+        /** @description The forecast the outfit was built for. `TemperatureC` is the day's dressing temperature, `(2·max + min) / 3`. */
+        OutfitWeatherResponse: {
+            city: string;
+            /** Format: date */
+            date: string;
+            /** Format: double */
+            tempMinC: number | string;
+            /** Format: double */
+            tempMaxC: number | string;
+            /** Format: int32 */
+            temperatureC: number | string;
+            band: components["schemas"]["TemperatureBand"];
+            rain: boolean;
+            /** Format: int32 */
+            precipitationProbability: null | number | string;
+        };
         PagedResponseOfBrandItem: {
             items: components["schemas"]["BrandItem"][];
             /** Format: int32 */
@@ -909,6 +1331,17 @@ export interface components {
         };
         PagedResponseOfNotificationResponse: {
             items: components["schemas"]["NotificationResponse"][];
+            /** Format: int32 */
+            page: number | string;
+            /** Format: int32 */
+            pageSize: number | string;
+            /** Format: int32 */
+            totalCount: number | string;
+            /** Format: int32 */
+            totalPages?: number | string;
+        };
+        PagedResponseOfOutfitResponse: {
+            items: components["schemas"]["OutfitResponse"][];
             /** Format: int32 */
             page: number | string;
             /** Format: int32 */
@@ -962,6 +1395,17 @@ export interface components {
             /** Format: int32 */
             totalPages?: number | string;
         };
+        PagedResponseOfWardrobeItemSummary: {
+            items: components["schemas"]["WardrobeItemSummary"][];
+            /** Format: int32 */
+            page: number | string;
+            /** Format: int32 */
+            pageSize: number | string;
+            /** Format: int32 */
+            totalCount: number | string;
+            /** Format: int32 */
+            totalPages?: number | string;
+        };
         PersonaListResponse: {
             items: components["schemas"]["PersonaResponse"][];
         };
@@ -993,6 +1437,8 @@ export interface components {
             isActive: boolean;
             styleSummary: components["schemas"]["StyleSummary"];
         };
+        /** @enum {unknown} */
+        PieceSource: "Wardrobe" | "Catalog";
         /** @description What the preference endpoints return. Quiet hours are `HH:mm` local times in string PreferencesResponse.TimeZone. */
         PreferencesResponse: {
             priceAlerts: boolean;
@@ -1030,6 +1476,11 @@ export interface components {
             status?: null | number | string;
             detail?: null | string;
             instance?: null | string;
+        };
+        ProcessItemResponse: {
+            /** Format: uuid */
+            itemId: string;
+            status: components["schemas"]["WardrobeItemStatus"];
         };
         /** @enum {unknown} */
         ProductColor: "Black" | "White" | "Grey" | "Navy" | "Blue" | "Green" | "Beige" | "Brown" | "Red" | "Pink" | "Purple" | "Yellow" | "Orange" | "Multi" | "Other";
@@ -1112,6 +1563,7 @@ export interface components {
             hipCm: null | number | string;
             /** Format: double */
             shoeSizeEu: null | number | string;
+            city: null | string;
             activePersona: null | components["schemas"]["PersonaRef"];
             /** Format: int32 */
             personaCount: number | string;
@@ -1130,18 +1582,22 @@ export interface components {
             ticketId: null | string;
             error: null | string;
         };
-        /** @description The whole seller: optional fields that are left out are cleared, as PUT means. */
+        /**
+         * @description The seller. `Name`, `Kind`, `WebsiteUrl` and `IsActive` are replaced on every PUT. The affiliate fields are the
+         *     exception, because workers that only know the shop would otherwise wipe what was configured by hand: left out = unchanged, an explicit
+         *     null (or blank) = cleared. The `*Set` flags record which of them the body contained; the JSON reader only calls an init accessor
+         *     for a property that is present.
+         */
         PutSellerRequest: {
-            name: string;
-            kind: string;
-            websiteUrl: string;
-            affiliateNetwork: null | string;
-            affiliateUrlTemplate: null | string;
-            affiliateParams: null | {
+            name?: string;
+            kind?: string;
+            websiteUrl?: string;
+            affiliateNetwork?: null | string;
+            affiliateUrlTemplate?: null | string;
+            affiliateParams?: null | {
                 [key: string]: string;
             };
-            /** @default true */
-            isActive: boolean;
+            isActive?: boolean;
         };
         PutSellerResponse: {
             /** Format: uuid */
@@ -1165,6 +1621,11 @@ export interface components {
             /** Format: int32 */
             accepted: number | string;
             rejected: components["schemas"]["RejectedEvent"][];
+        };
+        /** @description `WornOn` defaults to today in Europe/Istanbul. The body may be left out entirely. */
+        RecordWearRequest: {
+            /** Format: date */
+            wornOn: null | string;
         };
         RefreshRequest: {
             refreshToken: string;
@@ -1291,6 +1752,18 @@ export interface components {
         };
         /** @enum {unknown} */
         StockStatus: "InStock" | "LowStock" | "OutOfStock" | "Unknown";
+        /** @description What is kept of a vision answer in `AnalysisJson`: everything except the images and the embedding (stored on their own). */
+        StoredAnalysis: {
+            category: null | components["schemas"]["VisionCategory"];
+            categoryCandidates: components["schemas"]["VisionCategory"][];
+            primaryColor: components["schemas"]["VisionColor"];
+            secondaryColor: null | components["schemas"]["VisionColor"];
+            pattern: components["schemas"]["VisionPattern"];
+            quality: components["schemas"]["VisionQuality"];
+            embeddingModel: null | string;
+            /** Format: date-time */
+            analyzedAt: string;
+        };
         StyleCardItem: {
             /** Format: uuid */
             id: string;
@@ -1373,6 +1846,8 @@ export interface components {
             styleCardId: string;
             decision: string;
         };
+        /** @enum {unknown} */
+        TemperatureBand: "Hot" | "Warm" | "Mild" | "Cool" | "Cold";
         /** @description `AlertId` is null once the alert has been deleted. */
         TriggerResponse: {
             /** Format: int64 */
@@ -1403,6 +1878,29 @@ export interface components {
             targetPrice: null | number | string;
             sizes: null | string[];
             isActive: null | boolean;
+        };
+        /**
+         * @description A partial update: a null field is left as it is, and `Clear` names the optional fields to empty (IReadOnlyList&lt;string&gt; UpdateItemRequest.ClearableFields).
+         *     An empty body is valid: it is the one-tap "looks right" confirmation. Enum values are names, matched case-insensitively.
+         */
+        UpdateItemRequest: {
+            name: null | string;
+            categorySlug: null | string;
+            primaryColor: null | string;
+            secondaryColor: null | string;
+            pattern: null | string;
+            fit: null | string;
+            /** Format: int16 */
+            formality: null | number | string;
+            seasons: null | string[];
+            /** Format: uuid */
+            brandId: null | string;
+            size: null | string;
+            /** Format: double */
+            purchasePrice: null | number | string;
+            /** Format: date */
+            purchasedAt: null | string;
+            clear: null | string[];
         };
         /**
          * @description A partial update: a null field is left as it is, and a given list replaces the stored one (`[]` clears preferred/avoided
@@ -1443,7 +1941,7 @@ export interface components {
         };
         /**
          * @description Replaces the measurements: a field that is left out is cleared. `Audience` is the exception, a null keeps the current one
-         *     (a profile always has an audience).
+         *     (a profile always has an audience). `City` (at most 80 characters; blank clears it) is where the outfit engine reads the weather.
          */
         UpdateProfileRequest: {
             audience: null | string;
@@ -1461,6 +1959,7 @@ export interface components {
             hipCm: null | number | string;
             /** Format: double */
             shoeSizeEu: null | number | string;
+            city?: null | string;
         };
         UpsertItemError: {
             /** Format: int32 */
@@ -1535,6 +2034,152 @@ export interface components {
             brandSlug: string;
             group: string;
             size: string;
+        };
+        VisionCategory: {
+            slug: string;
+            /** Format: double */
+            confidence: number | string;
+        };
+        /** @description `Name` is a `ProductColor` name; `Hex` the measured shade. */
+        VisionColor: {
+            name: string;
+            /** Format: double */
+            confidence: number | string;
+            hex: null | string;
+        };
+        VisionPattern: {
+            name: string;
+            /** Format: double */
+            confidence: number | string;
+        };
+        VisionQuality: {
+            isGarment: boolean;
+            /** Format: double */
+            confidence: number | string;
+            warnings: string[];
+        };
+        WardrobeCategoryRef: {
+            /** Format: uuid */
+            id: string;
+            slug: string;
+            name: string;
+        };
+        /** @description `CategorySlug` is the top-level category of the missing piece (`ust-giyim`, ...). */
+        WardrobeGap: {
+            kind: string;
+            message: string;
+            categorySlug: string;
+            color: components["schemas"]["ProductColor"];
+            /** Format: int32 */
+            formality: number | string;
+            /** Format: int32 */
+            unlocksEstimate: number | string;
+            band?: components["schemas"]["FormalityBand"];
+        };
+        /**
+         * @description `PersonaId` is the persona the analysis was made for (the active one, else the first), or null for a user without personas.
+         *     `SuggestedProducts` fill the first gap: catalog items of its category, color and formality band, active and in stock, not
+         *     already in the wardrobe, and with a persona a `matchScore` of at least int GetGapsEndpoint.MinMatchScore.
+         */
+        WardrobeGapsResponse: {
+            /** Format: uuid */
+            personaId: null | string;
+            gaps: components["schemas"]["WardrobeGap"][];
+            suggestedProducts: components["schemas"]["ProductListItem"][];
+        };
+        /**
+         * @description One wardrobe item. `ThumbUrl`/`CutoutUrl` are public and permanent (a catalog item whose image could not be copied shows the
+         *     catalog's image); `OriginalUrl` is a 15-minute presigned link, given only when there is no cutout to show. `NeedsCategory`
+         *     asks the app to let the user pick one of `Analysis.CategoryCandidates`. `Analysis` is there once a photo was analysed.
+         */
+        WardrobeItemResponse: {
+            /** Format: uuid */
+            id: string;
+            status: components["schemas"]["WardrobeItemStatus"];
+            name: null | string;
+            category: null | components["schemas"]["WardrobeCategoryRef"];
+            needsCategory: boolean;
+            primaryColor: components["schemas"]["ProductColor"];
+            secondaryColor: null | components["schemas"]["ProductColor"];
+            pattern: components["schemas"]["ProductPattern"];
+            fit: components["schemas"]["ProductFit"];
+            /** Format: int32 */
+            formality: number | string;
+            seasons: string[];
+            brand: null | components["schemas"]["BrandRef"];
+            /** Format: uuid */
+            productId: null | string;
+            fromCatalog: boolean;
+            size: null | string;
+            /** Format: double */
+            purchasePrice: null | number | string;
+            /** Format: date */
+            purchasedAt: null | string;
+            thumbUrl: null | string;
+            cutoutUrl: null | string;
+            originalUrl: null | string;
+            warnings: string[];
+            failureReason: null | string;
+            analysis: null | components["schemas"]["StoredAnalysis"];
+            /** Format: int32 */
+            wearCount: number | string;
+            /** Format: date */
+            lastWornAt: null | string;
+            isArchived: boolean;
+            /** Format: date-time */
+            confirmedAt: null | string;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+        };
+        /** @enum {unknown} */
+        WardrobeItemStatus: "Processing" | "Ready" | "Failed";
+        /** @description An item in lists (the wardrobe grid, the stats' most and least worn). */
+        WardrobeItemSummary: {
+            /** Format: uuid */
+            id: string;
+            status: components["schemas"]["WardrobeItemStatus"];
+            name: null | string;
+            categorySlug: null | string;
+            needsCategory: boolean;
+            primaryColor: components["schemas"]["ProductColor"];
+            thumbUrl: null | string;
+            /** Format: int32 */
+            wearCount: number | string;
+            /** Format: date */
+            lastWornAt: null | string;
+            isArchived: boolean;
+            /** Format: date-time */
+            createdAt: string;
+        };
+        /**
+         * @description Over the wardrobe (not archived, not failed). An item counts as unworn for 180 days when its last wear, or its creation when it was
+         *     never worn, is more than 180 days ago. `PossibleOutfits` is the outfit engine's count of complete, wearable core outfits (top,
+         *     bottom, shoes) the wardrobe makes, capped at 999 (see `OutfitCounter`); never null since Task 12.
+         */
+        WardrobeStatsResponse: {
+            /** Format: int32 */
+            itemCount: number | string;
+            byCategory: components["schemas"]["CategoryCount"][];
+            byColor: components["schemas"]["ColorCount"][];
+            /** Format: int32 */
+            unwornFor180Days: number | string;
+            mostWorn: components["schemas"]["WardrobeItemSummary"][];
+            leastWorn: components["schemas"]["WardrobeItemSummary"][];
+            /** Format: int32 */
+            possibleOutfits: null | number | string;
+        };
+        /** @description `WornOn` is the day just recorded, or null after an undo. */
+        WearResponse: {
+            /** Format: uuid */
+            itemId: string;
+            /** Format: date */
+            wornOn: null | string;
+            /** Format: int32 */
+            wearCount: number | string;
+            /** Format: date */
+            lastWornAt: null | string;
         };
         WeeklyMetricItem: {
             /** Format: date */
@@ -3506,6 +4151,907 @@ export interface operations {
             };
             /** @description Unauthorized */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    CreateWardrobeUploadUrl: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateUploadUrlRequest"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CreateUploadUrlResponse"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    ProcessWardrobeItem: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Accepted */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProcessItemResponse"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    AddWardrobeItemFromProduct: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AddFromProductRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WardrobeItemResponse"];
+                };
+            };
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WardrobeItemResponse"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    ListWardrobeItems: {
+        parameters: {
+            query?: {
+                Category?: string;
+                Color?: string;
+                Archived?: boolean;
+                Page?: number | string;
+                PageSize?: number | string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PagedResponseOfWardrobeItemSummary"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    GetWardrobeItem: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WardrobeItemResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    ArchiveWardrobeItem: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    UpdateWardrobeItem: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateItemRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WardrobeItemResponse"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    RecordWardrobeWear: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": null | components["schemas"]["RecordWearRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WearResponse"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    UndoWardrobeWear: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                date: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WearResponse"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    GetWardrobeStats: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WardrobeStatsResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    GetWardrobeGaps: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WardrobeGapsResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    GetDailyOutfit: {
+        parameters: {
+            query?: {
+                Date?: string;
+                Occasion?: string;
+                Seed?: number | string;
+                PersonaId?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DailyOutfitResponse"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    GetHowToWear: {
+        parameters: {
+            query?: {
+                ProductId?: string;
+                WardrobeItemId?: string;
+                Count?: number | string;
+                Seed?: number | string;
+                Occasion?: string;
+                PersonaId?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HowToWearResponse"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    ListSavedOutfits: {
+        parameters: {
+            query?: {
+                Page?: number | string;
+                PageSize?: number | string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PagedResponseOfOutfitResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    GetOutfit: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OutfitResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    DismissOutfit: {
+        parameters: {
+            query?: {
+                Reason?: string;
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    SaveOutfit: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OutfitResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    WearOutfit: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OutfitResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    RecordOutfitFeedback: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OutfitFeedbackRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OutfitResponse"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Conflict */
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };

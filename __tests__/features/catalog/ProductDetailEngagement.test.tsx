@@ -390,3 +390,21 @@ describe('detail: alert sheet', () => {
     );
   });
 });
+
+describe('detail: "Bunu nasıl giyerim?"', () => {
+  it('opens the outfits built around the product', async () => {
+    await signedInSession();
+
+    await renderWithQuery(<ProductDetailScreen id="p1" />);
+    await fireEvent.press(await screen.findByTestId('how-to-wear'));
+
+    expect(router.push).toHaveBeenCalledWith('/outfits/how-to-wear?productId=p1');
+  });
+
+  it('asks a logged-out user to sign in first', async () => {
+    await renderWithQuery(<ProductDetailScreen id="p1" />);
+    await fireEvent.press(await screen.findByTestId('how-to-wear'));
+
+    expect(router.push).toHaveBeenCalledWith('/login');
+  });
+});

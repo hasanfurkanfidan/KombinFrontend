@@ -1,6 +1,6 @@
-import { ComingSoonScreen } from '@/features/placeholder/ComingSoonScreen';
-import { tr } from '@/i18n/tr';
+import { Redirect } from 'expo-router';
 
+/** The raised "+" is not a screen: a press opens the daily outfit (see the tab listener). This is only a deep-link fallback. */
 export default function AddRoute() {
-  return <ComingSoonScreen title={tr.tabAdd} />;
+  return <Redirect href="/outfits/daily" />;
 }

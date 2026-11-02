@@ -2570,10 +2570,1262 @@
           }
         }
       }
+    },
+    "/api/v1/me/wardrobe/items/upload-url": {
+      "post": {
+        "tags": [
+          "Wardrobe"
+        ],
+        "operationId": "CreateWardrobeUploadUrl",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateUploadUrlRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateUploadUrlResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/me/wardrobe/items/{id}/process": {
+      "post": {
+        "tags": [
+          "Wardrobe"
+        ],
+        "operationId": "ProcessWardrobeItem",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Accepted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProcessItemResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/me/wardrobe/items/from-product": {
+      "post": {
+        "tags": [
+          "Wardrobe"
+        ],
+        "operationId": "AddWardrobeItemFromProduct",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddFromProductRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WardrobeItemResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WardrobeItemResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/me/wardrobe/items": {
+      "get": {
+        "tags": [
+          "Wardrobe"
+        ],
+        "operationId": "ListWardrobeItems",
+        "parameters": [
+          {
+            "name": "Category",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Color",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Archived",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "Page",
+            "in": "query",
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": [
+                "integer",
+                "string"
+              ],
+              "format": "int32",
+              "default": 1
+            }
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": [
+                "integer",
+                "string"
+              ],
+              "format": "int32",
+              "default": 20
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PagedResponseOfWardrobeItemSummary"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/me/wardrobe/items/{id}": {
+      "get": {
+        "tags": [
+          "Wardrobe"
+        ],
+        "operationId": "GetWardrobeItem",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WardrobeItemResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Wardrobe"
+        ],
+        "operationId": "UpdateWardrobeItem",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateItemRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WardrobeItemResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Wardrobe"
+        ],
+        "operationId": "ArchiveWardrobeItem",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/me/wardrobe/items/{id}/wear": {
+      "post": {
+        "tags": [
+          "Wardrobe"
+        ],
+        "operationId": "RecordWardrobeWear",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "$ref": "#/components/schemas/RecordWearRequest"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WearResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/me/wardrobe/items/{id}/wear/{date}": {
+      "delete": {
+        "tags": [
+          "Wardrobe"
+        ],
+        "operationId": "UndoWardrobeWear",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "date",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WearResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/me/wardrobe/stats": {
+      "get": {
+        "tags": [
+          "Wardrobe"
+        ],
+        "operationId": "GetWardrobeStats",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WardrobeStatsResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/me/wardrobe/gaps": {
+      "get": {
+        "tags": [
+          "Wardrobe"
+        ],
+        "operationId": "GetWardrobeGaps",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WardrobeGapsResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/me/outfits/daily": {
+      "get": {
+        "tags": [
+          "Recommendation"
+        ],
+        "operationId": "GetDailyOutfit",
+        "parameters": [
+          {
+            "name": "Date",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Occasion",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Seed",
+            "in": "query",
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": [
+                "integer",
+                "string"
+              ],
+              "format": "int32"
+            }
+          },
+          {
+            "name": "PersonaId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DailyOutfitResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/me/outfits/how-to-wear": {
+      "get": {
+        "tags": [
+          "Recommendation"
+        ],
+        "operationId": "GetHowToWear",
+        "parameters": [
+          {
+            "name": "ProductId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "WardrobeItemId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "Count",
+            "in": "query",
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": [
+                "integer",
+                "string"
+              ],
+              "format": "int32"
+            }
+          },
+          {
+            "name": "Seed",
+            "in": "query",
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": [
+                "integer",
+                "string"
+              ],
+              "format": "int32"
+            }
+          },
+          {
+            "name": "Occasion",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "PersonaId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HowToWearResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/me/outfits/saved": {
+      "get": {
+        "tags": [
+          "Recommendation"
+        ],
+        "operationId": "ListSavedOutfits",
+        "parameters": [
+          {
+            "name": "Page",
+            "in": "query",
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": [
+                "integer",
+                "string"
+              ],
+              "format": "int32",
+              "default": 1
+            }
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": [
+                "integer",
+                "string"
+              ],
+              "format": "int32",
+              "default": 20
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PagedResponseOfOutfitResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/me/outfits/{id}": {
+      "get": {
+        "tags": [
+          "Recommendation"
+        ],
+        "operationId": "GetOutfit",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OutfitResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Recommendation"
+        ],
+        "operationId": "DismissOutfit",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "Reason",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/me/outfits/{id}/save": {
+      "post": {
+        "tags": [
+          "Recommendation"
+        ],
+        "operationId": "SaveOutfit",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OutfitResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/me/outfits/{id}/worn": {
+      "post": {
+        "tags": [
+          "Recommendation"
+        ],
+        "operationId": "WearOutfit",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OutfitResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/me/outfits/{id}/feedback": {
+      "post": {
+        "tags": [
+          "Recommendation"
+        ],
+        "operationId": "RecordOutfitFeedback",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OutfitFeedbackRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OutfitResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
     "schemas": {
+      "AddFromProductRequest": {
+        "required": [
+          "productId",
+          "size"
+        ],
+        "type": "object",
+        "properties": {
+          "productId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "size": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
       "AlertKind": {
         "enum": [
           "PriceDrop",
@@ -2740,6 +3992,30 @@
           }
         }
       },
+      "CategoryCount": {
+        "required": [
+          "slug",
+          "count"
+        ],
+        "type": "object",
+        "properties": {
+          "slug": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          }
+        },
+        "description": "`Slug` is the item's own (leaf) category slug; null counts the items without a category."
+      },
       "CategoryNode": {
         "required": [
           "id",
@@ -2838,6 +4114,26 @@
           },
           "slug": {
             "type": "string"
+          }
+        }
+      },
+      "ColorCount": {
+        "required": [
+          "color",
+          "count"
+        ],
+        "type": "object",
+        "properties": {
+          "color": {
+            "$ref": "#/components/schemas/ProductColor"
+          },
+          "count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
           }
         }
       },
@@ -2996,6 +4292,106 @@
         },
         "description": "Every field but the name and icon is optional. Seasons default to all four, formality to 1-5."
       },
+      "CreateUploadUrlRequest": {
+        "required": [
+          "contentType",
+          "sizeBytes"
+        ],
+        "type": "object",
+        "properties": {
+          "contentType": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "sizeBytes": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int64"
+          }
+        }
+      },
+      "CreateUploadUrlResponse": {
+        "required": [
+          "itemId",
+          "uploadUrl",
+          "headers",
+          "expiresAt"
+        ],
+        "type": "object",
+        "properties": {
+          "itemId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "uploadUrl": {
+            "type": "string"
+          },
+          "headers": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "description": "PUT the photo to `UploadUrl` with exactly `Headers` before `ExpiresAt`, then call `process`."
+      },
+      "DailyOutfitResponse": {
+        "required": [
+          "outfit",
+          "alternatives",
+          "weather",
+          "wardrobeEmpty",
+          "message"
+        ],
+        "type": "object",
+        "properties": {
+          "outfit": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/OutfitResponse"
+              }
+            ]
+          },
+          "alternatives": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OutfitResponse"
+            }
+          },
+          "weather": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/OutfitWeatherResponse"
+              }
+            ]
+          },
+          "wardrobeEmpty": {
+            "type": "boolean"
+          },
+          "message": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        },
+        "description": "`Outfit` is null only when nothing wearable could be built (then `Message` says so). `WardrobeEmpty` means the outfits\nare catalog shopping ideas (`kind` Shopping, `completeness` CatalogOnly). `Weather` is the forecast used, if any."
+      },
       "EventItem": {
         "required": [
           "name",
@@ -3041,6 +4437,51 @@
           }
         },
         "description": "One event as the app sends it. `AnonymousId` is the device's pre-login ID; it is required while the caller is anonymous and\nrecommended after login. `Properties` is a flat object whose keys depend on `Name` (AnalyticsEventCatalog)."
+      },
+      "FormalityBand": {
+        "enum": [
+          "Casual",
+          "Smart",
+          "Formal"
+        ]
+      },
+      "HowToWearResponse": {
+        "required": [
+          "productId",
+          "wardrobeItemId",
+          "outfits",
+          "message"
+        ],
+        "type": "object",
+        "properties": {
+          "productId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "wardrobeItemId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "outfits": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OutfitResponse"
+            }
+          },
+          "message": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        },
+        "description": "`Outfits` are built around the anchor (in every outfit with `role` Anchor), wardrobe pieces first; gaps come from the catalog\nwithin the persona's budget, each with its cheapest offer, and `completionPrice` sums them. A product the user already owns is\nanchored as the wardrobe item. `Message` explains an empty list or catalog-only ideas."
       },
       "JsonElement": { },
       "ListAlertsResponse": {
@@ -3128,6 +4569,12 @@
           }
         }
       },
+      "NarrationProvider": {
+        "enum": [
+          "Template",
+          "Anthropic"
+        ]
+      },
       "NotificationKind": {
         "enum": [
           "PriceDrop",
@@ -3193,6 +4640,16 @@
           "Sent",
           "Failed",
           "Suppressed"
+        ]
+      },
+      "Occasion": {
+        "enum": [
+          "Office",
+          "Weekend",
+          "Evening",
+          "Sport",
+          "Event",
+          null
         ]
       },
       "OfferResponse": {
@@ -3307,6 +4764,391 @@
           }
         }
       },
+      "OutfitCompleteness": {
+        "enum": [
+          "Complete",
+          "NeedsOne",
+          "CatalogOnly"
+        ],
+        "description": "How much of the outfit the user already owns. Honesty about gaps is part of the contract with the app."
+      },
+      "OutfitFeedbackRequest": {
+        "required": [
+          "action",
+          "reason"
+        ],
+        "type": "object",
+        "properties": {
+          "action": {
+            "type": "string"
+          },
+          "reason": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        },
+        "description": "`Action`: Save, Dismiss, Worn or Shuffle. Save, Dismiss and Worn do what their own endpoints do; Shuffle (\"another one\") is only\nrecorded. `Reason` is for Dismiss only (default Other)."
+      },
+      "OutfitItemRole": {
+        "enum": [
+          "Anchor",
+          "Wardrobe",
+          "Gap"
+        ]
+      },
+      "OutfitKind": {
+        "enum": [
+          "Daily",
+          "HowToWear",
+          "Shopping"
+        ]
+      },
+      "OutfitNarrationResponse": {
+        "required": [
+          "text",
+          "provider"
+        ],
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string"
+          },
+          "provider": {
+            "$ref": "#/components/schemas/NarrationProvider"
+          }
+        }
+      },
+      "OutfitOfferResponse": {
+        "required": [
+          "offerId",
+          "seller",
+          "price",
+          "goPath"
+        ],
+        "type": "object",
+        "properties": {
+          "offerId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "seller": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/SellerRef"
+              }
+            ]
+          },
+          "price": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "goPath": {
+            "type": "string"
+          }
+        },
+        "description": "A catalog piece's cheapest offer when it was suggested. `GoPath` is the only way to open it (the click is recorded)."
+      },
+      "OutfitPieceResponse": {
+        "required": [
+          "slot",
+          "role",
+          "source",
+          "wardrobeItemId",
+          "productId",
+          "name",
+          "categorySlug",
+          "color",
+          "imageUrl",
+          "offer"
+        ],
+        "type": "object",
+        "properties": {
+          "slot": {
+            "$ref": "#/components/schemas/OutfitSlot"
+          },
+          "role": {
+            "$ref": "#/components/schemas/OutfitItemRole"
+          },
+          "source": {
+            "$ref": "#/components/schemas/PieceSource"
+          },
+          "wardrobeItemId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "productId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "categorySlug": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "color": {
+            "$ref": "#/components/schemas/ProductColor"
+          },
+          "imageUrl": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "offer": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/OutfitOfferResponse"
+              }
+            ]
+          }
+        },
+        "description": "One piece. A wardrobe piece has `WardrobeItemId` and its thumbnail; a catalog piece (`Role` Gap, or an Anchor from the\ncatalog) has `ProductId`, the product image and `Offer`."
+      },
+      "OutfitResponse": {
+        "required": [
+          "id",
+          "kind",
+          "status",
+          "completeness",
+          "occasion",
+          "date",
+          "seed",
+          "score",
+          "rule",
+          "personaId",
+          "weather",
+          "pieces",
+          "completionPrice",
+          "anchorPrice",
+          "totalPrice",
+          "narration",
+          "createdAt",
+          "savedAt",
+          "wornAt"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/OutfitKind"
+          },
+          "status": {
+            "$ref": "#/components/schemas/OutfitStatus"
+          },
+          "completeness": {
+            "$ref": "#/components/schemas/OutfitCompleteness"
+          },
+          "occasion": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/Occasion"
+              }
+            ]
+          },
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "seed": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "score": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "rule": {
+            "type": "string"
+          },
+          "personaId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "weather": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/OutfitWeatherResponse"
+              }
+            ]
+          },
+          "pieces": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OutfitPieceResponse"
+            }
+          },
+          "completionPrice": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": [
+              "null",
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "anchorPrice": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": [
+              "null",
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "totalPrice": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": [
+              "null",
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "narration": {
+            "$ref": "#/components/schemas/OutfitNarrationResponse"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "savedAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "wornAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          }
+        },
+        "description": "An outfit. `CompletionPrice` is what the gap pieces cost (their cheapest offers, effective price), null when there are none;\n`AnchorPrice` is the catalog anchor's price; `TotalPrice` both together. `Rule` names why it works."
+      },
+      "OutfitSlot": {
+        "enum": [
+          "Top",
+          "Bottom",
+          "Outerwear",
+          "Shoes",
+          "Accessory"
+        ]
+      },
+      "OutfitStatus": {
+        "enum": [
+          "Suggested",
+          "Saved",
+          "Worn",
+          "Dismissed"
+        ]
+      },
+      "OutfitWeatherResponse": {
+        "required": [
+          "city",
+          "date",
+          "tempMinC",
+          "tempMaxC",
+          "temperatureC",
+          "band",
+          "rain",
+          "precipitationProbability"
+        ],
+        "type": "object",
+        "properties": {
+          "city": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "tempMinC": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "tempMaxC": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "temperatureC": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "band": {
+            "$ref": "#/components/schemas/TemperatureBand"
+          },
+          "rain": {
+            "type": "boolean"
+          },
+          "precipitationProbability": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          }
+        },
+        "description": "The forecast the outfit was built for. `TemperatureC` is the day's dressing temperature, `(2·max + min) / 3`."
+      },
       "PagedResponseOfBrandItem": {
         "required": [
           "items",
@@ -3418,6 +5260,55 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/NotificationResponse"
+            }
+          },
+          "page": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "pageSize": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "totalCount": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "totalPages": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          }
+        }
+      },
+      "PagedResponseOfOutfitResponse": {
+        "required": [
+          "items",
+          "page",
+          "pageSize",
+          "totalCount"
+        ],
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OutfitResponse"
             }
           },
           "page": {
@@ -3650,6 +5541,55 @@
           }
         }
       },
+      "PagedResponseOfWardrobeItemSummary": {
+        "required": [
+          "items",
+          "page",
+          "pageSize",
+          "totalCount"
+        ],
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WardrobeItemSummary"
+            }
+          },
+          "page": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "pageSize": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "totalCount": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "totalPages": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          }
+        }
+      },
       "PersonaListResponse": {
         "required": [
           "items"
@@ -3786,6 +5726,12 @@
             "$ref": "#/components/schemas/StyleSummary"
           }
         }
+      },
+      "PieceSource": {
+        "enum": [
+          "Wardrobe",
+          "Catalog"
+        ]
       },
       "PreferencesResponse": {
         "required": [
@@ -3941,6 +5887,22 @@
               "null",
               "string"
             ]
+          }
+        }
+      },
+      "ProcessItemResponse": {
+        "required": [
+          "itemId",
+          "status"
+        ],
+        "type": "object",
+        "properties": {
+          "itemId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "$ref": "#/components/schemas/WardrobeItemStatus"
           }
         }
       },
@@ -4259,6 +6221,7 @@
           "waistCm",
           "hipCm",
           "shoeSizeEu",
+          "city",
           "activePersona",
           "personaCount",
           "onboardingCompleted",
@@ -4331,6 +6294,12 @@
               "string"
             ],
             "format": "double"
+          },
+          "city": {
+            "type": [
+              "null",
+              "string"
+            ]
           },
           "activePersona": {
             "oneOf": [
@@ -4407,14 +6376,6 @@
         "description": "What Expo said about one message (one notification to one device). `Status` is `ok`, `error` or `unreachable`."
       },
       "PutSellerRequest": {
-        "required": [
-          "name",
-          "kind",
-          "websiteUrl",
-          "affiliateNetwork",
-          "affiliateUrlTemplate",
-          "affiliateParams"
-        ],
         "type": "object",
         "properties": {
           "name": {
@@ -4448,11 +6409,10 @@
             }
           },
           "isActive": {
-            "type": "boolean",
-            "default": true
+            "type": "boolean"
           }
         },
-        "description": "The whole seller: optional fields that are left out are cleared, as PUT means."
+        "description": "The seller. `Name`, `Kind`, `WebsiteUrl` and `IsActive` are replaced on every PUT. The affiliate fields are the\nexception, because workers that only know the shop would otherwise wipe what was configured by hand: left out = unchanged, an explicit\nnull (or blank) = cleared. The `*Set` flags record which of them the body contained; the JSON reader only calls an init accessor\nfor a property that is present."
       },
       "PutSellerResponse": {
         "required": [
@@ -4550,6 +6510,22 @@
             }
           }
         }
+      },
+      "RecordWearRequest": {
+        "required": [
+          "wornOn"
+        ],
+        "type": "object",
+        "properties": {
+          "wornOn": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date"
+          }
+        },
+        "description": "`WornOn` defaults to today in Europe/Istanbul. The body may be left out entirely."
       },
       "RefreshRequest": {
         "required": [
@@ -5042,6 +7018,67 @@
           "Unknown"
         ]
       },
+      "StoredAnalysis": {
+        "required": [
+          "category",
+          "categoryCandidates",
+          "primaryColor",
+          "secondaryColor",
+          "pattern",
+          "quality",
+          "embeddingModel",
+          "analyzedAt"
+        ],
+        "type": "object",
+        "properties": {
+          "category": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/VisionCategory"
+              }
+            ]
+          },
+          "categoryCandidates": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/VisionCategory"
+            }
+          },
+          "primaryColor": {
+            "$ref": "#/components/schemas/VisionColor"
+          },
+          "secondaryColor": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/VisionColor"
+              }
+            ]
+          },
+          "pattern": {
+            "$ref": "#/components/schemas/VisionPattern"
+          },
+          "quality": {
+            "$ref": "#/components/schemas/VisionQuality"
+          },
+          "embeddingModel": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "analyzedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "description": "What is kept of a vision answer in `AnalysisJson`: everything except the images and the embedding (stored on their own)."
+      },
       "StyleCardItem": {
         "required": [
           "id",
@@ -5353,6 +7390,15 @@
           }
         }
       },
+      "TemperatureBand": {
+        "enum": [
+          "Hot",
+          "Warm",
+          "Mild",
+          "Cool",
+          "Cold"
+        ]
+      },
       "TriggerResponse": {
         "required": [
           "id",
@@ -5478,6 +7524,119 @@
           }
         },
         "description": "A partial update: a null field is left as it is. `Sizes: []` clears the size filter."
+      },
+      "UpdateItemRequest": {
+        "required": [
+          "name",
+          "categorySlug",
+          "primaryColor",
+          "secondaryColor",
+          "pattern",
+          "fit",
+          "formality",
+          "seasons",
+          "brandId",
+          "size",
+          "purchasePrice",
+          "purchasedAt",
+          "clear"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "categorySlug": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "primaryColor": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "secondaryColor": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "pattern": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "fit": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "formality": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int16"
+          },
+          "seasons": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "type": "string"
+            }
+          },
+          "brandId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "size": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "purchasePrice": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": [
+              "null",
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "purchasedAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date"
+          },
+          "clear": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "description": "A partial update: a null field is left as it is, and `Clear` names the optional fields to empty (IReadOnlyList&lt;string&gt; UpdateItemRequest.ClearableFields).\nAn empty body is valid: it is the one-tap \"looks right\" confirmation. Enum values are names, matched case-insensitively."
       },
       "UpdatePersonaRequest": {
         "required": [
@@ -5739,9 +7898,15 @@
               "string"
             ],
             "format": "double"
+          },
+          "city": {
+            "type": [
+              "null",
+              "string"
+            ]
           }
         },
-        "description": "Replaces the measurements: a field that is left out is cleared. `Audience` is the exception, a null keeps the current one\n(a profile always has an audience)."
+        "description": "Replaces the measurements: a field that is left out is cleared. `Audience` is the exception, a null keeps the current one\n(a profile always has an audience). `City` (at most 80 characters; blank clears it) is where the outfit engine reads the weather."
       },
       "UpsertItemError": {
         "required": [
@@ -6086,6 +8251,588 @@
           }
         }
       },
+      "VisionCategory": {
+        "required": [
+          "slug",
+          "confidence"
+        ],
+        "type": "object",
+        "properties": {
+          "slug": {
+            "type": "string"
+          },
+          "confidence": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "double"
+          }
+        }
+      },
+      "VisionColor": {
+        "required": [
+          "name",
+          "confidence",
+          "hex"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "confidence": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "hex": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        },
+        "description": "`Name` is a `ProductColor` name; `Hex` the measured shade."
+      },
+      "VisionPattern": {
+        "required": [
+          "name",
+          "confidence"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "confidence": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "double"
+          }
+        }
+      },
+      "VisionQuality": {
+        "required": [
+          "isGarment",
+          "confidence",
+          "warnings"
+        ],
+        "type": "object",
+        "properties": {
+          "isGarment": {
+            "type": "boolean"
+          },
+          "confidence": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "warnings": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "WardrobeCategoryRef": {
+        "required": [
+          "id",
+          "slug",
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "WardrobeGap": {
+        "required": [
+          "kind",
+          "message",
+          "categorySlug",
+          "color",
+          "formality",
+          "unlocksEstimate"
+        ],
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "categorySlug": {
+            "type": "string"
+          },
+          "color": {
+            "$ref": "#/components/schemas/ProductColor"
+          },
+          "formality": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "unlocksEstimate": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "band": {
+            "$ref": "#/components/schemas/FormalityBand"
+          }
+        },
+        "description": "`CategorySlug` is the top-level category of the missing piece (`ust-giyim`, ...)."
+      },
+      "WardrobeGapsResponse": {
+        "required": [
+          "personaId",
+          "gaps",
+          "suggestedProducts"
+        ],
+        "type": "object",
+        "properties": {
+          "personaId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "gaps": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WardrobeGap"
+            }
+          },
+          "suggestedProducts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProductListItem"
+            }
+          }
+        },
+        "description": "`PersonaId` is the persona the analysis was made for (the active one, else the first), or null for a user without personas.\n`SuggestedProducts` fill the first gap: catalog items of its category, color and formality band, active and in stock, not\nalready in the wardrobe, and with a persona a `matchScore` of at least int GetGapsEndpoint.MinMatchScore."
+      },
+      "WardrobeItemResponse": {
+        "required": [
+          "id",
+          "status",
+          "name",
+          "category",
+          "needsCategory",
+          "primaryColor",
+          "secondaryColor",
+          "pattern",
+          "fit",
+          "formality",
+          "seasons",
+          "brand",
+          "productId",
+          "fromCatalog",
+          "size",
+          "purchasePrice",
+          "purchasedAt",
+          "thumbUrl",
+          "cutoutUrl",
+          "originalUrl",
+          "warnings",
+          "failureReason",
+          "analysis",
+          "wearCount",
+          "lastWornAt",
+          "isArchived",
+          "confirmedAt",
+          "createdAt",
+          "updatedAt"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "$ref": "#/components/schemas/WardrobeItemStatus"
+          },
+          "name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "category": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/WardrobeCategoryRef"
+              }
+            ]
+          },
+          "needsCategory": {
+            "type": "boolean"
+          },
+          "primaryColor": {
+            "$ref": "#/components/schemas/ProductColor"
+          },
+          "secondaryColor": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/ProductColor"
+              }
+            ]
+          },
+          "pattern": {
+            "$ref": "#/components/schemas/ProductPattern"
+          },
+          "fit": {
+            "$ref": "#/components/schemas/ProductFit"
+          },
+          "formality": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "seasons": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "brand": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/BrandRef"
+              }
+            ]
+          },
+          "productId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "fromCatalog": {
+            "type": "boolean"
+          },
+          "size": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "purchasePrice": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": [
+              "null",
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "purchasedAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date"
+          },
+          "thumbUrl": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "cutoutUrl": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "originalUrl": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "warnings": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "failureReason": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "analysis": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/StoredAnalysis"
+              }
+            ]
+          },
+          "wearCount": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "lastWornAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date"
+          },
+          "isArchived": {
+            "type": "boolean"
+          },
+          "confirmedAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "description": "One wardrobe item. `ThumbUrl`/`CutoutUrl` are public and permanent (a catalog item whose image could not be copied shows the\ncatalog's image); `OriginalUrl` is a 15-minute presigned link, given only when there is no cutout to show. `NeedsCategory`\nasks the app to let the user pick one of `Analysis.CategoryCandidates`. `Analysis` is there once a photo was analysed."
+      },
+      "WardrobeItemStatus": {
+        "enum": [
+          "Processing",
+          "Ready",
+          "Failed"
+        ]
+      },
+      "WardrobeItemSummary": {
+        "required": [
+          "id",
+          "status",
+          "name",
+          "categorySlug",
+          "needsCategory",
+          "primaryColor",
+          "thumbUrl",
+          "wearCount",
+          "lastWornAt",
+          "isArchived",
+          "createdAt"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "$ref": "#/components/schemas/WardrobeItemStatus"
+          },
+          "name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "categorySlug": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "needsCategory": {
+            "type": "boolean"
+          },
+          "primaryColor": {
+            "$ref": "#/components/schemas/ProductColor"
+          },
+          "thumbUrl": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "wearCount": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "lastWornAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date"
+          },
+          "isArchived": {
+            "type": "boolean"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "description": "An item in lists (the wardrobe grid, the stats' most and least worn)."
+      },
+      "WardrobeStatsResponse": {
+        "required": [
+          "itemCount",
+          "byCategory",
+          "byColor",
+          "unwornFor180Days",
+          "mostWorn",
+          "leastWorn",
+          "possibleOutfits"
+        ],
+        "type": "object",
+        "properties": {
+          "itemCount": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "byCategory": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CategoryCount"
+            }
+          },
+          "byColor": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ColorCount"
+            }
+          },
+          "unwornFor180Days": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "mostWorn": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WardrobeItemSummary"
+            }
+          },
+          "leastWorn": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WardrobeItemSummary"
+            }
+          },
+          "possibleOutfits": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          }
+        },
+        "description": "Over the wardrobe (not archived, not failed). An item counts as unworn for 180 days when its last wear, or its creation when it was\nnever worn, is more than 180 days ago. `PossibleOutfits` is the outfit engine's count of complete, wearable core outfits (top,\nbottom, shoes) the wardrobe makes, capped at 999 (see `OutfitCounter`); never null since Task 12."
+      },
+      "WearResponse": {
+        "required": [
+          "itemId",
+          "wornOn",
+          "wearCount",
+          "lastWornAt"
+        ],
+        "type": "object",
+        "properties": {
+          "itemId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "wornOn": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date"
+          },
+          "wearCount": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "lastWornAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date"
+          }
+        },
+        "description": "`WornOn` is the day just recorded, or null after an undo."
+      },
       "WeeklyMetricItem": {
         "required": [
           "weekStart",
@@ -6198,6 +8945,12 @@
     },
     {
       "name": "Analytics (internal)"
+    },
+    {
+      "name": "Wardrobe"
+    },
+    {
+      "name": "Recommendation"
     }
   ]
 }

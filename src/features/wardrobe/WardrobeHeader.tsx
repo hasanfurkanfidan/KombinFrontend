@@ -1,0 +1,278 @@
+import { useState } from 'react';
+import { Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { useRouter } from 'expo-router';
+
+import type { ProductColor, WardrobeGaps, WardrobeStats } from '@/api/models';
+import { BottomSheet } from '@/components/BottomSheet';
+import { Chip } from '@/components/Chip';
+import { Icon } from '@/components/Icon';
+import { colorLabels } from '@/features/catalog/filters';
+import { OptionSheet, type Option } from '@/features/catalog/OptionSheet';
+import { ProductCard } from '@/features/catalog/ProductCard';
+import { productHref } from '@/features/catalog/productLink';
+import { tr } from '@/i18n/tr';
+import { theme } from '@/theme';
+import { toNumber } from '@/utils/money';
+
+import type { ItemFilters } from './hooks';
+import { CATEGORY_GROUPS } from './labels';
+
+const ALL = 'all';
+const colorOptions: Option<ProductColor | typeof ALL>[] = [
+  { value: ALL, label: tr.filterAll },
+  ...(Object.keys(colorLabels) as ProductColor[]).map((value) => ({
+    value,
+    label: colorLabels[value],
+  })),
+];
+
+/** Three cards: how many pieces, how many outfits they make (— until the backend counted), how many sit unworn. */
+export function StatsRow({ stats }: { stats: WardrobeStats | undefined }) {
+  const outfits = stats?.possibleOutfits;
+  return (
+    <View style={styles.statsRow} testID="wardrobe-stats">
+      <View style={styles.stat}>
+        <Text style={styles.statValue}>{stats ? toNumber(stats.itemCount) : '—'}</Text>
+        <Text style={styles.statLabel}>{tr.wardrobeStatItems}</Text>
+      </View>
+      <View style={styles.stat}>
+        <Text style={styles.statValue} testID="stat-outfits">
+          {outfits === null || outfits === undefined ? tr.wardrobeStatUnknown : toNumber(outfits)}
+        </Text>
+        <Text style={styles.statLabel}>{tr.wardrobeStatOutfits}</Text>
+      </View>
+      <View style={[styles.stat, styles.statAccent]}>
+        <Text style={[styles.statValue, styles.statAccentText]}>
+          {stats ? toNumber(stats.unwornFor180Days) : '—'}
+        </Text>
+        <Text style={[styles.statLabel, styles.statAccentText]}>{tr.wardrobeStatUnworn}</Text>
+      </View>
+    </View>
+  );
+}
+
+/** The black card for the biggest gap; absent when the wardrobe has none. */
+export function GapCard({ gaps }: { gaps: WardrobeGaps | undefined }) {
+  const [open, setOpen] = useState(false);
+  const first = gaps?.gaps[0];
+  if (!gaps || !first) {
+    return null;
+  }
+  const unlocks = toNumber(first.unlocksEstimate);
+  return (
+    <>
+      <View style={styles.gapCard} testID="gap-card">
+        <View style={styles.gapText}>
+          <Text style={styles.gapTitle}>{first.message}</Text>
+          {unlocks > 0 ? (
+            <Text style={styles.gapBody}>{tr.wardrobeGapUnlocks(unlocks)}</Text>
+          ) : null}
+        </View>
+        <Pressable
+          accessibilityRole="button"
+          onPress={() => setOpen(true)}
+          style={styles.gapButton}
+          testID="gap-suggestions"
+        >
+          <Text style={styles.gapButtonText}>{tr.wardrobeGapSuggestions}</Text>
+        </Pressable>
+      </View>
+      <GapSuggestionsSheet
+        visible={open}
+        products={gaps.suggestedProducts}
+        onClose={() => setOpen(false)}
+      />
+    </>
+  );
+}
+
+function GapSuggestionsSheet({
+  visible,
+  products,
+  onClose,
+}: {
+  visible: boolean;
+  products: WardrobeGaps['suggestedProducts'];
+  onClose: () => void;
+}) {
+  const router = useRouter();
+  const { width } = useWindowDimensions();
+  const cardWidth = (width - theme.screenPaddingX * 2 - theme.gridGap) / 2;
+  return (
+    <BottomSheet visible={visible} title={tr.wardrobeGapSheetTitle} onClose={onClose}>
+      {products.length === 0 ? (
+        <Text style={styles.sheetEmpty}>{tr.wardrobeGapSheetEmpty}</Text>
+      ) : (
+        <View style={styles.sheetGrid}>
+          {products.map((product) => (
+            <ProductCard
+              key={product.id}
+              product={product}
+              width={cardWidth}
+              onPress={(id) => {
+                onClose();
+                router.push(productHref(id, 'direct'));
+              }}
+            />
+          ))}
+        </View>
+      )}
+    </BottomSheet>
+  );
+}
+
+interface FilterChipsProps {
+  filters: ItemFilters;
+  onChange: (next: ItemFilters) => void;
+}
+
+/** Tümü, the five top-level categories, and a colour chip that opens the colour sheet. */
+export function FilterChips({ filters, onChange }: FilterChipsProps) {
+  const [colorOpen, setColorOpen] = useState(false);
+  const color = filters.color as ProductColor | undefined;
+  return (
+    <>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.chips}
+      >
+        <Chip
+          label={tr.filterAll}
+          selected={!filters.category}
+          onPress={() => onChange({ ...filters, category: undefined })}
+          testID="wardrobe-filter-all"
+        />
+        {CATEGORY_GROUPS.map((group) => (
+          <Chip
+            key={group.slug}
+            label={group.label}
+            selected={filters.category === group.slug}
+            onPress={() => onChange({ ...filters, category: group.slug })}
+            testID={`wardrobe-filter-${group.slug}`}
+          />
+        ))}
+        <Chip
+          label={color ? colorLabels[color] : tr.filterColor}
+          selected={Boolean(color)}
+          dropdown
+          onPress={() => setColorOpen(true)}
+          testID="wardrobe-filter-color"
+        />
+      </ScrollView>
+      <OptionSheet
+        visible={colorOpen}
+        title={tr.filterColor}
+        options={colorOptions}
+        selected={color ?? ALL}
+        onSelect={(value) => {
+          onChange({ ...filters, color: value === ALL ? undefined : value });
+          setColorOpen(false);
+        }}
+        onClose={() => setColorOpen(false)}
+      />
+    </>
+  );
+}
+
+/** "Parça ekle": the black pill in the header. */
+export function AddButton({ onPress }: { onPress: () => void }) {
+  return (
+    <Pressable
+      accessibilityRole="button"
+      onPress={onPress}
+      style={styles.addButton}
+      testID="wardrobe-add"
+    >
+      <Icon name="camera" size={18} color={theme.colors.onInk} />
+      <Text style={styles.addButtonText}>{tr.wardrobeAddButton}</Text>
+    </Pressable>
+  );
+}
+
+const styles = StyleSheet.create({
+  statsRow: {
+    flexDirection: 'row',
+    gap: theme.spacing.md,
+  },
+  stat: {
+    flex: 1,
+    borderRadius: theme.radius.xl,
+    backgroundColor: theme.colors.surfaceAlt,
+    padding: theme.spacing.lg,
+    gap: theme.spacing.xs,
+  },
+  statAccent: {
+    backgroundColor: theme.colors.accentSoft,
+  },
+  statValue: {
+    ...theme.typography.display,
+    color: theme.colors.ink,
+  },
+  statLabel: {
+    ...theme.typography.caption,
+    color: theme.colors.inkMuted,
+  },
+  statAccentText: {
+    color: theme.colors.accent,
+  },
+  gapCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: theme.spacing.md,
+    borderRadius: theme.radius.xxl,
+    backgroundColor: theme.colors.ink,
+    padding: theme.spacing.xl,
+  },
+  gapText: {
+    flex: 1,
+    gap: theme.spacing.xs,
+  },
+  gapTitle: {
+    ...theme.typography.bodyStrong,
+    color: theme.colors.onInk,
+  },
+  gapBody: {
+    ...theme.typography.body,
+    color: theme.colors.borderStrong,
+  },
+  gapButton: {
+    minHeight: theme.sizes.touch,
+    paddingHorizontal: theme.spacing.xl,
+    borderRadius: theme.radius.pill,
+    backgroundColor: theme.colors.surface,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  gapButtonText: {
+    ...theme.typography.bodyStrong,
+    color: theme.colors.ink,
+  },
+  sheetEmpty: {
+    ...theme.typography.body,
+    color: theme.colors.inkMuted,
+    textAlign: 'center',
+  },
+  sheetGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: theme.gridGap,
+  },
+  chips: {
+    gap: theme.spacing.sm,
+    paddingVertical: theme.spacing.xs,
+  },
+  addButton: {
+    minHeight: theme.sizes.touch,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: theme.spacing.sm,
+    paddingHorizontal: theme.spacing.lg,
+    borderRadius: theme.radius.pill,
+    backgroundColor: theme.colors.ink,
+  },
+  addButtonText: {
+    ...theme.typography.bodyStrong,
+    color: theme.colors.onInk,
+  },
+});

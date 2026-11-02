@@ -11,6 +11,7 @@ import { tr } from '@/i18n/tr';
 import { useActivePersona, usePersonas } from '@/features/personas/hooks';
 import { PersonaChips } from '@/features/personas/PersonaChips';
 import { NotificationBell } from '@/features/notifications/NotificationBell';
+import { TomorrowCard } from '@/features/outfits/TomorrowCard';
 import { useMe } from '@/features/profile/hooks';
 import { useSession } from '@/session/useSession';
 import { theme } from '@/theme';
@@ -164,16 +165,7 @@ function DiscoverHeader({ filters, onChangeFilters, personaId }: DiscoverHeaderP
       </View>
 
       <PersonaChips />
-      {/* Placeholder: the "tomorrow" card arrives with the outfit features. */}
-      <View style={styles.tomorrow}>
-        <View style={styles.tomorrowText}>
-          <Text style={styles.tomorrowLabel}>{tr.discoverTomorrowLabel}</Text>
-          <Text style={styles.tomorrowTitle}>{tr.discoverTomorrowTitle}</Text>
-        </View>
-        <View style={styles.soon}>
-          <Text style={styles.soonText}>{tr.comingSoon}</Text>
-        </View>
-      </View>
+      <TomorrowCard />
 
       <Text style={styles.sectionTitle}>{tr.discoverForYou}</Text>
       <View style={styles.filters}>
@@ -206,38 +198,6 @@ const styles = StyleSheet.create({
   hello: {
     ...theme.typography.display,
     color: theme.colors.ink,
-  },
-  tomorrow: {
-    marginHorizontal: theme.screenPaddingX,
-    padding: theme.spacing.xl,
-    borderRadius: theme.radius.xxl,
-    backgroundColor: theme.colors.ink,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: theme.spacing.md,
-  },
-  tomorrowText: {
-    flex: 1,
-    gap: theme.spacing.xs,
-  },
-  tomorrowLabel: {
-    ...theme.typography.overline,
-    color: theme.colors.borderStrong,
-  },
-  tomorrowTitle: {
-    ...theme.typography.headingLarge,
-    color: theme.colors.onInk,
-  },
-  soon: {
-    paddingHorizontal: theme.spacing.md,
-    paddingVertical: theme.spacing.xs,
-    borderRadius: theme.radius.pill,
-    backgroundColor: theme.colors.inkSoft,
-  },
-  soonText: {
-    ...theme.typography.captionMedium,
-    color: theme.colors.onInk,
   },
   sectionTitle: {
     ...theme.typography.heading,

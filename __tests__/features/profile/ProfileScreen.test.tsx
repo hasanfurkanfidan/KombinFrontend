@@ -234,4 +234,13 @@ describe('Tarzlarım', () => {
     await fireEvent.press(screen.getByTestId('profile-size-map'));
     expect(router.push).toHaveBeenCalledWith('/profile/sizes');
   });
+
+  it('links to the saved outfits', async () => {
+    await renderWithQuery(<ProfileScreen />);
+
+    await fireEvent.press(await screen.findByTestId('profile-saved-outfits'));
+
+    expect(screen.getByText('Kaydedilen kombinler')).toBeTruthy();
+    expect(router.push).toHaveBeenCalledWith('/outfits/saved');
+  });
 });

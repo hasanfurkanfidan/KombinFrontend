@@ -1,5 +1,13 @@
 import type {
   Alert,
+  DailyOutfit,
+  HowToWear,
+  Outfit,
+  OutfitPiece,
+  WardrobeGaps,
+  WardrobeItem,
+  WardrobeItemSummary,
+  WardrobeStats,
   AlertTrigger,
   CategoryNode,
   Notification,
@@ -162,6 +170,7 @@ export function profile(overrides: Partial<Profile> = {}): Profile {
     waistCm: 84,
     hipCm: null,
     shoeSizeEu: null,
+    city: null,
     activePersona: { id: 'pe1', name: 'Ofis', icon: 'office' },
     personaCount: 1,
     onboardingCompleted: true,
@@ -275,3 +284,213 @@ export const preferences: NotificationPreferences = {
   timeZone: 'Europe/Istanbul',
   updatedAt: '2026-11-02T10:00:00Z',
 };
+
+export function wardrobeSummary(overrides: Partial<WardrobeItemSummary> = {}): WardrobeItemSummary {
+  return {
+    id: 'w1',
+    status: 'Ready',
+    name: 'Koyu yeşil blazer',
+    categorySlug: 'ust-giyim/blazer',
+    needsCategory: false,
+    primaryColor: 'Green',
+    thumbUrl: 'http://img.test/w1-thumb.webp',
+    wearCount: 12,
+    lastWornAt: new Date().toISOString().slice(0, 10),
+    isArchived: false,
+    createdAt: new Date().toISOString(),
+    ...overrides,
+  };
+}
+
+export function wardrobeItem(overrides: Partial<WardrobeItem> = {}): WardrobeItem {
+  return {
+    id: 'w1',
+    status: 'Ready',
+    name: null,
+    category: { id: 'c-blazer', slug: 'ust-giyim/blazer', name: 'Blazer' },
+    needsCategory: false,
+    primaryColor: 'Green',
+    secondaryColor: null,
+    pattern: 'Solid',
+    fit: 'Regular',
+    formality: 4,
+    seasons: ['Autumn', 'Winter'],
+    brand: null,
+    productId: null,
+    fromCatalog: false,
+    size: null,
+    purchasePrice: null,
+    purchasedAt: null,
+    thumbUrl: 'http://img.test/w1-thumb.webp',
+    cutoutUrl: 'http://img.test/w1-cutout.png',
+    originalUrl: null,
+    warnings: [],
+    failureReason: null,
+    analysis: {
+      category: { slug: 'ust-giyim/blazer', confidence: 0.82 },
+      categoryCandidates: [
+        { slug: 'ust-giyim/blazer', confidence: 0.82 },
+        { slug: 'ust-giyim/gomlek', confidence: 0.09 },
+        { slug: 'dis-giyim/ceket', confidence: 0.05 },
+      ],
+      primaryColor: { name: 'Green', confidence: 0.9, hex: '#2A3A2E' },
+      secondaryColor: null,
+      pattern: { name: 'Solid', confidence: 0.9 },
+      quality: { isGarment: true, confidence: 0.9, warnings: [] },
+      embeddingModel: 'clip',
+      analyzedAt: '2026-11-02T10:00:00Z',
+    },
+    wearCount: 0,
+    lastWornAt: null,
+    isArchived: false,
+    confirmedAt: null,
+    createdAt: '2026-11-02T10:00:00Z',
+    updatedAt: '2026-11-02T10:00:00Z',
+    ...overrides,
+  };
+}
+
+export function wardrobeStats(overrides: Partial<WardrobeStats> = {}): WardrobeStats {
+  return {
+    itemCount: 48,
+    byCategory: [],
+    byColor: [],
+    unwornFor180Days: 8,
+    mostWorn: [],
+    leastWorn: [],
+    possibleOutfits: 212,
+    ...overrides,
+  };
+}
+
+export function wardrobeGaps(overrides: Partial<WardrobeGaps> = {}): WardrobeGaps {
+  return {
+    personaId: 'pe1',
+    gaps: [
+      {
+        kind: 'MissingColor',
+        message: 'Eksik parça: bej tonlarda üst',
+        categorySlug: 'ust-giyim',
+        color: 'Beige',
+        formality: 3,
+        band: 'Smart',
+        unlocksEstimate: 15,
+      },
+    ],
+    suggestedProducts: [listItem({ id: 'gp1', name: 'Bej boğazlı triko', primaryColor: 'Beige' })],
+    ...overrides,
+  };
+}
+
+export function outfitPiece(overrides: Partial<OutfitPiece> = {}): OutfitPiece {
+  return {
+    slot: 'Top',
+    role: 'Wardrobe',
+    source: 'Wardrobe',
+    wardrobeItemId: 'w1',
+    productId: null,
+    name: 'Koyu yeşil blazer',
+    categorySlug: 'ust-giyim/blazer',
+    color: 'Green',
+    imageUrl: 'http://img.test/w1-thumb.webp',
+    offer: null,
+    ...overrides,
+  };
+}
+
+const wardrobePieces: OutfitPiece[] = [
+  outfitPiece(),
+  outfitPiece({
+    slot: 'Bottom',
+    wardrobeItemId: 'w2',
+    name: 'Siyah kumaş pantolon',
+    categorySlug: 'alt-giyim/pantolon',
+    color: 'Black',
+  }),
+  outfitPiece({
+    slot: 'Shoes',
+    wardrobeItemId: 'w3',
+    name: 'Kahverengi bot',
+    categorySlug: 'ayakkabi/bot',
+    color: 'Brown',
+  }),
+];
+
+export const gapPiece = outfitPiece({
+  slot: 'Top',
+  role: 'Gap',
+  source: 'Catalog',
+  wardrobeItemId: null,
+  productId: 'gp1',
+  name: 'Bej boğazlı triko',
+  categorySlug: 'ust-giyim/triko',
+  color: 'Beige',
+  offer: {
+    offerId: 'o-koton',
+    seller: { name: 'Koton', slug: 'koton' },
+    price: 649,
+    goPath: '/api/v1/go/o-koton',
+  },
+});
+
+let outfitCounter = 0;
+
+export function outfit(overrides: Partial<Outfit> = {}): Outfit {
+  outfitCounter += 1;
+  return {
+    id: `of${outfitCounter}`,
+    kind: 'Daily',
+    status: 'Suggested',
+    completeness: 'Complete',
+    occasion: 'Office',
+    date: '2026-11-02',
+    seed: 0,
+    score: 82,
+    rule: 'office',
+    personaId: 'pe1',
+    weather: null,
+    pieces: wardrobePieces,
+    completionPrice: null,
+    anchorPrice: null,
+    totalPrice: null,
+    narration: { text: 'Koyu yeşil blazer yağmurlu havada şık durur.', provider: 'Template' },
+    createdAt: '2026-11-02T08:00:00Z',
+    savedAt: null,
+    wornAt: null,
+    ...overrides,
+  };
+}
+
+/** A daily outfit that still needs one piece from a store. */
+export function needsOneOutfit(overrides: Partial<Outfit> = {}): Outfit {
+  return outfit({
+    completeness: 'NeedsOne',
+    pieces: [gapPiece, ...wardrobePieces.slice(1)],
+    completionPrice: 649,
+    ...overrides,
+  });
+}
+
+export function dailyOutfit(overrides: Partial<DailyOutfit> = {}): DailyOutfit {
+  return {
+    outfit: outfit(),
+    alternatives: [outfit(), outfit()],
+    weather: {
+      city: 'İstanbul',
+      date: '2026-11-02',
+      tempMinC: 7,
+      tempMaxC: 11,
+      temperatureC: 9,
+      band: 'Cool',
+      rain: true,
+      precipitationProbability: 80,
+    },
+    wardrobeEmpty: false,
+    message: null,
+    ...overrides,
+  };
+}
+
+export function howToWear(outfits: Outfit[], overrides: Partial<HowToWear> = {}): HowToWear {
+  return { productId: 'p1', wardrobeItemId: null, outfits, message: null, ...overrides };
+}

@@ -84,3 +84,35 @@ export type EventItem = Omit<Schemas['EventItem'], 'properties'> & {
 };
 export type RecordEventsRequest = { events: EventItem[] };
 export type RecordEventsResponse = Schemas['RecordEventsResponse'];
+
+export type WardrobeItem = Schemas['WardrobeItemResponse'];
+export type WardrobeItemSummary = Schemas['WardrobeItemSummary'];
+export type WardrobeItemPage = Schemas['PagedResponseOfWardrobeItemSummary'];
+export type WardrobeItemStatus = Schemas['WardrobeItemStatus'];
+export type WardrobeStats = Schemas['WardrobeStatsResponse'];
+export type WardrobeGaps = Schemas['WardrobeGapsResponse'];
+export type WardrobeGap = Schemas['WardrobeGap'];
+export type UploadUrlRequest = Schemas['CreateUploadUrlRequest'];
+export type UploadUrl = Schemas['CreateUploadUrlResponse'];
+export type ProcessItemResponse = Schemas['ProcessItemResponse'];
+export type UpdateWardrobeItemRequest = Schemas['UpdateItemRequest'];
+export type AddFromProductRequest = Schemas['AddFromProductRequest'];
+export type WearResponse = Schemas['WearResponse'];
+export type ProductPattern = Schemas['ProductPattern'];
+export type ProductFit = Schemas['ProductFit'];
+export type BrandRef = Schemas['BrandRef'];
+export type VisionCategory = Schemas['VisionCategory'];
+
+export type Outfit = Schemas['OutfitResponse'];
+export type OutfitPiece = Schemas['OutfitPieceResponse'];
+export type OutfitOffer = Schemas['OutfitOfferResponse'];
+export type OutfitWeather = Schemas['OutfitWeatherResponse'];
+export type OutfitPage = Schemas['PagedResponseOfOutfitResponse'];
+export type OutfitKind = Schemas['OutfitKind'];
+export type OutfitStatus = Schemas['OutfitStatus'];
+export type OutfitCompleteness = Schemas['OutfitCompleteness'];
+export type OutfitSlot = Schemas['OutfitSlot'];
+export type Occasion = NonNullable<Schemas['Occasion']>;
+export type DailyOutfit = Schemas['DailyOutfitResponse'];
+export type HowToWear = Schemas['HowToWearResponse'];
+export type OutfitFeedbackRequest = Schemas['OutfitFeedbackRequest'];
