@@ -1,4 +1,5 @@
 import { QueryClient, type InfiniteData } from '@tanstack/react-query';
+import * as FileSystem from 'expo-file-system/legacy';
 import * as ImageManipulator from 'expo-image-manipulator';
 
 import { track } from '@/analytics';
@@ -34,6 +35,7 @@ const getItemMock = jest.mocked(getWardrobeItem);
 const fromProductMock = jest.mocked(addItemFromProduct);
 const manipulateMock = jest.mocked(ImageManipulator.manipulateAsync);
 const trackMock = jest.mocked(track);
+const getInfoMock = jest.mocked(FileSystem.getInfoAsync);
 
 type ItemsData = InfiniteData<WardrobeItemPage, number>;
 
@@ -41,7 +43,6 @@ const photo = { uri: 'file:///photo-1.heic', width: 4000, height: 3000 };
 const PHOTO_BYTES = 321_000;
 
 let queryClient: QueryClient;
-const originalFetch = globalThis.fetch;
 
 function seedList(filters: { category?: string; color?: string } = {}) {
   const data: ItemsData = {
@@ -69,9 +70,13 @@ beforeEach(() => {
   useAddStore.getState().reset();
   queryClient = new QueryClient({ defaultOptions: { queries: { gcTime: Infinity } } });
   seedList();
-  globalThis.fetch = jest.fn(async () => ({
-    blob: async () => ({ size: PHOTO_BYTES }),
-  })) as unknown as typeof fetch;
+  getInfoMock.mockResolvedValue({
+    exists: true,
+    uri: 'file:///photo-1.heic#resized',
+    size: PHOTO_BYTES,
+    isDirectory: false,
+    modificationTime: 0,
+  });
   createUploadUrlMock.mockResolvedValue(uploadFor('w-new'));
   putPhotoMock.mockResolvedValue(undefined);
   processMock.mockResolvedValue({ itemId: 'w-new', status: 'Processing' });
@@ -79,7 +84,6 @@ beforeEach(() => {
 
 afterEach(() => {
   jest.useRealTimers();
-  globalThis.fetch = originalFetch;
 });
 
 /** Lets the pending promise chain run, then moves the clock so one poll happens. */
@@ -95,7 +99,7 @@ describe('resizing before the upload', () => {
     expect(resizeActions(undefined, undefined)).toEqual([]);
   });
 
-  it('re-encodes as JPEG at 0.85 and measures the bytes it will send', async () => {
+  it('re-encodes as JPEG at 0.85 and measures the file it will send', async () => {
     const prepared = await prepareImage(photo);
 
     expect(manipulateMock).toHaveBeenCalledWith(
@@ -103,9 +107,24 @@ describe('resizing before the upload', () => {
       [{ resize: { width: 1600 } }],
       { compress: 0.85, format: 'jpeg' },
     );
+    expect(getInfoMock).toHaveBeenCalledWith('file:///photo-1.heic#resized');
     expect(prepared.sizeBytes).toBe(PHOTO_BYTES);
     expect(prepared.contentType).toBe('image/jpeg');
     expect(prepared.uri).toBe('file:///photo-1.heic#resized');
+  });
+
+  it('refuses a re-encoded file that is missing or empty instead of uploading nothing', async () => {
+    getInfoMock.mockResolvedValueOnce({ exists: false, uri: 'x', isDirectory: false });
+    await expect(prepareImage(photo)).rejects.toThrow('missing or empty');
+
+    getInfoMock.mockResolvedValueOnce({
+      exists: true,
+      uri: 'x',
+      size: 0,
+      isDirectory: false,
+      modificationTime: 0,
+    });
+    await expect(prepareImage(photo)).rejects.toThrow('missing or empty');
   });
 });
 
@@ -127,7 +146,8 @@ describe('add flow: upload, process, poll', () => {
       contentType: 'image/jpeg',
       sizeBytes: PHOTO_BYTES,
     });
-    expect(putPhotoMock).toHaveBeenCalledWith(uploadFor('w-new'), { size: PHOTO_BYTES });
+    // The file on disk is what gets uploaded, by URI.
+    expect(putPhotoMock).toHaveBeenCalledWith(uploadFor('w-new'), 'file:///photo-1.heic#resized');
     expect(processMock).toHaveBeenCalledWith('w-new');
     // The local card took the server id and kept its local photo for the shimmer.
     expect(cards()[0]?.id).toBe('w-new');
@@ -184,6 +204,7 @@ describe('add flow: upload, process, poll', () => {
 
     expect(outcome?.status).toBe('Failed');
     expect(cards()[0]?.status).toBe('Failed');
+    expect(useAddStore.getState().failureReasons['w-new']).toBe('unsupported_image');
     expect(useAddStore.getState().confirmQueue).toEqual([]);
     expect(trackMock).toHaveBeenCalledWith('wardrobe_add_done', {
       status: 'Failed',
@@ -232,6 +253,7 @@ describe('add flow: upload, process, poll', () => {
     expect(cards()[0]).toMatchObject({ id: 'w-new', status: 'Failed' });
     expect(processMock).not.toHaveBeenCalled();
     expect(useAddStore.getState().retryPhotos['w-new']?.photo).toEqual(photo);
+    expect(useAddStore.getState().failureReasons['w-new']).toBe('offline');
 
     createUploadUrlMock.mockResolvedValue(uploadFor('w-second'));
     processMock.mockResolvedValue({ itemId: 'w-second', status: 'Processing' });
@@ -244,6 +266,7 @@ describe('add flow: upload, process, poll', () => {
     // The failed card is gone, replaced by the new one.
     expect(cards().map((card) => card.id)).toEqual(['w-second']);
     expect(useAddStore.getState().retryPhotos['w-new']).toBeUndefined();
+    expect(useAddStore.getState().failureReasons['w-new']).toBeUndefined();
   });
 
   it('retries a server-side failure by asking for the analysis again', async () => {

@@ -104,6 +104,16 @@ describe('Dolap grid', () => {
     expect(screen.getByTestId('wardrobe-add-tile')).toBeTruthy();
   });
 
+  it('prints the reason under a failed card when one is known', async () => {
+    useAddStore.getState().setFailureReason('w4', 'vision_400: unsupported_image');
+    await renderWithQuery(<WardrobeScreen />);
+
+    expect(await screen.findByTestId('wardrobe-failure-reason-w4')).toHaveTextContent(
+      'vision_400: unsupported_image',
+    );
+    expect(screen.queryByTestId('wardrobe-failure-reason-w1')).toBeNull();
+  });
+
   it('opens a piece, and retries a failed one by asking for the analysis again', async () => {
     processMock.mockResolvedValue({ itemId: 'w4', status: 'Processing' });
     await renderWithQuery(<WardrobeScreen />);

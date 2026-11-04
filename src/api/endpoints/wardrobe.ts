@@ -1,3 +1,6 @@
+// The SDK 58 default entry is the class-based API; `uploadAsync` and `getInfoAsync` live in the legacy entry.
+import { FileSystemUploadType, uploadAsync } from 'expo-file-system/legacy';
+
 import { request } from '../client';
 import type {
   AddFromProductRequest,
@@ -46,19 +49,22 @@ export function createUploadUrl(body: UploadUrlRequest): Promise<UploadUrl> {
 }
 
 /**
- * Sends the photo straight to object storage with exactly the headers the presigned URL was made for. This is not an
- * API call: no bearer token, no JSON, and the storage's own error is not a problem document.
+ * Sends the photo file straight to object storage with exactly the headers the presigned URL was made for. This is not
+ * an API call: no bearer token, no JSON, and the storage's own error is not a problem document.
+ *
+ * The file is streamed natively from its URI. React Native's `fetch` with a `Blob` body is not used on purpose: it can
+ * send something other than the file bytes while the storage still answers 200.
  */
 export async function putPhoto(
   upload: Pick<UploadUrl, 'uploadUrl' | 'headers'>,
-  photo: Blob,
+  fileUri: string,
 ): Promise<void> {
-  const response = await fetch(upload.uploadUrl, {
-    method: 'PUT',
+  const response = await uploadAsync(upload.uploadUrl, fileUri, {
+    httpMethod: 'PUT',
+    uploadType: FileSystemUploadType.BINARY_CONTENT,
     headers: upload.headers as Record<string, string>,
-    body: photo,
   });
-  if (!response.ok) {
+  if (response.status < 200 || response.status >= 300) {
     throw new Error(`Photo upload failed: HTTP ${response.status}`);
   }
 }

@@ -32,6 +32,7 @@ interface ItemTileProps {
 export function ItemTile({ item, width, onPress, onRetry }: ItemTileProps) {
   const [imageFailed, setImageFailed] = useState(false);
   const localUri = useAddStore((state) => state.localUris[item.id]);
+  const failureReason = useAddStore((state) => state.failureReasons[item.id]);
   const processing = item.status === 'Processing';
   const failed = item.status === 'Failed';
   // The server's thumbnail is a cutout on transparent ground (contain); the local photo fills the tile while we wait.
@@ -39,51 +40,63 @@ export function ItemTile({ item, width, onPress, onRetry }: ItemTileProps) {
   const isCutout = item.thumbUrl !== null;
 
   return (
-    <Pressable
-      accessibilityRole="button"
-      accessibilityLabel={item.name ?? tr.wardrobeItemUnnamed}
-      disabled={processing}
-      onPress={() => (failed ? onRetry(item.id) : onPress(item.id))}
-      style={[styles.tile, { width, height: width, backgroundColor: colorTint(item.primaryColor) }]}
-      testID={`wardrobe-item-${item.id}`}
-    >
-      {uri && !imageFailed ? (
-        <Image
-          source={{ uri }}
-          style={[styles.image, isCutout && styles.cutout]}
-          resizeMode={isCutout ? 'contain' : 'cover'}
-          onError={() => setImageFailed(true)}
-        />
-      ) : (
-        <Icon name="shirt" size={40} color={theme.colors.borderStrong} strokeWidth={1.4} />
-      )}
+    <View style={{ width }}>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={item.name ?? tr.wardrobeItemUnnamed}
+        disabled={processing}
+        onPress={() => (failed ? onRetry(item.id) : onPress(item.id))}
+        style={[
+          styles.tile,
+          { width, height: width, backgroundColor: colorTint(item.primaryColor) },
+        ]}
+        testID={`wardrobe-item-${item.id}`}
+      >
+        {uri && !imageFailed ? (
+          <Image
+            source={{ uri }}
+            style={[styles.image, isCutout && styles.cutout]}
+            resizeMode={isCutout ? 'contain' : 'cover'}
+            onError={() => setImageFailed(true)}
+          />
+        ) : (
+          <Icon name="shirt" size={40} color={theme.colors.borderStrong} strokeWidth={1.4} />
+        )}
 
-      {processing ? (
-        <>
-          <Shimmer />
-          <View style={[styles.pill, styles.pillLight]} testID={`wardrobe-processing-${item.id}`}>
-            <Text style={styles.pillTextDark}>{tr.wardrobeProcessing}</Text>
+        {processing ? (
+          <>
+            <Shimmer />
+            <View style={[styles.pill, styles.pillLight]} testID={`wardrobe-processing-${item.id}`}>
+              <Text style={styles.pillTextDark}>{tr.wardrobeProcessing}</Text>
+            </View>
+          </>
+        ) : failed ? (
+          <>
+            <View style={styles.failedBadge} testID={`wardrobe-failed-${item.id}`}>
+              <Text style={styles.failedMark}>!</Text>
+            </View>
+            <View style={[styles.pill, styles.pillWarning]}>
+              <Text style={styles.pillTextLight}>{tr.wardrobeFailedRetry}</Text>
+            </View>
+          </>
+        ) : isStale(item) ? (
+          <View style={[styles.pill, styles.pillInk]} testID={`wardrobe-stale-${item.id}`}>
+            <Text style={styles.pillTextLight}>{tr.wardrobeUnwornPill}</Text>
           </View>
-        </>
-      ) : failed ? (
-        <>
-          <View style={styles.failedBadge} testID={`wardrobe-failed-${item.id}`}>
-            <Text style={styles.failedMark}>!</Text>
+        ) : (
+          <View style={[styles.pill, styles.pillLight]} testID={`wardrobe-wears-${item.id}`}>
+            <Text style={styles.pillTextDark}>
+              {tr.wardrobeWornCount(toNumber(item.wearCount))}
+            </Text>
           </View>
-          <View style={[styles.pill, styles.pillWarning]}>
-            <Text style={styles.pillTextLight}>{tr.wardrobeFailedRetry}</Text>
-          </View>
-        </>
-      ) : isStale(item) ? (
-        <View style={[styles.pill, styles.pillInk]} testID={`wardrobe-stale-${item.id}`}>
-          <Text style={styles.pillTextLight}>{tr.wardrobeUnwornPill}</Text>
-        </View>
-      ) : (
-        <View style={[styles.pill, styles.pillLight]} testID={`wardrobe-wears-${item.id}`}>
-          <Text style={styles.pillTextDark}>{tr.wardrobeWornCount(toNumber(item.wearCount))}</Text>
-        </View>
-      )}
-    </Pressable>
+        )}
+      </Pressable>
+      {failed && failureReason ? (
+        <Text style={styles.reason} numberOfLines={2} testID={`wardrobe-failure-reason-${item.id}`}>
+          {failureReason}
+        </Text>
+      ) : null}
+    </View>
   );
 }
 
@@ -108,6 +121,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
+  },
+  reason: {
+    ...theme.typography.caption,
+    color: theme.colors.inkMuted,
+    marginTop: theme.spacing.xs,
   },
   image: {
     ...StyleSheet.absoluteFill,

@@ -62,6 +62,19 @@ jest.mock('expo-image-manipulator', () => ({
   manipulateAsync: jest.fn(async (uri: string) => ({ uri: `${uri}#resized`, width: 1, height: 1 })),
 }));
 
+// Native file access for the photo upload: tests give `getInfoAsync`/`uploadAsync` their own answers.
+jest.mock('expo-file-system/legacy', () => ({
+  FileSystemUploadType: { BINARY_CONTENT: 0, MULTIPART: 1 },
+  getInfoAsync: jest.fn(async (uri: string) => ({
+    exists: true,
+    uri,
+    size: 321_000,
+    isDirectory: false,
+    modificationTime: 0,
+  })),
+  uploadAsync: jest.fn(async () => ({ status: 200, headers: {}, mimeType: null, body: '' })),
+}));
+
 jest.mock('expo-device', () => ({ isDevice: true, deviceName: 'Test Phone' }));
 
 // Screens only report events; the real queue (and its flush timer) is exercised in __tests__/analytics via

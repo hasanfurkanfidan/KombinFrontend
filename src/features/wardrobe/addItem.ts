@@ -1,4 +1,5 @@
 import type { QueryClient } from '@tanstack/react-query';
+import { getInfoAsync } from 'expo-file-system/legacy';
 import * as ImageManipulator from 'expo-image-manipulator';
 
 import { track } from '@/analytics';
@@ -39,7 +40,6 @@ export interface AddOutcome {
 
 export interface PreparedImage {
   uri: string;
-  blob: Blob;
   contentType: 'image/jpeg';
   sizeBytes: number;
 }
@@ -58,8 +58,11 @@ export async function prepareImage(photo: PickedPhoto): Promise<PreparedImage> {
     resizeActions(photo.width, photo.height),
     { compress: JPEG_QUALITY, format: ImageManipulator.SaveFormat.JPEG },
   );
-  const blob = await (await fetch(result.uri)).blob();
-  return { uri: result.uri, blob, contentType: 'image/jpeg', sizeBytes: blob.size };
+  const info = await getInfoAsync(result.uri);
+  if (!info.exists || info.size <= 0) {
+    throw new Error('The re-encoded photo is missing or empty');
+  }
+  return { uri: result.uri, contentType: 'image/jpeg', sizeBytes: info.size };
 }
 
 const sleep = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));
@@ -114,16 +117,19 @@ export async function watchItem(
     try {
       const item = await getWardrobeItem(id);
       if (item.status !== 'Processing') {
+        useAddStore.getState().setFailureReason(id, item.failureReason);
         commit(queryClient, item);
         return finish(startedAt, id, item.status === 'Ready' ? 'Ready' : 'Failed');
       }
     } catch (error) {
       if (error instanceof ApiError && error.status === 404) {
+        useAddStore.getState().setFailureReason(id, 'not_found');
         patchItem(queryClient, id, { status: 'Failed' });
         return finish(startedAt, id, 'Failed');
       }
     }
     if (Date.now() - pollStart >= POLL_TIMEOUT_MS) {
+      useAddStore.getState().setFailureReason(id, 'timeout');
       patchItem(queryClient, id, { status: 'Failed' });
       return finish(startedAt, id, 'Timeout');
     }
@@ -158,11 +164,12 @@ async function uploadOne(
     id = upload.itemId;
     useAddStore.getState().renameLocal(localId, id);
     replaceItem(queryClient, localId, processingCard(id, 'Processing'));
-    await putPhoto(upload, prepared.blob);
+    await putPhoto(upload, prepared.uri);
     await processWardrobeItem(id);
     return { ok: true, id, startedAt };
-  } catch {
+  } catch (error) {
     useAddStore.getState().setRetry(id, { photo, source });
+    useAddStore.getState().setFailureReason(id, error instanceof Error ? error.message : null);
     patchItem(queryClient, id, { status: 'Failed' });
     return { ok: false, outcome: finish(startedAt, id, 'Failed') };
   }
@@ -200,11 +207,13 @@ export async function retryItem(queryClient: QueryClient, id: string): Promise<A
   const entry = useAddStore.getState().retryPhotos[id];
   if (entry) {
     useAddStore.getState().clearRetry(id);
+    useAddStore.getState().setFailureReason(id, null);
     removeItem(queryClient, id);
     const [outcome] = await addPhotos(queryClient, [entry.photo], entry.source);
     return outcome as AddOutcome;
   }
   const startedAt = Date.now();
+  useAddStore.getState().setFailureReason(id, null);
   patchItem(queryClient, id, { status: 'Processing' });
   try {
     await processWardrobeItem(id);
