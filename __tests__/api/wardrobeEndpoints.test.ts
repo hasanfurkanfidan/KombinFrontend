@@ -1,3 +1,5 @@
+import * as FileSystem from 'expo-file-system/legacy';
+
 import {
   getDailyOutfit,
   getHowToWear,
@@ -14,6 +16,7 @@ import {
 
 import { API, authHeader, reply, resetSession, signedInSession } from '../testUtils';
 
+const uploadAsyncMock = jest.mocked(FileSystem.uploadAsync);
 const fetchMock = jest.fn<Promise<Response>, [string, RequestInit]>();
 
 beforeEach(async () => {
@@ -36,33 +39,42 @@ describe('wardrobe endpoints', () => {
     expect(authHeader(lastCall())).toBe('Bearer access-old');
   });
 
-  it('puts the photo to the presigned URL with exactly the given headers, and no bearer token', async () => {
-    const blob = { size: 10 } as unknown as Blob;
-    fetchMock.mockResolvedValue({ ok: true, status: 200 } as Response);
-
+  it('uploads the photo file itself to the presigned URL: PUT, binary body, the given headers, no bearer token', async () => {
     await putPhoto(
       {
         uploadUrl: 'http://storage.test/bucket/key?sig=1',
         headers: { 'Content-Type': 'image/jpeg' },
       },
-      blob,
+      'file:///cache/photo.jpg',
     );
 
-    expect(lastCall()[0]).toBe('http://storage.test/bucket/key?sig=1');
-    expect(lastCall()[1]).toMatchObject({
-      method: 'PUT',
-      headers: { 'Content-Type': 'image/jpeg' },
-      body: blob,
-    });
-    expect(authHeader(lastCall())).toBeUndefined();
+    expect(uploadAsyncMock).toHaveBeenCalledWith(
+      'http://storage.test/bucket/key?sig=1',
+      'file:///cache/photo.jpg',
+      {
+        httpMethod: 'PUT',
+        uploadType: FileSystem.FileSystemUploadType.BINARY_CONTENT,
+        headers: { 'Content-Type': 'image/jpeg' },
+      },
+    );
+    // The file goes through the native uploader: neither `fetch` nor the API client is involved.
+    expect(fetchMock).not.toHaveBeenCalled();
   });
 
   it('fails when the storage refuses the photo', async () => {
-    fetchMock.mockResolvedValue({ ok: false, status: 403 } as Response);
+    uploadAsyncMock.mockResolvedValueOnce({ status: 403, headers: {}, mimeType: null, body: '' });
 
     await expect(
-      putPhoto({ uploadUrl: 'http://storage.test/x', headers: {} }, {} as Blob),
+      putPhoto({ uploadUrl: 'http://storage.test/x', headers: {} }, 'file:///cache/photo.jpg'),
     ).rejects.toThrow('HTTP 403');
+  });
+
+  it('fails when the native upload itself throws', async () => {
+    uploadAsyncMock.mockRejectedValueOnce(new Error('Network request failed'));
+
+    await expect(
+      putPhoto({ uploadUrl: 'http://storage.test/x', headers: {} }, 'file:///cache/photo.jpg'),
+    ).rejects.toThrow('Network request failed');
   });
 
   it('sends a patch with every field present, so {} is the confirmation', async () => {

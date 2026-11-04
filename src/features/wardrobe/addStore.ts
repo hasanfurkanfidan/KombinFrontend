@@ -16,6 +16,8 @@ interface AddState {
   localUris: Record<string, string>;
   /** Cards whose upload failed before the server could analyse them: a tap sends the photo again. */
   retryPhotos: Record<string, { photo: PickedPhoto; source: AddSource }>;
+  /** Why a card ended `Failed` (the backend's `failureReason`, or the upload error). Memory only. */
+  failureReasons: Record<string, string>;
   /** The wardrobe tab is focused: only then does a ready item open the confirm sheet by itself. */
   onWardrobeScreen: boolean;
   /** Ready items waiting for the user's one-tap confirmation, oldest first. */
@@ -25,6 +27,7 @@ interface AddState {
   renameLocal: (from: string, to: string) => void;
   setRetry: (id: string, entry: AddState['retryPhotos'][string]) => void;
   clearRetry: (id: string) => void;
+  setFailureReason: (id: string, reason: string | null) => void;
   setOnWardrobeScreen: (focused: boolean) => void;
   enqueueConfirm: (id: string) => void;
   dequeueConfirm: (id: string) => void;
@@ -35,6 +38,7 @@ const initial = {
   uploading: null,
   localUris: {},
   retryPhotos: {},
+  failureReasons: {},
   onWardrobeScreen: false,
   confirmQueue: [],
 };
@@ -57,6 +61,14 @@ export const useAddStore = create<AddState>((set) => ({
     set((state) => {
       const { [id]: _removed, ...rest } = state.retryPhotos;
       return { retryPhotos: rest };
+    }),
+  setFailureReason: (id, reason) =>
+    set((state) => {
+      if (reason === null) {
+        const { [id]: _removed, ...rest } = state.failureReasons;
+        return { failureReasons: rest };
+      }
+      return { failureReasons: { ...state.failureReasons, [id]: reason } };
     }),
   setOnWardrobeScreen: (onWardrobeScreen) => set({ onWardrobeScreen }),
   enqueueConfirm: (id) =>
