@@ -1,5 +1,12 @@
 import type {
   Alert,
+  Consent,
+  Post,
+  PostAuthor,
+  PostProposal,
+  PostTag,
+  TryResult,
+  UserProfile,
   DailyOutfit,
   HowToWear,
   Outfit,
@@ -363,6 +370,7 @@ export function wardrobeStats(overrides: Partial<WardrobeStats> = {}): WardrobeS
     mostWorn: [],
     leastWorn: [],
     possibleOutfits: 212,
+    unmatchedCount: 0,
     ...overrides,
   };
 }
@@ -543,4 +551,124 @@ export function pairingUnlock(overrides: Partial<PairingUnlock> = {}): PairingUn
     unlocksEstimate: 8,
     ...overrides,
   };
+}
+
+export function postAuthor(overrides: Partial<PostAuthor> = {}): PostAuthor {
+  return { id: 'u-elif', displayName: 'Elif Yıldız', handle: null, isCreator: false, ...overrides };
+}
+
+export function postTag(overrides: Partial<PostTag> = {}): PostTag {
+  return {
+    id: 't1',
+    kind: 'Product',
+    x: 0.1,
+    y: 0.1,
+    w: 0.4,
+    h: 0.3,
+    name: 'Yün karışımlı blazer',
+    categorySlug: 'ust-giyim/blazer',
+    color: 'Green',
+    imageUrl: 'http://img.test/t1.webp',
+    productId: 'p1',
+    wardrobeItemId: null,
+    offer: {
+      offerId: 'o-trendyol',
+      seller: { name: 'Trendyol', slug: 'trendyol' },
+      price: 2149,
+      goPath: '/api/v1/go/o-trendyol?src=feed&post=post1',
+    },
+    inWardrobe: null,
+    ...overrides,
+  };
+}
+
+let postCounter = 0;
+
+/** A live photo post with two tagged products; ids auto-number unless one is given. */
+export function post(overrides: Partial<Post> = {}): Post {
+  postCounter += 1;
+  return {
+    id: `post${postCounter}`,
+    kind: 'Photo',
+    status: 'Live',
+    visibility: 'Public',
+    author: postAuthor(),
+    caption: 'Pazartesi toplantı kombini',
+    image: { url: 'http://img.test/post.jpg?sig=1', previewUrl: null, aspect: 0.8 },
+    tags: [
+      postTag(),
+      postTag({
+        id: 't2',
+        name: 'Siyah kumaş pantolon',
+        productId: 'p2',
+        x: 0.3,
+        y: 0.6,
+        offer: {
+          offerId: 'o-koton',
+          seller: { name: 'Koton', slug: 'koton' },
+          price: 2680,
+          goPath: '/api/v1/go/o-koton?src=feed&post=post1',
+        },
+      }),
+    ],
+    summary: { totalPrice: 4829, pieceCount: 2, ownedCount: 1 },
+    likeCount: 12,
+    likedByMe: false,
+    followingAuthor: false,
+    matchScore: null,
+    disclosure: null,
+    statusMessage: null,
+    proposals: null,
+    reason: 'ForYou',
+    createdAt: '2026-11-05T09:00:00Z',
+    publishedAt: '2026-11-05T09:10:00Z',
+    ...overrides,
+  };
+}
+
+export function proposal(overrides: Partial<PostProposal> = {}): PostProposal {
+  return {
+    id: 'pr1',
+    source: 'Detected',
+    x: 0.2,
+    y: 0.1,
+    w: 0.5,
+    h: 0.3,
+    categorySlug: 'ust-giyim/blazer',
+    color: 'Green',
+    confidence: 0.8,
+    wardrobeItemId: null,
+    productId: null,
+    ...overrides,
+  };
+}
+
+export function consent(overrides: Partial<Consent> = {}): Consent {
+  return {
+    version: '2026-11-v1',
+    text: 'Fotoğraftaki herkesin paylaşıma izin verdiğini onaylıyorum.',
+    acceptedAt: null,
+    ...overrides,
+  };
+}
+
+export function userProfile(overrides: Partial<UserProfile> = {}): UserProfile {
+  return {
+    id: 'u-elif',
+    displayName: 'Elif Yıldız',
+    handle: null,
+    isCreator: false,
+    bio: null,
+    link: null,
+    followerCount: 10,
+    followingCount: 4,
+    postCount: 3,
+    isFollowing: false,
+    followsYou: false,
+    ...overrides,
+  };
+}
+
+export function tryResult(overrides: Partial<TryResult> = {}): TryResult {
+  return { postId: 'post1', groups: [], ...overrides };
 }
