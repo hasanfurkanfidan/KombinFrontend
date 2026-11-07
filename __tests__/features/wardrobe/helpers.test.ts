@@ -1,25 +1,27 @@
-import { isStale } from '@/features/wardrobe/ItemTile';
+import { companionCaption } from '@/features/wardrobe/ItemTile';
 import { warningHint } from '@/features/wardrobe/labels';
 import { theme } from '@/theme';
 import { colorTint } from '@/theme/colorNames';
 
 import { wardrobeSummary } from '../../fixtures';
 
-const daysAgo = (days: number) => new Date(Date.now() - days * 86_400_000).toISOString();
-
-describe('"6 ay" pill', () => {
-  it('applies to an old item that was never worn or not worn for 180 days', () => {
-    expect(isStale(wardrobeSummary({ createdAt: daysAgo(400), lastWornAt: null }))).toBe(true);
-    expect(isStale(wardrobeSummary({ createdAt: daysAgo(400), lastWornAt: daysAgo(200) }))).toBe(
-      true,
-    );
+describe('pairing caption', () => {
+  it('counts the pieces a finished item goes with', () => {
+    expect(companionCaption(wardrobeSummary({ companionCount: 5 }))).toBe('5 parçayla gider');
+    expect(companionCaption(wardrobeSummary({ companionCount: '3' }))).toBe('3 parçayla gider');
   });
 
-  it('does not apply to a recently worn item or a recently added one', () => {
-    expect(isStale(wardrobeSummary({ createdAt: daysAgo(400), lastWornAt: daysAgo(10) }))).toBe(
-      false,
-    );
-    expect(isStale(wardrobeSummary({ createdAt: daysAgo(30), lastWornAt: null }))).toBe(false);
+  it('says nothing matches when the count is zero', () => {
+    expect(companionCaption(wardrobeSummary({ companionCount: 0 }))).toBe('Eşleşen parça yok');
+  });
+
+  it('is hidden while processing or failed, or before the backend has counted', () => {
+    expect(
+      companionCaption(wardrobeSummary({ status: 'Processing', companionCount: 0 })),
+    ).toBeNull();
+    expect(companionCaption(wardrobeSummary({ status: 'Failed', companionCount: 0 }))).toBeNull();
+    expect(companionCaption(wardrobeSummary({ companionCount: undefined }))).toBeNull();
+    expect(companionCaption(wardrobeSummary({ companionCount: null }))).toBeNull();
   });
 });
 

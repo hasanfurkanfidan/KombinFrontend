@@ -4,9 +4,12 @@ import type {
   HowToWear,
   Outfit,
   OutfitPiece,
+  PairingCompanion,
+  PairingUnlock,
   WardrobeGaps,
   WardrobeItem,
   WardrobeItemSummary,
+  WardrobePairings,
   WardrobeStats,
   AlertTrigger,
   CategoryNode,
@@ -298,6 +301,7 @@ export function wardrobeSummary(overrides: Partial<WardrobeItemSummary> = {}): W
     lastWornAt: new Date().toISOString().slice(0, 10),
     isArchived: false,
     createdAt: new Date().toISOString(),
+    companionCount: 5,
     ...overrides,
   };
 }
@@ -493,4 +497,50 @@ export function dailyOutfit(overrides: Partial<DailyOutfit> = {}): DailyOutfit {
 
 export function howToWear(outfits: Outfit[], overrides: Partial<HowToWear> = {}): HowToWear {
   return { productId: 'p1', wardrobeItemId: null, outfits, message: null, ...overrides };
+}
+
+export function pairingCompanion(
+  id: string,
+  reason: PairingCompanion['reason'] = 'neutral',
+  score = 80,
+): PairingCompanion {
+  return { item: wardrobeSummary({ id, name: `Parça ${id}` }), score, reason };
+}
+
+/** A pairing answer: two bottoms and a shoe pair with the item; tops, outerwear and accessories have none. */
+export function pairings(overrides: Partial<WardrobePairings> = {}): WardrobePairings {
+  return {
+    itemId: 'w1',
+    personaId: 'pe1',
+    companions: [
+      { slot: 'Top', total: 0, items: [] },
+      {
+        slot: 'Bottom',
+        total: 2,
+        items: [pairingCompanion('b1', 'neutral'), pairingCompanion('b2', 'complementary')],
+      },
+      { slot: 'Outerwear', total: 0, items: [] },
+      { slot: 'Shoes', total: 1, items: [pairingCompanion('s1', 'statement')] },
+      { slot: 'Accessory', total: 0, items: [] },
+    ],
+    outfitCount: 6,
+    unlock: null,
+    ...overrides,
+  };
+}
+
+export function pairingUnlock(overrides: Partial<PairingUnlock> = {}): PairingUnlock {
+  return {
+    slot: 'Shoes',
+    productId: 'p77',
+    name: 'Beyaz sneaker',
+    categorySlug: 'ayakkabi/sneaker',
+    color: 'White',
+    imageUrl: 'http://img.test/p77.webp',
+    lowestPrice: 1299,
+    cheapestSeller: { name: 'Trendyol', slug: 'trendyol' },
+    goPath: '/go/o77',
+    unlocksEstimate: 8,
+    ...overrides,
+  };
 }

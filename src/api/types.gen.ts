@@ -772,6 +772,22 @@ export interface paths {
         patch: operations["UpdateWardrobeItem"];
         trace?: never;
     };
+    "/api/v1/me/wardrobe/items/{id}/pairings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["GetWardrobeItemPairings"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/me/wardrobe/items/{id}/wear": {
         parameters: {
             query?: never;
@@ -1406,6 +1422,61 @@ export interface components {
             /** Format: int32 */
             totalPages?: number | string;
         };
+        /** @description A piece that goes with the item. `Score` is 0-100 (see `OutfitPairs`), `Reason` names the colour harmony. */
+        PairingCompanion: {
+            item: components["schemas"]["WardrobeItemSummary"];
+            /** Format: int32 */
+            score: number | string;
+            reason: components["schemas"]["PairReason"];
+        };
+        /** @description A slot other than the item's own, possibly empty. `Total` counts every companion in it, also those past the limit. */
+        PairingSlot: {
+            slot: components["schemas"]["OutfitSlot"];
+            /** Format: int32 */
+            total: number | string;
+            items: components["schemas"]["PairingCompanion"][];
+        };
+        /**
+         * @description What goes with one wardrobe item. `PersonaId` is the persona the scores are weighted for, or null for a user without personas.
+         *     `OutfitCount` is how many of the outfits behind the stats' `possibleOutfits` wear the item; a layer or an accessory counts the
+         *     outfits it can be worn with. `Unlock` is null when every slot has enough companions, or the catalog has nothing that fits.
+         */
+        PairingsResponse: {
+            /** Format: uuid */
+            itemId: string;
+            /** Format: uuid */
+            personaId: null | string;
+            companions: components["schemas"]["PairingSlot"][];
+            /** Format: int32 */
+            outfitCount: number | string;
+            unlock: null | components["schemas"]["PairingUnlock"];
+        };
+        /**
+         * @description The catalog piece that would help the item most. `LowestPrice`, `CheapestSeller` and `GoPath` are one offer, the cheapest
+         *     by effective price. `UnlocksEstimate` is the outfits the item would gain. `MatchScore` is present only with a persona.
+         */
+        PairingUnlock: {
+            slot: components["schemas"]["OutfitSlot"];
+            /** Format: uuid */
+            productId: string;
+            name: string;
+            categorySlug: string;
+            color: components["schemas"]["ProductColor"];
+            imageUrl: null | string;
+            /** Format: double */
+            lowestPrice: number | string;
+            cheapestSeller: components["schemas"]["SellerRef"];
+            goPath: string;
+            /** Format: int32 */
+            unlocksEstimate: number | string;
+            /** Format: int32 */
+            matchScore?: null | number | string;
+        };
+        /**
+         * @description Why two pieces go together, in the word clients read.
+         * @enum {unknown}
+         */
+        PairReason: "neutral" | "tonal" | "complementary" | "analogous" | "statement";
         PersonaListResponse: {
             items: components["schemas"]["PersonaResponse"][];
         };
@@ -1940,25 +2011,27 @@ export interface components {
             clearQuietHours: null | boolean;
         };
         /**
-         * @description Replaces the measurements: a field that is left out is cleared. `Audience` is the exception, a null keeps the current one
-         *     (a profile always has an audience). `City` (at most 80 characters; blank clears it) is where the outfit engine reads the weather.
+         * @description The measurements and the city, the same way as the seller PUT: left out = unchanged, an explicit null = cleared. The `*Set` flags
+         *     record which of them the body contained; the JSON reader only calls an init accessor for a property that is present. `Audience` is
+         *     the exception, a null keeps the current one too (a profile always has an audience). `City` (at most 80 characters; blank clears it)
+         *     is where the outfit engine reads the weather.
          */
         UpdateProfileRequest: {
-            audience: null | string;
+            audience?: null | string;
             /** Format: int32 */
-            birthYear: null | number | string;
+            birthYear?: null | number | string;
             /** Format: int32 */
-            heightCm: null | number | string;
+            heightCm?: null | number | string;
             /** Format: double */
-            weightKg: null | number | string;
+            weightKg?: null | number | string;
             /** Format: int32 */
-            chestCm: null | number | string;
+            chestCm?: null | number | string;
             /** Format: int32 */
-            waistCm: null | number | string;
+            waistCm?: null | number | string;
             /** Format: int32 */
-            hipCm: null | number | string;
+            hipCm?: null | number | string;
             /** Format: double */
-            shoeSizeEu: null | number | string;
+            shoeSizeEu?: null | number | string;
             city?: null | string;
         };
         UpsertItemError: {
@@ -2135,7 +2208,10 @@ export interface components {
         };
         /** @enum {unknown} */
         WardrobeItemStatus: "Processing" | "Ready" | "Failed";
-        /** @description An item in lists (the wardrobe grid, the stats' most and least worn). */
+        /**
+         * @description An item in lists (the wardrobe grid, the stats' most and least worn). `CompanionCount`, how many pieces of the wardrobe it pairs
+         *     with, is present only on `GET /items`; an item that cannot be worn (yet) has 0.
+         */
         WardrobeItemSummary: {
             /** Format: uuid */
             id: string;
@@ -2152,6 +2228,8 @@ export interface components {
             isArchived: boolean;
             /** Format: date-time */
             createdAt: string;
+            /** Format: int32 */
+            companionCount?: null | number | string;
         };
         /**
          * @description Over the wardrobe (not archived, not failed). An item counts as unworn for 180 days when its last wear, or its creation when it was
@@ -4495,6 +4573,58 @@ export interface operations {
             };
             /** @description Conflict */
             409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    GetWardrobeItemPairings: {
+        parameters: {
+            query?: {
+                PersonaId?: string;
+                Limit?: number | string;
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PairingsResponse"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };

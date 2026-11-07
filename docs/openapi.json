@@ -6,7 +6,7 @@
   },
   "servers": [
     {
-      "url": "http://localhost:8081/"
+      "url": "http://localhost:8099/"
     }
   ],
   "paths": {
@@ -2709,8 +2709,8 @@
           "required": true
         },
         "responses": {
-          "201": {
-            "description": "Created",
+          "200": {
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -2719,8 +2719,8 @@
               }
             }
           },
-          "200": {
-            "description": "OK",
+          "201": {
+            "description": "Created",
             "content": {
               "application/json": {
                 "schema": {
@@ -2999,6 +2999,87 @@
         "responses": {
           "204": {
             "description": "No Content"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/me/wardrobe/items/{id}/pairings": {
+      "get": {
+        "tags": [
+          "Wardrobe"
+        ],
+        "operationId": "GetWardrobeItemPairings",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "PersonaId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "Limit",
+            "in": "query",
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": [
+                "integer",
+                "string"
+              ],
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PairingsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
           },
           "401": {
             "description": "Unauthorized",
@@ -4390,7 +4471,7 @@
             ]
           }
         },
-        "description": "`Outfit` is null only when nothing wearable could be built (then `Message` says so). `WardrobeEmpty` means the outfits\nare catalog shopping ideas (`kind` Shopping, `completeness` CatalogOnly). `Weather` is the forecast used, if any."
+        "description": "`Outfit` is null only when nothing wearable could be built (then `Message` says so). `WardrobeEmpty` means the outfits\r\nare catalog shopping ideas (`kind` Shopping, `completeness` CatalogOnly). `Weather` is the forecast used, if any."
       },
       "EventItem": {
         "required": [
@@ -4436,7 +4517,7 @@
             ]
           }
         },
-        "description": "One event as the app sends it. `AnonymousId` is the device's pre-login ID; it is required while the caller is anonymous and\nrecommended after login. `Properties` is a flat object whose keys depend on `Name` (AnalyticsEventCatalog)."
+        "description": "One event as the app sends it. `AnonymousId` is the device's pre-login ID; it is required while the caller is anonymous and\r\nrecommended after login. `Properties` is a flat object whose keys depend on `Name` (AnalyticsEventCatalog)."
       },
       "FormalityBand": {
         "enum": [
@@ -4481,9 +4562,9 @@
             ]
           }
         },
-        "description": "`Outfits` are built around the anchor (in every outfit with `role` Anchor), wardrobe pieces first; gaps come from the catalog\nwithin the persona's budget, each with its cheapest offer, and `completionPrice` sums them. A product the user already owns is\nanchored as the wardrobe item. `Message` explains an empty list or catalog-only ideas."
+        "description": "`Outfits` are built around the anchor (in every outfit with `role` Anchor), wardrobe pieces first; gaps come from the catalog\r\nwithin the persona's budget, each with its cheapest offer, and `completionPrice` sums them. A product the user already owns is\r\nanchored as the wardrobe item. `Message` explains an empty list or catalog-only ideas."
       },
-      "JsonElement": { },
+      "JsonElement": {},
       "ListAlertsResponse": {
         "required": [
           "items"
@@ -4739,7 +4820,7 @@
             "format": "date-time"
           }
         },
-        "description": "`GoPath` (`/api/v1/go/{offerId}`) is the only way to open an offer: the redirect records the click and adds the affiliate\nparameters. The seller's own URL is never part of the response."
+        "description": "`GoPath` (`/api/v1/go/{offerId}`) is the only way to open an offer: the redirect records the click and adds the affiliate\r\nparameters. The seller's own URL is never part of the response."
       },
       "OfferSeries": {
         "required": [
@@ -4789,7 +4870,7 @@
             ]
           }
         },
-        "description": "`Action`: Save, Dismiss, Worn or Shuffle. Save, Dismiss and Worn do what their own endpoints do; Shuffle (\"another one\") is only\nrecorded. `Reason` is for Dismiss only (default Other)."
+        "description": "`Action`: Save, Dismiss, Worn or Shuffle. Save, Dismiss and Worn do what their own endpoints do; Shuffle (\"another one\") is only\r\nrecorded. `Reason` is for Dismiss only (default Other)."
       },
       "OutfitItemRole": {
         "enum": [
@@ -4924,7 +5005,7 @@
             ]
           }
         },
-        "description": "One piece. A wardrobe piece has `WardrobeItemId` and its thumbnail; a catalog piece (`Role` Gap, or an Anchor from the\ncatalog) has `ProductId`, the product image and `Offer`."
+        "description": "One piece. A wardrobe piece has `WardrobeItemId` and its thumbnail; a catalog piece (`Role` Gap, or an Anchor from the\r\ncatalog) has `ProductId`, the product image and `Offer`."
       },
       "OutfitResponse": {
         "required": [
@@ -5068,7 +5149,7 @@
             "format": "date-time"
           }
         },
-        "description": "An outfit. `CompletionPrice` is what the gap pieces cost (their cheapest offers, effective price), null when there are none;\n`AnchorPrice` is the catalog anchor's price; `TotalPrice` both together. `Rule` names why it works."
+        "description": "An outfit. `CompletionPrice` is what the gap pieces cost (their cheapest offers, effective price), null when there are none;\r\n`AnchorPrice` is the catalog anchor's price; `TotalPrice` both together. `Rule` names why it works."
       },
       "OutfitSlot": {
         "enum": [
@@ -5589,6 +5670,188 @@
             "format": "int32"
           }
         }
+      },
+      "PairingCompanion": {
+        "required": [
+          "item",
+          "score",
+          "reason"
+        ],
+        "type": "object",
+        "properties": {
+          "item": {
+            "$ref": "#/components/schemas/WardrobeItemSummary"
+          },
+          "score": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "reason": {
+            "$ref": "#/components/schemas/PairReason"
+          }
+        },
+        "description": "A piece that goes with the item. `Score` is 0-100 (see `OutfitPairs`), `Reason` names the colour harmony."
+      },
+      "PairingSlot": {
+        "required": [
+          "slot",
+          "total",
+          "items"
+        ],
+        "type": "object",
+        "properties": {
+          "slot": {
+            "$ref": "#/components/schemas/OutfitSlot"
+          },
+          "total": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PairingCompanion"
+            }
+          }
+        },
+        "description": "A slot other than the item's own, possibly empty. `Total` counts every companion in it, also those past the limit."
+      },
+      "PairingsResponse": {
+        "required": [
+          "itemId",
+          "personaId",
+          "companions",
+          "outfitCount",
+          "unlock"
+        ],
+        "type": "object",
+        "properties": {
+          "itemId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "personaId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "companions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PairingSlot"
+            }
+          },
+          "outfitCount": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "unlock": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/PairingUnlock"
+              }
+            ]
+          }
+        },
+        "description": "What goes with one wardrobe item. `PersonaId` is the persona the scores are weighted for, or null for a user without personas.\r\n`OutfitCount` is how many of the outfits behind the stats' `possibleOutfits` wear the item; a layer or an accessory counts the\r\noutfits it can be worn with. `Unlock` is null when every slot has enough companions, or the catalog has nothing that fits."
+      },
+      "PairingUnlock": {
+        "required": [
+          "slot",
+          "productId",
+          "name",
+          "categorySlug",
+          "color",
+          "imageUrl",
+          "lowestPrice",
+          "cheapestSeller",
+          "goPath",
+          "unlocksEstimate"
+        ],
+        "type": "object",
+        "properties": {
+          "slot": {
+            "$ref": "#/components/schemas/OutfitSlot"
+          },
+          "productId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "categorySlug": {
+            "type": "string"
+          },
+          "color": {
+            "$ref": "#/components/schemas/ProductColor"
+          },
+          "imageUrl": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "lowestPrice": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "cheapestSeller": {
+            "$ref": "#/components/schemas/SellerRef"
+          },
+          "goPath": {
+            "type": "string"
+          },
+          "unlocksEstimate": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "matchScore": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          }
+        },
+        "description": "The catalog piece that would help the item most. `LowestPrice`, `CheapestSeller` and `GoPath` are one offer, the cheapest\r\nby effective price. `UnlocksEstimate` is the outfits the item would gain. `MatchScore` is present only with a persona."
+      },
+      "PairReason": {
+        "enum": [
+          "neutral",
+          "tonal",
+          "complementary",
+          "analogous",
+          "statement"
+        ],
+        "description": "Why two pieces go together, in the word clients read."
       },
       "PersonaListResponse": {
         "required": [
@@ -6412,7 +6675,7 @@
             "type": "boolean"
           }
         },
-        "description": "The seller. `Name`, `Kind`, `WebsiteUrl` and `IsActive` are replaced on every PUT. The affiliate fields are the\nexception, because workers that only know the shop would otherwise wipe what was configured by hand: left out = unchanged, an explicit\nnull (or blank) = cleared. The `*Set` flags record which of them the body contained; the JSON reader only calls an init accessor\nfor a property that is present."
+        "description": "The seller. `Name`, `Kind`, `WebsiteUrl` and `IsActive` are replaced on every PUT. The affiliate fields are the\r\nexception, because workers that only know the shop would otherwise wipe what was configured by hand: left out = unchanged, an explicit\r\nnull (or blank) = cleared. The `*Set` flags record which of them the body contained; the JSON reader only calls an init accessor\r\nfor a property that is present."
       },
       "PutSellerResponse": {
         "required": [
@@ -6724,7 +6987,7 @@
             "format": "date-time"
           }
         },
-        "description": "The catalog's ProductListItem fields, flattened, plus `isActive` (saved products stay in the list after they\nare delisted) and `savedAt`. A product nobody sells has `offerCount` 0 and `lowestPrice` 0."
+        "description": "The catalog's ProductListItem fields, flattened, plus `isActive` (saved products stay in the list after they\r\nare delisted) and `savedAt`. A product nobody sells has `offerCount` 0 and `lowestPrice` 0."
       },
       "SellerKind": {
         "enum": [
@@ -6961,7 +7224,7 @@
             ]
           }
         },
-        "description": "Which size to buy. `Size`, `Source` and `Confidence` are the user's own entry for the product's brand and group, when\nthere is one. Without it `Suggestion` may carry a guess from the user's sizes at other brands (not stored)."
+        "description": "Which size to buy. `Size`, `Source` and `Confidence` are the user's own entry for the product's brand and group, when\r\nthere is one. Without it `Suggestion` may carry a guess from the user's sizes at other brands (not stored)."
       },
       "SizeListResponse": {
         "required": [
@@ -7636,7 +7899,7 @@
             }
           }
         },
-        "description": "A partial update: a null field is left as it is, and `Clear` names the optional fields to empty (IReadOnlyList&lt;string&gt; UpdateItemRequest.ClearableFields).\nAn empty body is valid: it is the one-tap \"looks right\" confirmation. Enum values are names, matched case-insensitively."
+        "description": "A partial update: a null field is left as it is, and `Clear` names the optional fields to empty (IReadOnlyList&lt;string&gt; UpdateItemRequest.ClearableFields).\r\nAn empty body is valid: it is the one-tap \"looks right\" confirmation. Enum values are names, matched case-insensitively."
       },
       "UpdatePersonaRequest": {
         "required": [
@@ -7755,7 +8018,7 @@
             }
           }
         },
-        "description": "A partial update: a null field is left as it is, and a given list replaces the stored one (`[]` clears preferred/avoided\nlists, but not seasons). `ClearBudget: true` removes both budget bounds."
+        "description": "A partial update: a null field is left as it is, and a given list replaces the stored one (`[]` clears preferred/avoided\r\nlists, but not seasons). `ClearBudget: true` removes both budget bounds."
       },
       "UpdatePreferencesRequest": {
         "required": [
@@ -7815,19 +8078,9 @@
             ]
           }
         },
-        "description": "A partial update: a null field is left as it is. Quiet hours are `HH:mm` local times in Europe/Istanbul and come as a pair;\n`ClearQuietHours: true` removes them."
+        "description": "A partial update: a null field is left as it is. Quiet hours are `HH:mm` local times in Europe/Istanbul and come as a pair;\r\n`ClearQuietHours: true` removes them."
       },
       "UpdateProfileRequest": {
-        "required": [
-          "audience",
-          "birthYear",
-          "heightCm",
-          "weightKg",
-          "chestCm",
-          "waistCm",
-          "hipCm",
-          "shoeSizeEu"
-        ],
         "type": "object",
         "properties": {
           "audience": {
@@ -7906,7 +8159,7 @@
             ]
           }
         },
-        "description": "Replaces the measurements: a field that is left out is cleared. `Audience` is the exception, a null keeps the current one\n(a profile always has an audience). `City` (at most 80 characters; blank clears it) is where the outfit engine reads the weather."
+        "description": "The measurements and the city, the same way as the seller PUT: left out = unchanged, an explicit null = cleared. The `*Set` flags\r\nrecord which of them the body contained; the JSON reader only calls an init accessor for a property that is present. `Audience` is\r\nthe exception, a null keeps the current one too (a profile always has an audience). `City` (at most 80 characters; blank clears it)\r\nis where the outfit engine reads the weather."
       },
       "UpsertItemError": {
         "required": [
@@ -8439,7 +8692,7 @@
             }
           }
         },
-        "description": "`PersonaId` is the persona the analysis was made for (the active one, else the first), or null for a user without personas.\n`SuggestedProducts` fill the first gap: catalog items of its category, color and formality band, active and in stock, not\nalready in the wardrobe, and with a persona a `matchScore` of at least int GetGapsEndpoint.MinMatchScore."
+        "description": "`PersonaId` is the persona the analysis was made for (the active one, else the first), or null for a user without personas.\r\n`SuggestedProducts` fill the first gap: catalog items of its category, color and formality band, active and in stock, not\r\nalready in the wardrobe, and with a persona a `matchScore` of at least int GetGapsEndpoint.MinMatchScore."
       },
       "WardrobeItemResponse": {
         "required": [
@@ -8650,7 +8903,7 @@
             "format": "date-time"
           }
         },
-        "description": "One wardrobe item. `ThumbUrl`/`CutoutUrl` are public and permanent (a catalog item whose image could not be copied shows the\ncatalog's image); `OriginalUrl` is a 15-minute presigned link, given only when there is no cutout to show. `NeedsCategory`\nasks the app to let the user pick one of `Analysis.CategoryCandidates`. `Analysis` is there once a photo was analysed."
+        "description": "One wardrobe item. `ThumbUrl`/`CutoutUrl` are public and permanent (a catalog item whose image could not be copied shows the\r\ncatalog's image); `OriginalUrl` is a 15-minute presigned link, given only when there is no cutout to show. `NeedsCategory`\r\nasks the app to let the user pick one of `Analysis.CategoryCandidates`. `Analysis` is there once a photo was analysed."
       },
       "WardrobeItemStatus": {
         "enum": [
@@ -8727,9 +8980,18 @@
           "createdAt": {
             "type": "string",
             "format": "date-time"
+          },
+          "companionCount": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
           }
         },
-        "description": "An item in lists (the wardrobe grid, the stats' most and least worn)."
+        "description": "An item in lists (the wardrobe grid, the stats' most and least worn). `CompanionCount`, how many pieces of the wardrobe it pairs\r\nwith, is present only on `GET /items`; an item that cannot be worn (yet) has 0."
       },
       "WardrobeStatsResponse": {
         "required": [
@@ -8793,7 +9055,7 @@
             "format": "int32"
           }
         },
-        "description": "Over the wardrobe (not archived, not failed). An item counts as unworn for 180 days when its last wear, or its creation when it was\nnever worn, is more than 180 days ago. `PossibleOutfits` is the outfit engine's count of complete, wearable core outfits (top,\nbottom, shoes) the wardrobe makes, capped at 999 (see `OutfitCounter`); never null since Task 12."
+        "description": "Over the wardrobe (not archived, not failed). An item counts as unworn for 180 days when its last wear, or its creation when it was\r\nnever worn, is more than 180 days ago. `PossibleOutfits` is the outfit engine's count of complete, wearable core outfits (top,\r\nbottom, shoes) the wardrobe makes, capped at 999 (see `OutfitCounter`); never null since Task 12."
       },
       "WearResponse": {
         "required": [

@@ -38,6 +38,10 @@ export const queryKeys = {
   wardrobeItemsAll: ['wardrobe', 'items'] as const,
   wardrobeItem: (id: string) => ['wardrobe', 'item', id] as const,
   wardrobeStats: ['wardrobe', 'stats'] as const,
+  /** What goes with one item (companions per slot, outfit count, unlock suggestion). */
+  wardrobePairings: (id: string) => ['wardrobe', 'pairings', id] as const,
+  /** Every ready item that pairs with nothing, across all pages (the third stat card and its filter). */
+  wardrobeUnmatched: ['wardrobe', 'unmatched'] as const,
   wardrobeGaps: ['wardrobe', 'gaps'] as const,
 
   /** Prefix of everything about outfits (daily, how-to-wear, single, saved). */

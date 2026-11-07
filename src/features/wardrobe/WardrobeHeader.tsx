@@ -26,8 +26,20 @@ const colorOptions: Option<ProductColor | typeof ALL>[] = [
   })),
 ];
 
-/** Three cards: how many pieces, how many outfits they make (— until the backend counted), how many sit unworn. */
-export function StatsRow({ stats }: { stats: WardrobeStats | undefined }) {
+interface StatsRowProps {
+  stats: WardrobeStats | undefined;
+  /** Ready pieces that pair with nothing; `undefined` while they are being counted. */
+  unmatched: number | undefined;
+  /** The grid shows only those pieces. */
+  unmatchedActive: boolean;
+  onToggleUnmatched: () => void;
+}
+
+/**
+ * Three cards: how many pieces, how many outfits they make (— until the backend counted), and how many pieces pair
+ * with nothing. The last one is a filter: it is the pieces the gap card should help with.
+ */
+export function StatsRow({ stats, unmatched, unmatchedActive, onToggleUnmatched }: StatsRowProps) {
   const outfits = stats?.possibleOutfits;
   return (
     <View style={styles.statsRow} testID="wardrobe-stats">
@@ -41,12 +53,24 @@ export function StatsRow({ stats }: { stats: WardrobeStats | undefined }) {
         </Text>
         <Text style={styles.statLabel}>{tr.wardrobeStatOutfits}</Text>
       </View>
-      <View style={[styles.stat, styles.statAccent]}>
-        <Text style={[styles.statValue, styles.statAccentText]}>
-          {stats ? toNumber(stats.unwornFor180Days) : '—'}
+      <Pressable
+        accessibilityRole="button"
+        accessibilityState={{ selected: unmatchedActive, disabled: !unmatchedActive && !unmatched }}
+        disabled={!unmatchedActive && !unmatched}
+        onPress={onToggleUnmatched}
+        style={[styles.stat, unmatchedActive && styles.statActive]}
+        testID="stat-unmatched"
+      >
+        <Text
+          style={[styles.statValue, unmatchedActive && styles.statActiveText]}
+          testID="stat-unmatched-count"
+        >
+          {unmatched ?? '—'}
         </Text>
-        <Text style={[styles.statLabel, styles.statAccentText]}>{tr.wardrobeStatUnworn}</Text>
-      </View>
+        <Text style={[styles.statLabel, unmatchedActive && styles.statActiveText]}>
+          {tr.wardrobeStatUnmatched}
+        </Text>
+      </Pressable>
     </View>
   );
 }
@@ -124,10 +148,12 @@ function GapSuggestionsSheet({
 interface FilterChipsProps {
   filters: ItemFilters;
   onChange: (next: ItemFilters) => void;
+  /** The "parça eşleşmiyor" filter is on, so "Tümü" is not the selected chip. */
+  suspended?: boolean;
 }
 
 /** Tümü, the five top-level categories, and a colour chip that opens the colour sheet. */
-export function FilterChips({ filters, onChange }: FilterChipsProps) {
+export function FilterChips({ filters, onChange, suspended = false }: FilterChipsProps) {
   const [colorOpen, setColorOpen] = useState(false);
   const color = filters.color as ProductColor | undefined;
   return (
@@ -139,7 +165,7 @@ export function FilterChips({ filters, onChange }: FilterChipsProps) {
       >
         <Chip
           label={tr.filterAll}
-          selected={!filters.category}
+          selected={!filters.category && !suspended}
           onPress={() => onChange({ ...filters, category: undefined })}
           testID="wardrobe-filter-all"
         />
@@ -202,8 +228,8 @@ const styles = StyleSheet.create({
     padding: theme.spacing.lg,
     gap: theme.spacing.xs,
   },
-  statAccent: {
-    backgroundColor: theme.colors.accentSoft,
+  statActive: {
+    backgroundColor: theme.colors.ink,
   },
   statValue: {
     ...theme.typography.display,
@@ -213,8 +239,8 @@ const styles = StyleSheet.create({
     ...theme.typography.caption,
     color: theme.colors.inkMuted,
   },
-  statAccentText: {
-    color: theme.colors.accent,
+  statActiveText: {
+    color: theme.colors.onInk,
   },
   gapCard: {
     flexDirection: 'row',

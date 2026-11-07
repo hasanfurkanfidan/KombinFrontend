@@ -12,13 +12,19 @@ import {
   archiveWardrobeItem,
   getWardrobeGaps,
   getWardrobeItem,
+  getWardrobePairings,
   getWardrobeStats,
   listWardrobeItems,
   recordWear,
   undoWear,
   updateWardrobeItem,
 } from '@/api/endpoints/wardrobe';
-import type { CategoryNode, UpdateWardrobeItemRequest, WardrobeItem } from '@/api/models';
+import type {
+  CategoryNode,
+  UpdateWardrobeItemRequest,
+  WardrobeItem,
+  WardrobeItemSummary,
+} from '@/api/models';
 import { queryKeys } from '@/api/queryKeys';
 import { useSession } from '@/session/useSession';
 import { toNumber } from '@/utils/money';
@@ -73,6 +79,45 @@ export function useWardrobeItem(id: string | undefined) {
     queryKey: queryKeys.wardrobeItem(id ?? ''),
     queryFn: ({ signal }) => getWardrobeItem(id ?? '', signal),
     enabled: isSignedIn && Boolean(id),
+  });
+}
+
+/** What goes with one item. A 404 means it cannot be worn yet (unfinished or without a category). */
+export function useItemPairings(id: string | undefined) {
+  const { isSignedIn } = useSession();
+  return useQuery({
+    queryKey: queryKeys.wardrobePairings(id ?? ''),
+    queryFn: ({ signal }) => getWardrobePairings(id ?? '', signal),
+    enabled: isSignedIn && Boolean(id),
+  });
+}
+
+const UNMATCHED_PAGE_SIZE = 100;
+
+/** A finished, categorised item that pairs with nothing; the others (processing, failed, unconfirmed) are not "unmatched". */
+export function isUnmatched(item: WardrobeItemSummary): boolean {
+  return item.status === 'Ready' && !item.needsCategory && item.companionCount === 0;
+}
+
+/**
+ * Every item that pairs with nothing, read through all pages of the unfiltered list (a wardrobe is a few dozen pieces).
+ * It backs the third stat card and the grid when that card is on; any wardrobe change refetches it.
+ */
+export function useUnmatchedItems() {
+  const { isSignedIn } = useSession();
+  return useQuery({
+    queryKey: queryKeys.wardrobeUnmatched,
+    queryFn: async ({ signal }) => {
+      const found: WardrobeItemSummary[] = [];
+      for (let page = 1; ; page += 1) {
+        const result = await listWardrobeItems({ page, pageSize: UNMATCHED_PAGE_SIZE }, signal);
+        found.push(...result.items.filter(isUnmatched));
+        if (page >= Math.ceil(toNumber(result.totalCount) / toNumber(result.pageSize))) {
+          return found;
+        }
+      }
+    },
+    enabled: isSignedIn,
   });
 }
 

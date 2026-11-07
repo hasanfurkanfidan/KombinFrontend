@@ -27,6 +27,10 @@ export interface EventProps {
   outfit_shuffle: Record<string, never>;
   outfit_feedback: { action: 'Save' | 'Dismiss' | 'Worn' | 'Shuffle'; reason?: string };
   outfit_gap_click: Record<string, never>;
+  /** The pairing screen of a wardrobe item is on screen: how many pieces it goes with, and whether a catalog suggestion is shown. */
+  wardrobe_pairings_view: { companionTotal: number; hasUnlock: boolean };
+  /** "İncele" on the unlock card. */
+  wardrobe_unlock_click: Record<string, never>;
 }
 
 export type EventName = keyof EventProps;
@@ -54,6 +58,8 @@ export const EVENT_KEYS: Record<EventName, KeySpec> = {
   outfit_shuffle: { required: [], optional: [] },
   outfit_feedback: { required: ['action'], optional: ['reason'] },
   outfit_gap_click: { required: [], optional: [] },
+  wardrobe_pairings_view: { required: ['companionTotal', 'hasUnlock'], optional: [] },
+  wardrobe_unlock_click: { required: [], optional: [] },
 };
 
 /** Property keys that name personal data; refused on every event. */

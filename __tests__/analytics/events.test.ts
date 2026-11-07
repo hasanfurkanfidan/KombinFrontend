@@ -21,6 +21,10 @@ const BACKEND_TABLE: Record<string, { required: string[]; optional: string[] }> 
   outfit_shuffle: { required: [], optional: [] },
   outfit_feedback: { required: ['action'], optional: ['reason'] },
   outfit_gap_click: { required: [], optional: [] },
+  // Task 13c: NOT in the backend allow-list yet (Part A merged without them), so the backend rejects both one by one
+  // until it lists them; the client table already has them.
+  wardrobe_pairings_view: { required: ['companionTotal', 'hasUnlock'], optional: [] },
+  wardrobe_unlock_click: { required: [], optional: [] },
 };
 
 describe('event allow-list', () => {

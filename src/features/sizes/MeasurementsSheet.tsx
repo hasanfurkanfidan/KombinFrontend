@@ -35,6 +35,7 @@ function defaultsFrom(profile: Profile): MeasurementsInput {
     weightKg: toText(profile.weightKg),
     chestCm: toText(profile.chestCm),
     waistCm: toText(profile.waistCm),
+    city: profile.city ?? '',
   };
 }
 
@@ -44,7 +45,7 @@ interface MeasurementsSheetProps {
   profile: Profile;
 }
 
-/** "Ölçüleri güncelle": boy / kilo / göğüs / bel with the backend's ranges, saved with `PUT /me/profile`. */
+/** "Ölçüleri güncelle": boy / kilo / göğüs / bel with the backend's ranges, and the city for the weather; saved with `PUT /me/profile`. */
 export function MeasurementsSheet({ visible, onClose, profile }: MeasurementsSheetProps) {
   const update = useUpdateProfile();
   const {
@@ -94,6 +95,25 @@ export function MeasurementsSheet({ visible, onClose, profile }: MeasurementsShe
           )}
         />
       ))}
+      <Controller
+        control={control}
+        name="city"
+        render={({ field }) => (
+          <View>
+            <TextField
+              label={tr.profileCityLabel}
+              value={field.value}
+              onChangeText={field.onChange}
+              onBlur={field.onBlur}
+              placeholder={tr.profileCityPlaceholder}
+              autoCapitalize="words"
+              hint={tr.profileCityHint}
+              error={errors.city?.message}
+              testID="profile-city"
+            />
+          </View>
+        )}
+      />
       {errors.root?.message ? <Text style={styles.error}>{errors.root.message}</Text> : null}
       <Button
         label={tr.save}

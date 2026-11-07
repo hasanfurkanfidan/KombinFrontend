@@ -7,6 +7,7 @@ import {
   listSavedOutfits,
 } from '@/api/endpoints/outfits';
 import {
+  getWardrobePairings,
   listWardrobeItems,
   putPhoto,
   recordWear,
@@ -14,6 +15,7 @@ import {
   updateWardrobeItem,
 } from '@/api/endpoints/wardrobe';
 
+import { pairings } from '../fixtures';
 import { API, authHeader, reply, resetSession, signedInSession } from '../testUtils';
 
 const uploadAsyncMock = jest.mocked(FileSystem.uploadAsync);
@@ -37,6 +39,29 @@ describe('wardrobe endpoints', () => {
       `${API}/api/v1/me/wardrobe/items?Category=dis-giyim&Color=Black&Page=2&PageSize=24`,
     );
     expect(authHeader(lastCall())).toBe('Bearer access-old');
+  });
+
+  it('asks for the pairings of one item with the bearer token and no persona', async () => {
+    fetchMock.mockResolvedValue(reply(200, pairings()));
+
+    const result = await getWardrobePairings('w1');
+
+    expect(lastCall()[0]).toBe(`${API}/api/v1/me/wardrobe/items/w1/pairings`);
+    expect(authHeader(lastCall())).toBe('Bearer access-old');
+    expect(result.companions.map((slot) => slot.slot)).toEqual([
+      'Top',
+      'Bottom',
+      'Outerwear',
+      'Shoes',
+      'Accessory',
+    ]);
+    expect(result.unlock).toBeNull();
+  });
+
+  it('escapes the id in the pairings path', async () => {
+    await getWardrobePairings('a/b');
+
+    expect(lastCall()[0]).toBe(`${API}/api/v1/me/wardrobe/items/a%2Fb/pairings`);
   });
 
   it('uploads the photo file itself to the presigned URL: PUT, binary body, the given headers, no bearer token', async () => {
