@@ -75,6 +75,10 @@ export const sizes = {
   outfitHeaderButton: 44,
   /** Weather pill and piece thumbnails on the home card. */
   homeCardThumbHeight: 84,
+  /** The pairing screen's cutout takes this share of the window height. */
+  itemCutoutRatio: 0.4,
+  /** A companion tile in the "Bununla gidenler" rows. */
+  pairingTile: 96,
 } as const;
 
 export const shadows = {

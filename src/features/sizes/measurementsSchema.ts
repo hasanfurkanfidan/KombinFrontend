@@ -10,6 +10,9 @@ export const MEASUREMENT_RANGES = {
   waistCm: { min: 50, max: 200, integer: true },
 } as const;
 
+/** The backend's limit for `city`; blank clears it. */
+export const CITY_MAX_LENGTH = 80;
+
 /** A measurement typed as text: empty clears it, otherwise it must be a number inside the backend's range. */
 function measurement({ min, max, integer }: { min: number; max: number; integer: boolean }) {
   return z
@@ -34,6 +37,11 @@ export const measurementsSchema = z.object({
   weightKg: measurement(MEASUREMENT_RANGES.weightKg),
   chestCm: measurement(MEASUREMENT_RANGES.chestCm),
   waistCm: measurement(MEASUREMENT_RANGES.waistCm),
+  city: z
+    .string()
+    .trim()
+    .max(CITY_MAX_LENGTH, tr.profileCityTooLong)
+    .transform((text) => (text === '' ? null : text)),
 });
 
 export type MeasurementsInput = z.input<typeof measurementsSchema>;

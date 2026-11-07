@@ -11,6 +11,7 @@ import type {
   WardrobeGaps,
   WardrobeItem,
   WardrobeItemPage,
+  WardrobePairings,
   WardrobeStats,
   WearResponse,
 } from '../models';
@@ -133,6 +134,14 @@ export function undoWear(id: string, wornOn: string): Promise<WearResponse> {
     `${BASE}/items/${encodeURIComponent(id)}/wear/${encodeURIComponent(wornOn)}`,
     { method: 'DELETE', auth: true },
   );
+}
+
+/** What goes with the item: the persona is the backend's (active) one, so none is sent. */
+export function getWardrobePairings(id: string, signal?: AbortSignal): Promise<WardrobePairings> {
+  return request<WardrobePairings>(`${BASE}/items/${encodeURIComponent(id)}/pairings`, {
+    auth: true,
+    signal,
+  });
 }
 
 export function getWardrobeStats(signal?: AbortSignal): Promise<WardrobeStats> {

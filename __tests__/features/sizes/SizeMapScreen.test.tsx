@@ -97,9 +97,58 @@ describe('SizeMapScreen', () => {
       waistCm: 84,
       hipCm: 98,
       shoeSizeEu: null,
-      // The backend clears a city that is left out of the PUT: it travels with every measurements update.
+      // The city travels with every measurements update.
       city: null,
     });
+  });
+
+  it('keeps the stored city when only a measurement changes', async () => {
+    getProfileMock.mockResolvedValue(profile({ city: 'Ankara' }));
+    updateProfileMock.mockResolvedValue(profile());
+
+    await renderWithQuery(<SizeMapScreen />);
+    await fireEvent.press(await screen.findByTestId('measurements-edit'));
+    expect((await screen.findByTestId('profile-city')).props.value).toBe('Ankara');
+    await fireEvent.press(screen.getByTestId('measurements-save'));
+
+    await waitFor(() => expect(updateProfileMock).toHaveBeenCalledTimes(1));
+    expect(updateProfileMock.mock.calls[0]?.[0]).toMatchObject({ city: 'Ankara' });
+  });
+
+  it('clears the city when the field is emptied', async () => {
+    getProfileMock.mockResolvedValue(profile({ city: 'Ankara' }));
+    updateProfileMock.mockResolvedValue(profile());
+
+    await renderWithQuery(<SizeMapScreen />);
+    await fireEvent.press(await screen.findByTestId('measurements-edit'));
+    await fireEvent.changeText(await screen.findByTestId('profile-city'), '   ');
+    await fireEvent.press(screen.getByTestId('measurements-save'));
+
+    await waitFor(() => expect(updateProfileMock).toHaveBeenCalledTimes(1));
+    expect(updateProfileMock.mock.calls[0]?.[0]).toMatchObject({ city: null });
+  });
+
+  it('saves a typed city with the placeholder "İstanbul" while empty', async () => {
+    updateProfileMock.mockResolvedValue(profile({ city: 'İzmir' }));
+
+    await renderWithQuery(<SizeMapScreen />);
+    await fireEvent.press(await screen.findByTestId('measurements-edit'));
+    expect((await screen.findByTestId('profile-city')).props.placeholder).toBe('İstanbul');
+    await fireEvent.changeText(screen.getByTestId('profile-city'), '  İzmir ');
+    await fireEvent.press(screen.getByTestId('measurements-save'));
+
+    await waitFor(() => expect(updateProfileMock).toHaveBeenCalled());
+    expect(updateProfileMock.mock.calls[0]?.[0]).toMatchObject({ city: 'İzmir', heightCm: 178 });
+  });
+
+  it('refuses a city longer than 80 characters', async () => {
+    await renderWithQuery(<SizeMapScreen />);
+    await fireEvent.press(await screen.findByTestId('measurements-edit'));
+    await fireEvent.changeText(await screen.findByTestId('profile-city'), 'a'.repeat(81));
+    await fireEvent.press(screen.getByTestId('measurements-save'));
+
+    expect(await screen.findByText('Şehir en fazla 80 karakter olabilir')).toBeTruthy();
+    expect(updateProfileMock).not.toHaveBeenCalled();
   });
 
   it('refuses values outside the backend ranges', async () => {

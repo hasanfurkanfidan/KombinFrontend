@@ -11,15 +11,20 @@ import { toNumber } from '@/utils/money';
 
 import { useAddStore } from './addStore';
 
-const STALE_DAYS = 180;
-const DAY_MS = 86_400_000;
-
-/** "6 ay" pill: not worn for 180 days (or never) while the item itself is older than that. */
-export function isStale(item: WardrobeItemSummary, now: Date = new Date()): boolean {
-  const cutoff = now.getTime() - STALE_DAYS * DAY_MS;
-  const addedBefore = new Date(item.createdAt).getTime() < cutoff;
-  const wornSince = item.lastWornAt !== null && new Date(item.lastWornAt).getTime() >= cutoff;
-  return addedBefore && !wornSince;
+/**
+ * The muted line under a tile: how many pieces it goes with. Not shown while the item is processing or failed, nor for
+ * a card the backend has not counted yet (`companionCount` is only on the list endpoint).
+ */
+export function companionCaption(item: WardrobeItemSummary): string | null {
+  if (
+    item.status !== 'Ready' ||
+    item.companionCount === undefined ||
+    item.companionCount === null
+  ) {
+    return null;
+  }
+  const count = toNumber(item.companionCount);
+  return count > 0 ? tr.wardrobeCompanions(count) : tr.wardrobeNoCompanions;
 }
 
 interface ItemTileProps {
@@ -38,6 +43,7 @@ export function ItemTile({ item, width, onPress, onRetry }: ItemTileProps) {
   // The server's thumbnail is a cutout on transparent ground (contain); the local photo fills the tile while we wait.
   const uri = item.thumbUrl ?? localUri;
   const isCutout = item.thumbUrl !== null;
+  const caption = companionCaption(item);
 
   return (
     <View style={{ width }}>
@@ -79,18 +85,13 @@ export function ItemTile({ item, width, onPress, onRetry }: ItemTileProps) {
               <Text style={styles.pillTextLight}>{tr.wardrobeFailedRetry}</Text>
             </View>
           </>
-        ) : isStale(item) ? (
-          <View style={[styles.pill, styles.pillInk]} testID={`wardrobe-stale-${item.id}`}>
-            <Text style={styles.pillTextLight}>{tr.wardrobeUnwornPill}</Text>
-          </View>
-        ) : (
-          <View style={[styles.pill, styles.pillLight]} testID={`wardrobe-wears-${item.id}`}>
-            <Text style={styles.pillTextDark}>
-              {tr.wardrobeWornCount(toNumber(item.wearCount))}
-            </Text>
-          </View>
-        )}
+        ) : null}
       </Pressable>
+      {caption ? (
+        <Text style={styles.caption} numberOfLines={1} testID={`wardrobe-companions-${item.id}`}>
+          {caption}
+        </Text>
+      ) : null}
       {failed && failureReason ? (
         <Text style={styles.reason} numberOfLines={2} testID={`wardrobe-failure-reason-${item.id}`}>
           {failureReason}
@@ -122,6 +123,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     overflow: 'hidden',
   },
+  caption: {
+    ...theme.typography.caption,
+    color: theme.colors.inkMuted,
+    marginTop: theme.spacing.xs,
+  },
   reason: {
     ...theme.typography.caption,
     color: theme.colors.inkMuted,
@@ -149,9 +155,6 @@ const styles = StyleSheet.create({
   },
   pillLight: {
     backgroundColor: theme.colors.surface,
-  },
-  pillInk: {
-    backgroundColor: theme.colors.ink,
   },
   pillWarning: {
     backgroundColor: theme.colors.warning,

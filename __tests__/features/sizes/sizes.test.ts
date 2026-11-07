@@ -41,7 +41,13 @@ describe('size pill', () => {
 });
 
 describe('measurements schema', () => {
-  const valid = { heightCm: '178', weightKg: '76,5', chestCm: '100', waistCm: '84' };
+  const valid = {
+    heightCm: '178',
+    weightKg: '76,5',
+    chestCm: '100',
+    waistCm: '84',
+    city: 'Ankara',
+  };
 
   it('turns text into numbers, with a decimal comma for the weight', () => {
     expect(measurementsSchema.parse(valid)).toEqual({
@@ -49,7 +55,21 @@ describe('measurements schema', () => {
       weightKg: 76.5,
       chestCm: 100,
       waistCm: 84,
+      city: 'Ankara',
     });
+  });
+
+  it('trims the city, and a blank one clears it', () => {
+    expect(measurementsSchema.parse({ ...valid, city: '  İzmir ' }).city).toBe('İzmir');
+    expect(measurementsSchema.parse({ ...valid, city: '   ' }).city).toBeNull();
+  });
+
+  it('accepts 80 characters of city and refuses 81', () => {
+    expect(measurementsSchema.safeParse({ ...valid, city: 'a'.repeat(80) }).success).toBe(true);
+    const long = measurementsSchema.safeParse({ ...valid, city: 'a'.repeat(81) });
+    expect(long.error?.issues.map((issue) => issue.message)).toEqual([
+      'Şehir en fazla 80 karakter olabilir',
+    ]);
   });
 
   it('treats an empty field as cleared', () => {

@@ -17,7 +17,13 @@ import { AddItemSheet } from './AddItemSheet';
 import { retryItem } from './addItem';
 import { useAddStore } from './addStore';
 import { ConfirmItemSheet } from './ConfirmItemSheet';
-import { useWardrobeGaps, useWardrobeItems, useWardrobeStats, type ItemFilters } from './hooks';
+import {
+  useUnmatchedItems,
+  useWardrobeGaps,
+  useWardrobeItems,
+  useWardrobeStats,
+  type ItemFilters,
+} from './hooks';
 import { AddTile, ItemTile } from './ItemTile';
 import { AddButton, FilterChips, GapCard, StatsRow } from './WardrobeHeader';
 
@@ -54,10 +60,13 @@ function SignedInWardrobe() {
   const tileWidth = (width - theme.screenPaddingX * 2 - GAP * (COLUMNS - 1)) / COLUMNS;
   const [filters, setFilters] = useState<ItemFilters>({});
   const [addOpen, setAddOpen] = useState(false);
+  // The third stat card: the grid shows only the pieces that pair with nothing.
+  const [unmatchedOnly, setUnmatchedOnly] = useState(false);
 
   const stats = useWardrobeStats();
   const gaps = useWardrobeGaps();
   const items = useWardrobeItems(filters);
+  const unmatched = useUnmatchedItems();
   const uploading = useAddStore((state) => state.uploading);
   const confirmId = useAddStore((state) => state.confirmQueue[0] ?? null);
 
@@ -69,12 +78,24 @@ function SignedInWardrobe() {
     }, []),
   );
 
-  const list = useMemo(() => items.data?.pages.flatMap((page) => page.items) ?? [], [items.data]);
-  const filtered = Boolean(filters.category ?? filters.color);
+  const pagedList = useMemo(
+    () => items.data?.pages.flatMap((page) => page.items) ?? [],
+    [items.data],
+  );
+  const unmatchedList = unmatched.data;
+  const list = useMemo(
+    () => (unmatchedOnly ? (unmatchedList ?? []) : pagedList),
+    [unmatchedOnly, unmatchedList, pagedList],
+  );
+  const filtered = unmatchedOnly || Boolean(filters.category ?? filters.color);
   const cells: Cell[] = useMemo(
     () => [...list.map((item): Cell => ({ kind: 'item', item })), { kind: 'add' }],
     [list],
   );
+  const changeFilters = (next: ItemFilters) => {
+    setUnmatchedOnly(false);
+    setFilters(next);
+  };
 
   const header = (
     <View style={styles.header}>
@@ -82,9 +103,14 @@ function SignedInWardrobe() {
         <Text style={styles.title}>{tr.wardrobeTitle}</Text>
         <AddButton onPress={() => setAddOpen(true)} />
       </View>
-      <StatsRow stats={stats.data} />
+      <StatsRow
+        stats={stats.data}
+        unmatched={unmatched.data?.length}
+        unmatchedActive={unmatchedOnly}
+        onToggleUnmatched={() => setUnmatchedOnly((on) => !on)}
+      />
       <GapCard gaps={gaps.data} />
-      <FilterChips filters={filters} onChange={setFilters} />
+      <FilterChips filters={filters} onChange={changeFilters} suspended={unmatchedOnly} />
       {uploading && uploading.total > 1 ? (
         <View style={styles.progress} testID="upload-progress">
           <Text style={styles.progressText}>
@@ -96,14 +122,15 @@ function SignedInWardrobe() {
   );
 
   let placeholder: ReactElement | null = null;
-  if (items.isPending) {
+  const source = unmatchedOnly ? unmatched : items;
+  if (source.isPending) {
     placeholder = <GridSkeleton tileWidth={tileWidth} />;
-  } else if (items.isError && list.length === 0) {
-    placeholder = <ErrorState body={tr.wardrobeLoadFailed} onRetry={() => void items.refetch()} />;
+  } else if (source.isError && list.length === 0) {
+    placeholder = <ErrorState body={tr.wardrobeLoadFailed} onRetry={() => void source.refetch()} />;
   }
 
-  const emptyWardrobe = !items.isPending && !items.isError && list.length === 0 && !filtered;
-  const emptyFilter = !items.isPending && !items.isError && list.length === 0 && filtered;
+  const emptyWardrobe = !source.isPending && !source.isError && list.length === 0 && !filtered;
+  const emptyFilter = !source.isPending && !source.isError && list.length === 0 && filtered;
 
   return (
     <>
@@ -123,7 +150,9 @@ function SignedInWardrobe() {
               action={{ label: tr.wardrobeAddButton, onPress: () => setAddOpen(true) }}
             />
           ) : (
-            <EmptyState title={tr.wardrobeFilteredEmpty} />
+            <EmptyState
+              title={unmatchedOnly ? tr.wardrobeUnmatchedEmpty : tr.wardrobeFilteredEmpty}
+            />
           ))
         }
         renderItem={({ item: cell }) =>
@@ -153,7 +182,12 @@ function SignedInWardrobe() {
           )
         }
         onEndReached={() => {
-          if (items.hasNextPage && !items.isFetchingNextPage && !items.isFetchNextPageError) {
+          if (
+            !unmatchedOnly &&
+            items.hasNextPage &&
+            !items.isFetchingNextPage &&
+            !items.isFetchNextPageError
+          ) {
             void items.fetchNextPage();
           }
         }}
@@ -162,6 +196,7 @@ function SignedInWardrobe() {
         onRefresh={() => {
           void items.refetch();
           void stats.refetch();
+          void unmatched.refetch();
           void gaps.refetch();
         }}
         showsVerticalScrollIndicator={false}

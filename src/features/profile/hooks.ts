@@ -29,8 +29,9 @@ export function useProfile() {
 }
 
 /**
- * `PUT /me/profile` replaces the measurements and the city (a field left out is cleared) and keeps the audience when
- * it is null, so an update always carries the current measurements and city and only overrides what changed.
+ * `PUT /me/profile`: a field left out is unchanged and an explicit null clears it (audience excepted: null keeps it).
+ * The body still carries every current value, so the result does not depend on that rule and a patch overrides only
+ * what changed.
  */
 export function toUpdateRequest(
   profile: Profile,
@@ -58,6 +59,8 @@ export function useUpdateProfile() {
       queryClient.setQueryData(queryKeys.profile, profile);
       // Measurements feed the size hint on product detail.
       await queryClient.invalidateQueries({ queryKey: ['catalog', 'product'] });
+      // The city decides the weather an outfit is made for.
+      await queryClient.invalidateQueries({ queryKey: queryKeys.outfitsAll });
     },
   });
 }

@@ -34,20 +34,17 @@ const gapsMock = jest.mocked(getWardrobeGaps);
 const getItemMock = jest.mocked(getWardrobeItem);
 const processMock = jest.mocked(processWardrobeItem);
 
-const daysAgo = (days: number) => new Date(Date.now() - days * 86_400_000).toISOString();
-
 function itemsPage(items: WardrobeItemSummary[]) {
   return { items, page: 1, pageSize: 24, totalCount: items.length, totalPages: 1 };
 }
 
-const normal = wardrobeSummary({ id: 'w1', wearCount: 12 });
-const stale = wardrobeSummary({
+const normal = wardrobeSummary({ id: 'w1', companionCount: 5 });
+// A finished piece that goes with nothing: the third stat card counts it.
+const lonely = wardrobeSummary({
   id: 'w2',
   name: 'Kahverengi ceket',
   primaryColor: 'Brown',
-  wearCount: 0,
-  lastWornAt: null,
-  createdAt: daysAgo(300),
+  companionCount: 0,
 });
 const processing = wardrobeSummary({
   id: 'w3',
@@ -55,14 +52,21 @@ const processing = wardrobeSummary({
   name: null,
   categorySlug: null,
   thumbUrl: null,
+  companionCount: 0,
 });
-const failed = wardrobeSummary({ id: 'w4', status: 'Failed', name: null, thumbUrl: null });
+const failed = wardrobeSummary({
+  id: 'w4',
+  status: 'Failed',
+  name: null,
+  thumbUrl: null,
+  companionCount: 0,
+});
 
 beforeEach(async () => {
   jest.clearAllMocks();
   await resetSession();
   useAddStore.getState().reset();
-  listItemsMock.mockResolvedValue(itemsPage([processing, normal, stale, failed]));
+  listItemsMock.mockResolvedValue(itemsPage([processing, normal, lonely, failed]));
   statsMock.mockResolvedValue(wardrobeStats());
   gapsMock.mockResolvedValue(wardrobeGaps());
   jest.mocked(listCategories).mockResolvedValue(categories);
@@ -86,7 +90,7 @@ describe('Dolap grid', () => {
     await signedInSession();
   });
 
-  it('shows processing, failed, worn and long-unworn pieces differently, and a dashed "+" last', async () => {
+  it('shows processing and failed pieces differently, a pairing caption under the rest, and a dashed "+" last', async () => {
     await renderWithQuery(<WardrobeScreen />);
 
     // Processing: shimmer over the thumbnail and an "İşleniyor" pill.
@@ -95,13 +99,27 @@ describe('Dolap grid', () => {
     expect(screen.getByTestId('wardrobe-processing-w3')).toBeTruthy();
     expect(processingTile.props.accessibilityState.disabled).toBe(true);
 
-    // A normal piece: the wear count.
-    expect(within(screen.getByTestId('wardrobe-wears-w1')).getByText('12×')).toBeTruthy();
-    // Never worn and old: the ink "6 ay" pill.
-    expect(within(screen.getByTestId('wardrobe-stale-w2')).getByText('6 ay')).toBeTruthy();
+    // A piece that pairs: a muted caption under the tile, no wear pill on it.
+    expect(screen.getByTestId('wardrobe-companions-w1')).toHaveTextContent('5 parçayla gider');
+    expect(screen.queryByText('12×')).toBeNull();
+    expect(screen.queryByText('6 ay')).toBeNull();
+    // One that pairs with nothing says so; processing and failed cards have no caption.
+    expect(screen.getByTestId('wardrobe-companions-w2')).toHaveTextContent('Eşleşen parça yok');
+    expect(screen.queryByTestId('wardrobe-companions-w3')).toBeNull();
+    expect(screen.queryByTestId('wardrobe-companions-w4')).toBeNull();
     // Failed: the warning badge.
     expect(screen.getByTestId('wardrobe-failed-w4')).toBeTruthy();
     expect(screen.getByTestId('wardrobe-add-tile')).toBeTruthy();
+  });
+
+  it('shows no caption for a card the backend has not counted yet', async () => {
+    listItemsMock.mockResolvedValue(
+      itemsPage([wardrobeSummary({ id: 'w5', companionCount: undefined })]),
+    );
+    await renderWithQuery(<WardrobeScreen />);
+
+    await screen.findByTestId('wardrobe-item-w5');
+    expect(screen.queryByTestId('wardrobe-companions-w5')).toBeNull();
   });
 
   it('prints the reason under a failed card when one is known', async () => {
@@ -134,8 +152,60 @@ describe('Dolap grid', () => {
     expect(within(stats).getByText('parça')).toBeTruthy();
     expect(within(stats).getByText('olası kombin')).toBeTruthy();
     expect(screen.getByTestId('stat-outfits').props.children).toBe('—');
-    expect(within(stats).getByText('8')).toBeTruthy();
-    expect(within(stats).getByText('6 aydır giyilmedi')).toBeTruthy();
+    // Only the finished piece that pairs with nothing counts (not the processing or failed ones).
+    await waitFor(() => expect(screen.getByTestId('stat-unmatched-count').props.children).toBe(1));
+    expect(within(stats).getByText('parça eşleşmiyor')).toBeTruthy();
+    expect(within(stats).queryByText('6 aydır giyilmedi')).toBeNull();
+  });
+
+  it('counts the unmatched pieces over every page, not only the first', async () => {
+    const second = wardrobeSummary({ id: 'w6', companionCount: 0 });
+    listItemsMock.mockImplementation(async (query) =>
+      query.pageSize === 100 && query.page === 2
+        ? { items: [second], page: 2, pageSize: 100, totalCount: 101, totalPages: 2 }
+        : query.pageSize === 100
+          ? { items: [lonely], page: 1, pageSize: 100, totalCount: 101, totalPages: 2 }
+          : itemsPage([normal]),
+    );
+    await renderWithQuery(<WardrobeScreen />);
+
+    await waitFor(() => expect(screen.getByTestId('stat-unmatched-count').props.children).toBe(2));
+  });
+
+  it('filters the grid to the unmatched pieces when the third card is pressed, and back', async () => {
+    await renderWithQuery(<WardrobeScreen />);
+    await screen.findByTestId('wardrobe-item-w1');
+    await waitFor(() => expect(screen.getByTestId('stat-unmatched-count').props.children).toBe(1));
+
+    await fireEvent.press(screen.getByTestId('stat-unmatched'));
+    await waitFor(() => expect(screen.queryByTestId('wardrobe-item-w1')).toBeNull());
+    expect(screen.getByTestId('wardrobe-item-w2')).toBeTruthy();
+    expect(screen.queryByTestId('wardrobe-item-w3')).toBeNull();
+    expect(screen.getByTestId('stat-unmatched').props.accessibilityState.selected).toBe(true);
+
+    await fireEvent.press(screen.getByTestId('stat-unmatched'));
+    expect(await screen.findByTestId('wardrobe-item-w1')).toBeTruthy();
+  });
+
+  it('leaves the unmatched filter when a category chip is chosen', async () => {
+    await renderWithQuery(<WardrobeScreen />);
+    await screen.findByTestId('wardrobe-item-w1');
+    await waitFor(() => expect(screen.getByTestId('stat-unmatched-count').props.children).toBe(1));
+
+    await fireEvent.press(screen.getByTestId('stat-unmatched'));
+    await waitFor(() => expect(screen.queryByTestId('wardrobe-item-w1')).toBeNull());
+    await fireEvent.press(screen.getByTestId('wardrobe-filter-all'));
+
+    expect(await screen.findByTestId('wardrobe-item-w1')).toBeTruthy();
+    expect(screen.getByTestId('stat-unmatched').props.accessibilityState.selected).toBe(false);
+  });
+
+  it('cannot be pressed when every piece pairs with something', async () => {
+    listItemsMock.mockResolvedValue(itemsPage([normal]));
+    await renderWithQuery(<WardrobeScreen />);
+
+    await waitFor(() => expect(screen.getByTestId('stat-unmatched-count').props.children).toBe(0));
+    expect(screen.getByTestId('stat-unmatched').props.accessibilityState.disabled).toBe(true);
   });
 
   it('shows the olası kombin count once the backend has it', async () => {
@@ -170,7 +240,7 @@ describe('Dolap grid', () => {
   it('filters by top-level category and by colour', async () => {
     await renderWithQuery(<WardrobeScreen />);
     await screen.findByTestId('wardrobe-item-w1');
-    expect(listItemsMock.mock.calls[0]?.[0]).toEqual({ page: 1, pageSize: 24 });
+    expect(listItemsMock).toHaveBeenCalledWith({ page: 1, pageSize: 24 }, expect.anything());
 
     await fireEvent.press(screen.getByTestId('wardrobe-filter-dis-giyim'));
     await waitFor(() =>
