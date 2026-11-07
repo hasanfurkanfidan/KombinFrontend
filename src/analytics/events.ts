@@ -1,4 +1,13 @@
-import type { AlertKind, NotificationKind, OutfitCompleteness, OutfitKind } from '@/api/models';
+import type {
+  AlertKind,
+  NotificationKind,
+  OutfitCompleteness,
+  OutfitKind,
+  PostKind,
+  PostTagKind,
+  PostVisibility,
+  ReportReason,
+} from '@/api/models';
 
 /**
  * The analytics allow-list, mirrored from the backend README ("Analytics" table, `AnalyticsEventCatalog`).
@@ -31,6 +40,25 @@ export interface EventProps {
   wardrobe_pairings_view: { companionTotal: number; hasUnlock: boolean };
   /** "İncele" on the unlock card. */
   wardrobe_unlock_click: Record<string, never>;
+  /** A post came on screen. Ids and enums only; `position` is its index in the list (0-500). */
+  post_view: {
+    postId: string;
+    source: 'feed' | 'profile' | 'creator' | 'mine' | 'link';
+    position?: number;
+  };
+  post_tag_tap: { postId: string; tagKind: PostTagKind; hasOffer: boolean };
+  post_like: { postId: string; liked: boolean };
+  post_create_start: { kind: PostKind; source: 'camera' | 'library' | 'outfit' };
+  post_create_done: {
+    kind: PostKind;
+    status: 'Live' | 'Draft' | 'NeedsReview' | 'Blocked' | 'Failed' | 'Cancelled';
+    tagCount: number;
+    visibility?: PostVisibility;
+    durationMs: number;
+  };
+  post_report: { postId: string; reason: ReportReason };
+  creator_profile_view: { creatorId: string };
+  try_with_wardrobe: { postId: string; anchorCount: number; outfitCount: number };
 }
 
 export type EventName = keyof EventProps;
@@ -60,6 +88,17 @@ export const EVENT_KEYS: Record<EventName, KeySpec> = {
   outfit_gap_click: { required: [], optional: [] },
   wardrobe_pairings_view: { required: ['companionTotal', 'hasUnlock'], optional: [] },
   wardrobe_unlock_click: { required: [], optional: [] },
+  post_view: { required: ['postId', 'source'], optional: ['position'] },
+  post_tag_tap: { required: ['postId', 'tagKind', 'hasOffer'], optional: [] },
+  post_like: { required: ['postId', 'liked'], optional: [] },
+  post_create_start: { required: ['kind', 'source'], optional: [] },
+  post_create_done: {
+    required: ['kind', 'status', 'tagCount', 'durationMs'],
+    optional: ['visibility'],
+  },
+  post_report: { required: ['postId', 'reason'], optional: [] },
+  creator_profile_view: { required: ['creatorId'], optional: [] },
+  try_with_wardrobe: { required: ['postId', 'anchorCount', 'outfitCount'], optional: [] },
 };
 
 /** Property keys that name personal data; refused on every event. */

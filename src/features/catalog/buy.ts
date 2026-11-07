@@ -5,7 +5,7 @@ import { baseUrl } from '@/api/client';
 import type { Offer } from '@/api/models';
 
 /** Where a buy click comes from; the backend records it with the click. */
-export type ClickSource = 'product_detail' | 'saved' | 'alert' | 'outfit';
+export type ClickSource = 'product_detail' | 'saved' | 'alert' | 'outfit' | 'feed';
 
 /**
  * The only way the app sends a user to a seller: the backend's `/go` redirect, built from the offer's `goPath`.
@@ -15,9 +15,14 @@ export function buildGoUrl(
   goPath: string,
   options: { source?: ClickSource; personaId?: string } = {},
 ): string {
-  const params = [`src=${encodeURIComponent(options.source ?? 'product_detail')}`];
+  // A feed post's `goPath` already says `?src=feed&post=…` (the post is what the creator is paid for): the link is used as is.
+  const hasSource = /[?&]src=/.test(goPath);
+  const params = hasSource ? [] : [`src=${encodeURIComponent(options.source ?? 'product_detail')}`];
   if (options.personaId) {
     params.push(`personaId=${encodeURIComponent(options.personaId)}`);
+  }
+  if (params.length === 0) {
+    return `${baseUrl()}${goPath}`;
   }
   return `${baseUrl()}${goPath}${goPath.includes('?') ? '&' : '?'}${params.join('&')}`;
 }

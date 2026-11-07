@@ -19,6 +19,13 @@ describe('buy via /go', () => {
     );
   });
 
+  it('uses a feed goPath as given: it already says src=feed&post=…, and a second src would break the attribution', () => {
+    const goPath = '/api/v1/go/o1?src=feed&post=post-1';
+    expect(buildGoUrl(goPath, { source: 'feed' })).toBe(`http://api.test${goPath}`);
+    expect(buildGoUrl(goPath)).toBe(`http://api.test${goPath}`);
+    expect(buildGoUrl(goPath, { personaId: 'pe1' })).toBe(`http://api.test${goPath}&personaId=pe1`);
+  });
+
   it('opens the redirect in the in-app browser, and survives a browser failure', async () => {
     const open = jest.mocked(WebBrowser.openBrowserAsync);
     await openOffer({ id: 'o2', goPath: '/api/v1/go/o2' }, { personaId: 'pe1' });

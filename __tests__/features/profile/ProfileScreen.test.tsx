@@ -12,6 +12,8 @@ import {
   listSizes,
   updatePersona,
 } from '@/api/endpoints/profile';
+import { ApiError } from '@/api/client';
+import { getCreatorStats } from '@/api/endpoints/social';
 import { ProfileScreen } from '@/features/profile/ProfileScreen';
 import { useSessionStore } from '@/session/sessionStore';
 
@@ -21,6 +23,7 @@ import { renderWithQuery, resetSession, signedInSession } from '../../testUtils'
 jest.mock('@/api/endpoints/auth');
 jest.mock('@/api/endpoints/engagement');
 jest.mock('@/api/endpoints/profile');
+jest.mock('@/api/endpoints/social');
 
 const getMeMock = jest.mocked(getMe);
 const logoutMock = jest.mocked(logout);
@@ -53,6 +56,12 @@ beforeEach(async () => {
   jest.clearAllMocks();
   await resetSession();
   getMeMock.mockResolvedValue(me);
+  // Not a creator unless a test says so.
+  jest
+    .mocked(getCreatorStats)
+    .mockRejectedValue(
+      new ApiError({ status: 403, errorCode: 'Social.NotACreator', correlationId: 'c' }),
+    );
   jest.mocked(getProfile).mockResolvedValue(profile({ personaCount: 2 }));
   listPersonasMock.mockResolvedValue({ items: [ofis, hafta] });
   jest.mocked(listSavedIds).mockResolvedValue({ productIds: ['p1', 'p2', 'p3'] });
@@ -242,5 +251,41 @@ describe('Tarzlarım', () => {
 
     expect(screen.getByText('Kaydedilen kombinler')).toBeTruthy();
     expect(router.push).toHaveBeenCalledWith('/outfits/saved');
+  });
+
+  it('links to my posts and the blocked people, and shows "Kazançlarım" only for a creator', async () => {
+    await renderWithQuery(<ProfileScreen />);
+
+    await fireEvent.press(await screen.findByTestId('profile-my-posts'));
+    expect(router.push).toHaveBeenCalledWith('/posts/mine');
+    await fireEvent.press(screen.getByTestId('profile-blocks'));
+    expect(router.push).toHaveBeenCalledWith('/profile/blocks');
+    expect(screen.queryByTestId('profile-creator-stats')).toBeNull();
+  });
+
+  it('adds "Kazançlarım" when the creator stats answer', async () => {
+    jest.mocked(getCreatorStats).mockResolvedValue({
+      days: 30,
+      since: '2026-10-08T00:00:00Z',
+      clicks: 0,
+      estimatedEarnings: {
+        amount: 0,
+        currency: 'TRY',
+        isEstimate: true,
+        clicks: 0,
+        conversionRatePercent: 3,
+        averageOrderValue: 750,
+        commissionPercent: 8,
+        sharePercent: 40,
+      },
+      confirmedEarnings: 0,
+      followerCount: 0,
+      topPosts: [],
+    });
+    await renderWithQuery(<ProfileScreen />);
+
+    await fireEvent.press(await screen.findByTestId('profile-creator-stats'));
+
+    expect(router.push).toHaveBeenCalledWith('/profile/creator');
   });
 });

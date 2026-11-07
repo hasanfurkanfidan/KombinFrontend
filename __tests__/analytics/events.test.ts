@@ -25,6 +25,18 @@ const BACKEND_TABLE: Record<string, { required: string[]; optional: string[] }> 
   // until it lists them; the client table already has them.
   wardrobe_pairings_view: { required: ['companionTotal', 'hasUnlock'], optional: [] },
   wardrobe_unlock_click: { required: [], optional: [] },
+  // Task 14 (social): in the backend allow-list (`AnalyticsEventCatalog`); ids and enums only, never captions or handles.
+  post_view: { required: ['postId', 'source'], optional: ['position'] },
+  post_tag_tap: { required: ['postId', 'tagKind', 'hasOffer'], optional: [] },
+  post_like: { required: ['postId', 'liked'], optional: [] },
+  post_create_start: { required: ['kind', 'source'], optional: [] },
+  post_create_done: {
+    required: ['kind', 'status', 'tagCount', 'durationMs'],
+    optional: ['visibility'],
+  },
+  post_report: { required: ['postId', 'reason'], optional: [] },
+  creator_profile_view: { required: ['creatorId'], optional: [] },
+  try_with_wardrobe: { required: ['postId', 'anchorCount', 'outfitCount'], optional: [] },
 };
 
 describe('event allow-list', () => {

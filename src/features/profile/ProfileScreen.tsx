@@ -14,6 +14,7 @@ import { PersonaSheet } from '@/features/personas/PersonaSheet';
 import { swatchColor } from '@/features/personas/swatches';
 import { PreferencesSheet } from '@/features/notifications/PreferencesSheet';
 import { useSavedIds } from '@/features/saved/hooks';
+import { useCreatorStats } from '@/features/social/hooks';
 import { useSizes } from '@/features/sizes/hooks';
 import { tr } from '@/i18n/tr';
 import { signOut, useSession } from '@/session/useSession';
@@ -33,6 +34,8 @@ export function ProfileScreen() {
   const personas = usePersonas();
   const savedIds = useSavedIds();
   const sizes = useSizes();
+  // Only a creator gets "Kazançlarım": the stats answer 403 for everyone else.
+  const isCreator = useCreatorStats().isSuccess;
   const [signingOut, setSigningOut] = useState(false);
   const [sheetPersona, setSheetPersona] = useState<Persona | null>(null);
   const [preferencesOpen, setPreferencesOpen] = useState(false);
@@ -133,6 +136,29 @@ export function ProfileScreen() {
               onPress={() => router.push('/outfits/saved')}
               divider
               testID="profile-saved-outfits"
+            />
+            <SettingsRow
+              title={tr.myPostsRow}
+              caption={tr.myPostsRowCaption}
+              onPress={() => router.push('/posts/mine')}
+              divider
+              testID="profile-my-posts"
+            />
+            {isCreator ? (
+              <SettingsRow
+                title={tr.creatorEarningsRow}
+                caption={tr.creatorEarningsRowCaption}
+                onPress={() => router.push('/profile/creator')}
+                divider
+                testID="profile-creator-stats"
+              />
+            ) : null}
+            <SettingsRow
+              title={tr.blocksRow}
+              caption={tr.blocksRowCaption}
+              onPress={() => router.push('/profile/blocks')}
+              divider
+              testID="profile-blocks"
             />
             <SettingsRow
               title={tr.profileNotifications}

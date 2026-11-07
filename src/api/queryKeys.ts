@@ -53,4 +53,21 @@ export const queryKeys = {
     ['outfits', 'how-to-wear', query] as const,
   outfit: (id: string) => ['outfits', 'one', id] as const,
   savedOutfits: ['outfits', 'saved'] as const,
+
+  /** Prefix of everything social (feed, posts, profiles, creator pages, blocks). */
+  socialAll: ['social'] as const,
+  consent: ['social', 'consent'] as const,
+  /** Signed in or not is part of the key: `likedByMe`, `inWardrobe` and the match scores belong to the viewer. */
+  feed: (mode: string, personaId: string | null, signedIn: boolean) =>
+    ['social', 'feed', mode, personaId, signedIn] as const,
+  feedAll: ['social', 'feed'] as const,
+  post: (id: string) => ['social', 'post', id] as const,
+  /** Every post list (feed, profile, creator page, mine) as one prefix, for patching a post wherever it is cached. */
+  postLists: ['social', 'posts'] as const,
+  userPosts: (id: string) => ['social', 'posts', 'user', id] as const,
+  creator: (handle: string) => ['social', 'creator', handle] as const,
+  userProfile: (id: string) => ['social', 'user', id] as const,
+  myPosts: ['social', 'posts', 'mine'] as const,
+  blocks: ['social', 'blocks'] as const,
+  creatorStats: ['social', 'creator-stats'] as const,
 };

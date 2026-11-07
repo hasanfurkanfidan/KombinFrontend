@@ -79,6 +79,22 @@ export const sizes = {
   itemCutoutRatio: 0.4,
   /** A companion tile in the "Bununla gidenler" rows. */
   pairingTile: 96,
+  /** Round white tag dot drawn over a post photo (design screen 09); hit slop brings it to 44. */
+  tagDot: 28,
+  tagDotCore: 10,
+  /** Author avatar on a post card. */
+  postAvatar: 40,
+  /** Thumbnail in the tag sheet and the tag picker rows. */
+  tagThumb: 56,
+  /** A wardrobe/product row thumbnail in the tag picker. */
+  pickerThumb: 64,
+  /** Minimum height of the caption box in the publish step. */
+  captionInputHeight: 96,
+  /** Preview thumbnail of a post in "Gönderilerim" and the creator's top posts. */
+  /** Placeholder height of a post photo while the feed loads. */
+  postSkeleton: 320,
+  postThumbWidth: 72,
+  postThumbHeight: 90,
 } as const;
 
 export const shadows = {

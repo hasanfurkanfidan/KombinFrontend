@@ -15,6 +15,13 @@ export default function RootLayout() {
         <Stack.Screen name="outfits/how-to-wear" />
         <Stack.Screen name="outfits/saved" />
         <Stack.Screen name="outfits/[id]" />
+        <Stack.Screen name="posts/new" options={{ presentation: 'modal' }} />
+        <Stack.Screen name="posts/mine" />
+        <Stack.Screen name="posts/[id]" />
+        <Stack.Screen name="users/[id]" />
+        <Stack.Screen name="creators/[handle]" />
+        <Stack.Screen name="profile/creator" />
+        <Stack.Screen name="profile/blocks" />
         <Stack.Screen name="(auth)" options={{ presentation: 'modal' }} />
         <Stack.Screen
           name="(onboarding)"

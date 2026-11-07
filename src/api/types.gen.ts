@@ -964,10 +964,350 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/social/consent": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["GetPostingConsent"];
+        put?: never;
+        post: operations["AcceptPostingConsent"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/posts/upload-url": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["CreatePostUploadUrl"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/posts/{id}/process": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ProcessPost"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/posts/from-outfit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["CreateOutfitPost"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/posts/{id}/publish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["PublishPost"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/posts/{id}/report": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ReportPost"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/posts/{id}/try": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["TryPostWithWardrobe"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/posts/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["GetPost"];
+        put?: never;
+        post?: never;
+        delete: operations["DeletePost"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/posts/{id}/like": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["LikePost"];
+        delete: operations["UnlikePost"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/posts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ListMyPosts"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/blocks": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ListBlockedUsers"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/creator/stats": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["GetCreatorStats"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/feed": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["GetFeed"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/users/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["GetUserProfile"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/users/{id}/posts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ListUserPosts"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/users/{id}/follow": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["FollowUser"];
+        delete: operations["UnfollowUser"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/users/{id}/block": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["BlockUser"];
+        delete: operations["UnblockUser"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/internal/social/creators/{userId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["PutCreator"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/internal/social/review-queue": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["GetReviewQueue"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/internal/social/posts/{id}/review": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ReviewPost"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/creators/{handle}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["GetCreator"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** @description The version the user saw and accepted; only the current one is accepted. */
+        AcceptConsentRequest: {
+            version: null | string;
+        };
         AddFromProductRequest: {
             /** Format: uuid */
             productId: string;
@@ -1000,6 +1340,13 @@ export interface components {
             refreshToken: string;
             /** Format: int32 */
             expiresIn: number | string;
+        };
+        BlockedUserResponse: {
+            /** Format: uuid */
+            id: string;
+            displayName: string;
+            /** Format: date-time */
+            blockedAt: string;
         };
         BrandItem: {
             /** Format: uuid */
@@ -1061,6 +1408,13 @@ export interface components {
             size: string;
             fitted: null | boolean;
         };
+        /** @description The current posting consent and, when the caller accepted this version, when. */
+        ConsentResponse: {
+            version: string;
+            text: string;
+            /** Format: date-time */
+            acceptedAt: null | string;
+        };
         CreateAlertRequest: {
             /** Format: uuid */
             productId: string;
@@ -1068,6 +1422,10 @@ export interface components {
             /** Format: double */
             targetPrice: null | number | string;
             sizes: null | string[];
+        };
+        CreateOutfitPostRequest: {
+            /** Format: uuid */
+            outfitId: string;
         };
         /** @description Every field but the name and icon is optional. Seasons default to all four, formality to 1-5. */
         CreatePersonaRequest: {
@@ -1086,6 +1444,22 @@ export interface components {
             preferredFits: null | string[];
             seasons: null | string[];
         };
+        CreatePostUploadUrlRequest: {
+            contentType: null | string;
+            /** Format: int64 */
+            sizeBytes: number | string;
+        };
+        /** @description PUT the photo to `UploadUrl` with exactly `Headers` before `ExpiresAt`, then call `process`. */
+        CreatePostUploadUrlResponse: {
+            /** Format: uuid */
+            postId: string;
+            uploadUrl: string;
+            headers: {
+                [key: string]: string;
+            };
+            /** Format: date-time */
+            expiresAt: string;
+        };
         CreateUploadUrlRequest: {
             contentType: null | string;
             /** Format: int64 */
@@ -1102,6 +1476,49 @@ export interface components {
             /** Format: date-time */
             expiresAt: string;
         };
+        /** @description A creator's public page: the profile, the disclosure line to show, and their first page of posts the caller may see. */
+        CreatorPageResponse: {
+            profile: components["schemas"]["UserProfileResponse"];
+            disclosure: string;
+            posts: components["schemas"]["PagedResponseOfPostResponse"];
+        };
+        CreatorProfileResponse: {
+            /** Format: uuid */
+            userId: string;
+            handle: string;
+            bio: null | string;
+            link: null | string;
+            isActive: boolean;
+            /** Format: date-time */
+            updatedAt: string;
+        };
+        /**
+         * @description The owner's numbers over the last `Days`. `EstimatedEarnings` is an estimate (its inputs are listed); `ConfirmedEarnings`
+         *     sums imported conversions, 0 until the import exists.
+         */
+        CreatorStatsResponse: {
+            /** Format: int32 */
+            days: number | string;
+            /** Format: date-time */
+            since: string;
+            /** Format: int32 */
+            clicks: number | string;
+            estimatedEarnings: components["schemas"]["EarningsEstimate"];
+            /** Format: double */
+            confirmedEarnings: number | string;
+            /** Format: int32 */
+            followerCount: number | string;
+            topPosts: components["schemas"]["CreatorTopPost"][];
+        };
+        CreatorTopPost: {
+            /** Format: uuid */
+            postId: string;
+            /** Format: int32 */
+            clicks: number | string;
+            /** Format: int32 */
+            likeCount: number | string;
+            previewUrl: null | string;
+        };
         /**
          * @description `Outfit` is null only when nothing wearable could be built (then `Message` says so). `WardrobeEmpty` means the outfits
          *     are catalog shopping ideas (`kind` Shopping, `completeness` CatalogOnly). `Weather` is the forecast used, if any.
@@ -1112,6 +1529,23 @@ export interface components {
             weather: null | components["schemas"]["OutfitWeatherResponse"];
             wardrobeEmpty: boolean;
             message: null | string;
+        };
+        /** @description An estimate of what a creator earned from clicks, with every input shown so the app can say how it was computed. */
+        EarningsEstimate: {
+            /** Format: double */
+            amount: number | string;
+            currency: string;
+            isEstimate: boolean;
+            /** Format: int32 */
+            clicks: number | string;
+            /** Format: double */
+            conversionRatePercent: number | string;
+            /** Format: double */
+            averageOrderValue: number | string;
+            /** Format: double */
+            commissionPercent: number | string;
+            /** Format: double */
+            sharePercent: number | string;
         };
         /**
          * @description One event as the app sends it. `AnonymousId` is the device's pre-login ID; it is required while the caller is anonymous and
@@ -1126,6 +1560,23 @@ export interface components {
             /** Format: date-time */
             occurredAt: null | string;
             anonymousId: null | string;
+        };
+        /** @enum {unknown} */
+        FeedReason: "Following" | "ForYou" | null;
+        /** @description A page of 20 over at most ~230 ranked posts; `HasMore` says whether the next page has any. */
+        FeedResponse: {
+            mode: string;
+            items: components["schemas"]["PostResponse"][];
+            /** Format: int32 */
+            page: number | string;
+            /** Format: int32 */
+            pageSize: number | string;
+            hasMore: boolean;
+        };
+        FollowResponse: {
+            following: boolean;
+            /** Format: int32 */
+            followerCount: number | string;
         };
         /** @enum {unknown} */
         FormalityBand: "Casual" | "Smart" | "Formal";
@@ -1143,6 +1594,11 @@ export interface components {
             message: null | string;
         };
         JsonElement: unknown;
+        LikeResponse: {
+            liked: boolean;
+            /** Format: int32 */
+            likeCount: number | string;
+        };
         ListAlertsResponse: {
             items: components["schemas"]["AlertResponse"][];
         };
@@ -1367,6 +1823,17 @@ export interface components {
             /** Format: int32 */
             totalPages?: number | string;
         };
+        PagedResponseOfPostResponse: {
+            items: components["schemas"]["PostResponse"][];
+            /** Format: int32 */
+            page: number | string;
+            /** Format: int32 */
+            pageSize: number | string;
+            /** Format: int32 */
+            totalCount: number | string;
+            /** Format: int32 */
+            totalPages?: number | string;
+        };
         PagedResponseOfProductListItem: {
             items: components["schemas"]["ProductListItem"][];
             /** Format: int32 */
@@ -1422,6 +1889,11 @@ export interface components {
             /** Format: int32 */
             totalPages?: number | string;
         };
+        /**
+         * @description Why two pieces go together, in the word clients read.
+         * @enum {unknown}
+         */
+        PairReason: "neutral" | "tonal" | "complementary" | "analogous" | "statement";
         /** @description A piece that goes with the item. `Score` is 0-100 (see `OutfitPairs`), `Reason` names the colour harmony. */
         PairingCompanion: {
             item: components["schemas"]["WardrobeItemSummary"];
@@ -1435,21 +1907,6 @@ export interface components {
             /** Format: int32 */
             total: number | string;
             items: components["schemas"]["PairingCompanion"][];
-        };
-        /**
-         * @description What goes with one wardrobe item. `PersonaId` is the persona the scores are weighted for, or null for a user without personas.
-         *     `OutfitCount` is how many of the outfits behind the stats' `possibleOutfits` wear the item; a layer or an accessory counts the
-         *     outfits it can be worn with. `Unlock` is null when every slot has enough companions, or the catalog has nothing that fits.
-         */
-        PairingsResponse: {
-            /** Format: uuid */
-            itemId: string;
-            /** Format: uuid */
-            personaId: null | string;
-            companions: components["schemas"]["PairingSlot"][];
-            /** Format: int32 */
-            outfitCount: number | string;
-            unlock: null | components["schemas"]["PairingUnlock"];
         };
         /**
          * @description The catalog piece that would help the item most. `LowestPrice`, `CheapestSeller` and `GoPath` are one offer, the cheapest
@@ -1473,10 +1930,20 @@ export interface components {
             matchScore?: null | number | string;
         };
         /**
-         * @description Why two pieces go together, in the word clients read.
-         * @enum {unknown}
+         * @description What goes with one wardrobe item. `PersonaId` is the persona the scores are weighted for, or null for a user without personas.
+         *     `OutfitCount` is how many of the outfits behind the stats' `possibleOutfits` wear the item; a layer or an accessory counts the
+         *     outfits it can be worn with. `Unlock` is null when every slot has enough companions, or the catalog has nothing that fits.
          */
-        PairReason: "neutral" | "tonal" | "complementary" | "analogous" | "statement";
+        PairingsResponse: {
+            /** Format: uuid */
+            itemId: string;
+            /** Format: uuid */
+            personaId: null | string;
+            companions: components["schemas"]["PairingSlot"][];
+            /** Format: int32 */
+            outfitCount: number | string;
+            unlock: null | components["schemas"]["PairingUnlock"];
+        };
         PersonaListResponse: {
             items: components["schemas"]["PersonaResponse"][];
         };
@@ -1510,6 +1977,134 @@ export interface components {
         };
         /** @enum {unknown} */
         PieceSource: "Wardrobe" | "Catalog";
+        /** @description `Handle` and `IsCreator` come from the creator profile; other users have only a display name. */
+        PostAuthorResponse: {
+            /** Format: uuid */
+            id: string;
+            displayName: string;
+            handle: null | string;
+            isCreator: boolean;
+        };
+        /** @description Private objects behind presigned GETs valid for an hour: cache them by post ID, not by URL. `Aspect` is width / height. */
+        PostImageResponse: {
+            url: string;
+            previewUrl: null | string;
+            /** Format: double */
+            aspect: null | number | string;
+        };
+        /**
+         * @description A photo of someone in an outfit, or a saved outfit shown as a collage of its pieces (no person).
+         * @enum {unknown}
+         */
+        PostKind: "Photo" | "Outfit";
+        /** @description An unconfirmed proposal (the detector's guess or an outfit piece), shown to the author only, in the tag editor. */
+        PostProposalResponse: {
+            /** Format: uuid */
+            id: string;
+            source: components["schemas"]["PostTagSource"];
+            /** Format: double */
+            x: number | string;
+            /** Format: double */
+            y: number | string;
+            /** Format: double */
+            w: number | string;
+            /** Format: double */
+            h: number | string;
+            categorySlug: null | string;
+            color: null | components["schemas"]["ProductColor"];
+            /** Format: double */
+            confidence: null | number | string;
+            /** Format: uuid */
+            wardrobeItemId: null | string;
+            /** Format: uuid */
+            productId: null | string;
+        };
+        /**
+         * @description A post as the caller may see it. `Image` is null for an outfit post (lay the tags' images out as a collage) and before processing.
+         *     `MatchScore` is the viewer's persona match of the product tags. `Disclosure` is set on creators' posts and must be shown.
+         *     `StatusMessage` and `Proposals` are for the author only. `Reason` appears in the feed.
+         */
+        PostResponse: {
+            /** Format: uuid */
+            id: string;
+            kind: components["schemas"]["PostKind"];
+            status: components["schemas"]["PostStatus"];
+            visibility: components["schemas"]["PostVisibility"];
+            author: components["schemas"]["PostAuthorResponse"];
+            caption: null | string;
+            image: null | components["schemas"]["PostImageResponse"];
+            tags: components["schemas"]["PostTagResponse"][];
+            summary: components["schemas"]["PostSummaryResponse"];
+            /** Format: int32 */
+            likeCount: number | string;
+            likedByMe: boolean;
+            followingAuthor: boolean;
+            /** Format: int32 */
+            matchScore: null | number | string;
+            disclosure: null | string;
+            statusMessage: null | string;
+            proposals: null | components["schemas"]["PostProposalResponse"][];
+            reason: null | components["schemas"]["FeedReason"];
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            publishedAt: null | string;
+        };
+        /**
+         * @description `Processing` → `Blocked` | `NeedsReview` | `Draft` (or `Failed` when the photo could not be processed); the
+         *     author's confirmation turns a `Draft` into `Live` (a `NeedsReview` post waits for a reviewer). Three reports hide a
+         *     `Live` post. `Deleted` is a tombstone until the purge job.
+         * @enum {unknown}
+         */
+        PostStatus: "Processing" | "Draft" | "NeedsReview" | "Blocked" | "Live" | "Hidden" | "Deleted" | "Failed";
+        /** @description The band under the photo: "Bu kombin toplam `TotalPrice` ₺ · `PieceCount` parça · `OwnedCount`'si dolabında var". */
+        PostSummaryResponse: {
+            /** Format: double */
+            totalPrice: null | number | string;
+            /** Format: int32 */
+            pieceCount: number | string;
+            /** Format: int32 */
+            ownedCount: null | number | string;
+        };
+        /** @enum {unknown} */
+        PostTagKind: "Wardrobe" | "Product" | "Unknown";
+        /**
+         * @description A confirmed tag. `InWardrobe` is the viewer's: `exact` (they own that product, or it is their own piece), `similar` (they own a
+         *     ready piece of the same category and colour), null otherwise or when signed out.
+         */
+        PostTagResponse: {
+            /** Format: uuid */
+            id: string;
+            kind: components["schemas"]["PostTagKind"];
+            /** Format: double */
+            x: number | string;
+            /** Format: double */
+            y: number | string;
+            /** Format: double */
+            w: number | string;
+            /** Format: double */
+            h: number | string;
+            name: string;
+            categorySlug: null | string;
+            color: null | components["schemas"]["ProductColor"];
+            imageUrl: null | string;
+            /** Format: uuid */
+            productId: null | string;
+            /** Format: uuid */
+            wardrobeItemId: null | string;
+            offer: null | components["schemas"]["TagOfferResponse"];
+            inWardrobe: null | string;
+        };
+        /**
+         * @description Where a tag came from. Whatever the source, a tag is shown to viewers only once the author confirmed it.
+         * @enum {unknown}
+         */
+        PostTagSource: "Detected" | "User" | "Outfit";
+        /**
+         * @description Who may see a live post. New posts are PostVisibility.Private until the author chooses otherwise.
+         * @enum {unknown}
+         */
+        PostVisibility: "Private" | "Followers" | "Public";
         /** @description What the preference endpoints return. Quiet hours are `HH:mm` local times in string PreferencesResponse.TimeZone. */
         PreferencesResponse: {
             priceAlerts: boolean;
@@ -1552,6 +2147,11 @@ export interface components {
             /** Format: uuid */
             itemId: string;
             status: components["schemas"]["WardrobeItemStatus"];
+        };
+        ProcessPostResponse: {
+            /** Format: uuid */
+            postId: string;
+            status: components["schemas"]["PostStatus"];
         };
         /** @enum {unknown} */
         ProductColor: "Black" | "White" | "Grey" | "Navy" | "Blue" | "Green" | "Beige" | "Brown" | "Red" | "Pink" | "Purple" | "Yellow" | "Orange" | "Multi" | "Other";
@@ -1642,6 +2242,32 @@ export interface components {
             /** Format: date-time */
             onboardingCompletedAt: null | string;
         };
+        /** @description `Visibility` is `Private`, `Followers` or `Public`. `Tags` replaces every tag and proposal of the post. */
+        PublishPostRequest: {
+            caption: null | string;
+            visibility: null | string;
+            tags: null | components["schemas"]["PublishTag"][];
+        };
+        /**
+         * @description One confirmed tag. `Kind` is `Wardrobe` (with one of the author's `WardrobeItemId`), `Product` (with a
+         *     `ProductId`) or `Unknown` (an optional `Label`). The box is fractions of the image (clamped into it).
+         */
+        PublishTag: {
+            kind: null | string;
+            /** Format: double */
+            x: number | string;
+            /** Format: double */
+            y: number | string;
+            /** Format: double */
+            w: number | string;
+            /** Format: double */
+            h: number | string;
+            /** Format: uuid */
+            wardrobeItemId: null | string;
+            /** Format: uuid */
+            productId: null | string;
+            label: null | string;
+        };
         /** @description What Expo said about one message (one notification to one device). `Status` is `ok`, `error` or `unreachable`. */
         PushDelivery: {
             /** Format: int64 */
@@ -1652,6 +2278,13 @@ export interface components {
             status: string;
             ticketId: null | string;
             error: null | string;
+        };
+        /** @description `Handle` 3-30 of a-z, 0-9, `.` and `_` (lower-cased); `IsActive` defaults to true. Every field is replaced. */
+        PutCreatorRequest: {
+            handle: null | string;
+            bio: null | string;
+            link: null | string;
+            isActive: null | boolean;
         };
         /**
          * @description The seller. `Name`, `Kind`, `WebsiteUrl` and `IsActive` are replaced on every PUT. The affiliate fields are the
@@ -1719,6 +2352,41 @@ export interface components {
             /** Format: int32 */
             index: number | string;
             reason: string;
+        };
+        /** @description `Reason`: Nudity, Violence, Hate, Harassment, Spam, Scam or Other. */
+        ReportPostRequest: {
+            reason: null | string;
+        };
+        ReportPostResponse: {
+            reported: boolean;
+        };
+        /** @description A post waiting for a human: why (moderation labels or reports), and a 1-hour link to its preview. */
+        ReviewItem: {
+            /** Format: uuid */
+            postId: string;
+            /** Format: uuid */
+            authorId: string;
+            kind: components["schemas"]["PostKind"];
+            status: components["schemas"]["PostStatus"];
+            moderationJson: null | string;
+            reportReasons: {
+                [key: string]: number | string;
+            };
+            /** Format: int32 */
+            reportCount: number | string;
+            previewUrl: null | string;
+            caption: null | string;
+            /** Format: date-time */
+            updatedAt: string;
+        };
+        /** @description `Decision`: `Approve` or `Remove`. */
+        ReviewPostRequest: {
+            decision: null | string;
+        };
+        ReviewPostResponse: {
+            /** Format: uuid */
+            postId: string;
+            status: components["schemas"]["PostStatus"];
         };
         SavedIdsResponse: {
             productIds: string[];
@@ -1917,6 +2585,15 @@ export interface components {
             styleCardId: string;
             decision: string;
         };
+        /** @description The product's current cheapest sellable offer (effective price). `GoPath` is the only way to open it; it records the click for the post. */
+        TagOfferResponse: {
+            /** Format: uuid */
+            offerId: string;
+            seller: null | components["schemas"]["SellerRef"];
+            /** Format: double */
+            price: number | string;
+            goPath: string;
+        };
         /** @enum {unknown} */
         TemperatureBand: "Hot" | "Warm" | "Mild" | "Cool" | "Cold";
         /** @description `AlertId` is null once the alert has been deleted. */
@@ -1938,6 +2615,32 @@ export interface components {
             triggeredAt: string;
             /** Format: date-time */
             consumedAt: null | string;
+        };
+        /**
+         * @description The outfits built around one tagged product. `Owned`: the caller already has it, so the anchor is their own piece. The anchor's offer
+         *     keeps the post attribution (`goPath` with `post=`); gap pieces carry their own cheapest offer.
+         */
+        TryGroup: {
+            /** Format: uuid */
+            tagId: string;
+            /** Format: uuid */
+            productId: string;
+            owned: boolean;
+            outfits: components["schemas"]["OutfitResponse"][];
+            message: null | string;
+        };
+        /** @description All optional: `Seed` re-ranks near-equal outfits, `Occasion` and `PersonaId` as on how-to-wear. */
+        TryWithWardrobeRequest: {
+            /** Format: int32 */
+            seed: null | number | string;
+            occasion: null | string;
+            /** Format: uuid */
+            personaId: null | string;
+        };
+        TryWithWardrobeResponse: {
+            /** Format: uuid */
+            postId: string;
+            groups: components["schemas"]["TryGroup"][];
         };
         UnreadCountResponse: {
             /** Format: int32 */
@@ -2108,6 +2811,27 @@ export interface components {
             group: string;
             size: string;
         };
+        /**
+         * @description A user as others see them. `Handle`, `Bio` and `Link` exist for creators only. `PostCount` counts the posts the caller
+         *     may see. `IsFollowing`: the caller follows them; `FollowsYou`: they follow the caller.
+         */
+        UserProfileResponse: {
+            /** Format: uuid */
+            id: string;
+            displayName: string;
+            handle: null | string;
+            isCreator: boolean;
+            bio: null | string;
+            link: null | string;
+            /** Format: int32 */
+            followerCount: number | string;
+            /** Format: int32 */
+            followingCount: number | string;
+            /** Format: int32 */
+            postCount: number | string;
+            isFollowing: boolean;
+            followsYou: boolean;
+        };
         VisionCategory: {
             slug: string;
             /** Format: double */
@@ -2234,7 +2958,8 @@ export interface components {
         /**
          * @description Over the wardrobe (not archived, not failed). An item counts as unworn for 180 days when its last wear, or its creation when it was
          *     never worn, is more than 180 days ago. `PossibleOutfits` is the outfit engine's count of complete, wearable core outfits (top,
-         *     bottom, shoes) the wardrobe makes, capped at 999 (see `OutfitCounter`); never null since Task 12.
+         *     bottom, shoes) the wardrobe makes, capped at 999 (see `OutfitCounter`); never null since Task 12. `UnmatchedCount` is how many
+         *     wearable pieces pair with nothing else in the wardrobe (`companionCount` 0 on the grid): the pieces a purchase would unlock.
          */
         WardrobeStatsResponse: {
             /** Format: int32 */
@@ -2247,6 +2972,8 @@ export interface components {
             leastWorn: components["schemas"]["WardrobeItemSummary"][];
             /** Format: int32 */
             possibleOutfits: null | number | string;
+            /** Format: int32 */
+            unmatchedCount: number | string;
         };
         /** @description `WornOn` is the day just recorded, or null after an undo. */
         WearResponse: {
@@ -3199,6 +3926,7 @@ export interface operations {
             query?: {
                 src?: string;
                 personaId?: string;
+                post?: string;
             };
             header?: never;
             path: {
@@ -5182,6 +5910,1159 @@ export interface operations {
             };
             /** @description Conflict */
             409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    GetPostingConsent: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConsentResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    AcceptPostingConsent: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AcceptConsentRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConsentResponse"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    CreatePostUploadUrl: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreatePostUploadUrlRequest"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CreatePostUploadUrlResponse"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    ProcessPost: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Accepted */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProcessPostResponse"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    CreateOutfitPost: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateOutfitPostRequest"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PostResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    PublishPost: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PublishPostRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PostResponse"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    ReportPost: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReportPostRequest"];
+            };
+        };
+        responses: {
+            /** @description Accepted */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReportPostResponse"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    TryPostWithWardrobe: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TryWithWardrobeRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TryWithWardrobeResponse"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    GetPost: {
+        parameters: {
+            query?: {
+                personaId?: string;
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PostResponse"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    DeletePost: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    LikePost: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LikeResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    UnlikePost: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LikeResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    ListMyPosts: {
+        parameters: {
+            query?: {
+                page?: number | string;
+                pageSize?: number | string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PagedResponseOfPostResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    ListBlockedUsers: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BlockedUserResponse"][];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    GetCreatorStats: {
+        parameters: {
+            query?: {
+                days?: number | string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CreatorStatsResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    GetFeed: {
+        parameters: {
+            query?: {
+                Mode?: string;
+                Page?: number | string;
+                PersonaId?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FeedResponse"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    GetUserProfile: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserProfileResponse"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    ListUserPosts: {
+        parameters: {
+            query?: {
+                page?: number | string;
+                pageSize?: number | string;
+                personaId?: string;
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PagedResponseOfPostResponse"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    FollowUser: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FollowResponse"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    UnfollowUser: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FollowResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    BlockUser: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    UnblockUser: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    PutCreator: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                userId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PutCreatorRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CreatorProfileResponse"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    GetReviewQueue: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReviewItem"][];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    ReviewPost: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReviewPostRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReviewPostResponse"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    GetCreator: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                handle: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CreatorPageResponse"];
+                };
+            };
+            /** @description Not Found */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };

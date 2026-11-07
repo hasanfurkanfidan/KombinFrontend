@@ -6,7 +6,7 @@
   },
   "servers": [
     {
-      "url": "http://localhost:8099/"
+      "url": "http://localhost:8081/"
     }
   ],
   "paths": {
@@ -1344,6 +1344,13 @@
           },
           {
             "name": "personaId",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "post",
             "in": "query",
             "schema": {
               "type": "string"
@@ -2709,8 +2716,8 @@
           "required": true
         },
         "responses": {
-          "200": {
-            "description": "OK",
+          "201": {
+            "description": "Created",
             "content": {
               "application/json": {
                 "schema": {
@@ -2719,8 +2726,8 @@
               }
             }
           },
-          "201": {
-            "description": "Created",
+          "200": {
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -3884,10 +3891,1515 @@
           }
         }
       }
+    },
+    "/api/v1/social/consent": {
+      "get": {
+        "tags": [
+          "Social"
+        ],
+        "operationId": "GetPostingConsent",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConsentResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Social"
+        ],
+        "operationId": "AcceptPostingConsent",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AcceptConsentRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConsentResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/posts/upload-url": {
+      "post": {
+        "tags": [
+          "Social"
+        ],
+        "operationId": "CreatePostUploadUrl",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePostUploadUrlRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreatePostUploadUrlResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/posts/{id}/process": {
+      "post": {
+        "tags": [
+          "Social"
+        ],
+        "operationId": "ProcessPost",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Accepted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProcessPostResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/posts/from-outfit": {
+      "post": {
+        "tags": [
+          "Social"
+        ],
+        "operationId": "CreateOutfitPost",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateOutfitPostRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/posts/{id}/publish": {
+      "put": {
+        "tags": [
+          "Social"
+        ],
+        "operationId": "PublishPost",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PublishPostRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/posts/{id}/report": {
+      "post": {
+        "tags": [
+          "Social"
+        ],
+        "operationId": "ReportPost",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReportPostRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "description": "Accepted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportPostResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/posts/{id}/try": {
+      "post": {
+        "tags": [
+          "Social"
+        ],
+        "operationId": "TryPostWithWardrobe",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TryWithWardrobeRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TryWithWardrobeResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/posts/{id}": {
+      "get": {
+        "tags": [
+          "Social"
+        ],
+        "operationId": "GetPost",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "personaId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Social"
+        ],
+        "operationId": "DeletePost",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/posts/{id}/like": {
+      "post": {
+        "tags": [
+          "Social"
+        ],
+        "operationId": "LikePost",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LikeResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Social"
+        ],
+        "operationId": "UnlikePost",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LikeResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/me/posts": {
+      "get": {
+        "tags": [
+          "Social"
+        ],
+        "operationId": "ListMyPosts",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": [
+                "integer",
+                "string"
+              ],
+              "format": "int32"
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": [
+                "integer",
+                "string"
+              ],
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PagedResponseOfPostResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/me/blocks": {
+      "get": {
+        "tags": [
+          "Social"
+        ],
+        "operationId": "ListBlockedUsers",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/BlockedUserResponse"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/me/creator/stats": {
+      "get": {
+        "tags": [
+          "Social"
+        ],
+        "operationId": "GetCreatorStats",
+        "parameters": [
+          {
+            "name": "days",
+            "in": "query",
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": [
+                "integer",
+                "string"
+              ],
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreatorStatsResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/feed": {
+      "get": {
+        "tags": [
+          "Social"
+        ],
+        "operationId": "GetFeed",
+        "parameters": [
+          {
+            "name": "Mode",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Page",
+            "in": "query",
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": [
+                "integer",
+                "string"
+              ],
+              "format": "int32"
+            }
+          },
+          {
+            "name": "PersonaId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FeedResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/users/{id}": {
+      "get": {
+        "tags": [
+          "Social"
+        ],
+        "operationId": "GetUserProfile",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserProfileResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/users/{id}/posts": {
+      "get": {
+        "tags": [
+          "Social"
+        ],
+        "operationId": "ListUserPosts",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": [
+                "integer",
+                "string"
+              ],
+              "format": "int32"
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": [
+                "integer",
+                "string"
+              ],
+              "format": "int32"
+            }
+          },
+          {
+            "name": "personaId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PagedResponseOfPostResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/users/{id}/follow": {
+      "post": {
+        "tags": [
+          "Social"
+        ],
+        "operationId": "FollowUser",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FollowResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Social"
+        ],
+        "operationId": "UnfollowUser",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FollowResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/users/{id}/block": {
+      "post": {
+        "tags": [
+          "Social"
+        ],
+        "operationId": "BlockUser",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Social"
+        ],
+        "operationId": "UnblockUser",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/internal/social/creators/{userId}": {
+      "put": {
+        "tags": [
+          "Social (internal)"
+        ],
+        "operationId": "PutCreator",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PutCreatorRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreatorProfileResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/internal/social/review-queue": {
+      "get": {
+        "tags": [
+          "Social (internal)"
+        ],
+        "operationId": "GetReviewQueue",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ReviewItem"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/internal/social/posts/{id}/review": {
+      "post": {
+        "tags": [
+          "Social (internal)"
+        ],
+        "operationId": "ReviewPost",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReviewPostRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewPostResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/creators/{handle}": {
+      "get": {
+        "tags": [
+          "Social"
+        ],
+        "operationId": "GetCreator",
+        "parameters": [
+          {
+            "name": "handle",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreatorPageResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
     "schemas": {
+      "AcceptConsentRequest": {
+        "required": [
+          "version"
+        ],
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        },
+        "description": "The version the user saw and accepted; only the current one is accepted."
+      },
       "AddFromProductRequest": {
         "required": [
           "productId",
@@ -4016,6 +5528,27 @@
               "string"
             ],
             "format": "int32"
+          }
+        }
+      },
+      "BlockedUserResponse": {
+        "required": [
+          "id",
+          "displayName",
+          "blockedAt"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "displayName": {
+            "type": "string"
+          },
+          "blockedAt": {
+            "type": "string",
+            "format": "date-time"
           }
         }
       },
@@ -4241,6 +5774,30 @@
           }
         }
       },
+      "ConsentResponse": {
+        "required": [
+          "version",
+          "text",
+          "acceptedAt"
+        ],
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          },
+          "acceptedAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          }
+        },
+        "description": "The current posting consent and, when the caller accepted this version, when."
+      },
       "CreateAlertRequest": {
         "required": [
           "productId",
@@ -4274,6 +5831,18 @@
             "items": {
               "type": "string"
             }
+          }
+        }
+      },
+      "CreateOutfitPostRequest": {
+        "required": [
+          "outfitId"
+        ],
+        "type": "object",
+        "properties": {
+          "outfitId": {
+            "type": "string",
+            "format": "uuid"
           }
         }
       },
@@ -4373,6 +5942,58 @@
         },
         "description": "Every field but the name and icon is optional. Seasons default to all four, formality to 1-5."
       },
+      "CreatePostUploadUrlRequest": {
+        "required": [
+          "contentType",
+          "sizeBytes"
+        ],
+        "type": "object",
+        "properties": {
+          "contentType": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "sizeBytes": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int64"
+          }
+        }
+      },
+      "CreatePostUploadUrlResponse": {
+        "required": [
+          "postId",
+          "uploadUrl",
+          "headers",
+          "expiresAt"
+        ],
+        "type": "object",
+        "properties": {
+          "postId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "uploadUrl": {
+            "type": "string"
+          },
+          "headers": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "description": "PUT the photo to `UploadUrl` with exactly `Headers` before `ExpiresAt`, then call `process`."
+      },
       "CreateUploadUrlRequest": {
         "required": [
           "contentType",
@@ -4425,6 +6046,162 @@
         },
         "description": "PUT the photo to `UploadUrl` with exactly `Headers` before `ExpiresAt`, then call `process`."
       },
+      "CreatorPageResponse": {
+        "required": [
+          "profile",
+          "disclosure",
+          "posts"
+        ],
+        "type": "object",
+        "properties": {
+          "profile": {
+            "$ref": "#/components/schemas/UserProfileResponse"
+          },
+          "disclosure": {
+            "type": "string"
+          },
+          "posts": {
+            "$ref": "#/components/schemas/PagedResponseOfPostResponse"
+          }
+        },
+        "description": "A creator's public page: the profile, the disclosure line to show, and their first page of posts the caller may see."
+      },
+      "CreatorProfileResponse": {
+        "required": [
+          "userId",
+          "handle",
+          "bio",
+          "link",
+          "isActive",
+          "updatedAt"
+        ],
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "handle": {
+            "type": "string"
+          },
+          "bio": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "link": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "isActive": {
+            "type": "boolean"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "CreatorStatsResponse": {
+        "required": [
+          "days",
+          "since",
+          "clicks",
+          "estimatedEarnings",
+          "confirmedEarnings",
+          "followerCount",
+          "topPosts"
+        ],
+        "type": "object",
+        "properties": {
+          "days": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "since": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "clicks": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "estimatedEarnings": {
+            "$ref": "#/components/schemas/EarningsEstimate"
+          },
+          "confirmedEarnings": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "followerCount": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "topPosts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CreatorTopPost"
+            }
+          }
+        },
+        "description": "The owner's numbers over the last `Days`. `EstimatedEarnings` is an estimate (its inputs are listed); `ConfirmedEarnings`\nsums imported conversions, 0 until the import exists."
+      },
+      "CreatorTopPost": {
+        "required": [
+          "postId",
+          "clicks",
+          "likeCount",
+          "previewUrl"
+        ],
+        "type": "object",
+        "properties": {
+          "postId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "clicks": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "likeCount": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "previewUrl": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
       "DailyOutfitResponse": {
         "required": [
           "outfit",
@@ -4471,7 +6248,77 @@
             ]
           }
         },
-        "description": "`Outfit` is null only when nothing wearable could be built (then `Message` says so). `WardrobeEmpty` means the outfits\r\nare catalog shopping ideas (`kind` Shopping, `completeness` CatalogOnly). `Weather` is the forecast used, if any."
+        "description": "`Outfit` is null only when nothing wearable could be built (then `Message` says so). `WardrobeEmpty` means the outfits\nare catalog shopping ideas (`kind` Shopping, `completeness` CatalogOnly). `Weather` is the forecast used, if any."
+      },
+      "EarningsEstimate": {
+        "required": [
+          "amount",
+          "currency",
+          "isEstimate",
+          "clicks",
+          "conversionRatePercent",
+          "averageOrderValue",
+          "commissionPercent",
+          "sharePercent"
+        ],
+        "type": "object",
+        "properties": {
+          "amount": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "isEstimate": {
+            "type": "boolean"
+          },
+          "clicks": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "conversionRatePercent": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "averageOrderValue": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "commissionPercent": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "sharePercent": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "double"
+          }
+        },
+        "description": "An estimate of what a creator earned from clicks, with every input shown so the app can say how it was computed."
       },
       "EventItem": {
         "required": [
@@ -4517,7 +6364,75 @@
             ]
           }
         },
-        "description": "One event as the app sends it. `AnonymousId` is the device's pre-login ID; it is required while the caller is anonymous and\r\nrecommended after login. `Properties` is a flat object whose keys depend on `Name` (AnalyticsEventCatalog)."
+        "description": "One event as the app sends it. `AnonymousId` is the device's pre-login ID; it is required while the caller is anonymous and\nrecommended after login. `Properties` is a flat object whose keys depend on `Name` (AnalyticsEventCatalog)."
+      },
+      "FeedReason": {
+        "enum": [
+          "Following",
+          "ForYou",
+          null
+        ]
+      },
+      "FeedResponse": {
+        "required": [
+          "mode",
+          "items",
+          "page",
+          "pageSize",
+          "hasMore"
+        ],
+        "type": "object",
+        "properties": {
+          "mode": {
+            "type": "string"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PostResponse"
+            }
+          },
+          "page": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "pageSize": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "hasMore": {
+            "type": "boolean"
+          }
+        },
+        "description": "A page of 20 over at most ~230 ranked posts; `HasMore` says whether the next page has any."
+      },
+      "FollowResponse": {
+        "required": [
+          "following",
+          "followerCount"
+        ],
+        "type": "object",
+        "properties": {
+          "following": {
+            "type": "boolean"
+          },
+          "followerCount": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          }
+        }
       },
       "FormalityBand": {
         "enum": [
@@ -4562,9 +6477,29 @@
             ]
           }
         },
-        "description": "`Outfits` are built around the anchor (in every outfit with `role` Anchor), wardrobe pieces first; gaps come from the catalog\r\nwithin the persona's budget, each with its cheapest offer, and `completionPrice` sums them. A product the user already owns is\r\nanchored as the wardrobe item. `Message` explains an empty list or catalog-only ideas."
+        "description": "`Outfits` are built around the anchor (in every outfit with `role` Anchor), wardrobe pieces first; gaps come from the catalog\nwithin the persona's budget, each with its cheapest offer, and `completionPrice` sums them. A product the user already owns is\nanchored as the wardrobe item. `Message` explains an empty list or catalog-only ideas."
       },
-      "JsonElement": {},
+      "JsonElement": { },
+      "LikeResponse": {
+        "required": [
+          "liked",
+          "likeCount"
+        ],
+        "type": "object",
+        "properties": {
+          "liked": {
+            "type": "boolean"
+          },
+          "likeCount": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          }
+        }
+      },
       "ListAlertsResponse": {
         "required": [
           "items"
@@ -4820,7 +6755,7 @@
             "format": "date-time"
           }
         },
-        "description": "`GoPath` (`/api/v1/go/{offerId}`) is the only way to open an offer: the redirect records the click and adds the affiliate\r\nparameters. The seller's own URL is never part of the response."
+        "description": "`GoPath` (`/api/v1/go/{offerId}`) is the only way to open an offer: the redirect records the click and adds the affiliate\nparameters. The seller's own URL is never part of the response."
       },
       "OfferSeries": {
         "required": [
@@ -4870,7 +6805,7 @@
             ]
           }
         },
-        "description": "`Action`: Save, Dismiss, Worn or Shuffle. Save, Dismiss and Worn do what their own endpoints do; Shuffle (\"another one\") is only\r\nrecorded. `Reason` is for Dismiss only (default Other)."
+        "description": "`Action`: Save, Dismiss, Worn or Shuffle. Save, Dismiss and Worn do what their own endpoints do; Shuffle (\"another one\") is only\nrecorded. `Reason` is for Dismiss only (default Other)."
       },
       "OutfitItemRole": {
         "enum": [
@@ -5005,7 +6940,7 @@
             ]
           }
         },
-        "description": "One piece. A wardrobe piece has `WardrobeItemId` and its thumbnail; a catalog piece (`Role` Gap, or an Anchor from the\r\ncatalog) has `ProductId`, the product image and `Offer`."
+        "description": "One piece. A wardrobe piece has `WardrobeItemId` and its thumbnail; a catalog piece (`Role` Gap, or an Anchor from the\ncatalog) has `ProductId`, the product image and `Offer`."
       },
       "OutfitResponse": {
         "required": [
@@ -5149,7 +7084,7 @@
             "format": "date-time"
           }
         },
-        "description": "An outfit. `CompletionPrice` is what the gap pieces cost (their cheapest offers, effective price), null when there are none;\r\n`AnchorPrice` is the catalog anchor's price; `TotalPrice` both together. `Rule` names why it works."
+        "description": "An outfit. `CompletionPrice` is what the gap pieces cost (their cheapest offers, effective price), null when there are none;\n`AnchorPrice` is the catalog anchor's price; `TotalPrice` both together. `Rule` names why it works."
       },
       "OutfitSlot": {
         "enum": [
@@ -5390,6 +7325,55 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/OutfitResponse"
+            }
+          },
+          "page": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "pageSize": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "totalCount": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "totalPages": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          }
+        }
+      },
+      "PagedResponseOfPostResponse": {
+        "required": [
+          "items",
+          "page",
+          "pageSize",
+          "totalCount"
+        ],
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PostResponse"
             }
           },
           "page": {
@@ -5671,6 +7655,16 @@
           }
         }
       },
+      "PairReason": {
+        "enum": [
+          "neutral",
+          "tonal",
+          "complementary",
+          "analogous",
+          "statement"
+        ],
+        "description": "Why two pieces go together, in the word clients read."
+      },
       "PairingCompanion": {
         "required": [
           "item",
@@ -5723,54 +7717,6 @@
           }
         },
         "description": "A slot other than the item's own, possibly empty. `Total` counts every companion in it, also those past the limit."
-      },
-      "PairingsResponse": {
-        "required": [
-          "itemId",
-          "personaId",
-          "companions",
-          "outfitCount",
-          "unlock"
-        ],
-        "type": "object",
-        "properties": {
-          "itemId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "personaId": {
-            "type": [
-              "null",
-              "string"
-            ],
-            "format": "uuid"
-          },
-          "companions": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/PairingSlot"
-            }
-          },
-          "outfitCount": {
-            "pattern": "^-?(?:0|[1-9]\\d*)$",
-            "type": [
-              "integer",
-              "string"
-            ],
-            "format": "int32"
-          },
-          "unlock": {
-            "oneOf": [
-              {
-                "type": "null"
-              },
-              {
-                "$ref": "#/components/schemas/PairingUnlock"
-              }
-            ]
-          }
-        },
-        "description": "What goes with one wardrobe item. `PersonaId` is the persona the scores are weighted for, or null for a user without personas.\r\n`OutfitCount` is how many of the outfits behind the stats' `possibleOutfits` wear the item; a layer or an accessory counts the\r\noutfits it can be worn with. `Unlock` is null when every slot has enough companions, or the catalog has nothing that fits."
       },
       "PairingUnlock": {
         "required": [
@@ -5841,17 +7787,55 @@
             "format": "int32"
           }
         },
-        "description": "The catalog piece that would help the item most. `LowestPrice`, `CheapestSeller` and `GoPath` are one offer, the cheapest\r\nby effective price. `UnlocksEstimate` is the outfits the item would gain. `MatchScore` is present only with a persona."
+        "description": "The catalog piece that would help the item most. `LowestPrice`, `CheapestSeller` and `GoPath` are one offer, the cheapest\nby effective price. `UnlocksEstimate` is the outfits the item would gain. `MatchScore` is present only with a persona."
       },
-      "PairReason": {
-        "enum": [
-          "neutral",
-          "tonal",
-          "complementary",
-          "analogous",
-          "statement"
+      "PairingsResponse": {
+        "required": [
+          "itemId",
+          "personaId",
+          "companions",
+          "outfitCount",
+          "unlock"
         ],
-        "description": "Why two pieces go together, in the word clients read."
+        "type": "object",
+        "properties": {
+          "itemId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "personaId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "companions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PairingSlot"
+            }
+          },
+          "outfitCount": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "unlock": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/PairingUnlock"
+              }
+            ]
+          }
+        },
+        "description": "What goes with one wardrobe item. `PersonaId` is the persona the scores are weighted for, or null for a user without personas.\n`OutfitCount` is how many of the outfits behind the stats' `possibleOutfits` wear the item; a layer or an accessory counts the\noutfits it can be worn with. `Unlock` is null when every slot has enough companions, or the catalog has nothing that fits."
       },
       "PersonaListResponse": {
         "required": [
@@ -5995,6 +7979,489 @@
           "Wardrobe",
           "Catalog"
         ]
+      },
+      "PostAuthorResponse": {
+        "required": [
+          "id",
+          "displayName",
+          "handle",
+          "isCreator"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "displayName": {
+            "type": "string"
+          },
+          "handle": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "isCreator": {
+            "type": "boolean"
+          }
+        },
+        "description": "`Handle` and `IsCreator` come from the creator profile; other users have only a display name."
+      },
+      "PostImageResponse": {
+        "required": [
+          "url",
+          "previewUrl",
+          "aspect"
+        ],
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string"
+          },
+          "previewUrl": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "aspect": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "type": [
+              "null",
+              "number",
+              "string"
+            ],
+            "format": "double"
+          }
+        },
+        "description": "Private objects behind presigned GETs valid for an hour: cache them by post ID, not by URL. `Aspect` is width / height."
+      },
+      "PostKind": {
+        "enum": [
+          "Photo",
+          "Outfit"
+        ],
+        "description": "A photo of someone in an outfit, or a saved outfit shown as a collage of its pieces (no person)."
+      },
+      "PostProposalResponse": {
+        "required": [
+          "id",
+          "source",
+          "x",
+          "y",
+          "w",
+          "h",
+          "categorySlug",
+          "color",
+          "confidence",
+          "wardrobeItemId",
+          "productId"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "source": {
+            "$ref": "#/components/schemas/PostTagSource"
+          },
+          "x": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "y": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "w": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "h": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "categorySlug": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "color": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/ProductColor"
+              }
+            ]
+          },
+          "confidence": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "type": [
+              "null",
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "wardrobeItemId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "productId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          }
+        },
+        "description": "An unconfirmed proposal (the detector's guess or an outfit piece), shown to the author only, in the tag editor."
+      },
+      "PostResponse": {
+        "required": [
+          "id",
+          "kind",
+          "status",
+          "visibility",
+          "author",
+          "caption",
+          "image",
+          "tags",
+          "summary",
+          "likeCount",
+          "likedByMe",
+          "followingAuthor",
+          "matchScore",
+          "disclosure",
+          "statusMessage",
+          "proposals",
+          "reason",
+          "createdAt",
+          "publishedAt"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/PostKind"
+          },
+          "status": {
+            "$ref": "#/components/schemas/PostStatus"
+          },
+          "visibility": {
+            "$ref": "#/components/schemas/PostVisibility"
+          },
+          "author": {
+            "$ref": "#/components/schemas/PostAuthorResponse"
+          },
+          "caption": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "image": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/PostImageResponse"
+              }
+            ]
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PostTagResponse"
+            }
+          },
+          "summary": {
+            "$ref": "#/components/schemas/PostSummaryResponse"
+          },
+          "likeCount": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "likedByMe": {
+            "type": "boolean"
+          },
+          "followingAuthor": {
+            "type": "boolean"
+          },
+          "matchScore": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "disclosure": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "statusMessage": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "proposals": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/PostProposalResponse"
+            }
+          },
+          "reason": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/FeedReason"
+              }
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "publishedAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          }
+        },
+        "description": "A post as the caller may see it. `Image` is null for an outfit post (lay the tags' images out as a collage) and before processing.\n`MatchScore` is the viewer's persona match of the product tags. `Disclosure` is set on creators' posts and must be shown.\n`StatusMessage` and `Proposals` are for the author only. `Reason` appears in the feed."
+      },
+      "PostStatus": {
+        "enum": [
+          "Processing",
+          "Draft",
+          "NeedsReview",
+          "Blocked",
+          "Live",
+          "Hidden",
+          "Deleted",
+          "Failed"
+        ],
+        "description": "`Processing` → `Blocked` | `NeedsReview` | `Draft` (or `Failed` when the photo could not be processed); the\nauthor's confirmation turns a `Draft` into `Live` (a `NeedsReview` post waits for a reviewer). Three reports hide a\n`Live` post. `Deleted` is a tombstone until the purge job."
+      },
+      "PostSummaryResponse": {
+        "required": [
+          "totalPrice",
+          "pieceCount",
+          "ownedCount"
+        ],
+        "type": "object",
+        "properties": {
+          "totalPrice": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": [
+              "null",
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "pieceCount": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "ownedCount": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          }
+        },
+        "description": "The band under the photo: \"Bu kombin toplam `TotalPrice` ₺ · `PieceCount` parça · `OwnedCount`'si dolabında var\"."
+      },
+      "PostTagKind": {
+        "enum": [
+          "Wardrobe",
+          "Product",
+          "Unknown"
+        ]
+      },
+      "PostTagResponse": {
+        "required": [
+          "id",
+          "kind",
+          "x",
+          "y",
+          "w",
+          "h",
+          "name",
+          "categorySlug",
+          "color",
+          "imageUrl",
+          "productId",
+          "wardrobeItemId",
+          "offer",
+          "inWardrobe"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/PostTagKind"
+          },
+          "x": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "y": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "w": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "h": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "name": {
+            "type": "string"
+          },
+          "categorySlug": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "color": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/ProductColor"
+              }
+            ]
+          },
+          "imageUrl": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "productId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "wardrobeItemId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "offer": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/TagOfferResponse"
+              }
+            ]
+          },
+          "inWardrobe": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        },
+        "description": "A confirmed tag. `InWardrobe` is the viewer's: `exact` (they own that product, or it is their own piece), `similar` (they own a\nready piece of the same category and colour), null otherwise or when signed out."
+      },
+      "PostTagSource": {
+        "enum": [
+          "Detected",
+          "User",
+          "Outfit"
+        ],
+        "description": "Where a tag came from. Whatever the source, a tag is shown to viewers only once the author confirmed it."
+      },
+      "PostVisibility": {
+        "enum": [
+          "Private",
+          "Followers",
+          "Public"
+        ],
+        "description": "Who may see a live post. New posts are PostVisibility.Private until the author chooses otherwise."
       },
       "PreferencesResponse": {
         "required": [
@@ -6166,6 +8633,22 @@
           },
           "status": {
             "$ref": "#/components/schemas/WardrobeItemStatus"
+          }
+        }
+      },
+      "ProcessPostResponse": {
+        "required": [
+          "postId",
+          "status"
+        ],
+        "type": "object",
+        "properties": {
+          "postId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "$ref": "#/components/schemas/PostStatus"
           }
         }
       },
@@ -6594,6 +9077,112 @@
           }
         }
       },
+      "PublishPostRequest": {
+        "required": [
+          "caption",
+          "visibility",
+          "tags"
+        ],
+        "type": "object",
+        "properties": {
+          "caption": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "visibility": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "tags": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/PublishTag"
+            }
+          }
+        },
+        "description": "`Visibility` is `Private`, `Followers` or `Public`. `Tags` replaces every tag and proposal of the post."
+      },
+      "PublishTag": {
+        "required": [
+          "kind",
+          "x",
+          "y",
+          "w",
+          "h",
+          "wardrobeItemId",
+          "productId",
+          "label"
+        ],
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "x": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "y": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "w": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "h": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "wardrobeItemId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "productId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "label": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        },
+        "description": "One confirmed tag. `Kind` is `Wardrobe` (with one of the author's `WardrobeItemId`), `Product` (with a\n`ProductId`) or `Unknown` (an optional `Label`). The box is fractions of the image (clamped into it)."
+      },
       "PushDelivery": {
         "required": [
           "notificationId",
@@ -6638,6 +9227,42 @@
         },
         "description": "What Expo said about one message (one notification to one device). `Status` is `ok`, `error` or `unreachable`."
       },
+      "PutCreatorRequest": {
+        "required": [
+          "handle",
+          "bio",
+          "link",
+          "isActive"
+        ],
+        "type": "object",
+        "properties": {
+          "handle": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "bio": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "link": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "isActive": {
+            "type": [
+              "null",
+              "boolean"
+            ]
+          }
+        },
+        "description": "`Handle` 3-30 of a-z, 0-9, `.` and `_` (lower-cased); `IsActive` defaults to true. Every field is replaced."
+      },
       "PutSellerRequest": {
         "type": "object",
         "properties": {
@@ -6675,7 +9300,7 @@
             "type": "boolean"
           }
         },
-        "description": "The seller. `Name`, `Kind`, `WebsiteUrl` and `IsActive` are replaced on every PUT. The affiliate fields are the\r\nexception, because workers that only know the shop would otherwise wipe what was configured by hand: left out = unchanged, an explicit\r\nnull (or blank) = cleared. The `*Set` flags record which of them the body contained; the JSON reader only calls an init accessor\r\nfor a property that is present."
+        "description": "The seller. `Name`, `Kind`, `WebsiteUrl` and `IsActive` are replaced on every PUT. The affiliate fields are the\nexception, because workers that only know the shop would otherwise wipe what was configured by hand: left out = unchanged, an explicit\nnull (or blank) = cleared. The `*Set` flags record which of them the body contained; the JSON reader only calls an init accessor\nfor a property that is present."
       },
       "PutSellerResponse": {
         "required": [
@@ -6877,6 +9502,136 @@
           }
         }
       },
+      "ReportPostRequest": {
+        "required": [
+          "reason"
+        ],
+        "type": "object",
+        "properties": {
+          "reason": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        },
+        "description": "`Reason`: Nudity, Violence, Hate, Harassment, Spam, Scam or Other."
+      },
+      "ReportPostResponse": {
+        "required": [
+          "reported"
+        ],
+        "type": "object",
+        "properties": {
+          "reported": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ReviewItem": {
+        "required": [
+          "postId",
+          "authorId",
+          "kind",
+          "status",
+          "moderationJson",
+          "reportReasons",
+          "reportCount",
+          "previewUrl",
+          "caption",
+          "updatedAt"
+        ],
+        "type": "object",
+        "properties": {
+          "postId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "authorId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/PostKind"
+          },
+          "status": {
+            "$ref": "#/components/schemas/PostStatus"
+          },
+          "moderationJson": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "reportReasons": {
+            "type": "object",
+            "additionalProperties": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": [
+                "integer",
+                "string"
+              ],
+              "format": "int32"
+            }
+          },
+          "reportCount": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "previewUrl": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "caption": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "description": "A post waiting for a human: why (moderation labels or reports), and a 1-hour link to its preview."
+      },
+      "ReviewPostRequest": {
+        "required": [
+          "decision"
+        ],
+        "type": "object",
+        "properties": {
+          "decision": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        },
+        "description": "`Decision`: `Approve` or `Remove`."
+      },
+      "ReviewPostResponse": {
+        "required": [
+          "postId",
+          "status"
+        ],
+        "type": "object",
+        "properties": {
+          "postId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "$ref": "#/components/schemas/PostStatus"
+          }
+        }
+      },
       "SavedIdsResponse": {
         "required": [
           "productIds"
@@ -6987,7 +9742,7 @@
             "format": "date-time"
           }
         },
-        "description": "The catalog's ProductListItem fields, flattened, plus `isActive` (saved products stay in the list after they\r\nare delisted) and `savedAt`. A product nobody sells has `offerCount` 0 and `lowestPrice` 0."
+        "description": "The catalog's ProductListItem fields, flattened, plus `isActive` (saved products stay in the list after they\nare delisted) and `savedAt`. A product nobody sells has `offerCount` 0 and `lowestPrice` 0."
       },
       "SellerKind": {
         "enum": [
@@ -7224,7 +9979,7 @@
             ]
           }
         },
-        "description": "Which size to buy. `Size`, `Source` and `Confidence` are the user's own entry for the product's brand and group, when\r\nthere is one. Without it `Suggestion` may carry a guess from the user's sizes at other brands (not stored)."
+        "description": "Which size to buy. `Size`, `Source` and `Confidence` are the user's own entry for the product's brand and group, when\nthere is one. Without it `Suggestion` may carry a guess from the user's sizes at other brands (not stored)."
       },
       "SizeListResponse": {
         "required": [
@@ -7653,6 +10408,43 @@
           }
         }
       },
+      "TagOfferResponse": {
+        "required": [
+          "offerId",
+          "seller",
+          "price",
+          "goPath"
+        ],
+        "type": "object",
+        "properties": {
+          "offerId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "seller": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/SellerRef"
+              }
+            ]
+          },
+          "price": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "goPath": {
+            "type": "string"
+          }
+        },
+        "description": "The product's current cheapest sellable offer (effective price). `GoPath` is the only way to open it; it records the click for the post."
+      },
       "TemperatureBand": {
         "enum": [
           "Hot",
@@ -7736,6 +10528,94 @@
           }
         },
         "description": "`AlertId` is null once the alert has been deleted."
+      },
+      "TryGroup": {
+        "required": [
+          "tagId",
+          "productId",
+          "owned",
+          "outfits",
+          "message"
+        ],
+        "type": "object",
+        "properties": {
+          "tagId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "productId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "owned": {
+            "type": "boolean"
+          },
+          "outfits": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OutfitResponse"
+            }
+          },
+          "message": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        },
+        "description": "The outfits built around one tagged product. `Owned`: the caller already has it, so the anchor is their own piece. The anchor's offer\nkeeps the post attribution (`goPath` with `post=`); gap pieces carry their own cheapest offer."
+      },
+      "TryWithWardrobeRequest": {
+        "required": [
+          "seed",
+          "occasion",
+          "personaId"
+        ],
+        "type": "object",
+        "properties": {
+          "seed": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "occasion": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "personaId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          }
+        },
+        "description": "All optional: `Seed` re-ranks near-equal outfits, `Occasion` and `PersonaId` as on how-to-wear."
+      },
+      "TryWithWardrobeResponse": {
+        "required": [
+          "postId",
+          "groups"
+        ],
+        "type": "object",
+        "properties": {
+          "postId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "groups": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TryGroup"
+            }
+          }
+        }
       },
       "UnreadCountResponse": {
         "required": [
@@ -7899,7 +10779,7 @@
             }
           }
         },
-        "description": "A partial update: a null field is left as it is, and `Clear` names the optional fields to empty (IReadOnlyList&lt;string&gt; UpdateItemRequest.ClearableFields).\r\nAn empty body is valid: it is the one-tap \"looks right\" confirmation. Enum values are names, matched case-insensitively."
+        "description": "A partial update: a null field is left as it is, and `Clear` names the optional fields to empty (IReadOnlyList&lt;string&gt; UpdateItemRequest.ClearableFields).\nAn empty body is valid: it is the one-tap \"looks right\" confirmation. Enum values are names, matched case-insensitively."
       },
       "UpdatePersonaRequest": {
         "required": [
@@ -8018,7 +10898,7 @@
             }
           }
         },
-        "description": "A partial update: a null field is left as it is, and a given list replaces the stored one (`[]` clears preferred/avoided\r\nlists, but not seasons). `ClearBudget: true` removes both budget bounds."
+        "description": "A partial update: a null field is left as it is, and a given list replaces the stored one (`[]` clears preferred/avoided\nlists, but not seasons). `ClearBudget: true` removes both budget bounds."
       },
       "UpdatePreferencesRequest": {
         "required": [
@@ -8078,7 +10958,7 @@
             ]
           }
         },
-        "description": "A partial update: a null field is left as it is. Quiet hours are `HH:mm` local times in Europe/Istanbul and come as a pair;\r\n`ClearQuietHours: true` removes them."
+        "description": "A partial update: a null field is left as it is. Quiet hours are `HH:mm` local times in Europe/Istanbul and come as a pair;\n`ClearQuietHours: true` removes them."
       },
       "UpdateProfileRequest": {
         "type": "object",
@@ -8159,7 +11039,7 @@
             ]
           }
         },
-        "description": "The measurements and the city, the same way as the seller PUT: left out = unchanged, an explicit null = cleared. The `*Set` flags\r\nrecord which of them the body contained; the JSON reader only calls an init accessor for a property that is present. `Audience` is\r\nthe exception, a null keeps the current one too (a profile always has an audience). `City` (at most 80 characters; blank clears it)\r\nis where the outfit engine reads the weather."
+        "description": "The measurements and the city, the same way as the seller PUT: left out = unchanged, an explicit null = cleared. The `*Set` flags\nrecord which of them the body contained; the JSON reader only calls an init accessor for a property that is present. `Audience` is\nthe exception, a null keeps the current one too (a profile always has an audience). `City` (at most 80 characters; blank clears it)\nis where the outfit engine reads the weather."
       },
       "UpsertItemError": {
         "required": [
@@ -8504,6 +11384,83 @@
           }
         }
       },
+      "UserProfileResponse": {
+        "required": [
+          "id",
+          "displayName",
+          "handle",
+          "isCreator",
+          "bio",
+          "link",
+          "followerCount",
+          "followingCount",
+          "postCount",
+          "isFollowing",
+          "followsYou"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "displayName": {
+            "type": "string"
+          },
+          "handle": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "isCreator": {
+            "type": "boolean"
+          },
+          "bio": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "link": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "followerCount": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "followingCount": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "postCount": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "isFollowing": {
+            "type": "boolean"
+          },
+          "followsYou": {
+            "type": "boolean"
+          }
+        },
+        "description": "A user as others see them. `Handle`, `Bio` and `Link` exist for creators only. `PostCount` counts the posts the caller\nmay see. `IsFollowing`: the caller follows them; `FollowsYou`: they follow the caller."
+      },
       "VisionCategory": {
         "required": [
           "slug",
@@ -8692,7 +11649,7 @@
             }
           }
         },
-        "description": "`PersonaId` is the persona the analysis was made for (the active one, else the first), or null for a user without personas.\r\n`SuggestedProducts` fill the first gap: catalog items of its category, color and formality band, active and in stock, not\r\nalready in the wardrobe, and with a persona a `matchScore` of at least int GetGapsEndpoint.MinMatchScore."
+        "description": "`PersonaId` is the persona the analysis was made for (the active one, else the first), or null for a user without personas.\n`SuggestedProducts` fill the first gap: catalog items of its category, color and formality band, active and in stock, not\nalready in the wardrobe, and with a persona a `matchScore` of at least int GetGapsEndpoint.MinMatchScore."
       },
       "WardrobeItemResponse": {
         "required": [
@@ -8903,7 +11860,7 @@
             "format": "date-time"
           }
         },
-        "description": "One wardrobe item. `ThumbUrl`/`CutoutUrl` are public and permanent (a catalog item whose image could not be copied shows the\r\ncatalog's image); `OriginalUrl` is a 15-minute presigned link, given only when there is no cutout to show. `NeedsCategory`\r\nasks the app to let the user pick one of `Analysis.CategoryCandidates`. `Analysis` is there once a photo was analysed."
+        "description": "One wardrobe item. `ThumbUrl`/`CutoutUrl` are public and permanent (a catalog item whose image could not be copied shows the\ncatalog's image); `OriginalUrl` is a 15-minute presigned link, given only when there is no cutout to show. `NeedsCategory`\nasks the app to let the user pick one of `Analysis.CategoryCandidates`. `Analysis` is there once a photo was analysed."
       },
       "WardrobeItemStatus": {
         "enum": [
@@ -8991,7 +11948,7 @@
             "format": "int32"
           }
         },
-        "description": "An item in lists (the wardrobe grid, the stats' most and least worn). `CompanionCount`, how many pieces of the wardrobe it pairs\r\nwith, is present only on `GET /items`; an item that cannot be worn (yet) has 0."
+        "description": "An item in lists (the wardrobe grid, the stats' most and least worn). `CompanionCount`, how many pieces of the wardrobe it pairs\nwith, is present only on `GET /items`; an item that cannot be worn (yet) has 0."
       },
       "WardrobeStatsResponse": {
         "required": [
@@ -9001,7 +11958,8 @@
           "unwornFor180Days",
           "mostWorn",
           "leastWorn",
-          "possibleOutfits"
+          "possibleOutfits",
+          "unmatchedCount"
         ],
         "type": "object",
         "properties": {
@@ -9053,9 +12011,17 @@
               "string"
             ],
             "format": "int32"
+          },
+          "unmatchedCount": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
           }
         },
-        "description": "Over the wardrobe (not archived, not failed). An item counts as unworn for 180 days when its last wear, or its creation when it was\r\nnever worn, is more than 180 days ago. `PossibleOutfits` is the outfit engine's count of complete, wearable core outfits (top,\r\nbottom, shoes) the wardrobe makes, capped at 999 (see `OutfitCounter`); never null since Task 12."
+        "description": "Over the wardrobe (not archived, not failed). An item counts as unworn for 180 days when its last wear, or its creation when it was\nnever worn, is more than 180 days ago. `PossibleOutfits` is the outfit engine's count of complete, wearable core outfits (top,\nbottom, shoes) the wardrobe makes, capped at 999 (see `OutfitCounter`); never null since Task 12. `UnmatchedCount` is how many\nwearable pieces pair with nothing else in the wardrobe (`companionCount` 0 on the grid): the pieces a purchase would unlock."
       },
       "WearResponse": {
         "required": [
@@ -9213,6 +12179,12 @@
     },
     {
       "name": "Recommendation"
+    },
+    {
+      "name": "Social"
+    },
+    {
+      "name": "Social (internal)"
     }
   ]
 }
