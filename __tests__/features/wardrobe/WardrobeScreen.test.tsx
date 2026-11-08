@@ -100,11 +100,11 @@ describe('Dolap grid', () => {
     expect(processingTile.props.accessibilityState.disabled).toBe(true);
 
     // A piece that pairs: a muted caption under the tile, no wear pill on it.
-    expect(screen.getByTestId('wardrobe-companions-w1')).toHaveTextContent('5 parçayla gider');
+    expect(screen.getByTestId('wardrobe-companions-w1')).toHaveTextContent('5 parçayla giyilir');
     expect(screen.queryByText('12×')).toBeNull();
     expect(screen.queryByText('6 ay')).toBeNull();
     // One that pairs with nothing says so; processing and failed cards have no caption.
-    expect(screen.getByTestId('wardrobe-companions-w2')).toHaveTextContent('Eşleşen parça yok');
+    expect(screen.getByTestId('wardrobe-companions-w2')).toHaveTextContent('Henüz eşi yok');
     expect(screen.queryByTestId('wardrobe-companions-w3')).toBeNull();
     expect(screen.queryByTestId('wardrobe-companions-w4')).toBeNull();
     // Failed: the warning badge.
@@ -143,19 +143,17 @@ describe('Dolap grid', () => {
     await waitFor(() => expect(processMock).toHaveBeenCalledWith('w4'));
   });
 
-  it('shows the three stat cards, with "—" while the outfit count is unknown', async () => {
+  it('says the wardrobe in one sentence, without the outfit count while it is unknown', async () => {
     statsMock.mockResolvedValue(wardrobeStats({ possibleOutfits: null }));
     await renderWithQuery(<WardrobeScreen />);
 
     const stats = await screen.findByTestId('wardrobe-stats');
-    await waitFor(() => expect(within(stats).getByText('48')).toBeTruthy());
-    expect(within(stats).getByText('parça')).toBeTruthy();
-    expect(within(stats).getByText('olası kombin')).toBeTruthy();
-    expect(screen.getByTestId('stat-outfits').props.children).toBe('—');
     // Only the finished piece that pairs with nothing counts (not the processing or failed ones).
-    await waitFor(() => expect(screen.getByTestId('stat-unmatched-count').props.children).toBe(1));
-    expect(within(stats).getByText('parça eşleşmiyor')).toBeTruthy();
-    expect(within(stats).queryByText('6 aydır giyilmedi')).toBeNull();
+    await waitFor(() =>
+      expect(stats).toHaveTextContent('Dolabında 48 parça var; 1 parçanın henüz eşi yok.'),
+    );
+    expect(stats).not.toHaveTextContent('olası kombin');
+    expect(stats).not.toHaveTextContent('eşleşmiyor');
   });
 
   it('counts the unmatched pieces over every page, not only the first', async () => {
@@ -169,28 +167,33 @@ describe('Dolap grid', () => {
     );
     await renderWithQuery(<WardrobeScreen />);
 
-    await waitFor(() => expect(screen.getByTestId('stat-unmatched-count').props.children).toBe(2));
+    await waitFor(() =>
+      expect(screen.getByTestId('stat-unmatched')).toHaveTextContent('2 parçanın henüz eşi yok'),
+    );
   });
 
-  it('filters the grid to the unmatched pieces when the third card is pressed, and back', async () => {
+  it('filters the grid to the unpaired pieces when that clause is pressed, and back', async () => {
     await renderWithQuery(<WardrobeScreen />);
     await screen.findByTestId('wardrobe-item-w1');
-    await waitFor(() => expect(screen.getByTestId('stat-unmatched-count').props.children).toBe(1));
+    await waitFor(() =>
+      expect(screen.getByTestId('stat-unmatched')).toHaveTextContent('1 parçanın henüz eşi yok'),
+    );
 
     await fireEvent.press(screen.getByTestId('stat-unmatched'));
     await waitFor(() => expect(screen.queryByTestId('wardrobe-item-w1')).toBeNull());
     expect(screen.getByTestId('wardrobe-item-w2')).toBeTruthy();
     expect(screen.queryByTestId('wardrobe-item-w3')).toBeNull();
     expect(screen.getByTestId('stat-unmatched').props.accessibilityState.selected).toBe(true);
+    expect(screen.getByTestId('stat-unmatched')).toHaveTextContent('tümünü göster');
 
     await fireEvent.press(screen.getByTestId('stat-unmatched'));
     expect(await screen.findByTestId('wardrobe-item-w1')).toBeTruthy();
   });
 
-  it('leaves the unmatched filter when a category chip is chosen', async () => {
+  it('leaves the unpaired filter when a category chip is chosen', async () => {
     await renderWithQuery(<WardrobeScreen />);
     await screen.findByTestId('wardrobe-item-w1');
-    await waitFor(() => expect(screen.getByTestId('stat-unmatched-count').props.children).toBe(1));
+    await waitFor(() => expect(screen.getByTestId('stat-unmatched')).toBeTruthy());
 
     await fireEvent.press(screen.getByTestId('stat-unmatched'));
     await waitFor(() => expect(screen.queryByTestId('wardrobe-item-w1')).toBeNull());
@@ -200,18 +203,16 @@ describe('Dolap grid', () => {
     expect(screen.getByTestId('stat-unmatched').props.accessibilityState.selected).toBe(false);
   });
 
-  it('cannot be pressed when every piece pairs with something', async () => {
+  it('says "hepsinin eşi var" and offers no filter when every piece pairs with something', async () => {
     listItemsMock.mockResolvedValue(itemsPage([normal]));
     await renderWithQuery(<WardrobeScreen />);
 
-    await waitFor(() => expect(screen.getByTestId('stat-unmatched-count').props.children).toBe(0));
-    expect(screen.getByTestId('stat-unmatched').props.accessibilityState.disabled).toBe(true);
-  });
-
-  it('shows the olası kombin count once the backend has it', async () => {
-    await renderWithQuery(<WardrobeScreen />);
-
-    await waitFor(() => expect(screen.getByTestId('stat-outfits').props.children).toBe(212));
+    await waitFor(() =>
+      expect(screen.getByTestId('wardrobe-stats')).toHaveTextContent(
+        '48 parçanla 212 kombin çıkıyor; hepsinin eşi var.',
+      ),
+    );
+    expect(screen.queryByTestId('stat-unmatched')).toBeNull();
   });
 
   it('shows the first gap on the black card and lists the suggested products in a sheet', async () => {
@@ -219,7 +220,7 @@ describe('Dolap grid', () => {
 
     const card = await screen.findByTestId('gap-card');
     expect(within(card).getByText('Eksik parça: bej tonlarda üst')).toBeTruthy();
-    expect(within(card).getByText('Dolabına eklersen 15 yeni kombin açılıyor.')).toBeTruthy();
+    expect(within(card).getByText('Bunu eklersen 15 yeni kombin çıkar.')).toBeTruthy();
 
     await fireEvent.press(screen.getByTestId('gap-suggestions'));
     expect(await screen.findByText('Dolabını tamamlayan parçalar')).toBeTruthy();

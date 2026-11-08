@@ -20,9 +20,10 @@ describe('size pill', () => {
   });
 
   it('is a guess for stored inferred sizes and for suggestions from other brands', () => {
-    expect(sizePill({ ...base, size: 'L', source: 'Inferred' })).toEqual({
+    expect(sizePill({ ...base, size: 'L', source: 'Inferred', confidence: 0.8 })).toEqual({
       kind: 'inferred',
       size: 'L',
+      unsure: false,
     });
     expect(
       sizePill({
@@ -31,7 +32,23 @@ describe('size pill', () => {
         source: null,
         suggestion: { size: 'M', source: 'Inferred', confidence: 0.6 },
       }),
-    ).toEqual({ kind: 'inferred', size: 'M' });
+    ).toEqual({ kind: 'inferred', size: 'M', unsure: false });
+  });
+
+  it('says "emin değiliz" below 0.6 confidence, or with no confidence at all', () => {
+    expect(
+      sizePill({
+        ...base,
+        size: null,
+        source: null,
+        suggestion: { size: 'M', source: 'Inferred', confidence: 0.5 },
+      }),
+    ).toEqual({ kind: 'inferred', size: 'M', unsure: true });
+    expect(sizePill({ ...base, size: 'L', source: 'Inferred' })).toEqual({
+      kind: 'inferred',
+      size: 'L',
+      unsure: true,
+    });
   });
 
   it('is empty without a hint', () => {

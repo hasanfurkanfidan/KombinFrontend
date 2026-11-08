@@ -78,7 +78,7 @@ describe('Keşfet with a persona', () => {
 
     await renderWithQuery(<DiscoverScreen />);
 
-    expect(await screen.findByText('%94 uyum')).toBeTruthy();
+    expect(await screen.findByText('Sana uygun %94')).toBeTruthy();
     expect(screen.getByTestId('match-badge-p1')).toBeTruthy();
     expect(screen.queryByTestId('match-badge-p2')).toBeNull();
     expect(screen.queryByTestId('match-badge-p3')).toBeNull();
@@ -129,7 +129,7 @@ describe('Keşfet with a persona', () => {
     await fireEvent.press(await screen.findByTestId('filter-sort'));
 
     expect(await screen.findByTestId('option-match')).toBeTruthy();
-    expect(screen.getByText('Sana göre')).toBeTruthy();
+    expect(screen.getByText('Sana en uygun')).toBeTruthy();
   });
 
   it('keeps an explicit order instead of the match default', async () => {

@@ -32,12 +32,13 @@ const slotWords: Record<OutfitSlot, string> = {
   Accessory: tr.pairingsSlotAccessory,
 };
 
+/** The one-line "why" behind a companion, in words a person would use (no colour-theory terms). */
 export const reasonLabels: Record<PairReason, string> = {
-  neutral: tr.pairReasonNeutral,
-  tonal: tr.pairReasonTonal,
-  complementary: tr.pairReasonComplementary,
-  analogous: tr.pairReasonAnalogous,
-  statement: tr.pairReasonStatement,
+  neutral: tr.pairWhyNeutral,
+  tonal: tr.pairWhyTonal,
+  complementary: tr.pairWhyComplementary,
+  analogous: tr.pairWhyAnalogous,
+  statement: tr.pairWhyStatement,
 };
 
 /** How many pieces the whole answer lists: what `wardrobe_pairings_view` reports. */

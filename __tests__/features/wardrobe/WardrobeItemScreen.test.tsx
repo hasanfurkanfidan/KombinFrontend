@@ -51,19 +51,23 @@ describe('wardrobe item detail: pairings', () => {
     await renderWithQuery(<WardrobeItemScreen id="w1" />);
 
     expect((await screen.findByTestId('item-title')).props.children).toBe('Koyu yeşil blazer');
-    expect(await screen.findByText('Bununla gidenler')).toBeTruthy();
+    expect(await screen.findByText('Bununla giyilir')).toBeTruthy();
     expect(pairingsMock).toHaveBeenCalledWith('w1', expect.anything());
 
     const bottoms = await screen.findByTestId('pairing-row-Bottom');
     expect(within(bottoms).getByText('Alt')).toBeTruthy();
-    expect(screen.getByTestId('pairing-reason-b1')).toHaveTextContent('nötr');
-    expect(screen.getByTestId('pairing-reason-b2')).toHaveTextContent('zıt');
-    expect(screen.getByTestId('pairing-reason-s1')).toHaveTextContent('vurgu');
+    expect(screen.getByTestId('pairing-reason-b1')).toHaveTextContent(
+      'Sade bir renk, her şeyle giyilir',
+    );
+    expect(screen.getByTestId('pairing-reason-b2')).toHaveTextContent(
+      'Zıt renkler birbirini öne çıkarır',
+    );
+    expect(screen.getByTestId('pairing-reason-s1')).toHaveTextContent('Kombine renk katar');
 
     // Top, outerwear and accessories have nobody.
     for (const slot of ['Top', 'Outerwear', 'Accessory']) {
       expect(
-        within(screen.getByTestId(`pairing-empty-${slot}`)).getByText('Bu kategoride eşleşen yok'),
+        within(screen.getByTestId(`pairing-empty-${slot}`)).getByText('Dolabında buna uyan yok'),
       ).toBeTruthy();
     }
     expect(screen.queryByTestId('pairing-empty-Bottom')).toBeNull();
@@ -112,7 +116,7 @@ describe('wardrobe item detail: pairings', () => {
     await renderWithQuery(<WardrobeItemScreen id="w1" />);
 
     const card = await screen.findByTestId('pairing-unlock');
-    expect(within(card).getByText('Bir ayakkabı ekle, 8 kombin daha açılsın')).toBeTruthy();
+    expect(within(card).getByText('Bir ayakkabı eklersen 8 kombin daha çıkar')).toBeTruthy();
     expect(within(card).getByText('Beyaz sneaker')).toBeTruthy();
     expect(within(card).getByText('1.299 ₺ · Trendyol')).toBeTruthy();
     await waitFor(() =>
@@ -134,7 +138,7 @@ describe('wardrobe item detail: pairings', () => {
     await renderWithQuery(<WardrobeItemScreen id="w1" />);
 
     expect(
-      await screen.findByText('Eşleşmeleri görmek için önce parçanın kategorisini onayla.'),
+      await screen.findByText('Neyle giyileceğini görmek için önce parçanın türünü onayla.'),
     ).toBeTruthy();
     expect(trackMock).not.toHaveBeenCalledWith('wardrobe_pairings_view', expect.anything());
   });
@@ -144,7 +148,7 @@ describe('wardrobe item detail: pairings', () => {
     pairingsMock.mockRejectedValueOnce(new ApiError({ status: 500, correlationId: 'c' }));
     await renderWithQuery(<WardrobeItemScreen id="w1" />);
 
-    expect(await screen.findByText('Eşleşmeler yüklenemedi')).toBeTruthy();
+    expect(await screen.findByText('Bununla giyilenler yüklenemedi')).toBeTruthy();
     expect(screen.getByTestId('item-title')).toBeTruthy();
 
     await fireEvent.press(screen.getByText('Tekrar dene'));

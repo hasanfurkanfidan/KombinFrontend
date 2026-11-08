@@ -70,7 +70,7 @@ describe('labels', () => {
   });
 
   it('formats the match and falls back for statuses without a backend message', () => {
-    expect(matchText(92)).toBe('%92 sana uygun');
+    expect(matchText(92)).toBe('Sana uygun %92');
     expect(matchText(null)).toBeNull();
     expect(statusMessage({ status: 'Blocked', statusMessage: 'Sebep' })).toBe('Sebep');
     expect(statusMessage({ status: 'NeedsReview', statusMessage: null })).toMatch(/incelemede/);

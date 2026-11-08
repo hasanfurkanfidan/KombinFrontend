@@ -108,7 +108,7 @@ describe('author row, creator chip, match and disclosure', () => {
     expect(screen.getByTestId('creator-chip')).toBeTruthy();
     expect(screen.getByText('Kreatör')).toBeTruthy();
     expect(screen.getByTestId('post-author-sub').props.children).toBe(
-      '@elif.stil · %92 sana uygun',
+      '@elif.stil · Sana uygun %92',
     );
     expect(screen.getByTestId('post-disclosure')).toHaveTextContent(
       'Bu içerikten komisyon kazanabilir',
@@ -177,7 +177,7 @@ describe('tag dots', () => {
 
     expect(within(await screen.findByTestId('tag-row-ta')).getByText('Dolabında var')).toBeTruthy();
     const similar = screen.getByTestId('tag-row-tb');
-    expect(within(similar).getByText('Benzeri dolabında')).toBeTruthy();
+    expect(within(similar).getByText('Benzeri dolabında var')).toBeTruthy();
     expect(within(similar).getByText('Şu an satışta değil')).toBeTruthy();
     expect(screen.queryByTestId('tag-buy-tb')).toBeNull();
   });

@@ -36,42 +36,46 @@ interface StatsRowProps {
 }
 
 /**
- * Three cards: how many pieces, how many outfits they make (— until the backend counted), and how many pieces pair
- * with nothing. The last one is a filter: it is the pieces the gap card should help with.
+ * One sentence instead of three bare numbers: "12 parçanla 38 kombin çıkıyor; 3 parçanın henüz eşi yok." The second
+ * clause is a filter: pressed, the grid shows only those pieces (they are what the gap card should help with).
+ * Nothing is shown while the stats load or when the wardrobe is empty (its empty state says it all).
  */
 export function StatsRow({ stats, unmatched, unmatchedActive, onToggleUnmatched }: StatsRowProps) {
-  const outfits = stats?.possibleOutfits;
-  return (
-    <View style={styles.statsRow} testID="wardrobe-stats">
-      <View style={styles.stat}>
-        <Text style={styles.statValue}>{stats ? toNumber(stats.itemCount) : '—'}</Text>
-        <Text style={styles.statLabel}>{tr.wardrobeStatItems}</Text>
-      </View>
-      <View style={styles.stat}>
-        <Text style={styles.statValue} testID="stat-outfits">
-          {outfits === null || outfits === undefined ? tr.wardrobeStatUnknown : toNumber(outfits)}
-        </Text>
-        <Text style={styles.statLabel}>{tr.wardrobeStatOutfits}</Text>
-      </View>
-      <Pressable
-        accessibilityRole="button"
-        accessibilityState={{ selected: unmatchedActive, disabled: !unmatchedActive && !unmatched }}
-        disabled={!unmatchedActive && !unmatched}
-        onPress={onToggleUnmatched}
-        style={[styles.stat, unmatchedActive && styles.statActive]}
-        testID="stat-unmatched"
-      >
+  if (!stats || toNumber(stats.itemCount) === 0) {
+    return null;
+  }
+  const items = toNumber(stats.itemCount);
+  const outfits = stats.possibleOutfits;
+  const lead =
+    outfits === null || outfits === undefined
+      ? tr.wardrobeSummaryItems(items)
+      : tr.wardrobeSummaryOutfits(items, toNumber(outfits));
+
+  let tail = null;
+  if (unmatched === 0 && !unmatchedActive) {
+    tail = `; ${tr.wardrobeSummaryAllPaired}`;
+  } else if (unmatched !== undefined) {
+    tail = (
+      <>
+        {'; '}
         <Text
-          style={[styles.statValue, unmatchedActive && styles.statActiveText]}
-          testID="stat-unmatched-count"
+          accessibilityRole="button"
+          accessibilityState={{ selected: unmatchedActive }}
+          onPress={onToggleUnmatched}
+          style={styles.summaryLink}
+          testID="stat-unmatched"
         >
-          {unmatched ?? '—'}
+          {unmatchedActive ? tr.wardrobeSummaryShowAll : tr.wardrobeSummaryUnpaired(unmatched)}
         </Text>
-        <Text style={[styles.statLabel, unmatchedActive && styles.statActiveText]}>
-          {tr.wardrobeStatUnmatched}
-        </Text>
-      </Pressable>
-    </View>
+      </>
+    );
+  }
+
+  return (
+    <Text style={styles.summary} testID="wardrobe-stats">
+      {lead}
+      {tail}.
+    </Text>
   );
 }
 
@@ -217,30 +221,13 @@ export function AddButton({ onPress }: { onPress: () => void }) {
 }
 
 const styles = StyleSheet.create({
-  statsRow: {
-    flexDirection: 'row',
-    gap: theme.spacing.md,
-  },
-  stat: {
-    flex: 1,
-    borderRadius: theme.radius.xl,
-    backgroundColor: theme.colors.surfaceAlt,
-    padding: theme.spacing.lg,
-    gap: theme.spacing.xs,
-  },
-  statActive: {
-    backgroundColor: theme.colors.ink,
-  },
-  statValue: {
-    ...theme.typography.display,
+  summary: {
+    ...theme.typography.bodyMedium,
     color: theme.colors.ink,
   },
-  statLabel: {
-    ...theme.typography.caption,
-    color: theme.colors.inkMuted,
-  },
-  statActiveText: {
-    color: theme.colors.onInk,
+  summaryLink: {
+    ...theme.typography.bodyStrong,
+    textDecorationLine: 'underline',
   },
   gapCard: {
     flexDirection: 'row',

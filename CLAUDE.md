@@ -54,6 +54,16 @@ Nothing else exists yet (visual search); do not scaffold screens for features th
 - `@/` is an alias for `src/` (tsconfig paths + Jest `moduleNameMapper`).
 - Tests live in `__tests__/` and mirror `src/`.
 
+## Glossary and the clarity rules (Task 15b-A)
+
+Every user-facing string follows `docs/design/glossary.md`; `__tests__/i18n/glossary.test.ts` scans `tr.ts` and fails on a banned word. The short version:
+
+- **Fiyatlar** is the price tab (tracking a price is "izlemek"); **Akış** is the feed tab and appears nowhere else; feed modes are **Herkes / Takip ettiklerim**; "Takip et / Takip ediliyor" is only ever about people. "Keşfet" is only the products tab.
+- **Sana uygun %N** (never "uyum" alone), **Tarzım / tarz** (never "persona"), **Bununla giyilir**, **Dolabında var**, **En düşük fiyat**, **Tahmini beden: L**, **Kreatör**, **Paylaş**, **Parça**, **Kombin**, "eşi yok" for an unpaired piece, "Dolaptan çıkar" / "Tarzı kaldır" (not "arşivle"), "Hazırlanıyor" (not "işleniyor").
+- Banned: persona, uyum (alone), komşu / vurgu / nötr / tonal, eşleş-, akış in a sentence.
+
+The five rules every screen keeps (audit: `docs/design/clarity-audit.md`): the title plus **one** primary action explain the screen; at most two rows of controls before content; everyday Turkish; every number has a noun or verb next to it; each thing is said once (no badge repeating a caption, no two buttons for one action). Every list's empty state says what to do next in one sentence, with one button unless the header already has that button.
+
 ## Theme-token rule
 
 No hard-coded colours, font sizes, radii or spacing in components. Use `theme.colors`, `theme.spacing`, `theme.radius`, `theme.sizes`, `theme.typography`. Missing a value that the design needs? Add a token, then use it. `accent` (green) is **only** for positive price/stock signals (price drop, in stock, savings); `warning` is for price increases, sold-out and form errors. Touch targets are at least 44 px. The visual reference is `docs/design/kombin-app-tasarimi.pdf`; when it disagrees with a task document, the PDF wins for layout/visuals, the task wins for behaviour and data.

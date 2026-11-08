@@ -73,7 +73,7 @@ describe('Takip logged out', () => {
     await renderWithQuery(<TrackingScreen />);
     await fireEvent.press(await screen.findByText('Giriş yap'));
 
-    expect(screen.getByText('Takip için giriş yap')).toBeTruthy();
+    expect(screen.getByText('Fiyatları izlemek için giriş yap')).toBeTruthy();
     expect(router.push).toHaveBeenCalledWith('/login');
     expect(listAlertsMock).not.toHaveBeenCalled();
   });
@@ -102,8 +102,8 @@ describe('Takip: Alarmlar', () => {
     expect(await screen.findByText("3 ürün izleniyor · 1'i hedef fiyatın altında")).toBeTruthy();
     expect(screen.getByTestId('track-savings').props.children).toBe('850 ₺');
     expect(screen.getByTestId('track-average').props.children).toBe('%28');
-    expect(screen.getByText('Takiple kazandığın')).toBeTruthy();
-    expect(screen.getByText('Ort. indirim yakalanan')).toBeTruthy();
+    expect(screen.getByText('Fiyat izleyerek kazandığın')).toBeTruthy();
+    expect(screen.getByText('Yakaladığın ortalama indirim')).toBeTruthy();
   });
 
   it('lists each alert with its price, caption and status line', async () => {
@@ -201,7 +201,7 @@ describe('Takip: Alarmlar', () => {
 
     await renderWithQuery(<TrackingScreen />);
 
-    expect(await screen.findByText('Takip listen yüklenemedi')).toBeTruthy();
+    expect(await screen.findByText('Listen yüklenemedi')).toBeTruthy();
   });
 });
 

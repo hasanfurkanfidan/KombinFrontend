@@ -7,12 +7,12 @@ import { wardrobeSummary } from '../../fixtures';
 
 describe('pairing caption', () => {
   it('counts the pieces a finished item goes with', () => {
-    expect(companionCaption(wardrobeSummary({ companionCount: 5 }))).toBe('5 parçayla gider');
-    expect(companionCaption(wardrobeSummary({ companionCount: '3' }))).toBe('3 parçayla gider');
+    expect(companionCaption(wardrobeSummary({ companionCount: 5 }))).toBe('5 parçayla giyilir');
+    expect(companionCaption(wardrobeSummary({ companionCount: '3' }))).toBe('3 parçayla giyilir');
   });
 
   it('says nothing matches when the count is zero', () => {
-    expect(companionCaption(wardrobeSummary({ companionCount: 0 }))).toBe('Eşleşen parça yok');
+    expect(companionCaption(wardrobeSummary({ companionCount: 0 }))).toBe('Henüz eşi yok');
   });
 
   it('is hidden while processing or failed, or before the backend has counted', () => {

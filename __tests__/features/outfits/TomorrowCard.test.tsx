@@ -28,7 +28,7 @@ describe('home card "Yarın için"', () => {
     await renderWithQuery(<TomorrowCard />);
 
     const card = await screen.findByTestId('tomorrow-card');
-    expect(within(card).getByText('Dolabından bir kombin')).toBeTruthy();
+    expect(within(card).getByText('Dolabından hazır bir kombin')).toBeTruthy();
     expect(within(screen.getByTestId('tomorrow-weather')).getByText('9° · Yağmurlu')).toBeTruthy();
     // The three wardrobe pieces of the fixture outfit, side by side.
     expect(
@@ -68,7 +68,7 @@ describe('home card "Yarın için"', () => {
     await renderWithQuery(<TomorrowCard />);
 
     expect(
-      await screen.findByText('Dolabına 5 parça ekle, yarının kombinini hazırlayalım'),
+      await screen.findByText('Dolabına 5 parça ekle, her gün sana kombin hazırlayalım'),
     ).toBeTruthy();
     await waitFor(() => expect(statsMock).toHaveBeenCalled());
     expect(dailyMock).not.toHaveBeenCalled();
@@ -91,7 +91,7 @@ describe('home card "Yarın için"', () => {
 
     await renderWithQuery(<TomorrowCard />);
 
-    expect(await screen.findByText('Yarın için kombin çıkmadı')).toBeTruthy();
+    expect(await screen.findByText('Kombin çıkmadı; birkaç parça daha ekle')).toBeTruthy();
     expect(screen.queryByTestId('tomorrow-collage')).toBeNull();
     expect(screen.queryByTestId('tomorrow-weather')).toBeNull();
   });

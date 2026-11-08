@@ -64,7 +64,7 @@ describe('detail: match and size', () => {
 
     await renderWithQuery(<ProductDetailScreen id="p1" />);
 
-    expect(await screen.findByText('%87 uyum')).toBeTruthy();
+    expect(await screen.findByText('Sana uygun %87')).toBeTruthy();
   });
 
   it('hides a low match score', async () => {
@@ -88,7 +88,7 @@ describe('detail: match and size', () => {
     expect(screen.queryByTestId('size-add')).toBeNull();
   });
 
-  it('shows an outlined pill with "?" for a suggestion', async () => {
+  it('writes a suggestion out as "Tahmini beden: M"', async () => {
     await signedInSession();
     getProductMock.mockResolvedValue(
       product({
@@ -105,7 +105,10 @@ describe('detail: match and size', () => {
     await renderWithQuery(<ProductDetailScreen id="p1" />);
 
     expect(await screen.findByTestId('size-pill-inferred')).toBeTruthy();
-    expect(screen.getByText('M?')).toBeTruthy();
+    expect(screen.getByText('Tahmini beden: M')).toBeTruthy();
+    expect(screen.queryByText('M?')).toBeNull();
+    // 0.6 is confident enough: no "emin değiliz".
+    expect(screen.queryByTestId('size-unsure')).toBeNull();
   });
 
   it('offers "Bedenini ekle", which opens the size sheet with the product brand', async () => {
