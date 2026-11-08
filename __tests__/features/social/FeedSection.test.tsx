@@ -9,6 +9,7 @@ import { getUnreadCount } from '@/api/endpoints/notifications';
 import { listPersonas } from '@/api/endpoints/profile';
 import { blockUser, getFeed } from '@/api/endpoints/social';
 import { DiscoverScreen } from '@/features/catalog/DiscoverScreen';
+import { FeedScreen } from '@/features/social/FeedScreen';
 
 import { categories, listItem, page, persona, post, postAuthor } from '../../fixtures';
 import { renderWithQuery, resetSession, signedInSession } from '../../testUtils';
@@ -46,26 +47,25 @@ beforeEach(async () => {
   jest.mocked(getUnreadCount).mockResolvedValue(0);
 });
 
-describe('Keşfet "Ürünler / Akış"', () => {
-  it('keeps the product grid by default and switches to the feed through the URL param', async () => {
+describe('The Akış tab', () => {
+  it('sends an old Keşfet "?view=feed" link to the Akış tab', async () => {
+    paramsMock.mockReturnValue({ view: 'feed', mode: 'following' });
+
     await renderWithQuery(<DiscoverScreen />);
 
-    expect(await screen.findByText('Yün karışımlı blazer')).toBeTruthy();
-    expect(screen.getByText('Ürünler')).toBeTruthy();
-    expect(screen.getByText('Akış')).toBeTruthy();
-    expect(getFeedMock).not.toHaveBeenCalled();
-
-    await fireEvent.press(screen.getByTestId('segment-feed'));
-    expect(router.setParams).toHaveBeenCalledWith({ view: 'feed' });
+    expect(router.replace).toHaveBeenCalledWith({
+      pathname: '/feed',
+      params: { mode: 'following' },
+    });
+    expect(jest.mocked(listProducts)).not.toHaveBeenCalled();
   });
 
-  it('shows the feed with its own "Keşfet / Takip" toggle, and no product requests', async () => {
-    paramsMock.mockReturnValue({ view: 'feed' });
+  it('has one primary action, "Paylaş", and a mode toggle, and asks for no products', async () => {
     getFeedMock.mockResolvedValue(
       feedPage([post({ id: 'a1' }), post({ id: 'a2', author: postAuthor({ id: 'u-kaan' }) })]),
     );
 
-    await renderWithQuery(<DiscoverScreen />);
+    await renderWithQuery(<FeedScreen />);
 
     expect(await screen.findByTestId('post-a1')).toBeTruthy();
     expect(screen.getByTestId('post-a2')).toBeTruthy();
@@ -77,19 +77,22 @@ describe('Keşfet "Ürünler / Akış"', () => {
       { auth: false },
     ]);
     expect(jest.mocked(listProducts)).not.toHaveBeenCalled();
+    expect(screen.getByText('Paylaş')).toBeTruthy();
+    expect(screen.getByText('Herkes')).toBeTruthy();
+    expect(screen.getByText('Takip ettiklerim')).toBeTruthy();
 
     await fireEvent.press(screen.getByTestId('segment-following'));
     expect(router.setParams).toHaveBeenCalledWith({ mode: 'following' });
-    await fireEvent.press(screen.getByTestId('segment-products'));
-    expect(router.setParams).toHaveBeenCalledWith({ view: '' });
+    await fireEvent.press(screen.getByTestId('feed-share'));
+    expect(router.push).toHaveBeenCalledWith('/posts/new');
   });
 
-  it('asks a signed-out visitor to sign in for "Takip" instead of calling the endpoint', async () => {
-    paramsMock.mockReturnValue({ view: 'feed', mode: 'following' });
+  it('asks a signed-out visitor to sign in for "Takip ettiklerim" instead of calling the endpoint', async () => {
+    paramsMock.mockReturnValue({ mode: 'following' });
 
-    await renderWithQuery(<DiscoverScreen />);
+    await renderWithQuery(<FeedScreen />);
 
-    expect(await screen.findByText('Takip akışı için giriş yap')).toBeTruthy();
+    expect(await screen.findByText('Takip ettiklerini görmek için giriş yap')).toBeTruthy();
     expect(getFeedMock).not.toHaveBeenCalled();
     await fireEvent.press(screen.getByText('Giriş yap'));
     expect(router.push).toHaveBeenCalledWith('/login');
@@ -97,32 +100,33 @@ describe('Keşfet "Ürünler / Akış"', () => {
 
   it('asks for the following feed with the token and the active persona once signed in', async () => {
     await signedInSession();
-    paramsMock.mockReturnValue({ view: 'feed', mode: 'following' });
+    paramsMock.mockReturnValue({ mode: 'following' });
     getFeedMock.mockResolvedValue(feedPage([post({ id: 'f1', followingAuthor: true })]));
 
-    await renderWithQuery(<DiscoverScreen />);
+    await renderWithQuery(<FeedScreen />);
 
     expect(await screen.findByTestId('post-f1')).toBeTruthy();
     expect(getFeedMock.mock.calls[0]?.slice(0, 4)).toEqual(['following', 1, 'pe1', { auth: true }]);
   });
 
-  it('says so when nobody posted yet, and points at sharing', async () => {
-    paramsMock.mockReturnValue({ view: 'feed' });
+  it('says so when nobody posted yet, and points at the one Paylaş button', async () => {
     getFeedMock.mockResolvedValue(feedPage([]));
 
-    await renderWithQuery(<DiscoverScreen />);
+    await renderWithQuery(<FeedScreen />);
 
-    expect(await screen.findByText('Akışta henüz gönderi yok')).toBeTruthy();
+    expect(await screen.findByText('Henüz kimse paylaşmadı')).toBeTruthy();
+    // The header's "Paylaş" is the one button for it: the empty state points at it instead of repeating it.
+    expect(screen.getByText('İlk kombini sen paylaş.')).toBeTruthy();
+    expect(screen.getAllByText('Paylaş')).toHaveLength(1);
     await fireEvent.press(screen.getByTestId('feed-share'));
     expect(router.push).toHaveBeenCalledWith('/posts/new');
   });
 
   it('shows a retry when the feed cannot load', async () => {
-    paramsMock.mockReturnValue({ view: 'feed' });
     getFeedMock.mockRejectedValueOnce(new Error('boom'));
     getFeedMock.mockResolvedValue(feedPage([post({ id: 'r1' })]));
 
-    await renderWithQuery(<DiscoverScreen />);
+    await renderWithQuery(<FeedScreen />);
 
     await fireEvent.press(await screen.findByText('Tekrar dene'));
     expect(await screen.findByTestId('post-r1')).toBeTruthy();
@@ -130,7 +134,6 @@ describe('Keşfet "Ürünler / Akış"', () => {
 
   it("removes a blocked author's posts from the feed at once", async () => {
     await signedInSession();
-    paramsMock.mockReturnValue({ view: 'feed' });
     getFeedMock.mockResolvedValue(
       feedPage([
         post({ id: 'keep', author: postAuthor({ id: 'u-elif' }) }),
@@ -143,7 +146,7 @@ describe('Keşfet "Ürünler / Akış"', () => {
       buttons?.find((button) => button.style === 'destructive')?.onPress?.();
     });
 
-    await renderWithQuery(<DiscoverScreen />);
+    await renderWithQuery(<FeedScreen />);
     await screen.findByTestId('post-gone');
 
     await fireEvent.press(screen.getAllByTestId('post-menu')[1] as never);

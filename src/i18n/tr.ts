@@ -2,9 +2,9 @@
 export const tr = {
   // Navigation
   tabDiscover: 'Keşfet',
+  tabFeed: 'Akış',
   tabWardrobe: 'Dolap',
-  tabAdd: 'Ekle',
-  tabTracking: 'Takip',
+  tabPrices: 'Fiyatlar',
   tabProfile: 'Profil',
   comingSoon: 'Yakında',
 
@@ -580,20 +580,19 @@ export const tr = {
   homeCardPromptTitle: 'Dolabına 5 parça ekle, yarının kombinini hazırlayalım',
   homeCardPromptCta: 'Dolabına parça ekle',
   homeCardNothing: 'Yarın için kombin çıkmadı',
-  // Social: the feed on Keşfet (design screen 09)
-  discoverSectionProducts: 'Ürünler',
-  discoverSectionFeed: 'Akış',
-  feedModeForYou: 'Keşfet',
-  feedModeFollowing: 'Takip',
+  // Social: the Akış tab (design screen 09)
+  feedModeForYou: 'Herkes',
+  feedModeFollowing: 'Takip ettiklerim',
   feedShare: 'Paylaş',
-  feedEmptyTitle: 'Akışta henüz gönderi yok',
-  feedEmptyBody: 'İlk kombinini sen paylaş, buradan başkaları da görsün.',
-  feedFollowingEmptyTitle: 'Takip ettiklerinden gönderi yok',
-  feedFollowingEmptyBody: 'Akıştan beğendiğin kişileri takip et, gönderileri burada toplansın.',
-  feedFollowingSignInTitle: 'Takip akışı için giriş yap',
-  feedFollowingSignInBody: 'Takip ettiklerinin kombinlerini burada görürsün.',
-  feedLoadFailed: 'Akış yüklenemedi',
-  feedLoadMoreFailed: 'Daha fazla gönderi yüklenemedi',
+  feedEmptyTitle: 'Henüz kimse paylaşmadı',
+  feedEmptyBody: 'İlk kombini sen paylaş.',
+  feedFollowingEmptyTitle: 'Takip ettiklerinden paylaşım yok',
+  feedFollowingEmptyBody: 'Herkes bölümünde beğendiğin kişileri takip et.',
+  feedFollowingEmptyAction: 'Herkesin paylaşımlarına bak',
+  feedFollowingSignInTitle: 'Takip ettiklerini görmek için giriş yap',
+  feedFollowingSignInBody: 'Takip ettiğin kişilerin kombinleri burada.',
+  feedLoadFailed: 'Paylaşımlar yüklenemedi',
+  feedLoadMoreFailed: 'Daha fazla paylaşım yüklenemedi',
 
   // Social: a post
   postCreatorChip: 'Kreatör',

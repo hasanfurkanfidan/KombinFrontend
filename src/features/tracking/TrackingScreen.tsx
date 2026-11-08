@@ -27,7 +27,7 @@ const SEGMENTS = [
   { value: 'saved', label: tr.trackSegmentSaved },
 ] as const;
 
-/** The Takip tab (design screen 10): price alerts with headline stats, and the saved products grid. */
+/** The Fiyatlar tab (design screen 10): price alerts with headline stats, and the saved products grid. */
 export function TrackingScreen() {
   const router = useRouter();
   const { isSignedIn } = useSession();
@@ -36,7 +36,7 @@ export function TrackingScreen() {
   if (!isSignedIn) {
     return (
       <Screen>
-        <Text style={styles.title}>{tr.tabTracking}</Text>
+        <Text style={styles.title}>{tr.tabPrices}</Text>
         <EmptyState
           title={tr.trackSignedOutTitle}
           body={tr.trackSignedOutBody}
@@ -76,7 +76,7 @@ function AlertsSection({ segment, onChangeSegment }: SectionProps) {
 
   const header = (
     <View style={styles.header}>
-      <Text style={styles.title}>{tr.tabTracking}</Text>
+      <Text style={styles.title}>{tr.tabPrices}</Text>
       {alertItems ? (
         <Text style={styles.summary} testID="track-summary">
           {tr.trackSummary(summary.watched, withPossessive(summary.belowTarget))}
@@ -146,7 +146,7 @@ function SavedSection({ segment, onChangeSegment }: SectionProps) {
 
   const header = (
     <View style={[styles.header, styles.headerPadded]}>
-      <Text style={styles.title}>{tr.tabTracking}</Text>
+      <Text style={styles.title}>{tr.tabPrices}</Text>
       <SegmentedControl options={SEGMENTS} value={segment} onChange={onChangeSegment} />
     </View>
   );

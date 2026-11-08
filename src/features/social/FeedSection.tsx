@@ -1,12 +1,11 @@
 import { useMemo, type ReactElement } from 'react';
-import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, FlatList, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 
 import type { FeedMode } from '@/api/endpoints/social';
 import { Button } from '@/components/Button';
 import { EmptyState } from '@/components/EmptyState';
 import { ErrorState } from '@/components/ErrorState';
-import { Icon } from '@/components/Icon';
 import { Skeleton } from '@/components/Skeleton';
 import { useActivePersona, usePersonas } from '@/features/personas/hooks';
 import { SegmentedControl } from '@/features/tracking/SegmentedControl';
@@ -24,15 +23,15 @@ const MODE_OPTIONS = [
 ] as const satisfies readonly { value: FeedMode; label: string }[];
 
 interface FeedSectionProps {
-  /** The Keşfet header (greeting, bell, "Ürünler / Akış"); this section adds its own controls under it. */
+  /** The tab's title row with "Paylaş"; this section adds the mode toggle under it. */
   header: ReactElement;
   mode: FeedMode;
   onModeChange: (mode: FeedMode) => void;
 }
 
 /**
- * "Akış": the posts list of Keşfet. Its own "Keşfet / Takip" toggle sits above the list; signed-out users only get the
- * public feed, and "Takip" asks them to sign in instead of calling the endpoint.
+ * The posts list of the Akış tab. The mode toggle sits above the list; signed-out users only get the public feed,
+ * and the "following" mode asks them to sign in instead of calling the endpoint.
  */
 export function FeedSection({ header, mode, onModeChange }: FeedSectionProps) {
   const router = useRouter();
@@ -69,13 +68,14 @@ export function FeedSection({ header, mode, onModeChange }: FeedSectionProps) {
   } else if (posts.length === 0) {
     placeholder =
       mode === 'following' ? (
-        <EmptyState title={tr.feedFollowingEmptyTitle} body={tr.feedFollowingEmptyBody} />
-      ) : (
         <EmptyState
-          title={tr.feedEmptyTitle}
-          body={tr.feedEmptyBody}
-          action={{ label: tr.feedShare, onPress: () => router.push('/posts/new') }}
+          title={tr.feedFollowingEmptyTitle}
+          body={tr.feedFollowingEmptyBody}
+          action={{ label: tr.feedFollowingEmptyAction, onPress: () => onModeChange('forYou') }}
         />
+      ) : (
+        // The header's "Paylaş" is the button for this; a second one would repeat it.
+        <EmptyState title={tr.feedEmptyTitle} body={tr.feedEmptyBody} />
       );
   }
 
@@ -83,18 +83,7 @@ export function FeedSection({ header, mode, onModeChange }: FeedSectionProps) {
     <View>
       {header}
       <View style={styles.controls}>
-        <View style={styles.mode}>
-          <SegmentedControl options={MODE_OPTIONS} value={mode} onChange={onModeChange} />
-        </View>
-        <Pressable
-          accessibilityRole="button"
-          onPress={() => router.push('/posts/new')}
-          style={styles.share}
-          testID="feed-share"
-        >
-          <Icon name="plus" size={16} color={theme.colors.onInk} />
-          <Text style={styles.shareText}>{tr.feedShare}</Text>
-        </Pressable>
+        <SegmentedControl options={MODE_OPTIONS} value={mode} onChange={onModeChange} />
       </View>
     </View>
   );
@@ -137,27 +126,8 @@ export function FeedSection({ header, mode, onModeChange }: FeedSectionProps) {
 
 const styles = StyleSheet.create({
   controls: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: theme.spacing.md,
     paddingHorizontal: theme.screenPaddingX,
     paddingBottom: theme.spacing.lg,
-  },
-  mode: {
-    flex: 1,
-  },
-  share: {
-    minHeight: theme.sizes.touch,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: theme.spacing.xs,
-    paddingHorizontal: theme.spacing.lg,
-    borderRadius: theme.radius.pill,
-    backgroundColor: theme.colors.ink,
-  },
-  shareText: {
-    ...theme.typography.bodyMedium,
-    color: theme.colors.onInk,
   },
   skeleton: {
     gap: theme.spacing.md,
