@@ -115,6 +115,29 @@ describe('author row, creator chip, match and disclosure', () => {
     );
   });
 
+  it('gives the name its own line, so a narrow screen cuts the chip line before the name', async () => {
+    const creator = post({
+      author: postAuthor({
+        displayName: 'Elif Yıldız Karaosmanoğlu',
+        handle: 'elif.stil',
+        isCreator: true,
+      }),
+      matchScore: 92,
+    });
+    await renderWithQuery(<PostCard post={creator} />);
+
+    const name = within(screen.getByTestId('post-author')).getByText('Elif Yıldız Karaosmanoğlu');
+    expect(name.props.numberOfLines).toBe(2);
+    expect(screen.getByTestId('post-author-sub').props.numberOfLines).toBe(1);
+  });
+
+  it('hides a match under 70 in the author line', async () => {
+    const weak = post({ author: postAuthor({ handle: 'elif.stil' }), matchScore: 58 });
+    await renderWithQuery(<PostCard post={weak} />);
+
+    expect(screen.getByTestId('post-author-sub').props.children).toBe('@elif.stil');
+  });
+
   it('shows neither chip nor disclosure for an ordinary author, and no match line without a score', async () => {
     await renderWithQuery(<PostCard post={post()} />);
 

@@ -6,6 +6,7 @@ import type {
   PostVisibility,
   ReportReason,
 } from '@/api/models';
+import { matchBadgeScore } from '@/features/catalog/matchBadge';
 import { tr } from '@/i18n/tr';
 import { formatTry, toNumber } from '@/utils/money';
 import { withPossessive } from '@/utils/turkish';
@@ -106,7 +107,8 @@ export function postBand(summary: PostSummary): string {
 }
 
 export function matchText(score: number | string | null): string | null {
-  return score === null ? null : tr.postMatch(Math.round(toNumber(score)));
+  const value = matchBadgeScore(score);
+  return value === null ? null : tr.postMatch(value);
 }
 
 /** The centre of a tag's box as fractions of the picture: where its dot sits (rounded, so 0.1 + 0.4 / 2 is 0.3). */

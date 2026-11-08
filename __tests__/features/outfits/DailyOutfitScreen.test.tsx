@@ -68,7 +68,12 @@ describe('daily outfit with everything in the wardrobe (Complete)', () => {
     // Every piece is from the wardrobe: the white pill, no gap pill.
     expect(within(screen.getByTestId('piece-pill-Top')).getByText('Dolabında var')).toBeTruthy();
     expect(within(screen.getByTestId('piece-pill-Shoes')).getByText('Dolabında var')).toBeTruthy();
+    // Said once: no caption repeating the pill.
+    expect(screen.queryByText('Sahip olduğun parça')).toBeNull();
     expect(screen.queryByText(/Eksik ·/)).toBeNull();
+    // The occasion row says what it asks, and the shuffle says what it does.
+    expect(screen.getByText('Nereye?')).toBeTruthy();
+    expect(screen.getByTestId('outfit-shuffle')).toHaveTextContent('Başka öneri');
     expect(
       within(screen.getByTestId('outfit-narration')).getByText(
         'Koyu yeşil blazer yağmurlu havada şık durur.',

@@ -34,13 +34,14 @@ interface OfferRowProps {
   onPress: (offer: Offer) => void;
 }
 
+/** One seller: the whole row opens its offer (through `goPath`), so there is no separate "Git" link. */
 export function OfferRow({ offer, highlighted, onPress }: OfferRowProps) {
   const caption = getOfferCaption(offer);
   const sellable = isSellable(offer);
 
   return (
     <Pressable
-      accessibilityRole="button"
+      accessibilityRole="link"
       accessibilityLabel={`${offer.seller.name}, ${formatTry(offer.currentPrice)}`}
       disabled={!sellable}
       onPress={() => onPress(offer)}
@@ -65,19 +66,7 @@ export function OfferRow({ offer, highlighted, onPress }: OfferRowProps) {
       <Text style={[styles.price, !sellable && styles.priceMuted]} numberOfLines={1}>
         {formatTry(offer.currentPrice)}
       </Text>
-      {sellable ? (
-        <Pressable
-          accessibilityRole="link"
-          accessibilityLabel={`${offer.seller.name}: ${tr.productGo}`}
-          onPress={() => onPress(offer)}
-          hitSlop={theme.spacing.sm}
-          style={styles.go}
-          testID={`offer-go-${offer.id}`}
-        >
-          <Text style={styles.goText}>{tr.productGo}</Text>
-          <Icon name="arrowUpRight" size={14} />
-        </Pressable>
-      ) : null}
+      {sellable ? <Icon name="chevronRight" size={18} color={theme.colors.inkMuted} /> : null}
     </Pressable>
   );
 }
@@ -142,15 +131,5 @@ const styles = StyleSheet.create({
   },
   priceMuted: {
     color: theme.colors.inkMuted,
-  },
-  go: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 2,
-  },
-  goText: {
-    ...theme.typography.captionMedium,
-    color: theme.colors.ink,
-    textDecorationLine: 'underline',
   },
 });

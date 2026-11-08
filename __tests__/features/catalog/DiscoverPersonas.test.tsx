@@ -43,7 +43,7 @@ beforeEach(async () => {
   listProductsMock.mockResolvedValue(
     page([
       listItem({ id: 'p1', matchScore: 94 }),
-      listItem({ id: 'p2', name: 'Bej boğazlı triko', matchScore: 39 }),
+      listItem({ id: 'p2', name: 'Bej boğazlı triko', matchScore: 58 }),
       listItem({ id: 'p3', name: 'Siyah pantolon', matchScore: null }),
     ]),
   );
@@ -85,7 +85,7 @@ describe('Keşfet with a persona', () => {
     expect(listProductsMock).toHaveBeenCalledTimes(1);
   });
 
-  it('shows the match badge from 40 up and hides lower or missing scores', async () => {
+  it('shows "Sana uygun" from 70 up and hides lower or missing scores', async () => {
     await signedInSession();
 
     await renderWithQuery(<DiscoverScreen />);

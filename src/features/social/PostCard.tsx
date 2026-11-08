@@ -67,23 +67,27 @@ export function PostCard({ post }: PostCardProps) {
           <View style={styles.avatar}>
             <Text style={styles.avatarText}>{initialOf(post.author.displayName)}</Text>
           </View>
+          {/* The name has the first line to itself; the chip, handle and match share the second, which gives way
+              first on a narrow screen, so the name is never cut before them. */}
           <View style={styles.authorText}>
-            <View style={styles.nameRow}>
-              <Text style={styles.name} numberOfLines={1}>
-                {post.author.displayName}
-              </Text>
-              {post.author.isCreator ? (
-                <View style={styles.creatorChip} testID="creator-chip">
-                  <Text style={styles.creatorChipText}>{tr.postCreatorChip}</Text>
-                </View>
-              ) : null}
-            </View>
-            {post.author.handle || match ? (
-              <Text style={styles.sub} numberOfLines={1} testID="post-author-sub">
-                {[post.author.handle ? `@${post.author.handle}` : null, match]
-                  .filter(Boolean)
-                  .join(' · ')}
-              </Text>
+            <Text style={styles.name} numberOfLines={2}>
+              {post.author.displayName}
+            </Text>
+            {post.author.isCreator || post.author.handle || match ? (
+              <View style={styles.subRow}>
+                {post.author.isCreator ? (
+                  <View style={styles.creatorChip} testID="creator-chip">
+                    <Text style={styles.creatorChipText}>{tr.postCreatorChip}</Text>
+                  </View>
+                ) : null}
+                {post.author.handle || match ? (
+                  <Text style={styles.sub} numberOfLines={1} testID="post-author-sub">
+                    {[post.author.handle ? `@${post.author.handle}` : null, match]
+                      .filter(Boolean)
+                      .join(' · ')}
+                  </Text>
+                ) : null}
+              </View>
             ) : null}
           </View>
         </Pressable>
@@ -291,7 +295,7 @@ const styles = StyleSheet.create({
     flex: 1,
     gap: 2,
   },
-  nameRow: {
+  subRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: theme.spacing.sm,
@@ -299,7 +303,6 @@ const styles = StyleSheet.create({
   name: {
     ...theme.typography.bodyStrong,
     color: theme.colors.ink,
-    flexShrink: 1,
   },
   creatorChip: {
     paddingHorizontal: theme.spacing.sm,
@@ -314,6 +317,7 @@ const styles = StyleSheet.create({
   sub: {
     ...theme.typography.caption,
     color: theme.colors.inkMuted,
+    flexShrink: 1,
   },
   followButton: {
     minHeight: theme.sizes.touch,

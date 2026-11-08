@@ -19,7 +19,7 @@ interface PieceTileProps {
 }
 
 /**
- * One garment of an outfit. Wardrobe pieces carry the white "Dolabında" pill; a gap piece (to buy) has the accent
+ * One garment of an outfit. Wardrobe pieces carry the white "Dolabında var" pill (and nothing else says so); a gap piece (to buy) has the accent
  * border, an "Eksik · price" pill and the cheapest seller; the anchor (the product or item the outfit is built
  * around) gets an ink border.
  */
@@ -72,13 +72,10 @@ export function PieceTile({ piece, width, shopping = false }: PieceTileProps) {
         <Text style={styles.name} numberOfLines={2}>
           {piece.name}
         </Text>
+        {/* An owned piece already carries the "Dolabında var" pill: no second caption saying the same. */}
         {gap && offer?.seller ? (
           <Text style={styles.seller} numberOfLines={1}>
             {tr.outfitCheapestAt(offer.seller.name)}
-          </Text>
-        ) : piece.role === 'Wardrobe' ? (
-          <Text style={styles.owned} numberOfLines={1}>
-            {tr.outfitOwned}
           </Text>
         ) : null}
       </View>

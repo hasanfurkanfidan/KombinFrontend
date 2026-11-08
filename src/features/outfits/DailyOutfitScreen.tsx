@@ -1,5 +1,5 @@
 import { useState, type ReactElement } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 
 import { track } from '@/analytics';
@@ -9,6 +9,7 @@ import { Button } from '@/components/Button';
 import { Chip } from '@/components/Chip';
 import { EmptyState } from '@/components/EmptyState';
 import { ErrorState } from '@/components/ErrorState';
+import { Icon } from '@/components/Icon';
 import { IconButton } from '@/components/IconButton';
 import { Skeleton } from '@/components/Skeleton';
 import { showToast } from '@/components/toastStore';
@@ -112,46 +113,50 @@ function SignedInDaily() {
     dismiss.mutate({ id, reason }, { onError: () => showToast(tr.outfitActionFailed) });
   };
 
+  // One row: "Nereye?" with the occasion chips, and the labelled shuffle on the right.
   const controls = (
-    <ScrollView
-      horizontal
-      showsHorizontalScrollIndicator={false}
-      contentContainerStyle={styles.chips}
-      style={styles.chipScroll}
-    >
-      {OCCASIONS.map((entry) => (
-        <Chip
-          key={entry.value}
-          label={entry.label}
-          selected={occasion === entry.value}
-          onPress={() => pickOccasion(entry.value)}
-          testID={`occasion-${entry.value}`}
-        />
-      ))}
-    </ScrollView>
+    <View style={styles.controls}>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.chips}
+        style={styles.chipScroll}
+      >
+        <Text style={styles.occasionLabel}>{tr.outfitOccasionLabel}</Text>
+        {OCCASIONS.map((entry) => (
+          <Chip
+            key={entry.value}
+            label={entry.label}
+            selected={occasion === entry.value}
+            onPress={() => pickOccasion(entry.value)}
+            testID={`occasion-${entry.value}`}
+          />
+        ))}
+      </ScrollView>
+      <Pressable
+        accessibilityRole="button"
+        onPress={shuffle}
+        style={styles.shuffle}
+        testID="outfit-shuffle"
+      >
+        <Icon name="shuffle" size={16} />
+        <Text style={styles.shuffleText}>{tr.outfitShuffle}</Text>
+      </Pressable>
+    </View>
   );
 
-  const right = (
-    <>
-      {seeds.history.length > 0 ? (
-        <IconButton
-          icon="arrowLeft"
-          label={tr.outfitPrevious}
-          onPress={() => {
-            setSeeds(previousSeed);
-            setDismissed([]);
-          }}
-          testID="outfit-previous"
-        />
-      ) : null}
+  const right =
+    seeds.history.length > 0 ? (
       <IconButton
-        icon="shuffle"
-        label={tr.outfitShuffle}
-        onPress={shuffle}
-        testID="outfit-shuffle"
+        icon="arrowLeft"
+        label={tr.outfitPrevious}
+        onPress={() => {
+          setSeeds(previousSeed);
+          setDismissed([]);
+        }}
+        testID="outfit-previous"
       />
-    </>
-  );
+    ) : null;
 
   const title = outfitTitle(outfit, daily.data?.outfit?.date ?? todayIso());
   const subtitle = outfitSubtitle(daily.data?.weather ?? null, persona?.name);
@@ -266,13 +271,38 @@ function DailySkeleton() {
 }
 
 const styles = StyleSheet.create({
+  controls: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: theme.spacing.sm,
+    paddingRight: theme.screenPaddingX,
+    paddingBottom: theme.spacing.md,
+  },
   chipScroll: {
-    flexGrow: 0,
+    flex: 1,
   },
   chips: {
+    alignItems: 'center',
     gap: theme.spacing.sm,
-    paddingHorizontal: theme.screenPaddingX,
-    paddingBottom: theme.spacing.md,
+    paddingLeft: theme.screenPaddingX,
+    paddingRight: theme.spacing.sm,
+  },
+  occasionLabel: {
+    ...theme.typography.bodyStrong,
+    color: theme.colors.ink,
+  },
+  shuffle: {
+    minHeight: theme.sizes.touch,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: theme.spacing.xs,
+    paddingHorizontal: theme.spacing.md,
+    borderRadius: theme.radius.pill,
+    backgroundColor: theme.colors.surface,
+  },
+  shuffleText: {
+    ...theme.typography.bodyMedium,
+    color: theme.colors.ink,
   },
   scroll: {
     paddingHorizontal: theme.screenPaddingX,
