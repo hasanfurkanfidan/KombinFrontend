@@ -59,6 +59,8 @@ export interface EventProps {
   post_report: { postId: string; reason: ReportReason };
   creator_profile_view: { creatorId: string };
   try_with_wardrobe: { postId: string; anchorCount: number; outfitCount: number };
+  /** A Google or Apple sign-in succeeded. Not in the backend allow-list yet, so nothing emits it (see `externalSignIn.ts`). */
+  auth_external: { provider: 'google' | 'apple'; isNewUser: boolean };
 }
 
 export type EventName = keyof EventProps;
@@ -99,6 +101,7 @@ export const EVENT_KEYS: Record<EventName, KeySpec> = {
   post_report: { required: ['postId', 'reason'], optional: [] },
   creator_profile_view: { required: ['creatorId'], optional: [] },
   try_with_wardrobe: { required: ['postId', 'anchorCount', 'outfitCount'], optional: [] },
+  auth_external: { required: ['provider', 'isNewUser'], optional: [] },
 };
 
 /** Property keys that name personal data; refused on every event. */

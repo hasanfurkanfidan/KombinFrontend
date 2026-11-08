@@ -41,6 +41,7 @@ export const tokens = (suffix: string, expiresIn = 900) => ({
   accessToken: `access-${suffix}`,
   refreshToken: `refresh-${suffix}`,
   expiresIn,
+  isNewUser: false,
 });
 
 export async function resetSession() {

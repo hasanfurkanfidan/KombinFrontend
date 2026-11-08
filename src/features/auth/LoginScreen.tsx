@@ -6,6 +6,7 @@ import { Screen } from '@/components/Screen';
 import { tr } from '@/i18n/tr';
 import { theme } from '@/theme';
 
+import { ExternalSignInButtons } from './ExternalSignInButtons';
 import { LoginForm } from './LoginForm';
 
 export function LoginScreen() {
@@ -27,6 +28,8 @@ export function LoginScreen() {
           <Text style={styles.title}>{tr.authLoginTitle}</Text>
           <Text style={styles.subtitle}>{tr.authLoginSubtitle}</Text>
         </View>
+        {/* A new account is sent to onboarding by `OnboardingGate`, exactly like a registration. */}
+        <ExternalSignInButtons onSuccess={() => router.dismissTo('/')} />
         <LoginForm onSuccess={() => router.dismissTo('/')} />
         <View style={styles.footer}>
           <Text style={styles.footerText}>{tr.authLoginToRegister}</Text>

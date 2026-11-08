@@ -36,6 +36,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/auth/external": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ExternalSignIn"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/auth/refresh": {
         parameters: {
             query?: never;
@@ -1335,11 +1351,16 @@ export interface components {
         };
         /** @enum {unknown} */
         Audience: "Women" | "Men" | "Unisex" | "Kids";
+        /**
+         * @description What every sign-in returns. `IsNewUser` is true only when this request created the account (register, or a first Google/Apple
+         *     sign-in); the app routes those users to onboarding.
+         */
         AuthTokensResponse: {
             accessToken: string;
             refreshToken: string;
             /** Format: int32 */
             expiresIn: number | string;
+            isNewUser: boolean;
         };
         BlockedUserResponse: {
             /** Format: uuid */
@@ -1560,6 +1581,19 @@ export interface components {
             /** Format: date-time */
             occurredAt: null | string;
             anonymousId: null | string;
+        };
+        /**
+         * @description An ID token the app obtained from Google or Apple on the device. `DisplayName` is used only when this sign-in creates the account
+         *     (Apple gives the app the user's name once, on the very first sign-in). `Nonce` is the raw nonce the app generated for the provider,
+         *     when it used one. Nothing in the body is trusted for identity: who the user is comes from the verified token's claims alone.
+         */
+        ExternalSignInRequest: {
+            provider: string;
+            idToken: string;
+            displayName?: null | string;
+            deviceName?: null | string;
+            anonymousId?: null | string;
+            nonce?: null | string;
         };
         /** @enum {unknown} */
         FeedReason: "Following" | "ForYou" | null;
@@ -2316,6 +2350,7 @@ export interface components {
                 [key: string]: string;
             };
             isActive: boolean;
+            country: string;
             created: boolean;
         };
         RecordEventsRequest: {
@@ -3086,6 +3121,57 @@ export interface operations {
             };
             /** @description Unauthorized */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    ExternalSignIn: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ExternalSignInRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthTokensResponse"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };

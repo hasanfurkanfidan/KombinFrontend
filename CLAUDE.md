@@ -5,7 +5,7 @@ Kombin is a mobile app that learns a user's style(s), manages their wardrobe, su
 This repo is the Expo (React Native) client. Implemented so far:
 
 - shared foundation (theme, navigation, API client, session);
-- **Auth** (register, login, session persistence, token refresh, logout);
+- **Auth** (register, login, **Google and Apple sign-in**, session persistence, token refresh, logout);
 - **Catalog** (Keşfet product list with filters, product detail with offers and price history);
 - **Personas & onboarding** (audience → persona name → swipe → summary; persona chips on Keşfet; match scores);
 - **Saved products** (bookmark on cards and detail, Kaydedilenler grid);
@@ -33,6 +33,7 @@ Nothing else exists yet (visual search); do not scaffold screens for features th
 - Tests: Jest (`jest-expo`) + React Native Testing Library.
 - All code, comments and docs are English. **All user-facing copy is Turkish** and lives in `src/i18n/tr.ts` (one flat object, no i18n library).
 - Do not add a package unless it is strictly required; say why in the PR/summary. Added for personas/alerts: `expo-notifications` + `expo-device` (push permission and token), `react-native-gesture-handler` + `react-native-reanimated` + `react-native-worklets` (the swipe deck and swipe-to-delete rows; `worklets` is reanimated 4's required peer). Added for the wardrobe: `expo-image-picker` (camera and multi-select library, with Turkish permission strings in the `app.json` plugin entry) and `expo-image-manipulator` (resize to 1600 px / JPEG 0.85 before the upload). Added for the photo upload (task 13b): `expo-file-system` (imported from `expo-file-system/legacy`, where SDK 58 keeps `uploadAsync`/`getInfoAsync`): the re-encoded file is streamed from its URI with a binary `PUT` and its size comes from `getInfoAsync`. A `fetch(uri).blob()` body is **not** used: on React Native it can upload something other than the file bytes while storage still answers 200.
+- Task 16a (social sign-in) added exactly three: `expo-dev-client`, `@react-native-google-signin/google-signin` and `expo-apple-authentication`. They contain native code, so **the app no longer runs in Expo Go** (it still never uses `expo prebuild`; EAS builds the native project from `app.json` plugins): the development target is a development build, see "Development build" below.
 - Task 14 (social) added no package: the photo picker, the re-encode and the upload are the wardrobe's (`expo-image-picker`, `expo-image-manipulator`, `expo-file-system/legacy`).
 - Installing those needed `npm install --legacy-peer-deps` once (npm tried to resolve the optional `react-dom` peer to a version that wants a newer React). Afterwards a plain `npm install` works.
 - `jest-expo` 58 needs `@react-native/jest-preset` as a peer. An install with `--legacy-peer-deps` skips peers and prunes it, and then `npm test` dies with "The React Native Jest preset ... has moved". Restore it without touching the manifest: `npm install --no-save --legacy-peer-deps @react-native/jest-preset@0.88.1`.
@@ -152,6 +153,15 @@ The app never builds or opens a seller URL. Every buy action (the detail bar but
 - **Analytics.** `post_view { postId, source: feed|profile|creator|mine|link, position? }` once per post per list, from the list's viewability callback (`usePostViewTracking`); `post_tag_tap`, `post_like`, `post_create_start/done`, `post_report`, `creator_profile_view`, `try_with_wardrobe` (see `events.ts`; all are in the backend allow-list). Post and creator **ids and enum values only, never captions, labels or handles**.
 - **Cache** (`cache.ts`): `patchPost`, `patchAuthorPosts` (follow state), `patchProfile`, `removeAuthorPosts` (block), `removePost` (delete) rewrite every cached place a post can be (feed pages, profile lists, mine, the creator page, a single post) without refetching. Social queries live under `queryKeys.socialAll`.
 
+## Social sign-in (`features/auth/externalSignIn.ts`)
+
+- `signInWithGoogle()` / `signInWithApple()` get an ID token on the device and call `POST /auth/external { provider: 'google'|'apple', idToken, displayName?, deviceName, anonymousId }`; the returned tokens go through `completeSignIn`, exactly like a password login (same session store, same refresh path). Apple's name arrives only on an account's first sign-in and is sent as `displayName`; the backend uses it only when it creates the account.
+- Both return `null` when the user closes the sheet (Google `SIGN_IN_CANCELLED` / a `cancelled` response, Apple `ERR_REQUEST_CANCELED`): no message. Backend codes map to Turkish in `externalSignInMessage` (`Identity.ExternalTokenInvalid`, `ExternalEmailMissing`, `ExternalProviderDisabled`, `ExternalProviderUnavailable`); anything else is a generic line.
+- **The native modules are loaded with `require()` inside the functions**, never at the top of a file (not `import()` either: Jest cannot run it). Loading them eagerly would crash Expo Go, the web export and Jest. `ExternalSignInButtons` (top of the login and register screens, with the "veya" divider) renders nothing in Expo Go (`Constants.appOwnership === 'expo'`) or on web; the Apple button (`AppleAuthenticationButton`, so it passes review) appears only on iOS and only when `isAvailableAsync()` is true (`loadAppleAuthentication`).
+- `isNewUser` needs no routing of its own: both screens do `router.dismissTo('/')` and `OnboardingGate` sends an account with no persona to onboarding, exactly as after a registration.
+- Client ids come from `.env` (`EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID`, `EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID`, placeholders in `.env.example`), never from source. The only id in `app.json` is the reversed iOS client id as the Google plugin's `iosUrlScheme`. A change to either id needs a new native build.
+- `auth_external { provider, isNewUser }` is in `events.ts` and its test but **nothing emits it** until the backend's `AnalyticsEventCatalog` lists it (TODO in `externalSignIn.ts`).
+
 ## Session and refresh behaviour (summary)
 
 - `request(path, { auth: true })` sends the bearer token. Public catalog calls send none, so Keşfet and product detail work logged out.
@@ -168,6 +178,17 @@ The app never builds or opens a seller URL. Every buy action (the detail bar but
 3. **Feature folder**: its components, filters/helpers, and copy added to `src/i18n/tr.ts`.
 4. **Query hook** in `src/features/<feature>/hooks.ts` using `queryKeys` and an endpoint function in `src/api/endpoints/<feature>.ts` (typed from `models.ts`). Add the query key to `src/api/queryKeys.ts`.
 5. **Test** in `__tests__/features/<feature>/` — at least one render test of the screen (mock `@/api/endpoints/...`; helpers in `__tests__/testUtils.tsx`).
+
+## Development build (replaces Expo Go)
+
+Expo Go is no longer the dev target: Google and Apple sign-in are native code. Build and install a development client once (and again whenever a native dependency, a plugin or a client id changes), then run Metro against it:
+
+```bash
+eas build --profile development --platform android   # installable .apk (iOS: --platform ios, needs an Apple developer account)
+npx expo start --dev-client
+```
+
+In Expo Go the app still opens and the e-mail form works, but the social buttons are hidden.
 
 ## Commands
 

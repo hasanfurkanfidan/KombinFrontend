@@ -37,6 +37,8 @@ const BACKEND_TABLE: Record<string, { required: string[]; optional: string[] }> 
   post_report: { required: ['postId', 'reason'], optional: [] },
   creator_profile_view: { required: ['creatorId'], optional: [] },
   try_with_wardrobe: { required: ['postId', 'anchorCount', 'outfitCount'], optional: [] },
+  // Task 16a: NOT in the backend allow-list yet (a tiny backend task follows); the client table has it, nothing emits it.
+  auth_external: { required: ['provider', 'isNewUser'], optional: [] },
 };
 
 describe('event allow-list', () => {

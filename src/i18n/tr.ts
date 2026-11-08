@@ -42,6 +42,15 @@ export const tr = {
   authFieldDisplayName: 'Adın',
   authPasswordHint: 'En az 8 karakter, bir harf ve bir rakam',
   authInvalidCredentials: 'E-posta veya şifre hatalı',
+  authExternalGoogle: 'Google ile devam et',
+  authExternalApple: 'Apple ile devam et',
+  authExternalDivider: 'veya',
+  authExternalFailed: 'Giriş tamamlanamadı. Lütfen tekrar dene.',
+  authExternalTokenInvalid: 'Giriş doğrulanamadı. Lütfen tekrar dene.',
+  authExternalEmailMissing:
+    'Hesabından e-posta adresi alınamadı. E-posta ile hesap oluşturarak devam edebilirsin.',
+  authExternalProviderDisabled: 'Bu giriş yöntemi şu an kullanılamıyor.',
+  authExternalProviderUnavailable: 'Giriş servisine şu an ulaşılamıyor. Biraz sonra tekrar dene.',
   authEmailTaken: 'Bu e-posta adresiyle zaten bir hesap var',
 
   // Discover (Keşfet)

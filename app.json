@@ -9,7 +9,8 @@
     "userInterfaceStyle": "light",
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "app.kombin.mobile"
+      "bundleIdentifier": "app.kombin.mobile",
+      "usesAppleSignIn": true
     },
     "android": {
       "package": "app.kombin.mobile",
@@ -43,7 +44,25 @@
           "resizeMode": "contain",
           "backgroundColor": "#FFFFFF"
         }
-      ]
-    ]
+      ],
+      [
+        "@react-native-google-signin/google-signin",
+        {
+          "iosUrlScheme": "com.googleusercontent.apps.821421028055-caocq1ii1c3q6g75djk1cbb725vau9vc"
+        }
+      ],
+      "expo-apple-authentication"
+    ],
+    "extra": {
+      "router": {
+        "asyncRoutes": {
+          "web": true
+        }
+      },
+      "eas": {
+        "projectId": "fdd216c0-52e9-4a41-b363-58dba9125607"
+      }
+    },
+    "owner": "hasanfurkanfidan"
   }
 }
