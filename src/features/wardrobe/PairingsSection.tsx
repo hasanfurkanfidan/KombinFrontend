@@ -15,12 +15,13 @@ import { theme } from '@/theme';
 import { colorTint } from '@/theme/colorNames';
 import { formatTry, toNumber } from '@/utils/money';
 
-export const slotLabels: Record<OutfitSlot, string> = {
-  Top: tr.wardrobeCategoryTop,
-  Bottom: tr.wardrobeCategoryBottom,
-  Outerwear: tr.wardrobeCategoryOuterwear,
-  Shoes: tr.wardrobeCategoryShoes,
-  Accessory: tr.wardrobeCategoryAccessories,
+/** The group headings under "Bununla giyilir", plural where Turkish says it so ("Üstler", "Altlar"). */
+export const groupLabels: Record<OutfitSlot, string> = {
+  Top: tr.pairingsGroupTop,
+  Bottom: tr.pairingsGroupBottom,
+  Outerwear: tr.pairingsGroupOuterwear,
+  Shoes: tr.pairingsGroupShoes,
+  Accessory: tr.pairingsGroupAccessory,
 };
 
 /** Lowercase, for the middle of a sentence ("Bir ayakkabı ekle"). */
@@ -46,19 +47,24 @@ export function companionTotal(slots: readonly PairingSlot[]): number {
   return slots.reduce((sum, slot) => sum + toNumber(slot.total), 0);
 }
 
-/** "Bununla gidenler": one horizontal row per slot, an empty slot is a dashed tile. */
+/**
+ * The rows under "Bununla giyilir": one horizontal row per group, an empty group is a dashed tile. The one-line reason
+ * under each piece shows only once the user asked "Neden?" (`showWhy`); by default the screen just says what goes.
+ */
 export function CompanionRows({
   slots,
   onOpenItem,
+  showWhy = false,
 }: {
   slots: readonly PairingSlot[];
   onOpenItem: (id: string) => void;
+  showWhy?: boolean;
 }) {
   return (
     <View style={styles.rows} testID="pairing-rows">
       {slots.map((slot) => (
         <View key={slot.slot} style={styles.row} testID={`pairing-row-${slot.slot}`}>
-          <Text style={styles.rowTitle}>{slotLabels[slot.slot]}</Text>
+          <Text style={styles.rowTitle}>{groupLabels[slot.slot]}</Text>
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
@@ -70,7 +76,12 @@ export function CompanionRows({
               </View>
             ) : (
               slot.items.map((companion) => (
-                <CompanionTile key={companion.item.id} companion={companion} onPress={onOpenItem} />
+                <CompanionTile
+                  key={companion.item.id}
+                  companion={companion}
+                  onPress={onOpenItem}
+                  showWhy={showWhy}
+                />
               ))
             )}
           </ScrollView>
@@ -83,9 +94,11 @@ export function CompanionRows({
 function CompanionTile({
   companion,
   onPress,
+  showWhy,
 }: {
   companion: PairingCompanion;
   onPress: (id: string) => void;
+  showWhy: boolean;
 }) {
   const [imageFailed, setImageFailed] = useState(false);
   const item: WardrobeItemSummary = companion.item;
@@ -109,9 +122,11 @@ function CompanionTile({
           <Icon name="shirt" size={32} color={theme.colors.borderStrong} strokeWidth={1.4} />
         )}
       </Pressable>
-      <Text style={styles.reason} testID={`pairing-reason-${item.id}`}>
-        {reasonLabels[companion.reason]}
-      </Text>
+      {showWhy ? (
+        <Text style={styles.reason} testID={`pairing-reason-${item.id}`}>
+          {reasonLabels[companion.reason]}
+        </Text>
+      ) : null}
     </View>
   );
 }

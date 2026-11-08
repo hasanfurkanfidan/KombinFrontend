@@ -3,6 +3,7 @@ import { router } from 'expo-router';
 
 import { listCategories, listProducts } from '@/api/endpoints/catalog';
 import { listSavedIds } from '@/api/endpoints/engagement';
+import { getDailyOutfit } from '@/api/endpoints/outfits';
 import {
   getWardrobeGaps,
   getWardrobeItem,
@@ -15,6 +16,7 @@ import { useAddStore } from '@/features/wardrobe/addStore';
 import { WardrobeScreen } from '@/features/wardrobe/WardrobeScreen';
 
 import {
+  dailyOutfit,
   categories,
   page,
   wardrobeGaps,
@@ -25,6 +27,7 @@ import {
 import { renderWithQuery, resetSession, signedInSession } from '../../testUtils';
 
 jest.mock('@/api/endpoints/wardrobe');
+jest.mock('@/api/endpoints/outfits');
 jest.mock('@/api/endpoints/catalog');
 jest.mock('@/api/endpoints/engagement');
 
@@ -72,6 +75,7 @@ beforeEach(async () => {
   jest.mocked(listCategories).mockResolvedValue(categories);
   jest.mocked(listProducts).mockResolvedValue(page([]));
   jest.mocked(listSavedIds).mockResolvedValue({ productIds: [] });
+  jest.mocked(getDailyOutfit).mockResolvedValue(dailyOutfit());
 });
 
 describe('Dolap logged out', () => {
@@ -141,6 +145,24 @@ describe('Dolap grid', () => {
 
     await fireEvent.press(screen.getByTestId('wardrobe-item-w4'));
     await waitFor(() => expect(processMock).toHaveBeenCalledWith('w4'));
+  });
+
+  it('puts the daily outfit card on top once there are 5 pieces or more', async () => {
+    await renderWithQuery(<WardrobeScreen />);
+
+    expect(await screen.findByTestId('tomorrow-card')).toBeTruthy();
+  });
+
+  it('leaves the daily outfit card out below 5 pieces', async () => {
+    statsMock.mockResolvedValue(wardrobeStats({ itemCount: 4 }));
+    await renderWithQuery(<WardrobeScreen />);
+
+    await waitFor(() =>
+      expect(screen.getByTestId('wardrobe-stats')).toHaveTextContent(/^4 parçanla 212 kombin/),
+    );
+    expect(screen.queryByTestId('tomorrow-card')).toBeNull();
+    expect(screen.queryByTestId('tomorrow-loading')).toBeNull();
+    expect(getDailyOutfit).not.toHaveBeenCalled();
   });
 
   it('says the wardrobe in one sentence, without the outfit count while it is unknown', async () => {

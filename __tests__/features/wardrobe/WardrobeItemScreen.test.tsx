@@ -47,7 +47,7 @@ beforeEach(async () => {
 });
 
 describe('wardrobe item detail: pairings', () => {
-  it('shows the companions per slot with a tiny reason label, and a dashed tile for an empty slot', async () => {
+  it('groups the companions under "Bununla giyilir", with a dashed tile for an empty group', async () => {
     await renderWithQuery(<WardrobeItemScreen id="w1" />);
 
     expect((await screen.findByTestId('item-title')).props.children).toBe('Koyu yeşil blazer');
@@ -55,7 +55,29 @@ describe('wardrobe item detail: pairings', () => {
     expect(pairingsMock).toHaveBeenCalledWith('w1', expect.anything());
 
     const bottoms = await screen.findByTestId('pairing-row-Bottom');
-    expect(within(bottoms).getByText('Alt')).toBeTruthy();
+    expect(within(bottoms).getByText('Altlar')).toBeTruthy();
+    // Top, outerwear and accessories have nobody.
+    for (const slot of ['Top', 'Outerwear', 'Accessory']) {
+      expect(
+        within(screen.getByTestId(`pairing-empty-${slot}`)).getByText('Dolabında buna uyan yok'),
+      ).toBeTruthy();
+    }
+    expect(screen.queryByTestId('pairing-empty-Bottom')).toBeNull();
+    for (const label of ['Üstler', 'Altlar', 'Dış giyim', 'Ayakkabı', 'Aksesuar']) {
+      expect(screen.getByText(label)).toBeTruthy();
+    }
+    // No colour-theory labels on screen by default.
+    for (const word of ['nötr', 'zıt', 'vurgu', 'komşu', 'tonal']) {
+      expect(screen.queryByText(word)).toBeNull();
+    }
+    expect(screen.queryByTestId('pairing-reason-b1')).toBeNull();
+  });
+
+  it('shows a one-line reason under each piece only after "Neden?"', async () => {
+    await renderWithQuery(<WardrobeItemScreen id="w1" />);
+
+    await fireEvent.press(await screen.findByTestId('pairing-why'));
+
     expect(screen.getByTestId('pairing-reason-b1')).toHaveTextContent(
       'Sade bir renk, her şeyle giyilir',
     );
@@ -64,16 +86,8 @@ describe('wardrobe item detail: pairings', () => {
     );
     expect(screen.getByTestId('pairing-reason-s1')).toHaveTextContent('Kombine renk katar');
 
-    // Top, outerwear and accessories have nobody.
-    for (const slot of ['Top', 'Outerwear', 'Accessory']) {
-      expect(
-        within(screen.getByTestId(`pairing-empty-${slot}`)).getByText('Dolabında buna uyan yok'),
-      ).toBeTruthy();
-    }
-    expect(screen.queryByTestId('pairing-empty-Bottom')).toBeNull();
-    for (const label of ['Üst', 'Alt', 'Dış giyim', 'Ayakkabı', 'Aksesuar']) {
-      expect(screen.getByText(label)).toBeTruthy();
-    }
+    await fireEvent.press(screen.getByTestId('pairing-why'));
+    expect(screen.queryByTestId('pairing-reason-b1')).toBeNull();
   });
 
   it('opens a companion', async () => {
@@ -84,12 +98,14 @@ describe('wardrobe item detail: pairings', () => {
     expect(router.push).toHaveBeenCalledWith('/wardrobe/b1');
   });
 
-  it('says how many outfits the piece is in, and makes an outfit around it', async () => {
+  it('has one primary action, "Bu parçayla kombin yap", that builds an outfit around the piece', async () => {
     await renderWithQuery(<WardrobeItemScreen id="w1" />);
 
     expect(await screen.findByTestId('pairing-outfit-count')).toHaveTextContent(
       '6 kombinde yer alıyor',
     );
+    expect(screen.getByTestId('item-make-outfit')).toHaveTextContent('Bu parçayla kombin yap');
+    expect(screen.queryByText('Kombin yap')).toBeNull();
     await fireEvent.press(screen.getByTestId('item-make-outfit'));
 
     expect(router.push).toHaveBeenCalledWith('/outfits/how-to-wear?wardrobeItemId=w1');
