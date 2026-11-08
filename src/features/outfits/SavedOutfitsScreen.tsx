@@ -51,7 +51,13 @@ export function SavedOutfitsScreen() {
       <ErrorState title={tr.outfitSavedLoadFailed} onRetry={() => void saved.refetch()} />
     );
   } else if (outfits.length === 0) {
-    placeholder = <EmptyState title={tr.outfitSavedEmptyTitle} body={tr.outfitSavedEmptyBody} />;
+    placeholder = (
+      <EmptyState
+        title={tr.outfitSavedEmptyTitle}
+        body={tr.outfitSavedEmptyBody}
+        action={{ label: tr.outfitSavedEmptyAction, onPress: () => router.push('/outfits/daily') }}
+      />
+    );
   }
 
   return (

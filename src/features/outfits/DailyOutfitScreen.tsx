@@ -170,10 +170,16 @@ function SignedInDaily() {
     content = <EmptyWardrobe daily={daily.data} outfit={outfit} />;
   } else if (!outfit) {
     content = (
+      // "No more" points at the "Başka öneri" button above instead of repeating it; "nothing" sends to Dolap.
       <EmptyState
         title={dismissed.length > 0 ? tr.outfitNoMoreTitle : tr.outfitNothingTitle}
         body={
           dismissed.length > 0 ? tr.outfitNoMoreBody : (daily.data.message ?? tr.outfitNothingBody)
+        }
+        action={
+          dismissed.length > 0
+            ? undefined
+            : { label: tr.homeCardPromptCta, onPress: () => router.navigate('/wardrobe') }
         }
       />
     );

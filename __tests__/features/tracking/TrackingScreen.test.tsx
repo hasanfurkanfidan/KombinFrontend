@@ -194,6 +194,8 @@ describe('Takip: Alarmlar', () => {
 
     expect(await screen.findByText('Henüz alarmın yok')).toBeTruthy();
     expect(screen.getByText("0 ürün izleniyor · 0'ı hedef fiyatın altında")).toBeTruthy();
+    await fireEvent.press(screen.getByText('Ürünlere göz at'));
+    expect(router.navigate).toHaveBeenCalledWith('/');
   });
 
   it('shows an error with retry when the alerts cannot be loaded', async () => {
@@ -257,6 +259,7 @@ describe('Takip: Kaydedilenler', () => {
     await fireEvent.press(await screen.findByTestId('segment-saved'));
 
     expect(await screen.findByText('Kaydettiğin ürün yok')).toBeTruthy();
+    expect(screen.getByText('Ürünlere göz at')).toBeTruthy();
   });
 
   it('goes back to the alerts', async () => {

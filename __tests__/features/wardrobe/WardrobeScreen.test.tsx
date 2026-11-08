@@ -212,6 +212,20 @@ describe('Dolap grid', () => {
     expect(await screen.findByTestId('wardrobe-item-w1')).toBeTruthy();
   });
 
+  it('offers one way out of a category with no pieces', async () => {
+    listItemsMock.mockImplementation(async (query) =>
+      query.category === 'ayakkabi' ? itemsPage([]) : itemsPage([normal]),
+    );
+    await renderWithQuery(<WardrobeScreen />);
+    await screen.findByTestId('wardrobe-item-w1');
+
+    await fireEvent.press(screen.getByTestId('wardrobe-filter-ayakkabi'));
+    expect(await screen.findByText('Bu seçimde parça yok')).toBeTruthy();
+    await fireEvent.press(screen.getByText('Tüm parçaları göster'));
+
+    expect(await screen.findByTestId('wardrobe-item-w1')).toBeTruthy();
+  });
+
   it('leaves the unpaired filter when a category chip is chosen', async () => {
     await renderWithQuery(<WardrobeScreen />);
     await screen.findByTestId('wardrobe-item-w1');

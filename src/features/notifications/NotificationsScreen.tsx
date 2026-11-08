@@ -116,6 +116,11 @@ export function NotificationsScreen() {
       <EmptyState
         title={tr.notifEmptyTitle}
         body={filter === 'all' ? tr.notifEmptyBody : tr.notifEmptyFilterBody}
+        action={
+          filter === 'all'
+            ? { label: tr.notifBrowse, onPress: () => router.navigate('/') }
+            : { label: tr.notifShowAll, onPress: () => setFilter('all') }
+        }
       />
     );
   }

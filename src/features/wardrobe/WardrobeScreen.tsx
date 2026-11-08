@@ -158,6 +158,7 @@ function SignedInWardrobe() {
           ) : (
             <EmptyState
               title={unmatchedOnly ? tr.wardrobeUnmatchedEmpty : tr.wardrobeFilteredEmpty}
+              action={{ label: tr.wardrobeShowAll, onPress: () => changeFilters({}) }}
             />
           ))
         }

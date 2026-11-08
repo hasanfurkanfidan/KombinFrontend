@@ -76,6 +76,8 @@ describe('saved outfits', () => {
     await renderWithQuery(<SavedOutfitsScreen />);
 
     expect(await screen.findByText('Kaydettiğin kombin yok')).toBeTruthy();
+    await fireEvent.press(screen.getByText('Bugünün kombinine bak'));
+    expect(router.push).toHaveBeenCalledWith('/outfits/daily');
   });
 
   it('goes back from the header', async () => {

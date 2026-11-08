@@ -222,6 +222,8 @@ describe('daily outfit with everything in the wardrobe (Complete)', () => {
 
     expect(await screen.findByText('Bu gün için kombin çıkmadı')).toBeTruthy();
     expect(screen.getByText('Bu gün için uygun kombin çıkmadı.')).toBeTruthy();
+    await fireEvent.press(screen.getByText('Dolabına parça ekle'));
+    expect(router.navigate).toHaveBeenCalledWith('/wardrobe');
   });
 
   it('shows an accessory as a small fifth tile', async () => {

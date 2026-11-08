@@ -109,7 +109,7 @@ function ProductsSection() {
     placeholder = (
       <EmptyState
         title={tr.discoverEmptyTitle}
-        body={tr.discoverEmptyBody}
+        body={hasActiveFilters(filters) ? tr.discoverEmptyBody : undefined}
         action={
           hasActiveFilters(filters)
             ? {

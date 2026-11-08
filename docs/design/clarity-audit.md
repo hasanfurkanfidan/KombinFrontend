@@ -117,7 +117,23 @@ required" rule). Findings are ordered by how much they cost a first-time user.
 - **Job:** who is this and what do they wear.
 - **Breaks:** none structural; empty "Henüz gönderi yok" is fine for someone else's page (nothing for the viewer to do).
 
-## Rule-breaks left (need a visual change, not done here)
+## Small visual changes the rules forced
 
-See the task report: the stat sentence replaces three cards (a layout change by necessity), the author-row
-restructure moves the chip to the second line, and "Başka öneri" is a text pill where an icon was.
+Visual identity (tokens, type, colour) is Task 15b-B. These are the smallest changes that were needed to meet a
+rule; no token changed.
+
+- **Dolap:** three stat cards became one sentence (rule 4). The unpaired clause is underlined text that still filters.
+- **Feed author row:** the "Kreatör" chip moved to the second line with the handle and match, so the name never
+  truncates first.
+- **Daily outfit:** the shuffle is a white text pill "Başka öneri" in the occasion row instead of an icon in the header.
+- **Item detail:** a bottom bar holds the primary button (same pattern as product detail's buy bar).
+- **Product size:** a guess is written out ("Tahmini beden: L") instead of an outlined "L?" pill; a seller row ends in
+  a chevron instead of the "Git" link.
+- **Tab bar:** the raised round "+" is gone; a new `feed` line icon for Akış.
+
+## Deliberate exceptions
+
+- **Empty states without a button:** Akış "Herkes" (the header's "Paylaş" is right above; a second would repeat it),
+  "Başka kombin kalmadı" on the daily screen (points at "Başka öneri" in the row above), "Engellenenler" and another
+  person's empty profile (nothing for the viewer to do).
+- **Match threshold 70 everywhere,** not only on product detail: one rule for one phrase.

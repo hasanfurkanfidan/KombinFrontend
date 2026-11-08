@@ -125,7 +125,11 @@ function AlertsSection({ segment, onChangeSegment }: SectionProps) {
             <Skeleton height={104} radius={theme.radius.xl} />
           </View>
         ) : (
-          <EmptyState title={tr.trackEmptyAlertsTitle} body={tr.trackEmptyAlertsBody} />
+          <EmptyState
+            title={tr.trackEmptyAlertsTitle}
+            body={tr.trackEmptyAlertsBody}
+            action={{ label: tr.trackBrowse, onPress: () => router.navigate('/') }}
+          />
         )
       }
       contentContainerStyle={styles.listContent}
@@ -162,7 +166,11 @@ function SavedSection({ segment, onChangeSegment }: SectionProps) {
         ) : saved.isPending ? (
           <ProductGridSkeleton />
         ) : (
-          <EmptyState title={tr.trackEmptySavedTitle} body={tr.trackEmptySavedBody} />
+          <EmptyState
+            title={tr.trackEmptySavedTitle}
+            body={tr.trackEmptySavedBody}
+            action={{ label: tr.trackBrowse, onPress: () => router.navigate('/') }}
+          />
         )
       }
       isFetchingNextPage={saved.isFetchingNextPage}
