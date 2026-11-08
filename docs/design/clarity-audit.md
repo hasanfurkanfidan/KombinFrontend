@@ -123,8 +123,12 @@ Visual identity (tokens, type, colour) is Task 15b-B. These are the smallest cha
 rule; no token changed.
 
 - **Dolap:** three stat cards became one sentence (rule 4). The unpaired clause is underlined text that still filters.
-- **Feed author row:** the "Kreatör" chip moved to the second line with the handle and match, so the name never
-  truncates first.
+- **Dolap gap:** the black gap card became one quiet line under the sentence ("Bej bir üst 15 kombin daha açar ·
+  Önerilere bak"), and Dolap shows no daily outfit card (Keşfet has it), so the grid starts on the first screen.
+- **Product card:** "Sana uygun %N" moved from the photo (where it overlapped the discount badge) to small text under the
+  price.
+- **Feed author row:** three lines: the name; the "Kreatör" chip and the handle; "Sana uygun %N". Nothing truncates
+  at 390 px.
 - **Daily outfit:** the shuffle is a white text pill "Başka öneri" in the occasion row instead of an icon in the header.
 - **Item detail:** a bottom bar holds the primary button (same pattern as product detail's buy bar).
 - **Product size:** a guess is written out ("Tahmini beden: L") instead of an outlined "L?" pill; a seller row ends in

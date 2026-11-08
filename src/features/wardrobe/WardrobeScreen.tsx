@@ -8,9 +8,7 @@ import { EmptyState } from '@/components/EmptyState';
 import { ErrorState } from '@/components/ErrorState';
 import { Screen } from '@/components/Screen';
 import { Skeleton } from '@/components/Skeleton';
-import { DailyCard } from '@/features/outfits/DailyCard';
 import { tr } from '@/i18n/tr';
-import { toNumber } from '@/utils/money';
 import { useSession } from '@/session/useSession';
 import { theme } from '@/theme';
 import type { WardrobeItemSummary } from '@/api/models';
@@ -27,11 +25,9 @@ import {
   type ItemFilters,
 } from './hooks';
 import { AddTile, ItemTile } from './ItemTile';
-import { AddButton, FilterChips, GapCard, StatsRow } from './WardrobeHeader';
+import { AddButton, FilterChips, GapHint, StatsRow } from './WardrobeHeader';
 
 const COLUMNS = 3;
-/** From this many pieces the daily outfit card sits on top of Dolap (fewer make thin outfits). */
-export const DAILY_CARD_MIN_ITEMS = 5;
 const GAP = theme.spacing.md;
 
 type Cell = { kind: 'item'; item: WardrobeItemSummary } | { kind: 'add' };
@@ -68,7 +64,6 @@ function SignedInWardrobe() {
   const [unmatchedOnly, setUnmatchedOnly] = useState(false);
 
   const stats = useWardrobeStats();
-  const itemCount = stats.data ? toNumber(stats.data.itemCount) : 0;
   const gaps = useWardrobeGaps();
   const items = useWardrobeItems(filters);
   const unmatched = useUnmatchedItems();
@@ -108,14 +103,13 @@ function SignedInWardrobe() {
         <Text style={styles.title}>{tr.wardrobeTitle}</Text>
         <AddButton onPress={() => setAddOpen(true)} />
       </View>
-      {itemCount >= DAILY_CARD_MIN_ITEMS ? <DailyCard flush /> : null}
       <StatsRow
         stats={stats.data}
         unmatched={unmatched.data?.length}
         unmatchedActive={unmatchedOnly}
         onToggleUnmatched={() => setUnmatchedOnly((on) => !on)}
       />
-      <GapCard gaps={gaps.data} />
+      <GapHint gaps={gaps.data} />
       <FilterChips filters={filters} onChange={changeFilters} suspended={unmatchedOnly} />
       {uploading && uploading.total > 1 ? (
         <View style={styles.progress} testID="upload-progress">

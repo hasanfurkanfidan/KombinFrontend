@@ -79,32 +79,51 @@ export function StatsRow({ stats, unmatched, unmatchedActive, onToggleUnmatched 
   );
 }
 
-/** The black card for the biggest gap; absent when the wardrobe has none. */
-export function GapCard({ gaps }: { gaps: WardrobeGaps | undefined }) {
+/** The noun for a gap, by the top-level category of its slug ("ust-giyim/blazer" is an "üst"). */
+const GAP_NOUNS: Record<string, string> = {
+  'ust-giyim': tr.pairingsSlotTop,
+  'alt-giyim': tr.pairingsSlotBottom,
+  'dis-giyim': tr.wardrobeGapNounOuterwear,
+  ayakkabi: tr.pairingsSlotShoes,
+  aksesuar: tr.pairingsSlotAccessory,
+};
+
+/**
+ * The biggest gap as one quiet line: "Bej bir üst 15 kombin daha açar · Önerilere bak". The sentence is built from the
+ * gap's colour and category; when the category is unknown or nothing is unlocked, the backend's own message is used.
+ */
+export function gapHintText(gap: WardrobeGaps['gaps'][number]): string {
+  const noun = GAP_NOUNS[gap.categorySlug.split('/')[0] ?? ''];
+  const unlocks = toNumber(gap.unlocksEstimate);
+  if (!noun || unlocks <= 0) {
+    return gap.message;
+  }
+  const color = gap.color === 'Other' ? null : colorLabels[gap.color];
+  const piece = color ? tr.wardrobeGapPiece(color, noun) : tr.wardrobeGapPieceNoColor(noun);
+  return tr.wardrobeGapHint(piece, unlocks);
+}
+
+/** The biggest gap as a one-line hint under the summary sentence, with the suggestions behind a link; absent without gaps. */
+export function GapHint({ gaps }: { gaps: WardrobeGaps | undefined }) {
   const [open, setOpen] = useState(false);
   const first = gaps?.gaps[0];
   if (!gaps || !first) {
     return null;
   }
-  const unlocks = toNumber(first.unlocksEstimate);
   return (
     <>
-      <View style={styles.gapCard} testID="gap-card">
-        <View style={styles.gapText}>
-          <Text style={styles.gapTitle}>{first.message}</Text>
-          {unlocks > 0 ? (
-            <Text style={styles.gapBody}>{tr.wardrobeGapUnlocks(unlocks)}</Text>
-          ) : null}
-        </View>
-        <Pressable
-          accessibilityRole="button"
+      <Text style={styles.gapHint} testID="gap-hint">
+        {gapHintText(first)}
+        {' · '}
+        <Text
+          accessibilityRole="link"
           onPress={() => setOpen(true)}
-          style={styles.gapButton}
+          style={styles.gapLink}
           testID="gap-suggestions"
         >
-          <Text style={styles.gapButtonText}>{tr.wardrobeGapSuggestions}</Text>
-        </Pressable>
-      </View>
+          {tr.wardrobeGapSuggestions}
+        </Text>
+      </Text>
       <GapSuggestionsSheet
         visible={open}
         products={gaps.suggestedProducts}
@@ -229,37 +248,14 @@ const styles = StyleSheet.create({
     ...theme.typography.bodyStrong,
     textDecorationLine: 'underline',
   },
-  gapCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: theme.spacing.md,
-    borderRadius: theme.radius.xxl,
-    backgroundColor: theme.colors.ink,
-    padding: theme.spacing.xl,
-  },
-  gapText: {
-    flex: 1,
-    gap: theme.spacing.xs,
-  },
-  gapTitle: {
-    ...theme.typography.bodyStrong,
-    color: theme.colors.onInk,
-  },
-  gapBody: {
+  gapHint: {
     ...theme.typography.body,
-    color: theme.colors.borderStrong,
+    color: theme.colors.inkMuted,
   },
-  gapButton: {
-    minHeight: theme.sizes.touch,
-    paddingHorizontal: theme.spacing.xl,
-    borderRadius: theme.radius.pill,
-    backgroundColor: theme.colors.surface,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  gapButtonText: {
-    ...theme.typography.bodyStrong,
+  gapLink: {
+    ...theme.typography.bodyMedium,
     color: theme.colors.ink,
+    textDecorationLine: 'underline',
   },
   sheetEmpty: {
     ...theme.typography.body,

@@ -381,7 +381,11 @@ export const tr = {
   wardrobeSummaryUnpaired: (count: number) => `${count} parçanın henüz eşi yok`,
   wardrobeSummaryShowAll: 'tümünü göster',
   wardrobeUnmatchedEmpty: 'Eşi olmayan parçan yok',
-  wardrobeGapUnlocks: (count: number) => `Bunu eklersen ${count} yeni kombin çıkar.`,
+  // The gap hint under the summary: "Bej bir üst 15 kombin daha açar · Önerilere bak".
+  wardrobeGapHint: (piece: string, count: number) => `${piece} ${count} kombin daha açar`,
+  wardrobeGapPiece: (color: string, noun: string) => `${color} bir ${noun}`,
+  wardrobeGapPieceNoColor: (noun: string) => `Bir ${noun}`,
+  wardrobeGapNounOuterwear: 'dış giyim parçası',
   wardrobeGapSuggestions: 'Önerilere bak',
   wardrobeGapSheetTitle: 'Dolabını tamamlayan parçalar',
   wardrobeGapSheetEmpty: 'Şimdilik önerecek ürün bulamadık.',

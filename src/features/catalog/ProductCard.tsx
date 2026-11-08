@@ -57,11 +57,6 @@ export function ProductCard({ product, width, onPress }: ProductCardProps) {
             <Text style={styles.discountText}>{`−${discount}%`}</Text>
           </View>
         ) : null}
-        {match !== null ? (
-          <View style={styles.matchPill} testID={`match-badge-${product.id}`}>
-            <Text style={styles.matchText}>{tr.productMatch(match)}</Text>
-          </View>
-        ) : null}
         {inactive ? (
           <View style={styles.inactiveOverlay} testID={`inactive-${product.id}`}>
             <Text style={styles.inactiveText}>{tr.trackSavedInactive}</Text>
@@ -86,6 +81,12 @@ export function ProductCard({ product, width, onPress }: ProductCardProps) {
             </Text>
           ) : null}
         </View>
+        {/* Under the price, not on the image: the discount badge owns the photo's corner. */}
+        {match !== null ? (
+          <Text style={styles.match} numberOfLines={1} testID={`match-badge-${product.id}`}>
+            {tr.productMatch(match)}
+          </Text>
+        ) : null}
         {offerCount > 1 ? (
           <Text style={styles.footer} numberOfLines={1}>
             {product.cheapestSeller
@@ -125,19 +126,6 @@ const styles = StyleSheet.create({
   discountText: {
     ...theme.typography.captionMedium,
     color: theme.colors.onInk,
-  },
-  matchPill: {
-    position: 'absolute',
-    top: theme.spacing.md,
-    right: theme.spacing.md,
-    backgroundColor: theme.colors.surface,
-    borderRadius: theme.radius.pill,
-    paddingHorizontal: theme.spacing.sm,
-    paddingVertical: theme.spacing.xs,
-  },
-  matchText: {
-    ...theme.typography.captionMedium,
-    color: theme.colors.ink,
   },
   save: {
     position: 'absolute',
@@ -180,6 +168,10 @@ const styles = StyleSheet.create({
     ...theme.typography.caption,
     color: theme.colors.inkMuted,
     textDecorationLine: 'line-through',
+  },
+  match: {
+    ...theme.typography.captionMedium,
+    color: theme.colors.ink,
   },
   footer: {
     ...theme.typography.caption,

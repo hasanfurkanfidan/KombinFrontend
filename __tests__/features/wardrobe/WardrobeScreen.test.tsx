@@ -147,19 +147,10 @@ describe('Dolap grid', () => {
     await waitFor(() => expect(processMock).toHaveBeenCalledWith('w4'));
   });
 
-  it('puts the daily outfit card on top once there are 5 pieces or more', async () => {
+  it('does not repeat the daily outfit card: it lives on Keşfet only', async () => {
     await renderWithQuery(<WardrobeScreen />);
+    await screen.findByTestId('wardrobe-item-w1');
 
-    expect(await screen.findByTestId('tomorrow-card')).toBeTruthy();
-  });
-
-  it('leaves the daily outfit card out below 5 pieces', async () => {
-    statsMock.mockResolvedValue(wardrobeStats({ itemCount: 4 }));
-    await renderWithQuery(<WardrobeScreen />);
-
-    await waitFor(() =>
-      expect(screen.getByTestId('wardrobe-stats')).toHaveTextContent(/^4 parçanla 212 kombin/),
-    );
     expect(screen.queryByTestId('tomorrow-card')).toBeNull();
     expect(screen.queryByTestId('tomorrow-loading')).toBeNull();
     expect(getDailyOutfit).not.toHaveBeenCalled();
@@ -251,12 +242,12 @@ describe('Dolap grid', () => {
     expect(screen.queryByTestId('stat-unmatched')).toBeNull();
   });
 
-  it('shows the first gap on the black card and lists the suggested products in a sheet', async () => {
+  it('says the first gap in one quiet line and lists the suggested products behind its link', async () => {
     await renderWithQuery(<WardrobeScreen />);
 
-    const card = await screen.findByTestId('gap-card');
-    expect(within(card).getByText('Eksik parça: bej tonlarda üst')).toBeTruthy();
-    expect(within(card).getByText('Bunu eklersen 15 yeni kombin çıkar.')).toBeTruthy();
+    const hint = await screen.findByTestId('gap-hint');
+    expect(hint).toHaveTextContent('Bej bir üst 15 kombin daha açar · Önerilere bak');
+    expect(screen.queryByTestId('gap-card')).toBeNull();
 
     await fireEvent.press(screen.getByTestId('gap-suggestions'));
     expect(await screen.findByText('Dolabını tamamlayan parçalar')).toBeTruthy();
@@ -265,13 +256,13 @@ describe('Dolap grid', () => {
     expect(router.push).toHaveBeenCalledWith('/product/gp1?source=direct');
   });
 
-  it('hides the gap card when there are no gaps', async () => {
+  it('hides the gap hint when there are no gaps', async () => {
     gapsMock.mockResolvedValue(wardrobeGaps({ gaps: [], suggestedProducts: [] }));
     await renderWithQuery(<WardrobeScreen />);
     await screen.findByTestId('wardrobe-item-w1');
 
     await waitFor(() => expect(gapsMock).toHaveBeenCalled());
-    expect(screen.queryByTestId('gap-card')).toBeNull();
+    expect(screen.queryByTestId('gap-hint')).toBeNull();
   });
 
   it('filters by top-level category and by colour', async () => {

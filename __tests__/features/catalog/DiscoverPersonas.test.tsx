@@ -55,7 +55,8 @@ describe('Keşfet with a persona', () => {
 
     await renderWithQuery(<DiscoverScreen />);
 
-    const control = await screen.findByTestId('style-switcher');
+    // Waits for the personas and the products; a full parallel run can take longer than the default second.
+    const control = await screen.findByTestId('style-switcher', {}, { timeout: 4000 });
     expect(control).toHaveTextContent('Tarzım: Ofis');
     // No chip per style on the screen itself: they live in the sheet.
     expect(screen.queryByTestId('persona-chips')).toBeNull();
@@ -94,8 +95,11 @@ describe('Keşfet with a persona', () => {
     expect(screen.getByTestId('match-badge-p1')).toBeTruthy();
     expect(screen.queryByTestId('match-badge-p2')).toBeNull();
     expect(screen.queryByTestId('match-badge-p3')).toBeNull();
-    // The discount pill stays on the other corner.
+    // The discount badge keeps the photo; the match is small text in the card's text block, under the price.
     expect(screen.getAllByText('−28%').length).toBeGreaterThan(0);
+    const badge = screen.getByTestId('match-badge-p1');
+    expect(badge.type).toBe('Text');
+    expect(badge.props.numberOfLines).toBe(1);
   });
 
   it('switches the active style from the sheet', async () => {

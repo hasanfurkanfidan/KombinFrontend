@@ -107,15 +107,15 @@ describe('author row, creator chip, match and disclosure', () => {
 
     expect(screen.getByTestId('creator-chip')).toBeTruthy();
     expect(screen.getByText('Kreatör')).toBeTruthy();
-    expect(screen.getByTestId('post-author-sub').props.children).toBe(
-      '@elif.stil · Sana uygun %92',
-    );
+    // Second line: chip and handle only. The match has a line of its own.
+    expect(screen.getByTestId('post-author-sub').props.children).toBe('@elif.stil');
+    expect(screen.getByTestId('post-match')).toHaveTextContent('Sana uygun %92');
     expect(screen.getByTestId('post-disclosure')).toHaveTextContent(
       'Bu içerikten komisyon kazanabilir',
     );
   });
 
-  it('gives the name its own line, so a narrow screen cuts the chip line before the name', async () => {
+  it('splits the author into name / chip and handle / match, so nothing shares a line that could truncate', async () => {
     const creator = post({
       author: postAuthor({
         displayName: 'Elif Yıldız Karaosmanoğlu',
@@ -128,7 +128,9 @@ describe('author row, creator chip, match and disclosure', () => {
 
     const name = within(screen.getByTestId('post-author')).getByText('Elif Yıldız Karaosmanoğlu');
     expect(name.props.numberOfLines).toBe(2);
-    expect(screen.getByTestId('post-author-sub').props.numberOfLines).toBe(1);
+    expect(screen.getByTestId('post-author-sub').props.children).toBe('@elif.stil');
+    expect(screen.getByTestId('post-author-sub')).not.toHaveTextContent(/Sana uygun/);
+    expect(screen.getByTestId('post-match').props.numberOfLines).toBeUndefined();
   });
 
   it('hides a match under 70 in the author line', async () => {
@@ -136,6 +138,7 @@ describe('author row, creator chip, match and disclosure', () => {
     await renderWithQuery(<PostCard post={weak} />);
 
     expect(screen.getByTestId('post-author-sub').props.children).toBe('@elif.stil');
+    expect(screen.queryByTestId('post-match')).toBeNull();
   });
 
   it('shows neither chip nor disclosure for an ordinary author, and no match line without a score', async () => {
@@ -144,6 +147,7 @@ describe('author row, creator chip, match and disclosure', () => {
     expect(screen.queryByTestId('creator-chip')).toBeNull();
     expect(screen.queryByTestId('post-disclosure')).toBeNull();
     expect(screen.queryByTestId('post-author-sub')).toBeNull();
+    expect(screen.queryByTestId('post-match')).toBeNull();
     expect(screen.getByTestId('post-caption')).toHaveTextContent(
       'Elif Yıldız Pazartesi toplantı kombini',
     );

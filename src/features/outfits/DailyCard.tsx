@@ -18,12 +18,11 @@ import { OutfitCollage } from './OutfitCollage';
 const CARD_SEED = 0;
 
 /**
- * The black outfit card (design screen 02) on Keşfet and on top of Dolap: today's outfit until noon ("Bugün için"),
+ * The black outfit card (design screen 02) on Keşfet (only there: the app shows it once): today's outfit until noon ("Bugün için"),
  * tomorrow's after it ("Yarın için"), or the prompt to fill the wardrobe. It opens the daily screen on the very outfit
  * it shows (same date and seed, so the same query).
  */
-/** `flush` drops the side margin, for a parent that already pads its content (Dolap). */
-export function DailyCard({ flush = false }: { flush?: boolean }) {
+export function DailyCard() {
   const router = useRouter();
   const { isSignedIn } = useSession();
   const stats = useWardrobeStats();
@@ -39,7 +38,7 @@ export function DailyCard({ flush = false }: { flush?: boolean }) {
 
   if (state === 'prompt') {
     return (
-      <View style={[styles.card, flush && styles.cardFlush]} testID="tomorrow-prompt">
+      <View style={styles.card} testID="tomorrow-prompt">
         <Text style={styles.label}>{label}</Text>
         <Text style={styles.title}>{tr.homeCardPromptTitle}</Text>
         <Pressable
@@ -56,7 +55,7 @@ export function DailyCard({ flush = false }: { flush?: boolean }) {
 
   if (state === 'loading' || daily.isPending) {
     return (
-      <View style={[styles.card, flush && styles.cardFlush]} testID="tomorrow-loading">
+      <View style={styles.card} testID="tomorrow-loading">
         <Text style={styles.label}>{label}</Text>
         <Skeleton height={theme.sizes.homeCardThumbHeight} radius={theme.radius.lg} />
       </View>
@@ -79,7 +78,7 @@ export function DailyCard({ flush = false }: { flush?: boolean }) {
           params: { date: day, seed: String(CARD_SEED) },
         })
       }
-      style={[styles.card, flush && styles.cardFlush]}
+      style={styles.card}
       testID="tomorrow-card"
     >
       <View style={styles.top}>
@@ -105,10 +104,6 @@ export function DailyCard({ flush = false }: { flush?: boolean }) {
 }
 
 const styles = StyleSheet.create({
-  /** Inside a list whose content is already padded (Dolap). */
-  cardFlush: {
-    marginHorizontal: 0,
-  },
   card: {
     marginHorizontal: theme.screenPaddingX,
     padding: theme.spacing.xl,
