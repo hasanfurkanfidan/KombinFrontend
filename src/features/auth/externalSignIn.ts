@@ -2,7 +2,7 @@ import Constants from 'expo-constants';
 import * as Device from 'expo-device';
 import { Platform } from 'react-native';
 
-import { getAnonymousId } from '@/analytics';
+import { getAnonymousId, track } from '@/analytics';
 import { ApiError } from '@/api/client';
 import { externalSignIn } from '@/api/endpoints/auth';
 import type { ExternalSignInRequest } from '@/api/models';
@@ -83,9 +83,7 @@ async function exchange(
     anonymousId: await getAnonymousId(),
   });
   await completeSignIn(tokens);
-  // TODO(auth_external): report `track('auth_external', { provider, isNewUser })` once the backend's
-  // AnalyticsEventCatalog lists `auth_external`. The event is already in `events.ts`; sending it earlier would only
-  // make the backend reject it.
+  track('auth_external', { provider, isNewUser: tokens.isNewUser });
   return { provider, isNewUser: tokens.isNewUser };
 }
 
