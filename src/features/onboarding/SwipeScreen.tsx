@@ -16,8 +16,10 @@ import { OnboardingFrame } from './OnboardingFrame';
 import { SwipeDeck } from './SwipeDeck';
 import { createSwipeOutbox } from './swipeOutbox';
 
-/** Cards fetched for one persona: the design shows "n / 20". */
+/** Cards fetched to re-train or start another style: the design shows "n / 20". */
 export const STYLE_CARD_LIMIT = 20;
+/** The first run asks for less: eight cards are enough to start, and the app learns the rest by use. */
+export const FIRST_RUN_CARD_LIMIT = 8;
 
 interface SwipeScreenProps {
   personaId: string;
@@ -25,15 +27,16 @@ interface SwipeScreenProps {
   returnTo?: string;
 }
 
-/** Step 3: the card stack. Swipes are queued and sent in batches; the style summary comes back with each batch. */
+/** The card stack (step 2 of 2 in the first run). Swipes are queued and sent in batches; the style summary comes back with each batch. */
 export function SwipeScreen({ personaId, flow, returnTo }: SwipeScreenProps) {
   const router = useRouter();
   const queryClient = useQueryClient();
   const finishing = useRef(false);
+  const limit = flow === 'first' ? FIRST_RUN_CARD_LIMIT : STYLE_CARD_LIMIT;
 
   const cards = useQuery({
     queryKey: queryKeys.styleCards(personaId),
-    queryFn: ({ signal }) => getStyleCards(personaId, STYLE_CARD_LIMIT, signal),
+    queryFn: ({ signal }) => getStyleCards(personaId, limit, signal),
     // The deck owns its cards while it is on screen: never swap them for a refetch, and never reuse a stale stack.
     staleTime: Infinity,
     gcTime: 0,
@@ -46,20 +49,22 @@ export function SwipeScreen({ personaId, flow, returnTo }: SwipeScreenProps) {
       }
       finishing.current = true;
       await flush();
-      // The style summary shown on the next screen and the match scores of Keşfet both depend on the swipes.
+      // The style summary on Profil and the match scores of Keşfet both depend on the swipes.
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: queryKeys.personas }),
         queryClient.invalidateQueries({ queryKey: queryKeys.profile }),
         queryClient.invalidateQueries({ queryKey: queryKeys.productsAll }),
       ]);
       if (flow === 'first') {
+        // No summary screen: Keşfet, with the outfit card explaining itself, is the payoff.
         track('onboarding_step', { step: 'swipe', action: 'next' });
-        router.replace({ pathname: '/done', params: { personaId } });
+        track('onboarding_step', { step: 'done', action: 'done' });
+        leaveOnboarding(router, flow, returnTo);
       } else {
         leaveOnboarding(router, flow, returnTo);
       }
     },
-    [flow, personaId, queryClient, returnTo, router],
+    [flow, queryClient, returnTo, router],
   );
 
   // The backend says so once it has seen enough likes to know the user's taste.
@@ -95,7 +100,7 @@ export function SwipeScreen({ personaId, flow, returnTo }: SwipeScreenProps) {
   return (
     <OnboardingFrame
       flow={flow}
-      step={flow === 'first' ? 3 : flow === 'new' ? 2 : 1}
+      step={flow === 'first' ? 2 : flow === 'new' ? 2 : 1}
       title={tr.onboardingSwipeTitle}
       subtitle={tr.onboardingSwipeSubtitle}
       returnTo={returnTo}

@@ -1,8 +1,6 @@
-import { useLocalSearchParams } from 'expo-router';
+import { Redirect } from 'expo-router';
 
-import { DoneScreen } from '@/features/onboarding/DoneScreen';
-
+/** The summary step was removed in 15b (onboarding lands on Keşfet); an old link still gets there. */
 export default function DoneRoute() {
-  const { personaId } = useLocalSearchParams<{ personaId: string }>();
-  return <DoneScreen personaId={personaId} />;
+  return <Redirect href="/" />;
 }

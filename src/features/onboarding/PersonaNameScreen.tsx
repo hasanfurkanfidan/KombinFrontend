@@ -5,7 +5,6 @@ import { StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { z } from 'zod';
 
-import { track } from '@/analytics';
 import { ApiError } from '@/api/client';
 import { Button } from '@/components/Button';
 import { Chip } from '@/components/Chip';
@@ -30,7 +29,10 @@ interface PersonaNameScreenProps {
   returnTo?: string;
 }
 
-/** Step 2 (or step 1 of a new persona): a name from the chips or free text → `POST /me/personas`. */
+/**
+ * Step 1 of a new style ("Yeni tarz ekle" on Keşfet, "Yeni tarz oluştur" on Profil): a name from the chips or free
+ * text → `POST /me/personas`. The first run has no naming step (its style is "Tarzım").
+ */
 export function PersonaNameScreen({ flow, returnTo }: PersonaNameScreenProps) {
   const router = useRouter();
   const createPersona = useCreatePersona();
@@ -51,9 +53,6 @@ export function PersonaNameScreen({ flow, returnTo }: PersonaNameScreenProps) {
     const icon = preset && preset.label === name ? preset.key : CUSTOM_PERSONA_ICON;
     try {
       const persona = await createPersona.mutateAsync({ name, icon });
-      if (flow === 'first') {
-        track('onboarding_step', { step: 'persona', action: 'next' });
-      }
       router.push({ pathname: '/swipe', params: { personaId: persona.id, flow, returnTo } });
     } catch (error) {
       if (!(error instanceof ApiError)) {
@@ -71,8 +70,8 @@ export function PersonaNameScreen({ flow, returnTo }: PersonaNameScreenProps) {
   return (
     <OnboardingFrame
       flow={flow}
-      step={flow === 'first' ? 2 : 1}
-      title={flow === 'first' ? tr.onboardingPersonaTitle : tr.onboardingNewPersonaTitle}
+      step={1}
+      title={tr.onboardingNewPersonaTitle}
       subtitle={tr.onboardingPersonaSubtitle}
       returnTo={returnTo}
     >

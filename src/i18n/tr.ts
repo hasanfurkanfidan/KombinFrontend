@@ -188,7 +188,6 @@ export const tr = {
   onboardingAudienceWomen: 'Kadın',
   onboardingAudienceMen: 'Erkek',
   onboardingAudienceAll: 'Hepsi',
-  onboardingPersonaTitle: 'İlk tarzına bir isim ver',
   onboardingPersonaSubtitle: 'Ofis, hafta sonu, gece… Her tarz için ayrı öneriler alırsın.',
   onboardingNewPersonaTitle: 'Yeni tarzına bir isim ver',
   onboardingSwipeTitle: 'Hangisi sana daha yakın?',
@@ -201,15 +200,6 @@ export const tr = {
   swipeSkip: 'Geç',
   swipeStampLike: 'BEĞENDİM',
   swipeStampNope: 'OLMAZ',
-  onboardingDoneTitle: 'Tarzın hazır',
-  onboardingDoneSubtitle: 'Kullandıkça daha iyi tanıyacağız.',
-  onboardingDoneColors: 'Renklerin',
-  onboardingDoneFormality: 'Resmiyet',
-  onboardingDoneFormalityLow: 'Rahat',
-  onboardingDoneFormalityHigh: 'Resmi',
-  onboardingDoneFamilies: 'Tarzın',
-  onboardingDoneEmpty: 'Henüz yeterince beğeni yok; kullandıkça öğreneceğiz.',
-  onboardingDoneCta: 'Ürünlere göz at',
 
   // Saved
   saveAdd: 'Kaydet',

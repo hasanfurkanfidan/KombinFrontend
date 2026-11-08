@@ -320,7 +320,8 @@ describe('Dolap grid', () => {
       useAddStore.getState().enqueueConfirm('w1');
     });
 
-    expect(await screen.findByText('Bu parçayı onayla')).toBeTruthy();
+    // The sheet loads the item first; under a full parallel run that can take longer than the default second.
+    expect(await screen.findByText('Bu parçayı onayla', {}, { timeout: 4000 })).toBeTruthy();
     expect(getItemMock).toHaveBeenCalledWith('w1', expect.anything());
   });
 });
