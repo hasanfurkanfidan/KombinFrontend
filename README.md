@@ -15,6 +15,17 @@ npm start
 
 `EXPO_PUBLIC_API_URL` must be reachable from the device: `http://10.0.2.2:8080` on the Android emulator, `http://localhost:8080` on the iOS simulator, the machine's LAN IP on a physical device. Start the backend with `docker compose --file docker/compose.yaml up --build --detach --wait` in `../kombin-backend`. The catalog is empty until offers are ingested through the backend's internal `POST /api/v1/internal/catalog/offers/upsert`.
 
+## Development build (not Expo Go)
+
+Google and Apple sign-in use native modules, so the app needs a development build instead of Expo Go (in Expo Go it still opens, with the social buttons hidden):
+
+```bash
+eas build --profile development --platform android   # then install the .apk on the phone
+npx expo start --dev-client
+```
+
+Put the Google client ids in `.env` (`EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID`, `EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID`, see `.env.example`).
+
 ## Scripts
 
 | Script              | What it does                                               |

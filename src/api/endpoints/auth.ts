@@ -1,5 +1,12 @@
 import { request } from '../client';
-import type { AuthTokens, LoginRequest, LogoutRequest, Me, RegisterRequest } from '../models';
+import type {
+  AuthTokens,
+  ExternalSignInRequest,
+  LoginRequest,
+  LogoutRequest,
+  Me,
+  RegisterRequest,
+} from '../models';
 
 export function register(body: RegisterRequest): Promise<AuthTokens> {
   return request<AuthTokens>('/api/v1/auth/register', { method: 'POST', body });
@@ -7,6 +14,11 @@ export function register(body: RegisterRequest): Promise<AuthTokens> {
 
 export function login(body: LoginRequest): Promise<AuthTokens> {
   return request<AuthTokens>('/api/v1/auth/login', { method: 'POST', body });
+}
+
+/** Sign in with a Google or Apple ID token from the device; `isNewUser` is true when this call created the account. */
+export function externalSignIn(body: ExternalSignInRequest): Promise<AuthTokens> {
+  return request<AuthTokens>('/api/v1/auth/external', { method: 'POST', body });
 }
 
 /** `expoPushToken` makes the backend deactivate this phone's push device for the account. */

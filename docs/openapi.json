@@ -110,6 +110,66 @@
         }
       }
     },
+    "/api/v1/auth/external": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "operationId": "ExternalSignIn",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExternalSignInRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthTokensResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/auth/refresh": {
       "post": {
         "tags": [
@@ -5511,7 +5571,8 @@
         "required": [
           "accessToken",
           "refreshToken",
-          "expiresIn"
+          "expiresIn",
+          "isNewUser"
         ],
         "type": "object",
         "properties": {
@@ -5528,8 +5589,12 @@
               "string"
             ],
             "format": "int32"
+          },
+          "isNewUser": {
+            "type": "boolean"
           }
-        }
+        },
+        "description": "What every sign-in returns. `IsNewUser` is true only when this request created the account (register, or a first Google/Apple\nsign-in); the app routes those users to onboarding."
       },
       "BlockedUserResponse": {
         "required": [
@@ -6365,6 +6430,46 @@
           }
         },
         "description": "One event as the app sends it. `AnonymousId` is the device's pre-login ID; it is required while the caller is anonymous and\nrecommended after login. `Properties` is a flat object whose keys depend on `Name` (AnalyticsEventCatalog)."
+      },
+      "ExternalSignInRequest": {
+        "required": [
+          "provider",
+          "idToken"
+        ],
+        "type": "object",
+        "properties": {
+          "provider": {
+            "type": "string"
+          },
+          "idToken": {
+            "type": "string"
+          },
+          "displayName": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "deviceName": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "anonymousId": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "nonce": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        },
+        "description": "An ID token the app obtained from Google or Apple on the device. `DisplayName` is used only when this sign-in creates the account\n(Apple gives the app the user's name once, on the very first sign-in). `Nonce` is the raw nonce the app generated for the provider,\nwhen it used one. Nothing in the body is trusted for identity: who the user is comes from the verified token's claims alone."
       },
       "FeedReason": {
         "enum": [
@@ -9313,6 +9418,7 @@
           "affiliateUrlTemplate",
           "affiliateParams",
           "isActive",
+          "country",
           "created"
         ],
         "type": "object",
@@ -9356,6 +9462,9 @@
           },
           "isActive": {
             "type": "boolean"
+          },
+          "country": {
+            "type": "string"
           },
           "created": {
             "type": "boolean"

@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import {
   ActivityIndicator,
   Pressable,
@@ -18,6 +19,8 @@ interface ButtonProps {
   loading?: boolean;
   disabled?: boolean;
   trailingIcon?: IconName;
+  /** Drawn before the label (a brand mark); the caller owns its colour. */
+  leading?: ReactNode;
   style?: StyleProp<ViewStyle>;
   testID?: string;
 }
@@ -29,6 +32,7 @@ export function Button({
   loading = false,
   disabled = false,
   trailingIcon,
+  leading,
   style,
   testID,
 }: ButtonProps) {
@@ -54,6 +58,7 @@ export function Button({
         <ActivityIndicator color={foreground} />
       ) : (
         <>
+          {leading}
           <Text style={[styles.label, { color: foreground }]} numberOfLines={1}>
             {label}
           </Text>

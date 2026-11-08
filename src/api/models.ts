@@ -9,6 +9,7 @@ type Schemas = components['schemas'];
 export type AuthTokens = Schemas['AuthTokensResponse'];
 export type RegisterRequest = Schemas['RegisterRequest'];
 export type LoginRequest = Schemas['LoginRequest'];
+export type ExternalSignInRequest = Schemas['ExternalSignInRequest'];
 export type Me = Schemas['MeResponse'];
 
 export type CategoryNode = Schemas['CategoryNode'];
