@@ -9,9 +9,9 @@ import { ErrorState } from '@/components/ErrorState';
 import { Screen } from '@/components/Screen';
 import { tr } from '@/i18n/tr';
 import { useActivePersona, usePersonas } from '@/features/personas/hooks';
-import { PersonaChips } from '@/features/personas/PersonaChips';
+import { StyleSwitcher } from '@/features/personas/StyleSwitcher';
 import { NotificationBell } from '@/features/notifications/NotificationBell';
-import { TomorrowCard } from '@/features/outfits/TomorrowCard';
+import { DailyCard } from '@/features/outfits/DailyCard';
 import { useMe } from '@/features/profile/hooks';
 import { useSession } from '@/session/useSession';
 import { theme } from '@/theme';
@@ -188,8 +188,8 @@ function DiscoverHeader({ filters, onChangeFilters, personaId }: DiscoverHeaderP
     <View style={styles.header}>
       <DiscoverTop />
 
-      <PersonaChips />
-      <TomorrowCard />
+      <StyleSwitcher />
+      <DailyCard />
 
       <Text style={styles.sectionTitle}>{tr.discoverForYou}</Text>
       <View style={styles.filters}>

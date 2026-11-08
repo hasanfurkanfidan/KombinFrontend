@@ -50,16 +50,28 @@ beforeEach(async () => {
 });
 
 describe('Keşfet with a persona', () => {
-  it('shows the persona chips with the active one selected, plus the dashed "+" chip', async () => {
+  it('collapses the styles into one "Tarzım: Ofis" control above a single filter row', async () => {
     await signedInSession();
 
     await renderWithQuery(<DiscoverScreen />);
 
-    const active = await screen.findByTestId('persona-chip-pe1');
-    expect(active.props.accessibilityState.selected).toBe(true);
-    expect(screen.getByTestId('persona-chip-pe2').props.accessibilityState.selected).toBe(false);
-    expect(screen.getByText('Hafta sonu')).toBeTruthy();
-    expect(screen.getByTestId('persona-add')).toBeTruthy();
+    const control = await screen.findByTestId('style-switcher');
+    expect(control).toHaveTextContent('Tarzım: Ofis');
+    // No chip per style on the screen itself: they live in the sheet.
+    expect(screen.queryByTestId('persona-chips')).toBeNull();
+    expect(screen.queryByText('Hafta sonu')).toBeNull();
+  });
+
+  it('hides the style control when there is only one style', async () => {
+    await signedInSession();
+    listPersonasMock.mockResolvedValue({ items: [personas[0] as (typeof personas)[number]] });
+
+    await renderWithQuery(<DiscoverScreen />);
+    await screen.findByTestId('product-card-p1');
+
+    expect(screen.queryByTestId('style-switcher')).toBeNull();
+    // Still personalised: the one style is sent.
+    expect(listProductsMock.mock.calls[0]?.[0]).toMatchObject({ PersonaId: 'pe1' });
   });
 
   it('queries with the active persona and sorts by match by default', async () => {
@@ -86,7 +98,7 @@ describe('Keşfet with a persona', () => {
     expect(screen.getAllByText('−28%').length).toBeGreaterThan(0);
   });
 
-  it('activates another persona when its chip is pressed', async () => {
+  it('switches the active style from the sheet', async () => {
     await signedInSession();
     // Like the server: once activated, the next list says so.
     activateMock.mockImplementation(async (id) => {
@@ -96,20 +108,24 @@ describe('Keşfet with a persona', () => {
     });
 
     await renderWithQuery(<DiscoverScreen />);
-    await fireEvent.press(await screen.findByTestId('persona-chip-pe2'));
+    await fireEvent.press(await screen.findByTestId('style-switcher'));
+    expect(screen.getByText('Hangi tarzına göre gösterelim?')).toBeTruthy();
+    expect(screen.getByTestId('style-option-pe1').props.accessibilityState.selected).toBe(true);
+    await fireEvent.press(screen.getByTestId('style-option-pe2'));
 
     await waitFor(() => expect(activateMock).toHaveBeenCalledWith('pe2'));
-    // The chip row switches at once (optimistic), before the refetch answers.
+    // The control switches at once (optimistic), before the refetch answers.
     await waitFor(() =>
-      expect(screen.getByTestId('persona-chip-pe2').props.accessibilityState.selected).toBe(true),
+      expect(screen.getByTestId('style-switcher')).toHaveTextContent('Tarzım: Hafta sonu'),
     );
   });
 
-  it('opens the new-persona flow from the "+" chip', async () => {
+  it('opens the new-style flow from the sheet', async () => {
     await signedInSession();
 
     await renderWithQuery(<DiscoverScreen />);
-    await fireEvent.press(await screen.findByTestId('persona-add'));
+    await fireEvent.press(await screen.findByTestId('style-switcher'));
+    await fireEvent.press(screen.getByTestId('style-add'));
 
     expect(router.push).toHaveBeenCalledWith({ pathname: '/persona', params: { flow: 'new' } });
   });
@@ -156,18 +172,18 @@ describe('Keşfet with a persona', () => {
     const query = listProductsMock.mock.calls[0]?.[0];
     expect(query?.Sort).toBeUndefined();
     expect(query?.PersonaId).toBeUndefined();
-    expect(screen.queryByTestId('persona-chips')).toBeNull();
+    expect(screen.queryByTestId('style-switcher')).toBeNull();
   });
 });
 
 describe('Keşfet logged out', () => {
-  it('hides the persona row, sends no persona and shows no match badge', async () => {
+  it('hides the style control, sends no persona and shows no match badge', async () => {
     useSessionLoggedOut();
 
     await renderWithQuery(<DiscoverScreen />);
     await screen.findByTestId('product-card-p1');
 
-    expect(screen.queryByTestId('persona-chips')).toBeNull();
+    expect(screen.queryByTestId('style-switcher')).toBeNull();
     expect(listPersonasMock).not.toHaveBeenCalled();
     expect(listProductsMock.mock.calls[0]?.[0].PersonaId).toBeUndefined();
     expect(listProductsMock.mock.calls[0]?.[0].Sort).toBeUndefined();
