@@ -22,6 +22,17 @@ beforeEach(async () => {
 });
 
 describe('DiscoverScreen', () => {
+  it('opens "Görselden bul" from the header camera button and from the tile', async () => {
+    listProductsMock.mockResolvedValue(page([listItem()]));
+    await renderWithQuery(<DiscoverScreen />);
+
+    await fireEvent.press(await screen.findByLabelText('Görselden bul'));
+    expect(router.push).toHaveBeenLastCalledWith('/lens?entry=explore');
+
+    await fireEvent.press(screen.getByText('Gördüğün bir parçayı fotoğrafla, en ucuzunu bulalım'));
+    expect(router.push).toHaveBeenLastCalledWith('/lens?entry=home');
+  });
+
   it('renders the product grid with prices, discount and seller count', async () => {
     listProductsMock.mockResolvedValue(
       page([

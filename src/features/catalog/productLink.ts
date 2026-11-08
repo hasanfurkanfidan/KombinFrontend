@@ -1,5 +1,6 @@
 /** Where the user came from when a product detail opens; reported as `product_view`'s `source`. */
-export type ProductSource = 'discover' | 'saved' | 'alert' | 'notification' | 'push' | 'direct';
+export type ProductSource =
+  'discover' | 'saved' | 'alert' | 'notification' | 'push' | 'lens' | 'direct';
 
 const SOURCES: readonly ProductSource[] = [
   'discover',
@@ -7,6 +8,7 @@ const SOURCES: readonly ProductSource[] = [
   'alert',
   'notification',
   'push',
+  'lens',
   'direct',
 ];
 

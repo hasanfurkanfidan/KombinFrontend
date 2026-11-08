@@ -869,6 +869,52 @@
         }
       }
     },
+    "/api/v1/internal/catalog/embeddings/run": {
+      "post": {
+        "tags": [
+          "Catalog (internal)"
+        ],
+        "operationId": "RunProductEmbeddings",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "$ref": "#/components/schemas/RunEmbeddingsRequest"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunEmbeddingsResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/me/saved": {
       "get": {
         "tags": [
@@ -5441,6 +5487,70 @@
           }
         }
       }
+    },
+    "/api/v1/lens/search": {
+      "post": {
+        "tags": [
+          "Lens"
+        ],
+        "operationId": "LensSearch",
+        "parameters": [
+          {
+            "name": "audience",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "image": {
+                    "$ref": "#/components/schemas/IFormFile"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LensSearchResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -5694,6 +5804,17 @@
           }
         },
         "description": "`Slug` is the item's own (leaf) category slug; null counts the items without a category."
+      },
+      "CategoryFamily": {
+        "enum": [
+          "Top",
+          "Bottom",
+          "Outerwear",
+          "Shoes",
+          "Bag",
+          "Accessory",
+          null
+        ]
       },
       "CategoryNode": {
         "required": [
@@ -6584,7 +6705,289 @@
         },
         "description": "`Outfits` are built around the anchor (in every outfit with `role` Anchor), wardrobe pieces first; gaps come from the catalog\nwithin the persona's budget, each with its cheapest offer, and `completionPrice` sums them. A product the user already owns is\nanchored as the wardrobe item. `Message` explains an empty list or catalog-only ideas."
       },
+      "IFormFile": {
+        "type": "string",
+        "format": "binary"
+      },
       "JsonElement": { },
+      "LensBox": {
+        "required": [
+          "x",
+          "y",
+          "w",
+          "h"
+        ],
+        "type": "object",
+        "properties": {
+          "x": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "y": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "w": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "h": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "double"
+          }
+        },
+        "description": "Fractions of the photo (0-1): left, top, width, height."
+      },
+      "LensCategoryGuess": {
+        "required": [
+          "slug",
+          "confidence"
+        ],
+        "type": "object",
+        "properties": {
+          "slug": {
+            "type": "string"
+          },
+          "confidence": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "double"
+          }
+        }
+      },
+      "LensOfferResponse": {
+        "required": [
+          "offerId",
+          "seller",
+          "price",
+          "goPath"
+        ],
+        "type": "object",
+        "properties": {
+          "offerId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "seller": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/SellerRef"
+              }
+            ]
+          },
+          "price": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "goPath": {
+            "type": "string"
+          }
+        },
+        "description": "The product's cheapest sellable offer by effective price. `GoPath` (`src=lens`) is the only way to open it."
+      },
+      "LensRegionResponse": {
+        "required": [
+          "index",
+          "box",
+          "slot",
+          "family",
+          "category",
+          "color",
+          "familyRestricted",
+          "results",
+          "wardrobeMatches"
+        ],
+        "type": "object",
+        "properties": {
+          "index": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "box": {
+            "$ref": "#/components/schemas/LensBox"
+          },
+          "slot": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "family": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/CategoryFamily"
+              }
+            ]
+          },
+          "category": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/LensCategoryGuess"
+              }
+            ]
+          },
+          "color": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/ProductColor"
+              }
+            ]
+          },
+          "familyRestricted": {
+            "type": "boolean"
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LensResultResponse"
+            }
+          },
+          "wardrobeMatches": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/LensWardrobeMatchResponse"
+            }
+          }
+        },
+        "description": "A garment found in the photo. `Category`, `Slot`, `Family` and `Color` are null for the whole-photo region (nothing was\ndetected). `FamilyRestricted` is false when the search was widened (low confidence) or covered every family. An empty\n`Results` is an honest \"no close product\". `WardrobeMatches` is present only for a signed-in caller."
+      },
+      "LensResultResponse": {
+        "required": [
+          "product",
+          "similarity",
+          "level",
+          "inStock",
+          "offer"
+        ],
+        "type": "object",
+        "properties": {
+          "product": {
+            "$ref": "#/components/schemas/ProductListItem"
+          },
+          "similarity": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "level": {
+            "type": "string"
+          },
+          "inStock": {
+            "type": "boolean"
+          },
+          "offer": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/LensOfferResponse"
+              }
+            ]
+          }
+        },
+        "description": "One catalog match. `Product` is the catalog list item. `Similarity` (0-1) is for analytics buckets and ordering; the app shows\n`Level` (`close` \"yakın eşleşme\", `similar` \"benzer\"), never a percentage. `Offer` is null when nothing can be bought now."
+      },
+      "LensSearchResponse": {
+        "required": [
+          "regions",
+          "audience",
+          "wholePhoto"
+        ],
+        "type": "object",
+        "properties": {
+          "regions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LensRegionResponse"
+            }
+          },
+          "audience": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/Audience"
+              }
+            ]
+          },
+          "wholePhoto": {
+            "type": "boolean"
+          }
+        },
+        "description": "Regions with results come first (best match first), then the empty ones, so the app can select the first. `Audience` is the filter\nthat was applied (null: none); `WholePhoto` is true when no garment region was found and the photo was searched as a whole."
+      },
+      "LensWardrobeMatchResponse": {
+        "required": [
+          "item",
+          "similarity",
+          "match"
+        ],
+        "type": "object",
+        "properties": {
+          "item": {
+            "$ref": "#/components/schemas/WardrobeItemSummary"
+          },
+          "similarity": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "match": {
+            "type": "string"
+          }
+        },
+        "description": "One of the caller's own pieces close to the region: `exact` or `similar`, as in Social."
+      },
       "LikeResponse": {
         "required": [
           "liked",
@@ -9741,6 +10144,100 @@
           }
         }
       },
+      "RunEmbeddingsRequest": {
+        "required": [
+          "limit",
+          "productIds"
+        ],
+        "type": "object",
+        "properties": {
+          "limit": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "productIds": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        },
+        "description": "`Limit`: how many due products to work on (default 100, at most 1000); `ProductIds` restricts the run to those products."
+      },
+      "RunEmbeddingsResponse": {
+        "required": [
+          "due",
+          "embedded",
+          "reused",
+          "unusable",
+          "failed",
+          "remaining",
+          "aborted"
+        ],
+        "type": "object",
+        "properties": {
+          "due": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "embedded": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "reused": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "unusable": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "failed": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "remaining": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "aborted": {
+            "type": "boolean"
+          }
+        }
+      },
       "SavedIdsResponse": {
         "required": [
           "productIds"
@@ -12294,6 +12791,9 @@
     },
     {
       "name": "Social (internal)"
+    },
+    {
+      "name": "Lens"
     }
   ]
 }

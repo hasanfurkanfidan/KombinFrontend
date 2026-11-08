@@ -22,6 +22,7 @@ export default function RootLayout() {
         <Stack.Screen name="creators/[handle]" />
         <Stack.Screen name="profile/creator" />
         <Stack.Screen name="profile/blocks" />
+        <Stack.Screen name="lens" />
         <Stack.Screen name="(auth)" options={{ presentation: 'modal' }} />
         <Stack.Screen
           name="(onboarding)"

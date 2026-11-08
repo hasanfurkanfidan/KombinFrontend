@@ -1,5 +1,6 @@
 import type {
   AlertKind,
+  CategoryFamily,
   NotificationKind,
   OutfitCompleteness,
   OutfitKind,
@@ -61,6 +62,19 @@ export interface EventProps {
   try_with_wardrobe: { postId: string; anchorCount: number; outfitCount: number };
   /** A Google or Apple sign-in succeeded. Not in the backend allow-list yet, so nothing emits it (see `externalSignIn.ts`). */
   auth_external: { provider: 'google' | 'apple'; isNewUser: boolean };
+  /** "Görselden bul" opened: from the Keşfet header (`explore`), the Keşfet tile (`home`) or elsewhere. */
+  lens_open: { entry: 'explore' | 'home' | 'other' };
+  /** One search: counts, the time on the device (downscale + upload + answer) and where the photo came from. Never image data. */
+  lens_search: {
+    regionCount: number;
+    resultCount: number;
+    durationMs: number;
+    source: 'camera' | 'gallery';
+  };
+  /** A product in a region's rail: its position (0-11) and the result's `level`. */
+  lens_result_tap: { productId: string; position: number; similarity: 'close' | 'similar' };
+  /** "Dolabıma ekle" on a region; `family` is absent for the whole photo. */
+  lens_add_to_wardrobe: { family?: CategoryFamily };
 }
 
 export type EventName = keyof EventProps;
@@ -102,6 +116,13 @@ export const EVENT_KEYS: Record<EventName, KeySpec> = {
   creator_profile_view: { required: ['creatorId'], optional: [] },
   try_with_wardrobe: { required: ['postId', 'anchorCount', 'outfitCount'], optional: [] },
   auth_external: { required: ['provider', 'isNewUser'], optional: [] },
+  lens_open: { required: ['entry'], optional: [] },
+  lens_search: {
+    required: ['regionCount', 'resultCount', 'durationMs', 'source'],
+    optional: [],
+  },
+  lens_result_tap: { required: ['productId', 'position', 'similarity'], optional: [] },
+  lens_add_to_wardrobe: { required: [], optional: ['family'] },
 };
 
 /** Property keys that name personal data; refused on every event. */

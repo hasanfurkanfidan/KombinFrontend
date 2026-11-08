@@ -45,6 +45,8 @@ export interface RequestOptions {
   method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
   query?: Record<string, QueryValue>;
   body?: unknown;
+  /** A multipart body (a photo); sent as it is, with the boundary `fetch` picks. Wins over `body`. */
+  form?: FormData;
   /** Protected call: sends the bearer token, refreshes it proactively and once more on 401. */
   auth?: boolean;
   signal?: AbortSignal;
@@ -89,7 +91,7 @@ async function send<T>(path: string, options: RequestOptions, token: string | nu
     Accept: 'application/json',
     'X-Correlation-ID': correlationId,
   };
-  if (options.body !== undefined) {
+  if (options.body !== undefined && !options.form) {
     headers['Content-Type'] = 'application/json';
   }
   if (token) {
@@ -101,7 +103,7 @@ async function send<T>(path: string, options: RequestOptions, token: string | nu
     response = await fetch(`${baseUrl()}${path}${buildQuery(options.query)}`, {
       method,
       headers,
-      body: options.body === undefined ? undefined : JSON.stringify(options.body),
+      body: options.form ?? (options.body === undefined ? undefined : JSON.stringify(options.body)),
       signal: options.signal,
     });
   } catch (cause) {

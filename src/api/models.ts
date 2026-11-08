@@ -150,3 +150,10 @@ export type CreatorPage = Schemas['CreatorPageResponse'];
 export type CreatorStats = Schemas['CreatorStatsResponse'];
 export type ReportReason =
   'Nudity' | 'Violence' | 'Hate' | 'Harassment' | 'Spam' | 'Scam' | 'Other';
+
+export type LensSearchResult = Schemas['LensSearchResponse'];
+export type LensRegion = Schemas['LensRegionResponse'];
+export type LensResult = Schemas['LensResultResponse'];
+export type LensBox = Schemas['LensBox'];
+export type LensWardrobeMatch = Schemas['LensWardrobeMatchResponse'];
+export type CategoryFamily = NonNullable<Schemas['CategoryFamily']>;
