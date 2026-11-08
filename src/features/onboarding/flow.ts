@@ -4,7 +4,8 @@ import { tr } from '@/i18n/tr';
 
 /**
  * How the persona steps were reached:
- * - `first`: onboarding proper (audience → name → swipe → done), entered because the user has no persona yet.
+ * - `first`: onboarding proper (audience → swipe), entered because the user has no persona yet. The style is created
+ *   silently as "Tarzım" after the audience step and renamed later from Profil; the swipe lands on Keşfet.
  * - `new`: "+" on Keşfet or "Yeni tarz oluştur" on Profil (name → swipe), shown as a modal over the tabs.
  * - `retrain`: "Tarzını yeniden öğret" for an existing persona (swipe only).
  */
@@ -17,7 +18,7 @@ export function parseFlow(value: string | string[] | undefined): OnboardingFlow 
 
 /** Number of progress segments the header draws. */
 export function stepCount(flow: OnboardingFlow): number {
-  return flow === 'first' ? 4 : flow === 'new' ? 2 : 1;
+  return flow === 'first' ? 2 : flow === 'new' ? 2 : 1;
 }
 
 type Router = ReturnType<typeof useRouter>;

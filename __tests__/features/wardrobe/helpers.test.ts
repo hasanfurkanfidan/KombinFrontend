@@ -1,18 +1,20 @@
+import type { WardrobeGaps } from '@/api/models';
 import { companionCaption } from '@/features/wardrobe/ItemTile';
 import { warningHint } from '@/features/wardrobe/labels';
+import { gapHintText } from '@/features/wardrobe/WardrobeHeader';
 import { theme } from '@/theme';
 import { colorTint } from '@/theme/colorNames';
 
-import { wardrobeSummary } from '../../fixtures';
+import { wardrobeGaps, wardrobeSummary } from '../../fixtures';
 
 describe('pairing caption', () => {
   it('counts the pieces a finished item goes with', () => {
-    expect(companionCaption(wardrobeSummary({ companionCount: 5 }))).toBe('5 parçayla gider');
-    expect(companionCaption(wardrobeSummary({ companionCount: '3' }))).toBe('3 parçayla gider');
+    expect(companionCaption(wardrobeSummary({ companionCount: 5 }))).toBe('5 parçayla giyilir');
+    expect(companionCaption(wardrobeSummary({ companionCount: '3' }))).toBe('3 parçayla giyilir');
   });
 
   it('says nothing matches when the count is zero', () => {
-    expect(companionCaption(wardrobeSummary({ companionCount: 0 }))).toBe('Eşleşen parça yok');
+    expect(companionCaption(wardrobeSummary({ companionCount: 0 }))).toBe('Henüz eşi yok');
   });
 
   it('is hidden while processing or failed, or before the backend has counted', () => {
@@ -43,5 +45,24 @@ describe('colorTint', () => {
   it('keeps white and pale garments visible against a white screen', () => {
     expect(colorTint('White')).not.toBe(theme.colors.surface.toLowerCase());
     expect(colorTint('Beige')).toMatch(/^#[0-9a-f]{6}$/);
+  });
+});
+
+describe('gap hint', () => {
+  const gap = wardrobeGaps().gaps[0] as WardrobeGaps['gaps'][number];
+
+  it('builds the line from the colour and the top-level category', () => {
+    expect(gapHintText(gap)).toBe('Bej bir üst 15 kombin daha açar');
+    expect(
+      gapHintText({ ...gap, categorySlug: 'dis-giyim/kaban', color: 'Navy', unlocksEstimate: 6 }),
+    ).toBe('Lacivert bir dış giyim parçası 6 kombin daha açar');
+    expect(gapHintText({ ...gap, categorySlug: 'ayakkabi', color: 'Other' })).toBe(
+      'Bir ayakkabı 15 kombin daha açar',
+    );
+  });
+
+  it("falls back to the backend's message for an unknown category or nothing unlocked", () => {
+    expect(gapHintText({ ...gap, categorySlug: 'mayo' })).toBe('Eksik parça: bej tonlarda üst');
+    expect(gapHintText({ ...gap, unlocksEstimate: 0 })).toBe('Eksik parça: bej tonlarda üst');
   });
 });

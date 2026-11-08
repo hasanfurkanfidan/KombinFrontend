@@ -11,7 +11,7 @@ import { theme } from '@/theme';
 import { leaveOnboarding, stepCount, type OnboardingFlow } from './flow';
 
 /** Names of the first run's steps (1-based `step` indexes into this), as reported with `onboarding_step`. */
-const FIRST_RUN_STEPS = ['audience', 'persona', 'swipe'] as const;
+const FIRST_RUN_STEPS = ['audience', 'swipe'] as const;
 
 interface OnboardingFrameProps {
   flow: OnboardingFlow;

@@ -228,7 +228,7 @@ export function ProductDetailScreen({ id, source = 'direct' }: ProductDetailScre
   );
 }
 
-/** "%94 uyum" next to the brand line; absent when there is no persona or the score is too low to show. */
+/** "Sana uygun %94" next to the brand line; absent without a persona or when the score is too low to show. */
 function MatchPill({ score }: { score: Product['matchScore'] }) {
   const value = matchBadgeScore(score);
   if (value === null) {
@@ -241,7 +241,7 @@ function MatchPill({ score }: { score: Product['matchScore'] }) {
   );
 }
 
-/** Top-right of the title block: the user's size as a pill, a guess with "?", or a link to add one. */
+/** Top-right of the title block: the user's size as a pill, a guess written out, or a link to add one. */
 function SizeSlot({ product, onAdd }: { product: Product; onAdd: () => void }) {
   const pill = sizePill(product.sizeHint);
   if (pill.kind === 'none') {
@@ -256,14 +256,23 @@ function SizeSlot({ product, onAdd }: { product: Product; onAdd: () => void }) {
       </Pressable>
     );
   }
-  const known = pill.kind === 'known';
+  if (pill.kind === 'inferred') {
+    return (
+      <View style={styles.sizeSlot} testID="size-pill-inferred">
+        <Text style={styles.sizeGuess}>{tr.productSizeInferred(pill.size)}</Text>
+        {pill.unsure ? (
+          <Text style={styles.sizeCaption} testID="size-unsure">
+            {tr.productSizeUnsure}
+          </Text>
+        ) : null}
+      </View>
+    );
+  }
   return (
-    <View style={styles.sizeSlot} testID={known ? 'size-pill' : 'size-pill-inferred'}>
-      <Text style={styles.sizeCaption}>{known ? tr.productSizeYours : tr.productSizeInferred}</Text>
-      <View style={[styles.sizePill, known ? styles.sizePillKnown : styles.sizePillInferred]}>
-        <Text style={[styles.sizePillText, known && styles.sizePillTextKnown]}>
-          {known ? pill.size : `${pill.size}?`}
-        </Text>
+    <View style={styles.sizeSlot} testID="size-pill">
+      <Text style={styles.sizeCaption}>{tr.productSizeYours}</Text>
+      <View style={styles.sizePill}>
+        <Text style={styles.sizePillText}>{pill.size}</Text>
       </View>
     </View>
   );
@@ -428,20 +437,15 @@ const styles = StyleSheet.create({
     borderRadius: theme.radius.md,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  sizePillKnown: {
     backgroundColor: theme.colors.ink,
-  },
-  sizePillInferred: {
-    borderWidth: 1,
-    borderColor: theme.colors.borderStrong,
   },
   sizePillText: {
     ...theme.typography.bodyStrong,
-    color: theme.colors.ink,
-  },
-  sizePillTextKnown: {
     color: theme.colors.onInk,
+  },
+  sizeGuess: {
+    ...theme.typography.bodyStrong,
+    color: theme.colors.ink,
   },
   sizeLink: {
     ...theme.typography.captionMedium,

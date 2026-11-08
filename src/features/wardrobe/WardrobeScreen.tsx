@@ -25,7 +25,7 @@ import {
   type ItemFilters,
 } from './hooks';
 import { AddTile, ItemTile } from './ItemTile';
-import { AddButton, FilterChips, GapCard, StatsRow } from './WardrobeHeader';
+import { AddButton, FilterChips, GapHint, StatsRow } from './WardrobeHeader';
 
 const COLUMNS = 3;
 const GAP = theme.spacing.md;
@@ -109,7 +109,7 @@ function SignedInWardrobe() {
         unmatchedActive={unmatchedOnly}
         onToggleUnmatched={() => setUnmatchedOnly((on) => !on)}
       />
-      <GapCard gaps={gaps.data} />
+      <GapHint gaps={gaps.data} />
       <FilterChips filters={filters} onChange={changeFilters} suspended={unmatchedOnly} />
       {uploading && uploading.total > 1 ? (
         <View style={styles.progress} testID="upload-progress">
@@ -152,6 +152,7 @@ function SignedInWardrobe() {
           ) : (
             <EmptyState
               title={unmatchedOnly ? tr.wardrobeUnmatchedEmpty : tr.wardrobeFilteredEmpty}
+              action={{ label: tr.wardrobeShowAll, onPress: () => changeFilters({}) }}
             />
           ))
         }

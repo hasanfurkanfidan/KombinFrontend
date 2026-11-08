@@ -36,71 +36,94 @@ interface StatsRowProps {
 }
 
 /**
- * Three cards: how many pieces, how many outfits they make (— until the backend counted), and how many pieces pair
- * with nothing. The last one is a filter: it is the pieces the gap card should help with.
+ * One sentence instead of three bare numbers: "12 parçanla 38 kombin çıkıyor; 3 parçanın henüz eşi yok." The second
+ * clause is a filter: pressed, the grid shows only those pieces (they are what the gap card should help with).
+ * Nothing is shown while the stats load or when the wardrobe is empty (its empty state says it all).
  */
 export function StatsRow({ stats, unmatched, unmatchedActive, onToggleUnmatched }: StatsRowProps) {
-  const outfits = stats?.possibleOutfits;
-  return (
-    <View style={styles.statsRow} testID="wardrobe-stats">
-      <View style={styles.stat}>
-        <Text style={styles.statValue}>{stats ? toNumber(stats.itemCount) : '—'}</Text>
-        <Text style={styles.statLabel}>{tr.wardrobeStatItems}</Text>
-      </View>
-      <View style={styles.stat}>
-        <Text style={styles.statValue} testID="stat-outfits">
-          {outfits === null || outfits === undefined ? tr.wardrobeStatUnknown : toNumber(outfits)}
-        </Text>
-        <Text style={styles.statLabel}>{tr.wardrobeStatOutfits}</Text>
-      </View>
-      <Pressable
-        accessibilityRole="button"
-        accessibilityState={{ selected: unmatchedActive, disabled: !unmatchedActive && !unmatched }}
-        disabled={!unmatchedActive && !unmatched}
-        onPress={onToggleUnmatched}
-        style={[styles.stat, unmatchedActive && styles.statActive]}
-        testID="stat-unmatched"
-      >
+  if (!stats || toNumber(stats.itemCount) === 0) {
+    return null;
+  }
+  const items = toNumber(stats.itemCount);
+  const outfits = stats.possibleOutfits;
+  const lead =
+    outfits === null || outfits === undefined
+      ? tr.wardrobeSummaryItems(items)
+      : tr.wardrobeSummaryOutfits(items, toNumber(outfits));
+
+  let tail = null;
+  if (unmatched === 0 && !unmatchedActive) {
+    tail = `; ${tr.wardrobeSummaryAllPaired}`;
+  } else if (unmatched !== undefined) {
+    tail = (
+      <>
+        {'; '}
         <Text
-          style={[styles.statValue, unmatchedActive && styles.statActiveText]}
-          testID="stat-unmatched-count"
+          accessibilityRole="button"
+          accessibilityState={{ selected: unmatchedActive }}
+          onPress={onToggleUnmatched}
+          style={styles.summaryLink}
+          testID="stat-unmatched"
         >
-          {unmatched ?? '—'}
+          {unmatchedActive ? tr.wardrobeSummaryShowAll : tr.wardrobeSummaryUnpaired(unmatched)}
         </Text>
-        <Text style={[styles.statLabel, unmatchedActive && styles.statActiveText]}>
-          {tr.wardrobeStatUnmatched}
-        </Text>
-      </Pressable>
-    </View>
+      </>
+    );
+  }
+
+  return (
+    <Text style={styles.summary} testID="wardrobe-stats">
+      {lead}
+      {tail}.
+    </Text>
   );
 }
 
-/** The black card for the biggest gap; absent when the wardrobe has none. */
-export function GapCard({ gaps }: { gaps: WardrobeGaps | undefined }) {
+/** The noun for a gap, by the top-level category of its slug ("ust-giyim/blazer" is an "üst"). */
+const GAP_NOUNS: Record<string, string> = {
+  'ust-giyim': tr.pairingsSlotTop,
+  'alt-giyim': tr.pairingsSlotBottom,
+  'dis-giyim': tr.wardrobeGapNounOuterwear,
+  ayakkabi: tr.pairingsSlotShoes,
+  aksesuar: tr.pairingsSlotAccessory,
+};
+
+/**
+ * The biggest gap as one quiet line: "Bej bir üst 15 kombin daha açar · Önerilere bak". The sentence is built from the
+ * gap's colour and category; when the category is unknown or nothing is unlocked, the backend's own message is used.
+ */
+export function gapHintText(gap: WardrobeGaps['gaps'][number]): string {
+  const noun = GAP_NOUNS[gap.categorySlug.split('/')[0] ?? ''];
+  const unlocks = toNumber(gap.unlocksEstimate);
+  if (!noun || unlocks <= 0) {
+    return gap.message;
+  }
+  const color = gap.color === 'Other' ? null : colorLabels[gap.color];
+  const piece = color ? tr.wardrobeGapPiece(color, noun) : tr.wardrobeGapPieceNoColor(noun);
+  return tr.wardrobeGapHint(piece, unlocks);
+}
+
+/** The biggest gap as a one-line hint under the summary sentence, with the suggestions behind a link; absent without gaps. */
+export function GapHint({ gaps }: { gaps: WardrobeGaps | undefined }) {
   const [open, setOpen] = useState(false);
   const first = gaps?.gaps[0];
   if (!gaps || !first) {
     return null;
   }
-  const unlocks = toNumber(first.unlocksEstimate);
   return (
     <>
-      <View style={styles.gapCard} testID="gap-card">
-        <View style={styles.gapText}>
-          <Text style={styles.gapTitle}>{first.message}</Text>
-          {unlocks > 0 ? (
-            <Text style={styles.gapBody}>{tr.wardrobeGapUnlocks(unlocks)}</Text>
-          ) : null}
-        </View>
-        <Pressable
-          accessibilityRole="button"
+      <Text style={styles.gapHint} testID="gap-hint">
+        {gapHintText(first)}
+        {' · '}
+        <Text
+          accessibilityRole="link"
           onPress={() => setOpen(true)}
-          style={styles.gapButton}
+          style={styles.gapLink}
           testID="gap-suggestions"
         >
-          <Text style={styles.gapButtonText}>{tr.wardrobeGapSuggestions}</Text>
-        </Pressable>
-      </View>
+          {tr.wardrobeGapSuggestions}
+        </Text>
+      </Text>
       <GapSuggestionsSheet
         visible={open}
         products={gaps.suggestedProducts}
@@ -217,62 +240,22 @@ export function AddButton({ onPress }: { onPress: () => void }) {
 }
 
 const styles = StyleSheet.create({
-  statsRow: {
-    flexDirection: 'row',
-    gap: theme.spacing.md,
-  },
-  stat: {
-    flex: 1,
-    borderRadius: theme.radius.xl,
-    backgroundColor: theme.colors.surfaceAlt,
-    padding: theme.spacing.lg,
-    gap: theme.spacing.xs,
-  },
-  statActive: {
-    backgroundColor: theme.colors.ink,
-  },
-  statValue: {
-    ...theme.typography.display,
+  summary: {
+    ...theme.typography.bodyMedium,
     color: theme.colors.ink,
   },
-  statLabel: {
-    ...theme.typography.caption,
+  summaryLink: {
+    ...theme.typography.bodyStrong,
+    textDecorationLine: 'underline',
+  },
+  gapHint: {
+    ...theme.typography.body,
     color: theme.colors.inkMuted,
   },
-  statActiveText: {
-    color: theme.colors.onInk,
-  },
-  gapCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: theme.spacing.md,
-    borderRadius: theme.radius.xxl,
-    backgroundColor: theme.colors.ink,
-    padding: theme.spacing.xl,
-  },
-  gapText: {
-    flex: 1,
-    gap: theme.spacing.xs,
-  },
-  gapTitle: {
-    ...theme.typography.bodyStrong,
-    color: theme.colors.onInk,
-  },
-  gapBody: {
-    ...theme.typography.body,
-    color: theme.colors.borderStrong,
-  },
-  gapButton: {
-    minHeight: theme.sizes.touch,
-    paddingHorizontal: theme.spacing.xl,
-    borderRadius: theme.radius.pill,
-    backgroundColor: theme.colors.surface,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  gapButtonText: {
-    ...theme.typography.bodyStrong,
+  gapLink: {
+    ...theme.typography.bodyMedium,
     color: theme.colors.ink,
+    textDecorationLine: 'underline',
   },
   sheetEmpty: {
     ...theme.typography.body,

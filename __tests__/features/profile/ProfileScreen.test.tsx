@@ -97,7 +97,7 @@ describe('ProfileScreen', () => {
     expect(screen.getByText('ayse@example.com')).toBeTruthy();
     expect(screen.getByText('Üyelik: Kasım 2026')).toBeTruthy();
     await waitFor(() =>
-      expect(screen.getByTestId('profile-summary').props.children).toBe('2 tarz · 3 kayıtlı'),
+      expect(screen.getByTestId('profile-summary').props.children).toBe('2 tarz · 3 kayıtlı ürün'),
     );
   });
 
@@ -138,7 +138,7 @@ describe('Tarzlarım', () => {
     expect(screen.getByText('Minimal, Klasik · 800–2.500 ₺')).toBeTruthy();
     expect(screen.getByText('Hafta sonu')).toBeTruthy();
     expect(screen.getByText('Sportif · 300 ₺ üzeri')).toBeTruthy();
-    expect(screen.getAllByText('Aktif')).toHaveLength(1);
+    expect(screen.getAllByText('Seçili')).toHaveLength(1);
   });
 
   it('opens the new-persona flow from the dashed row, returning to the profile', async () => {
@@ -223,7 +223,7 @@ describe('Tarzlarım', () => {
     await fireEvent.press(await screen.findByTestId('persona-row-pe2'));
     await fireEvent.press(await screen.findByTestId('persona-sheet-archive'));
 
-    expect(await screen.findByText('"Hafta sonu" arşivlensin mi?')).toBeTruthy();
+    expect(await screen.findByText('"Hafta sonu" kaldırılsın mı?')).toBeTruthy();
     expect(archivePersona).not.toHaveBeenCalled();
 
     await fireEvent.press(screen.getByTestId('persona-archive-confirm'));

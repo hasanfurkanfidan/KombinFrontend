@@ -126,7 +126,7 @@ describe('DiscoverScreen', () => {
 
     await renderWithQuery(<DiscoverScreen />);
 
-    expect(await screen.findByText('Sonuç bulunamadı')).toBeTruthy();
+    expect(await screen.findByText('Bu seçimde ürün yok')).toBeTruthy();
   });
 
   it('shows an error state and retries', async () => {

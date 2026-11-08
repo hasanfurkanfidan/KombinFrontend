@@ -1,4 +1,4 @@
-import { homeCardState } from '@/features/outfits/homeCard';
+import { homeCardDay, homeCardState } from '@/features/outfits/homeCard';
 
 describe('home card gating', () => {
   it('asks for the outfit only when signed in with at least one piece', () => {
@@ -24,5 +24,14 @@ describe('home card gating', () => {
     expect(homeCardState({ isSignedIn: true, itemCount: undefined, statsPending: false })).toBe(
       'prompt',
     );
+  });
+});
+
+describe('homeCardDay', () => {
+  it('is today until noon and tomorrow from noon on', () => {
+    expect(homeCardDay(new Date(2026, 10, 8, 8, 30))).toBe('today');
+    expect(homeCardDay(new Date(2026, 10, 8, 11, 59))).toBe('today');
+    expect(homeCardDay(new Date(2026, 10, 8, 12, 0))).toBe('tomorrow');
+    expect(homeCardDay(new Date(2026, 10, 8, 22, 0))).toBe('tomorrow');
   });
 });

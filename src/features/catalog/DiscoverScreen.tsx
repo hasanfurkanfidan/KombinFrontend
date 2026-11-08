@@ -3,19 +3,16 @@ import { StyleSheet, Text, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 
 import { track } from '@/analytics';
-import type { FeedMode } from '@/api/endpoints/social';
 import { Button } from '@/components/Button';
 import { EmptyState } from '@/components/EmptyState';
 import { ErrorState } from '@/components/ErrorState';
 import { Screen } from '@/components/Screen';
 import { tr } from '@/i18n/tr';
 import { useActivePersona, usePersonas } from '@/features/personas/hooks';
-import { PersonaChips } from '@/features/personas/PersonaChips';
+import { StyleSwitcher } from '@/features/personas/StyleSwitcher';
 import { NotificationBell } from '@/features/notifications/NotificationBell';
-import { TomorrowCard } from '@/features/outfits/TomorrowCard';
+import { DailyCard } from '@/features/outfits/DailyCard';
 import { useMe } from '@/features/profile/hooks';
-import { FeedSection } from '@/features/social/FeedSection';
-import { SegmentedControl } from '@/features/tracking/SegmentedControl';
 import { useSession } from '@/session/useSession';
 import { theme } from '@/theme';
 import { formatLongDay } from '@/utils/dates';
@@ -33,42 +30,24 @@ import { useProducts } from './hooks';
 import { ProductGrid, ProductGridSkeleton } from './ProductGrid';
 import { productHref } from './productLink';
 
-type DiscoverSection = 'products' | 'feed';
-
-const SECTION_OPTIONS = [
-  { value: 'products', label: tr.discoverSectionProducts },
-  { value: 'feed', label: tr.discoverSectionFeed },
-] as const satisfies readonly { value: DiscoverSection; label: string }[];
-
 /**
- * Keşfet has two sections under one header: "Ürünler" (the product grid, the default) and "Akış" (the posts feed).
- * Like the filters, the section and the feed mode live in the URL params, so the back stack restores them.
+ * Keşfet: the product grid. The feed used to be a second section here ("Ürünler / Akış"); it is its own tab now, and
+ * an old `?view=feed` link is sent there.
  */
 export function DiscoverScreen() {
   const router = useRouter();
   const { view, mode } = useLocalSearchParams<{ view?: string; mode?: string }>();
-  const section: DiscoverSection = view === 'feed' ? 'feed' : 'products';
-  const setSection = (next: DiscoverSection) =>
-    router.setParams({ view: next === 'feed' ? 'feed' : '' });
+  const toFeed = view === 'feed';
+  useEffect(() => {
+    if (toFeed) {
+      router.replace({ pathname: '/feed', params: mode === 'following' ? { mode } : {} });
+    }
+  }, [toFeed, mode, router]);
 
-  if (section === 'feed') {
-    const feedMode: FeedMode = mode === 'following' ? 'following' : 'forYou';
-    return (
-      <Screen padded={false}>
-        <FeedSection
-          header={<DiscoverTop section={section} onSection={setSection} />}
-          mode={feedMode}
-          onModeChange={(next) =>
-            router.setParams({ mode: next === 'following' ? 'following' : '' })
-          }
-        />
-      </Screen>
-    );
-  }
-  return <ProductsSection onSection={setSection} />;
+  return toFeed ? <Screen padded={false}>{null}</Screen> : <ProductsSection />;
 }
 
-function ProductsSection({ onSection }: { onSection: (next: DiscoverSection) => void }) {
+function ProductsSection() {
   const router = useRouter();
   const params = useLocalSearchParams<{
     category?: string;
@@ -120,12 +99,7 @@ function ProductsSection({ onSection }: { onSection: (next: DiscoverSection) => 
   }, [listLoaded, listKey]);
 
   const header = (
-    <DiscoverHeader
-      filters={filters}
-      onChangeFilters={setFilters}
-      personaId={personaId}
-      onSection={onSection}
-    />
+    <DiscoverHeader filters={filters} onChangeFilters={setFilters} personaId={personaId} />
   );
 
   let placeholder = <ProductGridSkeleton />;
@@ -135,7 +109,7 @@ function ProductsSection({ onSection }: { onSection: (next: DiscoverSection) => 
     placeholder = (
       <EmptyState
         title={tr.discoverEmptyTitle}
-        body={tr.discoverEmptyBody}
+        body={hasActiveFilters(filters) ? tr.discoverEmptyBody : undefined}
         action={
           hasActiveFilters(filters)
             ? {
@@ -189,45 +163,33 @@ interface DiscoverHeaderProps {
   filters: ProductFilters;
   onChangeFilters: (next: ProductFilters) => void;
   personaId: string | undefined;
-  onSection: (next: DiscoverSection) => void;
 }
 
-/** Greeting, the bell and the "Ürünler / Akış" switch: the top of both sections. */
-function DiscoverTop({
-  section,
-  onSection,
-}: {
-  section: DiscoverSection;
-  onSection: (next: DiscoverSection) => void;
-}) {
+/** Greeting and the bell. */
+function DiscoverTop() {
   const me = useMe();
   const now = new Date();
 
   return (
-    <View style={styles.top}>
-      <View style={styles.greetingRow}>
-        <View style={styles.greeting}>
-          <Text style={styles.date}>{formatLongDay(now)}</Text>
-          <Text style={styles.hello} numberOfLines={1}>
-            {buildGreeting(now, me.data?.displayName)}
-          </Text>
-        </View>
-        <NotificationBell />
+    <View style={styles.greetingRow}>
+      <View style={styles.greeting}>
+        <Text style={styles.date}>{formatLongDay(now)}</Text>
+        <Text style={styles.hello} numberOfLines={1}>
+          {buildGreeting(now, me.data?.displayName)}
+        </Text>
       </View>
-      <View style={styles.sections}>
-        <SegmentedControl options={SECTION_OPTIONS} value={section} onChange={onSection} />
-      </View>
+      <NotificationBell />
     </View>
   );
 }
 
-function DiscoverHeader({ filters, onChangeFilters, personaId, onSection }: DiscoverHeaderProps) {
+function DiscoverHeader({ filters, onChangeFilters, personaId }: DiscoverHeaderProps) {
   return (
     <View style={styles.header}>
-      <DiscoverTop section="products" onSection={onSection} />
+      <DiscoverTop />
 
-      <PersonaChips />
-      <TomorrowCard />
+      <StyleSwitcher />
+      <DailyCard />
 
       <Text style={styles.sectionTitle}>{tr.discoverForYou}</Text>
       <View style={styles.filters}>
@@ -238,13 +200,6 @@ function DiscoverHeader({ filters, onChangeFilters, personaId, onSection }: Disc
 }
 
 const styles = StyleSheet.create({
-  top: {
-    gap: theme.spacing.lg,
-    paddingBottom: theme.spacing.lg,
-  },
-  sections: {
-    paddingHorizontal: theme.screenPaddingX,
-  },
   header: {
     gap: theme.spacing.lg,
     paddingBottom: theme.spacing.lg,

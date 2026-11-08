@@ -2,23 +2,25 @@ import { MATCH_BADGE_MIN, matchBadgeScore } from '@/features/catalog/matchBadge'
 import { buildGreeting } from '@/features/catalog/greeting';
 
 describe('match badge threshold', () => {
-  it('shows scores from 40 up', () => {
-    expect(MATCH_BADGE_MIN).toBe(40);
-    expect(matchBadgeScore(40)).toBe(40);
+  it('shows scores from 70 up', () => {
+    expect(MATCH_BADGE_MIN).toBe(70);
+    expect(matchBadgeScore(70)).toBe(70);
     expect(matchBadgeScore(94)).toBe(94);
     expect(matchBadgeScore('89')).toBe(89);
   });
 
   it('hides bad scores and missing ones', () => {
-    expect(matchBadgeScore(39)).toBeNull();
+    expect(matchBadgeScore(69)).toBeNull();
+    // "Sana uygun %58" is a weak claim nobody can read: hidden.
+    expect(matchBadgeScore(58)).toBeNull();
     expect(matchBadgeScore(0)).toBeNull();
     expect(matchBadgeScore(null)).toBeNull();
     expect(matchBadgeScore(undefined)).toBeNull();
   });
 
   it('rounds before comparing', () => {
-    expect(matchBadgeScore(39.6)).toBe(40);
-    expect(matchBadgeScore(39.4)).toBeNull();
+    expect(matchBadgeScore(69.6)).toBe(70);
+    expect(matchBadgeScore(69.4)).toBeNull();
   });
 });
 

@@ -9,15 +9,19 @@ import { Icon, type IconName } from './Icon';
 
 type TabBarProps = Parameters<NonNullable<ComponentProps<typeof Tabs>['tabBar']>>[0];
 
-const ITEMS: Record<string, { label: string; icon: IconName }> = {
+/**
+ * The five tabs, in bar order. Routes of the tabs group that are not listed here (the redirects kept for old links,
+ * `add` and `tracking`) get no button.
+ */
+export const TAB_ITEMS: Record<string, { label: string; icon: IconName }> = {
   index: { label: tr.tabDiscover, icon: 'home' },
+  feed: { label: tr.tabFeed, icon: 'feed' },
   wardrobe: { label: tr.tabWardrobe, icon: 'wardrobe' },
-  add: { label: tr.tabAdd, icon: 'plus' },
-  tracking: { label: tr.tabTracking, icon: 'tag' },
+  prices: { label: tr.tabPrices, icon: 'tag' },
   profile: { label: tr.tabProfile, icon: 'user' },
 };
 
-/** Bottom bar with a raised round "+" in the middle (design screens 02, 04, 05). */
+/** Bottom bar: five labelled tabs, no floating button (every tab's main action sits in its own header). */
 export function TabBar({ state, emitter, navigateToTab, insets }: TabBarProps) {
   return (
     <View
@@ -30,7 +34,7 @@ export function TabBar({ state, emitter, navigateToTab, insets }: TabBarProps) {
       ]}
     >
       {state.routes.map((route, position) => {
-        const item = ITEMS[route.name];
+        const item = TAB_ITEMS[route.name];
         if (!item) {
           return null;
         }
@@ -45,22 +49,6 @@ export function TabBar({ state, emitter, navigateToTab, insets }: TabBarProps) {
             navigateToTab(route.key);
           }
         };
-
-        if (route.name === 'add') {
-          return (
-            <View key={route.key} style={styles.slot}>
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel={item.label}
-                onPress={onPress}
-                style={[styles.addButton, theme.shadows.raised]}
-                testID="tab-add"
-              >
-                <Icon name="plus" size={26} color={theme.colors.onInk} />
-              </Pressable>
-            </View>
-          );
-        }
 
         const color = focused ? theme.colors.ink : theme.colors.inkMuted;
         return (
@@ -104,15 +92,5 @@ const styles = StyleSheet.create({
   },
   labelFocused: {
     fontFamily: theme.fontFamilies.bodyStrong,
-  },
-  addButton: {
-    // Lifts the button above the bar's top edge, as in the design.
-    marginTop: -theme.spacing.xxl,
-    width: theme.sizes.tabAddButton,
-    height: theme.sizes.tabAddButton,
-    borderRadius: theme.radius.pill,
-    backgroundColor: theme.colors.ink,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
 });

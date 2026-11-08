@@ -38,7 +38,6 @@ export const sizes = {
   fieldHeight: 52,
   buttonHeight: 54,
   tabBarHeight: 84,
-  tabAddButton: 52,
   productImageHeight: 180,
   detailImageHeight: 300,
   sellerBadge: 32,

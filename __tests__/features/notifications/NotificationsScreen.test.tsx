@@ -113,6 +113,9 @@ describe('NotificationsScreen', () => {
 
     await fireEvent.press(screen.getByTestId('notifications-filter-stock'));
     expect(screen.getByText('Bu başlık altında bildirim yok.')).toBeTruthy();
+    // One way out: back to every notification.
+    await fireEvent.press(screen.getByText('Tüm bildirimleri göster'));
+    expect(screen.queryByText('Bu başlık altında bildirim yok.')).toBeNull();
   });
 
   it('shows the empty state for a user without notifications', async () => {
@@ -121,6 +124,8 @@ describe('NotificationsScreen', () => {
 
     expect(await screen.findByText('Henüz bildirimin yok')).toBeTruthy();
     expect(screen.queryByText('BUGÜN')).toBeNull();
+    await fireEvent.press(screen.getByText('Ürünlere göz at'));
+    expect(router.navigate).toHaveBeenCalledWith('/');
   });
 
   it('offers a retry when the feed cannot be loaded', async () => {

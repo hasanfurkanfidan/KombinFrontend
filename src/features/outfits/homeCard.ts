@@ -19,3 +19,13 @@ export function homeCardState(input: {
   }
   return (input.itemCount ?? 0) > 0 ? 'outfit' : 'prompt';
 }
+
+/** Until this hour the card shows today's outfit ("Bugün için"); from it on, tomorrow's ("Yarın için"). */
+export const HOME_CARD_SWITCH_HOUR = 12;
+
+export type HomeCardDay = 'today' | 'tomorrow';
+
+/** Which day the card is about, by the device's local time. */
+export function homeCardDay(now: Date): HomeCardDay {
+  return now.getHours() < HOME_CARD_SWITCH_HOUR ? 'today' : 'tomorrow';
+}

@@ -109,17 +109,29 @@ export function WardrobeItemScreen({ id }: { id: string }) {
       ) : (
         <ScrollView
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingBottom: insets.bottom + theme.spacing.xxxl }}
+          contentContainerStyle={{
+            paddingBottom: insets.bottom + theme.sizes.buttonHeight + theme.spacing.xxxl * 2,
+          }}
         >
           <ItemBody
             item={item.data}
             onOpenItem={(itemId) => router.push(`/wardrobe/${itemId}`)}
             onDetails={() => setEditOpen(true)}
-            onMakeOutfit={() => router.push(`/outfits/how-to-wear?wardrobeItemId=${id}`)}
             onOpenProduct={(productId) => router.push(productHref(productId, 'direct'))}
           />
         </ScrollView>
       )}
+
+      {item.data ? (
+        // The screen's one primary action: an outfit built around this piece.
+        <View style={[styles.bar, { paddingBottom: theme.spacing.md + insets.bottom }]}>
+          <Button
+            label={tr.wardrobeMakeOutfit}
+            onPress={() => router.push(`/outfits/how-to-wear?wardrobeItemId=${id}`)}
+            testID="item-make-outfit"
+          />
+        </View>
+      ) : null}
 
       <View style={[styles.topBar, { top: insets.top + theme.spacing.sm }]}>
         <IconButton icon="arrowLeft" label={tr.back} onPress={goBack} testID="item-back" />
@@ -190,19 +202,18 @@ function ItemBody({
   item,
   onOpenItem,
   onDetails,
-  onMakeOutfit,
   onOpenProduct,
 }: {
   item: WardrobeItem;
   onOpenItem: (id: string) => void;
   onDetails: () => void;
-  onMakeOutfit: () => void;
   onOpenProduct: (productId: string) => void;
 }) {
   const { height } = useWindowDimensions();
   const category = useCategoryName(item.category?.slug);
   const pairings = useItemPairings(item.id);
   const uri = item.cutoutUrl ?? item.thumbUrl ?? item.originalUrl;
+  const [showWhy, setShowWhy] = useState(false);
 
   // One `wardrobe_pairings_view` per opened item, once its answer is on screen.
   const reported = useRef<string | null>(null);
@@ -239,11 +250,25 @@ function ItemBody({
           {item.name ?? category ?? tr.wardrobeItemUnnamed}
         </Text>
 
-        <Text style={styles.sectionTitle}>{tr.pairingsTitle}</Text>
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>{tr.pairingsTitle}</Text>
+          {pairings.data ? (
+            <Pressable
+              accessibilityRole="button"
+              accessibilityState={{ expanded: showWhy }}
+              onPress={() => setShowWhy((on) => !on)}
+              hitSlop={theme.spacing.sm}
+              style={styles.why}
+              testID="pairing-why"
+            >
+              <Text style={styles.whyText}>{tr.pairingsWhy}</Text>
+            </Pressable>
+          ) : null}
+        </View>
         <PairingsBody
           pairings={pairings}
+          showWhy={showWhy}
           onOpenItem={onOpenItem}
-          onMakeOutfit={onMakeOutfit}
           onOpenProduct={onOpenProduct}
         />
 
@@ -272,16 +297,16 @@ function ItemBody({
   );
 }
 
-/** The companion rows, the outfit count with "Kombin yap", and the unlock card; each state of the query has its text. */
+/** The companion rows, the outfit count and the unlock card; each state of the query has its text. */
 function PairingsBody({
   pairings,
+  showWhy,
   onOpenItem,
-  onMakeOutfit,
   onOpenProduct,
 }: {
   pairings: ReturnType<typeof useItemPairings>;
+  showWhy: boolean;
   onOpenItem: (id: string) => void;
-  onMakeOutfit: () => void;
   onOpenProduct: (productId: string) => void;
 }) {
   if (pairings.isPending) {
@@ -307,19 +332,10 @@ function PairingsBody({
   const { unlock } = data;
   return (
     <>
-      <CompanionRows slots={data.companions} onOpenItem={onOpenItem} />
-      <View style={styles.outfitRow}>
-        <Text style={styles.outfitCount} testID="pairing-outfit-count">
-          {tr.pairingsOutfitCount(toNumber(data.outfitCount))}
-        </Text>
-        <Button
-          label={tr.wardrobeMakeOutfit}
-          variant="secondary"
-          onPress={onMakeOutfit}
-          style={styles.makeOutfit}
-          testID="item-make-outfit"
-        />
-      </View>
+      <CompanionRows slots={data.companions} onOpenItem={onOpenItem} showWhy={showWhy} />
+      <Text style={styles.outfitCount} testID="pairing-outfit-count">
+        {tr.pairingsOutfitCount(toNumber(data.outfitCount))}
+      </Text>
       {unlock ? (
         <UnlockCard
           unlock={unlock}
@@ -381,19 +397,34 @@ const styles = StyleSheet.create({
     ...theme.typography.body,
     color: theme.colors.inkMuted,
   },
-  outfitRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: theme.spacing.md,
-  },
   outfitCount: {
     ...theme.typography.bodyStrong,
     color: theme.colors.ink,
-    flexShrink: 1,
   },
-  makeOutfit: {
-    paddingHorizontal: theme.spacing.xl,
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  why: {
+    minHeight: theme.sizes.touch,
+    justifyContent: 'center',
+  },
+  whyText: {
+    ...theme.typography.captionMedium,
+    color: theme.colors.ink,
+    textDecorationLine: 'underline',
+  },
+  bar: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    paddingTop: theme.spacing.md,
+    paddingHorizontal: theme.screenPaddingX,
+    backgroundColor: theme.colors.surface,
+    borderTopWidth: 1,
+    borderTopColor: theme.colors.border,
   },
   detailsRow: {
     minHeight: theme.sizes.touch,

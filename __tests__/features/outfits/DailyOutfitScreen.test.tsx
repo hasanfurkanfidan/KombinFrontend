@@ -66,9 +66,14 @@ describe('daily outfit with everything in the wardrobe (Complete)', () => {
     expect(screen.getByText('Koyu yeşil blazer')).toBeTruthy();
     expect(screen.getByText('Siyah kumaş pantolon')).toBeTruthy();
     // Every piece is from the wardrobe: the white pill, no gap pill.
-    expect(within(screen.getByTestId('piece-pill-Top')).getByText('Dolabında')).toBeTruthy();
-    expect(within(screen.getByTestId('piece-pill-Shoes')).getByText('Dolabında')).toBeTruthy();
+    expect(within(screen.getByTestId('piece-pill-Top')).getByText('Dolabında var')).toBeTruthy();
+    expect(within(screen.getByTestId('piece-pill-Shoes')).getByText('Dolabında var')).toBeTruthy();
+    // Said once: no caption repeating the pill.
+    expect(screen.queryByText('Sahip olduğun parça')).toBeNull();
     expect(screen.queryByText(/Eksik ·/)).toBeNull();
+    // The occasion row says what it asks, and the shuffle says what it does.
+    expect(screen.getByText('Nereye?')).toBeTruthy();
+    expect(screen.getByTestId('outfit-shuffle')).toHaveTextContent('Başka öneri');
     expect(
       within(screen.getByTestId('outfit-narration')).getByText(
         'Koyu yeşil blazer yağmurlu havada şık durur.',
@@ -217,6 +222,8 @@ describe('daily outfit with everything in the wardrobe (Complete)', () => {
 
     expect(await screen.findByText('Bu gün için kombin çıkmadı')).toBeTruthy();
     expect(screen.getByText('Bu gün için uygun kombin çıkmadı.')).toBeTruthy();
+    await fireEvent.press(screen.getByText('Dolabına parça ekle'));
+    expect(router.navigate).toHaveBeenCalledWith('/wardrobe');
   });
 
   it('shows an accessory as a small fifth tile', async () => {
@@ -251,7 +258,7 @@ describe('daily outfit that needs one piece (NeedsOne)', () => {
     ).toBeTruthy();
     expect(screen.getByText('En ucuzu Koton')).toBeTruthy();
     // The other pieces are still the user's own.
-    expect(within(screen.getByTestId('piece-pill-Bottom')).getByText('Dolabında')).toBeTruthy();
+    expect(within(screen.getByTestId('piece-pill-Bottom')).getByText('Dolabında var')).toBeTruthy();
     expect(screen.getByText('Eksik 1 parçayı tamamla')).toBeTruthy();
     expect(screen.getByTestId('outfit-price').props.children).toBe('649 ₺');
     expect(

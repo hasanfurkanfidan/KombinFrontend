@@ -3,7 +3,7 @@ import { router } from 'expo-router';
 
 import { getDailyOutfit } from '@/api/endpoints/outfits';
 import { getWardrobeStats } from '@/api/endpoints/wardrobe';
-import { TomorrowCard } from '@/features/outfits/TomorrowCard';
+import { DailyCard } from '@/features/outfits/DailyCard';
 
 import { dailyOutfit, wardrobeStats } from '../../fixtures';
 import { renderWithQuery, resetSession, signedInSession } from '../../testUtils';
@@ -19,16 +19,37 @@ beforeEach(async () => {
   await resetSession();
   dailyMock.mockResolvedValue(dailyOutfit());
   statsMock.mockResolvedValue(wardrobeStats({ itemCount: 48 }));
+  // After noon the card is about tomorrow.
+  jest.spyOn(Date.prototype, 'getHours').mockReturnValue(20);
 });
 
-describe('home card "Yarın için"', () => {
+afterEach(() => {
+  jest.restoreAllMocks();
+});
+
+describe('home card "Bugün için" / "Yarın için"', () => {
+  it('is about today until noon, and opens the daily screen on today', async () => {
+    jest.spyOn(Date.prototype, 'getHours').mockReturnValue(9);
+    await signedInSession();
+    await renderWithQuery(<DailyCard />);
+
+    const card = await screen.findByTestId('tomorrow-card');
+    expect(screen.getByText('BUGÜN İÇİN')).toBeTruthy();
+    expect(dailyMock.mock.calls[0]?.[0]).toMatchObject({ date: 'today', seed: 0 });
+    await fireEvent.press(card);
+    expect(router.push).toHaveBeenCalledWith({
+      pathname: '/outfits/daily',
+      params: { date: 'today', seed: '0' },
+    });
+  });
+
   it('shows tomorrow with its weather pill and piece thumbnails, and opens the daily screen on the same seed', async () => {
     await signedInSession();
 
-    await renderWithQuery(<TomorrowCard />);
+    await renderWithQuery(<DailyCard />);
 
     const card = await screen.findByTestId('tomorrow-card');
-    expect(within(card).getByText('Dolabından bir kombin')).toBeTruthy();
+    expect(within(card).getByText('Dolabından hazır bir kombin')).toBeTruthy();
     expect(within(screen.getByTestId('tomorrow-weather')).getByText('9° · Yağmurlu')).toBeTruthy();
     // The three wardrobe pieces of the fixture outfit, side by side.
     expect(
@@ -52,7 +73,7 @@ describe('home card "Yarın için"', () => {
     let resolveStats: (value: ReturnType<typeof wardrobeStats>) => void = () => undefined;
     statsMock.mockReturnValue(new Promise((resolve) => (resolveStats = resolve)));
 
-    await renderWithQuery(<TomorrowCard />);
+    await renderWithQuery(<DailyCard />);
     expect(screen.getByTestId('tomorrow-loading')).toBeTruthy();
     expect(dailyMock).not.toHaveBeenCalled();
 
@@ -65,10 +86,10 @@ describe('home card "Yarın için"', () => {
     await signedInSession();
     statsMock.mockResolvedValue(wardrobeStats({ itemCount: 0 }));
 
-    await renderWithQuery(<TomorrowCard />);
+    await renderWithQuery(<DailyCard />);
 
     expect(
-      await screen.findByText('Dolabına 5 parça ekle, yarının kombinini hazırlayalım'),
+      await screen.findByText('Dolabına 5 parça ekle, her gün sana kombin hazırlayalım'),
     ).toBeTruthy();
     await waitFor(() => expect(statsMock).toHaveBeenCalled());
     expect(dailyMock).not.toHaveBeenCalled();
@@ -78,7 +99,7 @@ describe('home card "Yarın için"', () => {
   });
 
   it('prompts when logged out, without calling the backend', async () => {
-    await renderWithQuery(<TomorrowCard />);
+    await renderWithQuery(<DailyCard />);
 
     expect(screen.getByTestId('tomorrow-prompt')).toBeTruthy();
     expect(statsMock).not.toHaveBeenCalled();
@@ -89,9 +110,9 @@ describe('home card "Yarın için"', () => {
     await signedInSession();
     dailyMock.mockResolvedValue(dailyOutfit({ outfit: null, alternatives: [], weather: null }));
 
-    await renderWithQuery(<TomorrowCard />);
+    await renderWithQuery(<DailyCard />);
 
-    expect(await screen.findByText('Yarın için kombin çıkmadı')).toBeTruthy();
+    expect(await screen.findByText('Kombin çıkmadı; birkaç parça daha ekle')).toBeTruthy();
     expect(screen.queryByTestId('tomorrow-collage')).toBeNull();
     expect(screen.queryByTestId('tomorrow-weather')).toBeNull();
   });
