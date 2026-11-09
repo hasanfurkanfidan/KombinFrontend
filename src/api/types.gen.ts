@@ -244,6 +244,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/internal/catalog/embeddings/run": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["RunProductEmbeddings"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/me/saved": {
         parameters: {
             query?: never;
@@ -1316,6 +1332,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/lens/search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["LensSearch"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1389,6 +1421,8 @@ export interface components {
             /** Format: int32 */
             count: number | string;
         };
+        /** @enum {unknown} */
+        CategoryFamily: "Top" | "Bottom" | "Outerwear" | "Shoes" | "Bag" | "Accessory" | null;
         CategoryNode: {
             /** Format: uuid */
             id: string;
@@ -1627,7 +1661,79 @@ export interface components {
             outfits: components["schemas"]["OutfitResponse"][];
             message: null | string;
         };
+        /** Format: binary */
+        IFormFile: string;
         JsonElement: unknown;
+        /** @description Fractions of the photo (0-1): left, top, width, height. */
+        LensBox: {
+            /** Format: double */
+            x: number | string;
+            /** Format: double */
+            y: number | string;
+            /** Format: double */
+            w: number | string;
+            /** Format: double */
+            h: number | string;
+        };
+        LensCategoryGuess: {
+            slug: string;
+            /** Format: double */
+            confidence: number | string;
+        };
+        /** @description The product's cheapest sellable offer by effective price. `GoPath` (`src=lens`) is the only way to open it. */
+        LensOfferResponse: {
+            /** Format: uuid */
+            offerId: string;
+            seller: null | components["schemas"]["SellerRef"];
+            /** Format: double */
+            price: number | string;
+            goPath: string;
+        };
+        /**
+         * @description A garment found in the photo. `Category`, `Slot`, `Family` and `Color` are null for the whole-photo region (nothing was
+         *     detected). `FamilyRestricted` is false when the search was widened (low confidence) or covered every family. An empty
+         *     `Results` is an honest "no close product". `WardrobeMatches` is present only for a signed-in caller.
+         */
+        LensRegionResponse: {
+            /** Format: int32 */
+            index: number | string;
+            box: components["schemas"]["LensBox"];
+            slot: null | string;
+            family: null | components["schemas"]["CategoryFamily"];
+            category: null | components["schemas"]["LensCategoryGuess"];
+            color: null | components["schemas"]["ProductColor"];
+            familyRestricted: boolean;
+            results: components["schemas"]["LensResultResponse"][];
+            wardrobeMatches: null | components["schemas"]["LensWardrobeMatchResponse"][];
+        };
+        /**
+         * @description One catalog match. `Product` is the catalog list item. `Similarity` (0-1) is for analytics buckets and ordering; the app shows
+         *     `Level` (`close` "yakın eşleşme", `similar` "benzer"), never a percentage. `Offer` is null when nothing can be bought now.
+         */
+        LensResultResponse: {
+            product: components["schemas"]["ProductListItem"];
+            /** Format: double */
+            similarity: number | string;
+            level: string;
+            inStock: boolean;
+            offer: null | components["schemas"]["LensOfferResponse"];
+        };
+        /**
+         * @description Regions with results come first (best match first), then the empty ones, so the app can select the first. `Audience` is the filter
+         *     that was applied (null: none); `WholePhoto` is true when no garment region was found and the photo was searched as a whole.
+         */
+        LensSearchResponse: {
+            regions: components["schemas"]["LensRegionResponse"][];
+            audience: null | components["schemas"]["Audience"];
+            wholePhoto: boolean;
+        };
+        /** @description One of the caller's own pieces close to the region: `exact` or `similar`, as in Social. */
+        LensWardrobeMatchResponse: {
+            item: components["schemas"]["WardrobeItemSummary"];
+            /** Format: double */
+            similarity: number | string;
+            match: string;
+        };
         LikeResponse: {
             liked: boolean;
             /** Format: int32 */
@@ -2422,6 +2528,27 @@ export interface components {
             /** Format: uuid */
             postId: string;
             status: components["schemas"]["PostStatus"];
+        };
+        /** @description `Limit`: how many due products to work on (default 100, at most 1000); `ProductIds` restricts the run to those products. */
+        RunEmbeddingsRequest: {
+            /** Format: int32 */
+            limit: null | number | string;
+            productIds: null | string[];
+        };
+        RunEmbeddingsResponse: {
+            /** Format: int32 */
+            due: number | string;
+            /** Format: int32 */
+            embedded: number | string;
+            /** Format: int32 */
+            reused: number | string;
+            /** Format: int32 */
+            unusable: number | string;
+            /** Format: int32 */
+            failed: number | string;
+            /** Format: int32 */
+            remaining: number | string;
+            aborted: boolean;
         };
         SavedIdsResponse: {
             productIds: string[];
@@ -3615,6 +3742,39 @@ export interface operations {
             };
             /** @description Conflict */
             409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    RunProductEmbeddings: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": null | components["schemas"]["RunEmbeddingsRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RunEmbeddingsResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -7149,6 +7309,52 @@ export interface operations {
             };
             /** @description Not Found */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    LensSearch: {
+        parameters: {
+            query?: {
+                audience?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    image?: components["schemas"]["IFormFile"];
+                };
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LensSearchResponse"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };

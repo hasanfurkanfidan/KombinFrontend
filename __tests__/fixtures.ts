@@ -1,6 +1,9 @@
 import type {
   Alert,
   Consent,
+  LensRegion,
+  LensResult,
+  LensSearchResult,
   Post,
   PostAuthor,
   PostProposal,
@@ -671,4 +674,40 @@ export function userProfile(overrides: Partial<UserProfile> = {}): UserProfile {
 
 export function tryResult(overrides: Partial<TryResult> = {}): TryResult {
   return { postId: 'post1', groups: [], ...overrides };
+}
+
+export function lensResult(overrides: Partial<LensResult> = {}): LensResult {
+  const product = overrides.product ?? listItem();
+  return {
+    product,
+    similarity: 0.75,
+    level: 'close',
+    inStock: true,
+    offer: {
+      offerId: `o-${product.id}`,
+      seller: { name: 'Trendyol', slug: 'trendyol' },
+      price: 1899,
+      goPath: `/api/v1/go/o-${product.id}?src=lens`,
+    },
+    ...overrides,
+  };
+}
+
+export function lensRegion(overrides: Partial<LensRegion> = {}): LensRegion {
+  return {
+    index: 0,
+    box: { x: 0.1, y: 0.2, w: 0.4, h: 0.5 },
+    slot: 'Outerwear',
+    family: 'Outerwear',
+    category: { slug: 'dis-giyim/blazer', confidence: 0.8 },
+    color: 'Brown',
+    familyRestricted: true,
+    results: [lensResult()],
+    wardrobeMatches: null,
+    ...overrides,
+  };
+}
+
+export function lensSearch(overrides: Partial<LensSearchResult> = {}): LensSearchResult {
+  return { regions: [lensRegion()], audience: null, wholePhoto: false, ...overrides };
 }

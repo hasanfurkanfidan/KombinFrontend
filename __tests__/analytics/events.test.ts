@@ -39,6 +39,10 @@ const BACKEND_TABLE: Record<string, { required: string[]; optional: string[] }> 
   try_with_wardrobe: { required: ['postId', 'anchorCount', 'outfitCount'], optional: [] },
   // Task 16a: NOT in the backend allow-list yet (a tiny backend task follows); the client table has it, nothing emits it.
   auth_external: { required: ['provider', 'isNewUser'], optional: [] },
+  lens_open: { required: ['entry'], optional: [] },
+  lens_search: { required: ['regionCount', 'resultCount', 'durationMs', 'source'], optional: [] },
+  lens_result_tap: { required: ['productId', 'position', 'similarity'], optional: [] },
+  lens_add_to_wardrobe: { required: [], optional: ['family'] },
 };
 
 describe('event allow-list', () => {

@@ -94,6 +94,18 @@ export const sizes = {
   postSkeleton: 320,
   postThumbWidth: 72,
   postThumbHeight: 90,
+  /** The photo on the Lens screen is at most this share of the window height (full width otherwise). */
+  lensPhotoMaxRatio: 0.55,
+  /** Number badge in a region outline's corner (the whole outline is the touch target). */
+  lensRegionBadge: 24,
+  /** Outline of a region on the photo, and of the selected one. */
+  lensRegionBorder: 1.5,
+  lensRegionBorderSelected: 3,
+  /** A product card in a region's rail. */
+  lensRailCardWidth: 140,
+  lensRailImageHeight: 168,
+  /** A wardrobe piece in the "Dolabında benzeri var" strip. */
+  lensWardrobeThumb: 64,
 } as const;
 
 export const shadows = {

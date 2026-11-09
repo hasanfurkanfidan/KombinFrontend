@@ -30,3 +30,11 @@ export async function pickPhotos(): Promise<PickedPhoto[]> {
     }),
   );
 }
+
+/** One photo from the system picker (visual search sends a single photo). */
+export async function pickPhoto(): Promise<PickedPhoto | null> {
+  const [photo] = toPhotos(
+    await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], quality: 1 }),
+  );
+  return photo ?? null;
+}

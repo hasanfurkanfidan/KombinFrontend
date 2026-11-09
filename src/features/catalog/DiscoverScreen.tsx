@@ -12,6 +12,7 @@ import { useActivePersona, usePersonas } from '@/features/personas/hooks';
 import { StyleSwitcher } from '@/features/personas/StyleSwitcher';
 import { NotificationBell } from '@/features/notifications/NotificationBell';
 import { DailyCard } from '@/features/outfits/DailyCard';
+import { LensEntryTile, LensHeaderButton } from '@/features/lens/LensEntryTile';
 import { useMe } from '@/features/profile/hooks';
 import { useSession } from '@/session/useSession';
 import { theme } from '@/theme';
@@ -165,7 +166,7 @@ interface DiscoverHeaderProps {
   personaId: string | undefined;
 }
 
-/** Greeting and the bell. */
+/** Greeting, the "Görselden bul" camera button and the bell. */
 function DiscoverTop() {
   const me = useMe();
   const now = new Date();
@@ -178,7 +179,10 @@ function DiscoverTop() {
           {buildGreeting(now, me.data?.displayName)}
         </Text>
       </View>
-      <NotificationBell />
+      <View style={styles.headerActions}>
+        <LensHeaderButton />
+        <NotificationBell />
+      </View>
     </View>
   );
 }
@@ -190,6 +194,7 @@ function DiscoverHeader({ filters, onChangeFilters, personaId }: DiscoverHeaderP
 
       <StyleSwitcher />
       <DailyCard />
+      <LensEntryTile />
 
       <Text style={styles.sectionTitle}>{tr.discoverForYou}</Text>
       <View style={styles.filters}>
@@ -210,6 +215,11 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: theme.screenPaddingX,
     paddingTop: theme.spacing.lg,
+  },
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: theme.spacing.sm,
   },
   greeting: {
     flex: 1,
