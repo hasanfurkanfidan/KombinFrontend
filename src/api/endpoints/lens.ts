@@ -1,3 +1,5 @@
+import { File as FsFile } from 'expo-file-system';
+
 import { request } from '../client';
 import type { LensSearchResult } from '../models';
 
@@ -12,14 +14,16 @@ export interface LensSearchInput {
 }
 
 /**
- * `POST /lens/search`: the photo goes up as multipart field `image` and is never stored. React Native's `FormData`
- * streams a `{ uri, name, type }` part from the file natively (no `Blob` body, see `putPhoto`).
+ * `POST /lens/search`: the photo goes up as multipart field `image` and is never stored.
+ *
+ * The part is an `expo-file-system` `File` (a `Blob` with its file name and MIME type, read through `bytes()`). The
+ * global `fetch` on SDK 58 is `expo/fetch`, whose FormData encoder rejects React Native's `{ uri, name, type }` part
+ * ("`uri` is not supported"): such a request never leaves the phone. The backend checks the part's content type, which
+ * `File` derives from the `.jpg` the manipulator wrote.
  */
 export function searchLens(input: LensSearchInput): Promise<LensSearchResult> {
   const form = new FormData();
-  // React Native's file part; the DOM typings only know `string | Blob`.
-  const part = { uri: input.uri, name: 'lens.jpg', type: 'image/jpeg' };
-  form.append('image', part as unknown as Blob);
+  form.append('image', new FsFile(input.uri));
   return request<LensSearchResult>('/api/v1/lens/search', {
     method: 'POST',
     query: { audience: input.audience },

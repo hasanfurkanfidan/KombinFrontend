@@ -26,7 +26,7 @@ Nothing else exists yet; do not scaffold screens for features the backend does n
 - Expo SDK (managed workflow, **no `expo prebuild`**, no custom native modules), TypeScript `strict`, **Expo Router**.
 - Server data: **TanStack Query**. Client state: **Zustand** (session, local prefs, the wardrobe add queue, toasts). No Redux, no MobX, no context-based global stores.
 - Styling: plain `StyleSheet` + the central theme. **No Tailwind/NativeWind, no UI kit** (Paper, Tamagui, …). Components are custom and live in `src/components`.
-- HTTP: `fetch` wrapped in **one** typed client, `src/api/client.ts`. No axios. A multipart call passes `form` (a `FormData`; React Native streams a `{ uri, name, type }` part from the file) instead of `body`; the client then sets no `Content-Type`, so `fetch` adds the boundary.
+- HTTP: `fetch` wrapped in **one** typed client, `src/api/client.ts`. No axios. A multipart call passes `form` (a `FormData`) instead of `body`; the client then sets no `Content-Type`, so `fetch` adds the boundary. **A file part is an `expo-file-system` `File`** (`new File(uri)`: a Blob with its name and MIME type), never React Native's `{ uri, name, type }` object: the global `fetch` on SDK 58 is `expo/fetch`, whose FormData encoder throws on a `uri` part, so the request never leaves the phone (and Jest, with the endpoint mocked, does not notice).
 - Tokens: access token in memory (Zustand), refresh token in `expo-secure-store`. **Never `AsyncStorage` for tokens.**
 - Forms: `react-hook-form` + `zod` (`@hookform/resolvers` is the glue). Validation messages are Turkish.
 - Charts: one small custom SVG chart (`react-native-svg`). No charting library.

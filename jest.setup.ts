@@ -75,6 +75,20 @@ jest.mock('expo-file-system/legacy', () => ({
   uploadAsync: jest.fn(async () => ({ status: 200, headers: {}, mimeType: null, body: '' })),
 }));
 
+// The new file API: the Lens upload appends a `File` (a Blob that `expo/fetch` reads through `bytes()`) to its FormData.
+jest.mock('expo-file-system', () => ({
+  File: class {
+    readonly uri: string;
+    readonly name: string;
+    readonly type: string;
+    constructor(uri: string) {
+      this.uri = uri;
+      this.name = uri.split('/').pop() ?? '';
+      this.type = uri.endsWith('.jpg') ? 'image/jpeg' : '';
+    }
+  },
+}));
+
 jest.mock('expo-device', () => ({ isDevice: true, deviceName: 'Test Phone' }));
 
 // Screens only report events; the real queue (and its flush timer) is exercised in __tests__/analytics via
