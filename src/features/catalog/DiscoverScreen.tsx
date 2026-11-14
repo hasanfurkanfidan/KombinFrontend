@@ -12,8 +12,8 @@ import { useActivePersona, usePersonas } from '@/features/personas/hooks';
 import { StyleSwitcher } from '@/features/personas/StyleSwitcher';
 import { NotificationBell } from '@/features/notifications/NotificationBell';
 import { DailyCard } from '@/features/outfits/DailyCard';
-import { LensEntryTile, LensHeaderButton } from '@/features/lens/LensEntryTile';
 import { useMe } from '@/features/profile/hooks';
+import { SearchEntry } from '@/features/search/SearchField';
 import { useSession } from '@/session/useSession';
 import { theme } from '@/theme';
 import { formatLongDay } from '@/utils/dates';
@@ -166,23 +166,20 @@ interface DiscoverHeaderProps {
   personaId: string | undefined;
 }
 
-/** Greeting, the "Görselden bul" camera button and the bell. */
+/** Date and bell, the greeting, then the search field (whose camera is Keşfet's way into "Görselden bul"). */
 function DiscoverTop() {
   const me = useMe();
   const now = new Date();
 
   return (
-    // The date shares its row with the two icon buttons; the greeting gets the full width below, and may wrap, so
-    // the user's name is never cut.
+    // The date shares its row with the bell; the greeting gets the full width below, and may wrap, so the user's
+    // name is never cut.
     <View style={styles.greeting}>
       <View style={styles.greetingRow}>
         <Text style={styles.date} numberOfLines={1}>
           {formatLongDay(now)}
         </Text>
-        <View style={styles.headerActions}>
-          <LensHeaderButton />
-          <NotificationBell />
-        </View>
+        <NotificationBell />
       </View>
       <Text style={styles.hello}>{buildGreeting(now, me.data?.displayName)}</Text>
     </View>
@@ -193,10 +190,10 @@ function DiscoverHeader({ filters, onChangeFilters, personaId }: DiscoverHeaderP
   return (
     <View style={styles.header}>
       <DiscoverTop />
+      <SearchEntry />
 
       <StyleSwitcher />
       <DailyCard />
-      <LensEntryTile />
 
       <Text style={styles.sectionTitle}>{tr.discoverForYou}</Text>
       <View style={styles.filters}>
@@ -216,11 +213,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     gap: theme.spacing.md,
-  },
-  headerActions: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: theme.spacing.sm,
   },
   greeting: {
     gap: theme.spacing.xs,

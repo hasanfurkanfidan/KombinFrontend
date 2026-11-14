@@ -62,7 +62,7 @@ export interface EventProps {
   try_with_wardrobe: { postId: string; anchorCount: number; outfitCount: number };
   /** A Google or Apple sign-in succeeded. Not in the backend allow-list yet, so nothing emits it (see `externalSignIn.ts`). */
   auth_external: { provider: 'google' | 'apple'; isNewUser: boolean };
-  /** "Görselden bul" opened: from the Keşfet header (`explore`), the Keşfet tile (`home`) or elsewhere. */
+  /** "Görselden bul" opened: from the camera in Keşfet's search field (`explore`), elsewhere (`other`); `home` was the removed Keşfet tile. */
   lens_open: { entry: 'explore' | 'home' | 'other' };
   /** One search: counts, the time on the device (downscale + upload + answer) and where the photo came from. Never image data. */
   lens_search: {

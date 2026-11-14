@@ -14,6 +14,12 @@ export interface ProductFilters {
   color?: ProductColor;
   audience?: Audience;
   sort?: SortValue;
+  /** Free-text search (product or brand name); only the search screen sets it, as it does the three below. */
+  query?: string;
+  brandSlug?: string;
+  /** Bounds on the lowest price, in TRY. */
+  minPrice?: number;
+  maxPrice?: number;
   /** The active persona: adds match scores and makes `sort=match` available. Not a user-facing filter. */
   personaId?: string;
 }
@@ -70,9 +76,13 @@ export function filterNames(filters: ProductFilters): string {
 /** Maps app filters onto the contract's query parameters. */
 export function toListQuery(filters: ProductFilters, page?: number): ListProductsQuery {
   return {
+    Query: filters.query,
     CategorySlug: filters.categorySlug,
+    BrandSlug: filters.brandSlug,
     Color: filters.color,
     Audience: filters.audience,
+    MinPrice: filters.minPrice,
+    MaxPrice: filters.maxPrice,
     Sort: filters.sort,
     PersonaId: filters.personaId,
     Page: page,

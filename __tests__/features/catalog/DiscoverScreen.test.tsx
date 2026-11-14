@@ -22,15 +22,19 @@ beforeEach(async () => {
 });
 
 describe('DiscoverScreen', () => {
-  it('opens "Görselden bul" from the header camera button and from the tile', async () => {
+  it('opens search from the field and "Görselden bul" from the camera inside it', async () => {
     listProductsMock.mockResolvedValue(page([listItem()]));
     await renderWithQuery(<DiscoverScreen />);
 
-    await fireEvent.press(await screen.findByLabelText('Görselden bul'));
-    expect(router.push).toHaveBeenLastCalledWith('/lens?entry=explore');
+    await fireEvent.press(await screen.findByTestId('search-entry'));
+    expect(router.push).toHaveBeenLastCalledWith('/search');
 
-    await fireEvent.press(screen.getByText('Gördüğün bir parçayı fotoğrafla, en ucuzunu bulalım'));
-    expect(router.push).toHaveBeenLastCalledWith('/lens?entry=home');
+    await fireEvent.press(screen.getByLabelText('Görselden bul'));
+    expect(router.push).toHaveBeenLastCalledWith('/lens?entry=explore');
+    // The camera in the field is the one Lens entry: no header button, no tile.
+    expect(screen.getAllByLabelText('Görselden bul')).toHaveLength(1);
+    expect(screen.queryByTestId('lens-header-button')).toBeNull();
+    expect(screen.queryByTestId('lens-tile')).toBeNull();
   });
 
   it('renders the product grid with prices, discount and seller count', async () => {
