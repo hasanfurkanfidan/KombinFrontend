@@ -39,16 +39,6 @@ export const colors = {
   onImage: '#FFFFFF',
   /** Scrim behind modals and over a photo being scanned. */
   scrim: 'rgba(19, 30, 21, 0.45)',
-
-  // Deprecated aliases, removed by the cleanup commit of Task 15b-B once every screen is migrated.
-  /** @deprecated use `control` (borders) or `muted` (text, icons). */
-  borderStrong: '#8D948E',
-  /** @deprecated use `primary` (the user's choice) or `chalkInk` (Kombin's signal). */
-  accent: '#075726',
-  /** @deprecated use `primarySoft` or `chalk`. */
-  accentSoft: '#DFF3E2',
-  /** @deprecated use `onPrimary` (on a green fill) or `ink` (on a surface panel). */
-  onInk: '#FFFFFF',
 } as const;
 
 /** Shape: 6 tags, 12 controls, 14 the primary CTA, 16 tiles, 20 panels. Round things use half their size. */
@@ -58,20 +48,6 @@ export const radius = {
   cta: 14,
   tile: 16,
   panel: 20,
-
-  // Deprecated aliases (see above).
-  /** @deprecated */
-  sm: 6,
-  /** @deprecated */
-  md: 12,
-  /** @deprecated */
-  lg: 12,
-  /** @deprecated */
-  xl: 16,
-  /** @deprecated */
-  xxl: 20,
-  /** @deprecated no pills: controls use `control`, round things half their size. */
-  pill: 999,
 } as const;
 
 /** Press feedback and state changes; skipped when the OS asks for reduced motion. */
