@@ -64,9 +64,10 @@ export function NarrationRow({ text }: { text: string }) {
 }
 
 const styles = StyleSheet.create({
+  // White, so the figure's surface panel and the sheet's hairline carry the depth.
   root: {
     flex: 1,
-    backgroundColor: theme.colors.surface,
+    backgroundColor: theme.colors.bg,
   },
   header: {
     flexDirection: 'row',
@@ -109,8 +110,8 @@ const styles = StyleSheet.create({
     width: theme.spacing.sm,
     height: theme.spacing.sm,
     marginTop: theme.spacing.xs + 1,
-    borderRadius: theme.radius.pill,
-    backgroundColor: theme.colors.accent,
+    borderRadius: theme.spacing.sm / 2,
+    backgroundColor: theme.colors.control,
   },
   narrationText: {
     ...theme.typography.body,

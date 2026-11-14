@@ -4,78 +4,108 @@ import type { OutfitPiece } from '@/api/models';
 import { Icon } from '@/components/Icon';
 import { tr } from '@/i18n/tr';
 import { theme } from '@/theme';
-import { colorTint } from '@/theme/colorNames';
 import { formatTry, toNumber } from '@/utils/money';
 
-import { sortPieces } from './labels';
+import { figureBands } from './labels';
 
-const GAP = theme.spacing.md;
+const PANEL_PADDING = theme.spacing.lg;
+const BAND_GAP = theme.spacing.sm;
 
-interface PieceTileProps {
+/**
+ * Each slot's well, as a share of the figure column's width: top and bottom large, shoes small. A layered torso
+ * (outerwear over a top) draws two narrower wells that overlap.
+ */
+const WELL = {
+  torso: { width: 1, height: 0.82 },
+  layered: { width: 0.66, height: 0.82 },
+  bottom: { width: 0.86, height: 1 },
+  shoes: { width: 0.6, height: 0.4 },
+} as const;
+
+interface PieceProps {
   piece: OutfitPiece;
-  width: number;
   /** An outfit of catalog ideas for an empty wardrobe: every piece is "from the store", none is missing. */
-  shopping?: boolean;
+  shopping: boolean;
+}
+
+function priceOf(piece: OutfitPiece): string | null {
+  return piece.offer ? formatTry(toNumber(piece.offer.price)) : null;
 }
 
 /**
- * One garment of an outfit. Wardrobe pieces carry the white "Dolabında var" pill (and nothing else says so); a gap piece (to buy) has the accent
- * border, an "Eksik · price" pill and the cheapest seller; the anchor (the product or item the outfit is built
- * around) gets an ink border.
+ * One garment's well in the figure. A wardrobe or catalog piece sits in a white well (cutouts and white-background
+ * product photos read the same there); the anchor gets the green edge (it is the piece the user chose); a gap piece
+ * (to buy) is a chalk-dashed ghost of itself carrying "Eksik · price".
  */
-export function PieceTile({ piece, width, shopping = false }: PieceTileProps) {
-  const gap = piece.role === 'Gap';
+export function PieceTile({
+  piece,
+  shopping,
+  width,
+  height,
+  style,
+}: PieceProps & { width: number; height: number; style?: object }) {
+  const gap = piece.role === 'Gap' && !shopping;
   const anchor = piece.role === 'Anchor';
-  const offer = piece.offer;
-  const price = offer ? formatTry(toNumber(offer.price)) : null;
-  const pill = shopping
-    ? price
+  return (
+    <View
+      style={[styles.well, { width, height }, gap && styles.ghost, anchor && styles.anchor, style]}
+      testID={`piece-${piece.slot}`}
+    >
+      {piece.imageUrl ? (
+        <Image
+          source={{ uri: piece.imageUrl }}
+          style={[styles.image, gap && styles.ghostImage]}
+          resizeMode="contain"
+        />
+      ) : (
+        <Icon
+          name="shirt"
+          size={Math.min(48, height / 2)}
+          color={theme.colors.control}
+          strokeWidth={1.4}
+        />
+      )}
+      {gap ? (
+        <View style={styles.missingTag} testID={`piece-pill-${piece.slot}`}>
+          <Text style={styles.missingText} numberOfLines={1}>
+            {tr.outfitMissing(priceOf(piece) ?? '')}
+          </Text>
+        </View>
+      ) : null}
+    </View>
+  );
+}
+
+/** The short label beside a well: a leader line, the piece's name and what it is (yours, the anchor, its price). */
+function Leader({ piece, shopping }: PieceProps) {
+  const gap = piece.role === 'Gap' && !shopping;
+  const status = shopping
+    ? priceOf(piece)
     : gap
-      ? tr.outfitMissing(price ?? '')
-      : anchor
+      ? null
+      : piece.role === 'Anchor'
         ? tr.outfitAnchor
         : piece.source === 'Wardrobe'
           ? tr.outfitInWardrobe
           : null;
-  const highlighted = gap || shopping;
-
   return (
-    <View style={{ width, gap: theme.spacing.sm }} testID={`piece-${piece.slot}`}>
-      <View
-        style={[
-          styles.tile,
-          { height: width, backgroundColor: colorTint(piece.color) },
-          highlighted && styles.tileGap,
-          anchor && styles.tileAnchor,
-        ]}
-      >
-        {piece.imageUrl ? (
-          <Image source={{ uri: piece.imageUrl }} style={styles.image} resizeMode="contain" />
-        ) : (
-          <Icon name="shirt" size={48} color={theme.colors.borderStrong} strokeWidth={1.4} />
-        )}
-        {pill ? (
-          <View
-            style={[
-              styles.pill,
-              highlighted ? styles.pillGap : anchor ? styles.pillAnchor : styles.pillOwned,
-            ]}
-            testID={`piece-pill-${piece.slot}`}
-          >
-            <Text style={[styles.pillText, (highlighted || anchor) && styles.pillTextLight]}>
-              {pill}
-            </Text>
-          </View>
-        ) : null}
-      </View>
-      <View style={styles.caption}>
+    <View style={styles.leader}>
+      <View style={[styles.leaderLine, gap && styles.leaderLineGap]} />
+      <View style={styles.leaderText}>
         <Text style={styles.name} numberOfLines={2}>
           {piece.name}
         </Text>
-        {/* An owned piece already carries the "Dolabında var" pill: no second caption saying the same. */}
-        {gap && offer?.seller ? (
+        {status ? (
+          <View testID={`piece-pill-${piece.slot}`}>
+            <Text style={shopping ? styles.price : styles.status} numberOfLines={1}>
+              {status}
+            </Text>
+          </View>
+        ) : null}
+        {/* The ghost already says "Eksik · price"; the label adds where it is cheapest. */}
+        {gap && piece.offer?.seller ? (
           <Text style={styles.seller} numberOfLines={1}>
-            {tr.outfitCheapestAt(offer.seller.name)}
+            {tr.outfitCheapestAt(piece.offer.seller.name)}
           </Text>
         ) : null}
       </View>
@@ -83,7 +113,40 @@ export function PieceTile({ piece, width, shopping = false }: PieceTileProps) {
   );
 }
 
-/** The outfit's pieces: a two-column grid, and the accessory (when there is one) as a small tile below it. */
+/** A small accessory beside the figure: a thumbnail with its name and whether it is owned or missing. */
+function AccessoryTile({ piece, shopping }: PieceProps) {
+  const gap = piece.role === 'Gap' && !shopping;
+  const price = priceOf(piece);
+  return (
+    <View style={styles.accessory} testID="piece-accessory">
+      <View style={[styles.accessoryWell, gap && styles.ghost]}>
+        {piece.imageUrl ? (
+          <Image
+            source={{ uri: piece.imageUrl }}
+            style={[styles.image, gap && styles.ghostImage]}
+            resizeMode="contain"
+          />
+        ) : (
+          <Icon name="shirt" size={24} color={theme.colors.control} strokeWidth={1.4} />
+        )}
+      </View>
+      <View style={styles.leaderText}>
+        <Text style={styles.name} numberOfLines={2}>
+          {piece.name}
+        </Text>
+        <Text style={gap ? styles.missingInline : styles.status} numberOfLines={1}>
+          {shopping ? price : gap && price ? tr.outfitMissing(price) : tr.outfitInWardrobe}
+        </Text>
+      </View>
+    </View>
+  );
+}
+
+/**
+ * The outfit as a standing figure on a surface panel: the torso (a top, or outerwear layered over it) at the top, the
+ * bottom below, the shoes at the base, each well sized by its role with a short leader label beside it; accessories
+ * are small side tiles under the labels.
+ */
 export function OutfitPieces({
   pieces,
   shopping = false,
@@ -91,137 +154,197 @@ export function OutfitPieces({
 }: {
   pieces: readonly OutfitPiece[];
   shopping?: boolean;
-  /** The area the grid may use; the screen width minus the padding when left out. */
+  /** The area the panel may use; the screen width minus the padding when left out. */
   width?: number;
 }) {
   const window = useWindowDimensions();
   const area = width ?? window.width - theme.screenPaddingX * 2;
-  const tileWidth = (area - GAP) / 2;
-  const sorted = sortPieces(pieces);
-  const main = sorted.filter((piece) => piece.slot !== 'Accessory');
-  const accessories = sorted.filter((piece) => piece.slot === 'Accessory');
+  const figure = Math.round((area - PANEL_PADDING * 2) * theme.sizes.outfitFigureRatio);
+  const { bands, accessories } = figureBands(pieces);
 
   return (
-    <View style={styles.pieces}>
-      <View style={styles.grid}>
-        {main.map((piece) => (
-          <PieceTile
-            key={`${piece.slot}-${piece.name}`}
-            piece={piece}
-            width={tileWidth}
-            shopping={shopping}
-          />
-        ))}
-      </View>
-      {accessories.map((piece) => (
-        <View key={`${piece.slot}-${piece.name}`} style={styles.accessory} testID="piece-accessory">
-          <View
-            style={[
-              styles.accessoryThumb,
-              { backgroundColor: colorTint(piece.color) },
-              (piece.role === 'Gap' || shopping) && styles.tileGap,
-            ]}
-          >
-            {piece.imageUrl ? (
-              <Image source={{ uri: piece.imageUrl }} style={styles.image} resizeMode="contain" />
-            ) : (
-              <Icon name="shirt" size={24} color={theme.colors.borderStrong} strokeWidth={1.4} />
-            )}
+    <View style={styles.panel} testID="outfit-figure">
+      {bands.map((band) => {
+        if (band.kind === 'torso' && band.pieces.length === 2) {
+          const [outer, top] = band.pieces as [OutfitPiece, OutfitPiece];
+          const w = Math.round(figure * WELL.layered.width);
+          const h = Math.round(figure * WELL.layered.height);
+          return (
+            <View key="torso" style={styles.band}>
+              <View style={[styles.figureCell, { width: figure, height: h }]}>
+                <PieceTile
+                  piece={outer}
+                  shopping={shopping}
+                  width={w}
+                  height={h}
+                  style={styles.layerBack}
+                />
+                <PieceTile
+                  piece={top}
+                  shopping={shopping}
+                  width={w}
+                  height={h}
+                  style={styles.layerFront}
+                />
+              </View>
+              <View style={styles.labels}>
+                <Leader piece={top} shopping={shopping} />
+                <Leader piece={outer} shopping={shopping} />
+              </View>
+            </View>
+          );
+        }
+        const piece = band.pieces[0] as OutfitPiece;
+        const size = WELL[band.kind];
+        const h = Math.round(figure * size.height);
+        return (
+          <View key={band.kind} style={styles.band}>
+            <View style={[styles.figureCell, { width: figure, height: h }]}>
+              <PieceTile
+                piece={piece}
+                shopping={shopping}
+                width={Math.round(figure * size.width)}
+                height={h}
+              />
+            </View>
+            <View style={styles.labels}>
+              <Leader piece={piece} shopping={shopping} />
+            </View>
           </View>
-          <View style={styles.caption}>
-            <Text style={styles.name} numberOfLines={2}>
-              {piece.name}
-            </Text>
-            <Text style={piece.role === 'Gap' ? styles.seller : styles.owned} numberOfLines={1}>
-              {piece.role === 'Gap' && piece.offer
-                ? tr.outfitMissing(formatTry(toNumber(piece.offer.price)))
-                : tr.outfitInWardrobe}
-            </Text>
+        );
+      })}
+      {accessories.length > 0 ? (
+        <View style={styles.band}>
+          <View style={{ width: figure }} />
+          <View style={styles.labels}>
+            {accessories.map((piece) => (
+              <AccessoryTile
+                key={`${piece.slot}-${piece.name}`}
+                piece={piece}
+                shopping={shopping}
+              />
+            ))}
           </View>
         </View>
-      ))}
+      ) : null}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  pieces: {
-    gap: theme.spacing.lg,
+  panel: {
+    backgroundColor: theme.colors.surface,
+    borderRadius: theme.radius.panel,
+    padding: PANEL_PADDING,
+    gap: BAND_GAP,
   },
-  grid: {
+  band: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: GAP,
+    alignItems: 'center',
   },
-  tile: {
-    borderRadius: theme.radius.xxl,
+  figureCell: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  labels: {
+    flex: 1,
+    gap: theme.spacing.md,
+  },
+  well: {
+    borderRadius: theme.radius.tile,
+    backgroundColor: theme.colors.bg,
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
+  },
+  anchor: {
     borderWidth: 2,
-    borderColor: 'transparent',
+    borderColor: theme.colors.primary,
   },
-  tileGap: {
-    borderColor: theme.colors.accent,
+  ghost: {
+    backgroundColor: 'transparent',
+    borderWidth: theme.sizes.dashedBorder,
+    borderStyle: 'dashed',
+    borderColor: theme.colors.chalkLine,
   },
-  tileAnchor: {
-    borderColor: theme.colors.ink,
+  ghostImage: {
+    opacity: 0.45,
+  },
+  layerBack: {
+    position: 'absolute',
+    left: 0,
+  },
+  layerFront: {
+    position: 'absolute',
+    right: 0,
   },
   image: {
     ...StyleSheet.absoluteFill,
-    margin: theme.spacing.lg,
+    margin: theme.spacing.sm,
   },
-  pill: {
+  missingTag: {
     position: 'absolute',
-    top: theme.spacing.sm,
-    left: theme.spacing.sm,
-    borderRadius: theme.radius.pill,
-    paddingHorizontal: theme.spacing.md,
-    paddingVertical: theme.spacing.xs,
+    bottom: theme.spacing.xs,
+    alignSelf: 'center',
+    maxWidth: '92%',
+    backgroundColor: theme.colors.chalk,
+    borderRadius: theme.radius.tag,
+    paddingHorizontal: theme.spacing.sm,
+    paddingVertical: 2,
   },
-  pillOwned: {
-    backgroundColor: theme.colors.bg,
+  missingText: {
+    ...theme.typography.captionStrong,
+    fontVariant: ['tabular-nums'],
+    color: theme.colors.chalkInk,
   },
-  pillGap: {
-    backgroundColor: theme.colors.accent,
+  leader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: theme.spacing.sm,
   },
-  pillAnchor: {
-    backgroundColor: theme.colors.ink,
+  leaderLine: {
+    width: theme.sizes.leaderLine,
+    height: 1,
+    backgroundColor: theme.colors.control,
   },
-  pillText: {
-    ...theme.typography.captionMedium,
-    color: theme.colors.ink,
+  leaderLineGap: {
+    backgroundColor: theme.colors.chalkLine,
   },
-  pillTextLight: {
-    color: theme.colors.onInk,
-  },
-  caption: {
-    flexShrink: 1,
+  leaderText: {
+    flex: 1,
     gap: 2,
   },
   name: {
-    ...theme.typography.bodyMedium,
+    ...theme.typography.captionMedium,
     color: theme.colors.ink,
   },
-  owned: {
-    ...theme.typography.caption,
-    color: theme.colors.muted,
+  status: {
+    ...theme.typography.captionStrong,
+    color: theme.colors.primary,
+  },
+  price: {
+    ...theme.typography.price,
+    color: theme.colors.ink,
   },
   seller: {
     ...theme.typography.caption,
-    color: theme.colors.accent,
+    color: theme.colors.ink2,
+  },
+  missingInline: {
+    ...theme.typography.captionStrong,
+    fontVariant: ['tabular-nums'],
+    color: theme.colors.chalkInk,
   },
   accessory: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: theme.spacing.md,
+    gap: theme.spacing.sm,
   },
-  accessoryThumb: {
+  accessoryWell: {
     width: theme.sizes.outfitAccessoryTile,
     height: theme.sizes.outfitAccessoryTile,
-    borderRadius: theme.radius.lg,
-    borderWidth: 2,
-    borderColor: 'transparent',
+    borderRadius: theme.radius.control,
+    backgroundColor: theme.colors.bg,
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',

@@ -123,12 +123,25 @@ export const sizes = {
   itemCutoutHeight: 240,
   /** Colour dot in the confirm sheet's swatch row (hit slop brings it to 44). */
   colorSwatch: 34,
-  /** Small fifth tile (accessory) under the outfit grid. */
-  outfitAccessoryTile: 72,
+  /** The outfit figure's column takes this share of its panel; the leader labels get the rest. */
+  outfitFigureRatio: 0.5,
+  /** Small side tile of an accessory beside the outfit figure. */
+  outfitAccessoryTile: 56,
+  /** Leader line from a piece's well to its label. */
+  leaderLine: 16,
+  /** Dashed chalk edge of a missing piece (the ghost) and of the unlock card. */
+  dashedBorder: 1.5,
   /** Round shuffle / close buttons in the outfit header. */
   outfitHeaderButton: 44,
-  /** Weather pill and piece thumbnails on the home card. */
+  /** Loading placeholder of the home card. */
   homeCardThumbHeight: 84,
+  /** The small standing figure on the home card: a column of three stacked thumbnails. */
+  homeFigureWidth: 76,
+  homeFigureTorso: 60,
+  homeFigureBottom: 68,
+  homeFigureShoes: 34,
+  /** Loading placeholder of the outfit figure. */
+  outfitFigureSkeleton: 380,
   /** The pairing screen's cutout takes this share of the window height. */
   itemCutoutRatio: 0.4,
   /** A companion tile in the "Bununla gidenler" rows. */

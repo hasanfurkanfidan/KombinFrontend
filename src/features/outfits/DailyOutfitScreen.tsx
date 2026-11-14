@@ -264,14 +264,7 @@ function EmptyWardrobe({ daily, outfit }: { daily: DailyOutfit; outfit: Outfit |
 function DailySkeleton() {
   return (
     <View style={styles.scroll} testID="outfit-skeleton">
-      <View style={styles.skeletonRow}>
-        <Skeleton height={160} radius={theme.radius.xxl} style={styles.skeletonCell} />
-        <Skeleton height={160} radius={theme.radius.xxl} style={styles.skeletonCell} />
-      </View>
-      <View style={styles.skeletonRow}>
-        <Skeleton height={160} radius={theme.radius.xxl} style={styles.skeletonCell} />
-        <Skeleton height={160} radius={theme.radius.xxl} style={styles.skeletonCell} />
-      </View>
+      <Skeleton height={theme.sizes.outfitFigureSkeleton} radius={theme.radius.panel} />
     </View>
   );
 }
@@ -303,7 +296,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: theme.spacing.xs,
     paddingHorizontal: theme.spacing.md,
-    borderRadius: theme.radius.pill,
+    borderRadius: theme.radius.control,
+    borderWidth: 1,
+    borderColor: theme.colors.control,
     backgroundColor: theme.colors.bg,
   },
   shuffleText: {
@@ -332,25 +327,17 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   storePill: {
-    borderRadius: theme.radius.pill,
-    backgroundColor: theme.colors.ink,
-    paddingHorizontal: theme.spacing.md,
-    paddingVertical: theme.spacing.xs,
+    borderRadius: theme.radius.tag,
+    backgroundColor: theme.colors.surface,
+    paddingHorizontal: theme.spacing.sm,
+    paddingVertical: 2,
   },
   storePillText: {
-    ...theme.typography.captionMedium,
-    color: theme.colors.onInk,
+    ...theme.typography.captionStrong,
+    color: theme.colors.ink2,
   },
   shoppingTotal: {
-    ...theme.typography.label,
+    ...theme.typography.price,
     color: theme.colors.ink,
-  },
-  skeletonRow: {
-    flexDirection: 'row',
-    gap: theme.spacing.md,
-  },
-  skeletonCell: {
-    flex: 1,
-    width: undefined,
   },
 });

@@ -42,8 +42,8 @@ export function SavedOutfitsScreen() {
   } else if (saved.isPending) {
     placeholder = (
       <View style={styles.row} testID="saved-skeleton">
-        <Skeleton width={cardWidth} height={cardWidth} radius={theme.radius.xl} />
-        <Skeleton width={cardWidth} height={cardWidth} radius={theme.radius.xl} />
+        <Skeleton width={cardWidth} height={cardWidth} radius={theme.radius.tile} />
+        <Skeleton width={cardWidth} height={cardWidth} radius={theme.radius.tile} />
       </View>
     );
   } else if (saved.isError && outfits.length === 0) {
