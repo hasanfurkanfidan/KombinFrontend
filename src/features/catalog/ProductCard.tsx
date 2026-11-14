@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Image, StyleSheet, Text, View } from 'react-native';
 
 import type { ProductListItem } from '@/api/models';
 import { Icon } from '@/components/Icon';
+import { PressableScale } from '@/components/PressableScale';
 import { tr } from '@/i18n/tr';
 import { SaveButton } from '@/features/saved/SaveButton';
 import { theme } from '@/theme';
@@ -34,7 +35,7 @@ export function ProductCard({ product, width, onPress }: ProductCardProps) {
   const inactive = product.isActive === false;
 
   return (
-    <Pressable
+    <PressableScale
       accessibilityRole="button"
       accessibilityLabel={`${product.brand.name}, ${product.name}, ${formatTry(price)}`}
       onPress={() => onPress(product.id)}
@@ -50,7 +51,7 @@ export function ProductCard({ product, width, onPress }: ProductCardProps) {
             onError={() => setImageFailed(true)}
           />
         ) : (
-          <Icon name="shirt" size={48} color={theme.colors.borderStrong} strokeWidth={1.4} />
+          <Icon name="shirt" size={48} color={theme.colors.control} strokeWidth={1.4} />
         )}
         {discount > 0 ? (
           <View style={styles.discountPill}>
@@ -95,7 +96,7 @@ export function ProductCard({ product, width, onPress }: ProductCardProps) {
           </Text>
         ) : null}
       </View>
-    </Pressable>
+    </PressableScale>
   );
 }
 
@@ -105,7 +106,7 @@ const styles = StyleSheet.create({
   },
   imageBox: {
     height: theme.sizes.productImageHeight,
-    borderRadius: theme.radius.xl,
+    borderRadius: theme.radius.tile,
     backgroundColor: theme.colors.surface,
     alignItems: 'center',
     justifyContent: 'center',
@@ -118,14 +119,14 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: theme.spacing.md,
     left: theme.spacing.md,
-    backgroundColor: theme.colors.accent,
-    borderRadius: theme.radius.pill,
+    backgroundColor: theme.colors.chalk,
+    borderRadius: theme.radius.tag,
     paddingHorizontal: theme.spacing.sm,
-    paddingVertical: theme.spacing.xs,
+    paddingVertical: 2,
   },
   discountText: {
-    ...theme.typography.captionMedium,
-    color: theme.colors.onInk,
+    ...theme.typography.match,
+    color: theme.colors.chalkInk,
   },
   save: {
     position: 'absolute',
@@ -141,7 +142,7 @@ const styles = StyleSheet.create({
   },
   inactiveText: {
     ...theme.typography.label,
-    color: theme.colors.onInk,
+    color: theme.colors.onImage,
     textAlign: 'center',
   },
   info: {
@@ -161,20 +162,21 @@ const styles = StyleSheet.create({
     gap: theme.spacing.sm,
   },
   price: {
-    ...theme.typography.label,
+    ...theme.typography.price,
     color: theme.colors.ink,
   },
   originalPrice: {
     ...theme.typography.caption,
+    fontVariant: ['tabular-nums'],
     color: theme.colors.muted,
     textDecorationLine: 'line-through',
   },
   match: {
-    ...theme.typography.captionMedium,
-    color: theme.colors.ink,
+    ...theme.typography.match,
+    color: theme.colors.primary,
   },
   footer: {
     ...theme.typography.caption,
-    color: theme.colors.accent,
+    color: theme.colors.muted,
   },
 });

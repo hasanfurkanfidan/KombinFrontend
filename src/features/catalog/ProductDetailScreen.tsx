@@ -164,12 +164,19 @@ export function ProductDetailScreen({ id, source = 'direct' }: ProductDetailScre
       )}
 
       <View style={[styles.topBar, { top: insets.top + theme.spacing.sm }]}>
-        <IconButton icon="arrowLeft" label={tr.back} onPress={goBack} testID="detail-back" />
+        <IconButton
+          icon="arrowLeft"
+          label={tr.back}
+          onPress={goBack}
+          tone="onImage"
+          testID="detail-back"
+        />
         {product.data ? (
           <IconButton
             icon="bell"
             label={hasAlert ? tr.productAlertActive : tr.productAlertBell}
             filled={hasAlert}
+            tone="onImage"
             onPress={() => requireSignIn(() => setAlertOpen(true))}
             testID="detail-bell"
           />
@@ -235,9 +242,9 @@ function MatchPill({ score }: { score: Product['matchScore'] }) {
     return null;
   }
   return (
-    <View style={styles.matchPill} testID="detail-match">
-      <Text style={styles.matchText}>{tr.productMatch(value)}</Text>
-    </View>
+    <Text style={styles.matchText} testID="detail-match">
+      {tr.productMatch(value)}
+    </Text>
   );
 }
 
@@ -292,7 +299,7 @@ function ProductImages({ product }: { product: Product }) {
     <View style={styles.imageArea}>
       {images.length === 0 ? (
         <View style={[styles.imagePlaceholder, { width }]}>
-          <Icon name="shirt" size={72} color={theme.colors.borderStrong} strokeWidth={1.2} />
+          <Icon name="shirt" size={72} color={theme.colors.control} strokeWidth={1.2} />
         </View>
       ) : (
         <FlatList
@@ -332,14 +339,14 @@ function DetailSkeleton() {
     <View>
       <Skeleton height={theme.sizes.detailImageHeight} radius={0} />
       <View style={styles.body}>
-        <Skeleton height={14} width="25%" radius={theme.radius.sm} />
-        <Skeleton height={26} width="80%" radius={theme.radius.sm} />
+        <Skeleton height={14} width="25%" radius={theme.radius.tag} />
+        <Skeleton height={26} width="80%" radius={theme.radius.tag} />
         <View style={styles.skeletonCards}>
-          <Skeleton height={96} radius={theme.radius.lg} style={styles.skeletonCard} />
-          <Skeleton height={96} radius={theme.radius.lg} style={styles.skeletonCard} />
+          <Skeleton height={96} radius={theme.radius.tile} style={styles.skeletonCard} />
+          <Skeleton height={96} radius={theme.radius.tile} style={styles.skeletonCard} />
         </View>
-        <Skeleton height={64} radius={theme.radius.lg} />
-        <Skeleton height={64} radius={theme.radius.lg} />
+        <Skeleton height={64} radius={theme.radius.tile} />
+        <Skeleton height={64} radius={theme.radius.tile} />
       </View>
     </View>
   );
@@ -379,13 +386,13 @@ const styles = StyleSheet.create({
     gap: theme.spacing.xs,
   },
   dot: {
-    width: 6,
-    height: 6,
-    borderRadius: theme.radius.pill,
-    backgroundColor: theme.colors.borderStrong,
+    width: theme.sizes.carouselDot,
+    height: theme.sizes.carouselDot,
+    borderRadius: theme.sizes.carouselDot / 2,
+    backgroundColor: theme.colors.control,
   },
   dotActive: {
-    width: 18,
+    width: theme.sizes.carouselDotActive,
     backgroundColor: theme.colors.ink,
   },
   body: {
@@ -412,15 +419,9 @@ const styles = StyleSheet.create({
     ...theme.typography.caption,
     color: theme.colors.muted,
   },
-  matchPill: {
-    backgroundColor: theme.colors.surface,
-    borderRadius: theme.radius.pill,
-    paddingHorizontal: theme.spacing.sm,
-    paddingVertical: 2,
-  },
   matchText: {
-    ...theme.typography.captionMedium,
-    color: theme.colors.ink,
+    ...theme.typography.match,
+    color: theme.colors.primary,
   },
   sizeSlot: {
     alignItems: 'flex-end',
@@ -434,23 +435,22 @@ const styles = StyleSheet.create({
     minWidth: 36,
     height: 36,
     paddingHorizontal: theme.spacing.sm,
-    borderRadius: theme.radius.md,
+    borderRadius: theme.radius.control,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: theme.colors.ink,
+    backgroundColor: theme.colors.primarySoft,
   },
   sizePillText: {
     ...theme.typography.label,
-    color: theme.colors.onInk,
+    color: theme.colors.primary,
   },
   sizeGuess: {
     ...theme.typography.label,
     color: theme.colors.ink,
   },
   sizeLink: {
-    ...theme.typography.captionMedium,
-    color: theme.colors.ink,
-    textDecorationLine: 'underline',
+    ...theme.typography.captionStrong,
+    color: theme.colors.primary,
   },
   name: {
     ...theme.typography.heading,
@@ -462,7 +462,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: theme.spacing.md,
     padding: theme.spacing.lg,
-    borderRadius: theme.radius.lg,
+    borderRadius: theme.radius.tile,
     backgroundColor: theme.colors.surface,
   },
   howToWearText: {
@@ -481,21 +481,21 @@ const styles = StyleSheet.create({
     gap: theme.spacing.md,
   },
   offersTitle: {
-    ...theme.typography.bodyMedium,
-    color: theme.colors.ink2,
+    ...theme.typography.subhead,
+    color: theme.colors.ink,
   },
   noOffers: {
     ...theme.typography.body,
     color: theme.colors.muted,
   },
   offerList: {
-    borderWidth: 1,
+    borderWidth: StyleSheet.hairlineWidth,
     borderColor: theme.colors.line,
-    borderRadius: theme.radius.lg,
+    borderRadius: theme.radius.tile,
     overflow: 'hidden',
   },
   offerDivider: {
-    borderTopWidth: 1,
+    borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: theme.colors.line,
   },
   bar: {
@@ -508,7 +508,7 @@ const styles = StyleSheet.create({
     paddingTop: BAR_PADDING,
     paddingHorizontal: theme.screenPaddingX,
     backgroundColor: theme.colors.bg,
-    borderTopWidth: 1,
+    borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: theme.colors.line,
   },
   buyButton: {

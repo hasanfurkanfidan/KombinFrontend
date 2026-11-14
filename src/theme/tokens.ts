@@ -90,6 +90,12 @@ export const sizes = {
   productImageHeight: 180,
   detailImageHeight: 300,
   sellerBadge: 32,
+  /** Radio circle in single-choice lists, and its selected dot. */
+  radio: 20,
+  radioDot: 10,
+  /** Carousel dot under a product photo; the current one is wider. */
+  carouselDot: 6,
+  carouselDotActive: 18,
   chartMiniWidth: 120,
   chartMiniHeight: 34,
   chartFullHeight: 200,

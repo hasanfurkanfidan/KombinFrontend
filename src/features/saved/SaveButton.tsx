@@ -28,7 +28,12 @@ export function SaveButton({ productId, variant, style }: SaveButtonProps) {
       style={[card ? styles.card : styles.bar, style]}
       testID={`save-${productId}-${variant}`}
     >
-      <Icon name="bookmark" size={card ? 16 : 22} filled={saved} />
+      <Icon
+        name="bookmark"
+        size={card ? 16 : 22}
+        filled={saved}
+        color={saved ? theme.colors.primary : theme.colors.ink}
+      />
     </Pressable>
   );
 }
@@ -37,7 +42,7 @@ const styles = StyleSheet.create({
   card: {
     width: theme.sizes.bookmarkButton,
     height: theme.sizes.bookmarkButton,
-    borderRadius: theme.radius.pill,
+    borderRadius: theme.radius.control,
     backgroundColor: theme.colors.bg,
     alignItems: 'center',
     justifyContent: 'center',
@@ -45,9 +50,9 @@ const styles = StyleSheet.create({
   bar: {
     width: theme.sizes.buttonHeight,
     height: theme.sizes.buttonHeight,
-    borderRadius: theme.radius.lg,
+    borderRadius: theme.radius.control,
     borderWidth: 1,
-    borderColor: theme.colors.borderStrong,
+    borderColor: theme.colors.control,
     alignItems: 'center',
     justifyContent: 'center',
   },

@@ -27,7 +27,7 @@ export function PriceSummary({ summary, history }: PriceSummaryProps) {
     <View style={styles.wrapper}>
       <View style={styles.cards}>
         <View style={[styles.card, styles.lowest]}>
-          <Text style={[styles.overline, styles.overlineAccent]}>{tr.productLowestPrice}</Text>
+          <Text style={styles.overline}>{tr.productLowestPrice}</Text>
           {lowestNow === null ? (
             <Text style={styles.noStock}>{tr.productNoStock}</Text>
           ) : (
@@ -36,7 +36,7 @@ export function PriceSummary({ summary, history }: PriceSummaryProps) {
             </Text>
           )}
           {summary.isLowestOfLast90Days ? (
-            <Text style={styles.captionAccent}>{tr.productLowestOf90Days}</Text>
+            <Text style={styles.chalkTag}>{tr.productLowestOf90Days}</Text>
           ) : null}
         </View>
 
@@ -51,7 +51,7 @@ export function PriceSummary({ summary, history }: PriceSummaryProps) {
           <Text style={styles.overline}>{tr.productPriceHistory}</Text>
           <View style={styles.miniChart}>
             {history.status === 'loading' ? (
-              <Skeleton height={theme.sizes.chartMiniHeight} radius={theme.radius.sm} />
+              <Skeleton height={theme.sizes.chartMiniHeight} radius={theme.radius.tag} />
             ) : history.status === 'error' ? (
               <Text style={styles.caption}>{tr.productPriceHistoryFailed}</Text>
             ) : history.points.length === 0 ? (
@@ -87,12 +87,12 @@ const styles = StyleSheet.create({
   },
   card: {
     flex: 1,
-    borderRadius: theme.radius.lg,
+    borderRadius: theme.radius.tile,
     padding: theme.spacing.lg,
     gap: theme.spacing.xs,
   },
   lowest: {
-    backgroundColor: theme.colors.accentSoft,
+    backgroundColor: theme.colors.surface,
   },
   history: {
     backgroundColor: theme.colors.surface,
@@ -102,20 +102,24 @@ const styles = StyleSheet.create({
     ...theme.typography.captionStrong,
     color: theme.colors.muted,
   },
-  overlineAccent: {
-    color: theme.colors.accent,
-  },
   price: {
     ...theme.typography.priceLarge,
-    color: theme.colors.accent,
+    color: theme.colors.ink,
   },
   noStock: {
     ...theme.typography.subhead,
     color: theme.colors.muted,
   },
-  captionAccent: {
-    ...theme.typography.caption,
-    color: theme.colors.accent,
+  /** "Son 90 günün en ucuzu": Kombin pointing at the price, so a chalk tag. */
+  chalkTag: {
+    ...theme.typography.captionStrong,
+    color: theme.colors.chalkInk,
+    backgroundColor: theme.colors.chalk,
+    borderRadius: theme.radius.tag,
+    alignSelf: 'flex-start',
+    paddingHorizontal: theme.spacing.sm,
+    paddingVertical: 2,
+    overflow: 'hidden',
   },
   caption: {
     ...theme.typography.caption,
@@ -127,7 +131,7 @@ const styles = StyleSheet.create({
   },
   expanded: {
     backgroundColor: theme.colors.surface,
-    borderRadius: theme.radius.lg,
+    borderRadius: theme.radius.tile,
     paddingVertical: theme.spacing.md,
   },
 });

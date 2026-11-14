@@ -75,10 +75,10 @@ export function ProductGridSkeleton() {
         <View key={row} style={styles.row}>
           {[0, 1].map((column) => (
             <View key={column} style={{ width: cardWidth, gap: theme.spacing.sm }}>
-              <Skeleton height={theme.sizes.productImageHeight} radius={theme.radius.xl} />
-              <Skeleton height={12} width="40%" radius={theme.radius.sm} />
-              <Skeleton height={14} radius={theme.radius.sm} />
-              <Skeleton height={14} width="60%" radius={theme.radius.sm} />
+              <Skeleton height={theme.sizes.productImageHeight} radius={theme.radius.tile} />
+              <Skeleton height={12} width="40%" radius={theme.radius.tag} />
+              <Skeleton height={14} radius={theme.radius.tag} />
+              <Skeleton height={14} width="60%" radius={theme.radius.tag} />
             </View>
           ))}
         </View>
