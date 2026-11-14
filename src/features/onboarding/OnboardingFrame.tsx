@@ -92,15 +92,15 @@ const styles = StyleSheet.create({
     gap: theme.spacing.xs,
   },
   dash: {
-    width: 32,
-    height: 4,
-    borderRadius: theme.radius.pill,
+    width: theme.sizes.progressDash,
+    height: theme.sizes.progressDashHeight,
+    borderRadius: theme.sizes.progressDashHeight / 2,
   },
   dashDone: {
-    backgroundColor: theme.colors.ink,
+    backgroundColor: theme.colors.primary,
   },
   dashTodo: {
-    backgroundColor: theme.colors.surfaceAlt2,
+    backgroundColor: theme.colors.line,
   },
   skip: {
     minHeight: theme.sizes.touch,
@@ -108,7 +108,7 @@ const styles = StyleSheet.create({
   },
   skipText: {
     ...theme.typography.bodyMedium,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
   titles: {
     gap: theme.spacing.sm,
@@ -119,6 +119,6 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     ...theme.typography.body,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
 });

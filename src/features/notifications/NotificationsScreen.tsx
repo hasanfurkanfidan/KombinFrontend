@@ -43,7 +43,6 @@ export function NotificationsScreen() {
         <IconButton
           icon="arrowLeft"
           label={tr.back}
-          tone="tinted"
           onPress={() => (router.canGoBack() ? router.back() : router.replace('/'))}
           testID="notifications-back"
         />
@@ -53,14 +52,12 @@ export function NotificationsScreen() {
             <IconButton
               icon="more"
               label={tr.notifMenuButton}
-              tone="tinted"
               onPress={() => setMenuOpen(true)}
               testID="notifications-menu"
             />
             <IconButton
               icon="sliders"
               label={tr.notifPreferencesButton}
-              tone="tinted"
               onPress={() => setPreferencesOpen(true)}
               testID="notifications-preferences"
             />
@@ -104,9 +101,9 @@ export function NotificationsScreen() {
   if (feed.isPending) {
     placeholder = (
       <View style={styles.skeletons}>
-        <Skeleton height={96} radius={theme.radius.xl} />
-        <Skeleton height={96} radius={theme.radius.xl} />
-        <Skeleton height={96} radius={theme.radius.xl} />
+        <Skeleton height={96} radius={theme.radius.tile} />
+        <Skeleton height={96} radius={theme.radius.tile} />
+        <Skeleton height={96} radius={theme.radius.tile} />
       </View>
     );
   } else if (feed.isError && items.length === 0) {
@@ -133,7 +130,7 @@ export function NotificationsScreen() {
         ListHeaderComponent={header}
         ListEmptyComponent={placeholder}
         renderSectionHeader={({ section }) => (
-          <Text style={styles.sectionTitle}>{section.title.toLocaleUpperCase('tr-TR')}</Text>
+          <Text style={styles.sectionTitle}>{section.title}</Text>
         )}
         renderItem={({ item }) => (
           <View style={styles.row}>
@@ -187,7 +184,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: theme.screenPaddingX,
   },
   title: {
-    ...theme.typography.display,
+    ...theme.typography.title,
     color: theme.colors.ink,
     flex: 1,
   },
@@ -204,8 +201,8 @@ const styles = StyleSheet.create({
     paddingBottom: theme.spacing.xxxl,
   },
   sectionTitle: {
-    ...theme.typography.overline,
-    color: theme.colors.inkMuted,
+    ...theme.typography.captionStrong,
+    color: theme.colors.muted,
     paddingHorizontal: theme.screenPaddingX,
     paddingTop: theme.spacing.xl,
     paddingBottom: theme.spacing.md,

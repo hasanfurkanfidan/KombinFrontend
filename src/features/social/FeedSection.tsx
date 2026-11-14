@@ -58,9 +58,9 @@ export function FeedSection({ header, mode, onModeChange }: FeedSectionProps) {
   } else if (feed.isPending || !personasReady) {
     placeholder = (
       <View style={styles.skeleton} testID="feed-skeleton">
-        <Skeleton height={theme.sizes.postAvatar} radius={theme.radius.pill} />
-        <Skeleton height={theme.sizes.postSkeleton} radius={theme.radius.xl} />
-        <Skeleton height={16} width="60%" radius={theme.radius.sm} />
+        <Skeleton height={theme.sizes.postAvatar} radius={theme.radius.control} />
+        <Skeleton height={theme.sizes.postSkeleton} radius={theme.radius.tile} />
+        <Skeleton height={16} width="60%" radius={theme.radius.tag} />
       </View>
     );
   } else if (feed.isError && posts.length === 0) {
@@ -144,7 +144,7 @@ const styles = StyleSheet.create({
   },
   loadMoreFailedText: {
     ...theme.typography.body,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
     textAlign: 'center',
   },
 });

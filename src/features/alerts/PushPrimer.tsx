@@ -60,6 +60,6 @@ export function PushPrimerSheet({ visible, onAllow, onDismiss }: PushPrimerSheet
 const styles = StyleSheet.create({
   body: {
     ...theme.typography.body,
-    color: theme.colors.inkSoft,
+    color: theme.colors.ink2,
   },
 });

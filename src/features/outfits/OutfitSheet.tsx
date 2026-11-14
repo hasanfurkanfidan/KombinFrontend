@@ -191,9 +191,12 @@ export function DismissSheet({
 
 const styles = StyleSheet.create({
   sheet: {
-    backgroundColor: theme.colors.surface,
-    borderTopLeftRadius: theme.radius.xxl,
-    borderTopRightRadius: theme.radius.xxl,
+    backgroundColor: theme.colors.bg,
+    borderTopLeftRadius: theme.radius.panel,
+    borderTopRightRadius: theme.radius.panel,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderBottomWidth: 0,
+    borderColor: theme.colors.line,
     paddingHorizontal: theme.screenPaddingX,
     paddingBottom: theme.spacing.xxl,
     gap: theme.spacing.md,
@@ -206,20 +209,20 @@ const styles = StyleSheet.create({
   grabber: {
     width: theme.sizes.grabberWidth,
     height: theme.sizes.grabberHeight,
-    borderRadius: theme.radius.pill,
-    backgroundColor: theme.colors.border,
+    borderRadius: theme.sizes.grabberHeight / 2,
+    backgroundColor: theme.colors.control,
   },
   caption: {
     ...theme.typography.body,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
   price: {
-    ...theme.typography.display,
+    ...theme.typography.priceLarge,
     color: theme.colors.ink,
   },
   rows: {
-    borderRadius: theme.radius.lg,
-    backgroundColor: theme.colors.surfaceAlt,
+    borderRadius: theme.radius.tile,
+    backgroundColor: theme.colors.surface,
     paddingHorizontal: theme.spacing.lg,
   },
   row: {
@@ -231,11 +234,11 @@ const styles = StyleSheet.create({
   },
   rowText: {
     ...theme.typography.body,
-    color: theme.colors.inkSoft,
+    color: theme.colors.ink2,
     flexShrink: 1,
   },
   rowPrice: {
-    ...theme.typography.bodyStrong,
+    ...theme.typography.price,
     color: theme.colors.ink,
   },
   buttons: {
@@ -254,6 +257,6 @@ const styles = StyleSheet.create({
     color: theme.colors.ink,
   },
   reasonMuted: {
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
 });

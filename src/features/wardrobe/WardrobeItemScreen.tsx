@@ -134,10 +134,17 @@ export function WardrobeItemScreen({ id }: { id: string }) {
       ) : null}
 
       <View style={[styles.topBar, { top: insets.top + theme.spacing.sm }]}>
-        <IconButton icon="arrowLeft" label={tr.back} onPress={goBack} testID="item-back" />
+        <IconButton
+          icon="arrowLeft"
+          label={tr.back}
+          onPress={goBack}
+          tone="onImage"
+          testID="item-back"
+        />
         {item.data ? (
           <IconButton
             icon="more"
+            tone="onImage"
             label={tr.wardrobeMenu}
             onPress={() => setMenuOpen(true)}
             testID="item-menu"
@@ -242,7 +249,7 @@ function ItemBody({
         {uri ? (
           <Image source={{ uri }} style={styles.cutoutImage} resizeMode="contain" />
         ) : (
-          <Icon name="shirt" size={72} color={theme.colors.borderStrong} strokeWidth={1.2} />
+          <Icon name="shirt" size={72} color={theme.colors.control} strokeWidth={1.2} />
         )}
       </View>
       <View style={styles.body}>
@@ -279,7 +286,7 @@ function ItemBody({
           testID="item-details"
         >
           <Text style={styles.detailsLabel}>{tr.wardrobeDetails}</Text>
-          <Icon name="chevronRight" size={20} color={theme.colors.inkMuted} />
+          <Icon name="chevronRight" size={20} color={theme.colors.muted} />
         </Pressable>
         {item.fromCatalog && item.productId ? (
           <Pressable
@@ -312,8 +319,8 @@ function PairingsBody({
   if (pairings.isPending) {
     return (
       <View style={styles.pairingsSkeleton} testID="pairings-loading">
-        <Skeleton height={theme.sizes.pairingTile} radius={theme.radius.xl} />
-        <Skeleton height={theme.sizes.pairingTile} radius={theme.radius.xl} />
+        <Skeleton height={theme.sizes.pairingTile} radius={theme.radius.tile} />
+        <Skeleton height={theme.sizes.pairingTile} radius={theme.radius.tile} />
       </View>
     );
   }
@@ -352,7 +359,7 @@ function PairingsBody({
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: theme.colors.surface,
+    backgroundColor: theme.colors.bg,
   },
   errorWrap: {
     flex: 1,
@@ -380,11 +387,11 @@ const styles = StyleSheet.create({
     gap: theme.spacing.lg,
   },
   name: {
-    ...theme.typography.headingLarge,
+    ...theme.typography.heading,
     color: theme.colors.ink,
   },
   sectionTitle: {
-    ...theme.typography.heading,
+    ...theme.typography.subhead,
     color: theme.colors.ink,
   },
   pairingsSkeleton: {
@@ -395,10 +402,10 @@ const styles = StyleSheet.create({
   },
   note: {
     ...theme.typography.body,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
   outfitCount: {
-    ...theme.typography.bodyStrong,
+    ...theme.typography.label,
     color: theme.colors.ink,
   },
   sectionHeader: {
@@ -411,9 +418,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   whyText: {
-    ...theme.typography.captionMedium,
-    color: theme.colors.ink,
-    textDecorationLine: 'underline',
+    ...theme.typography.captionStrong,
+    color: theme.colors.primary,
   },
   bar: {
     position: 'absolute',
@@ -422,18 +428,18 @@ const styles = StyleSheet.create({
     bottom: 0,
     paddingTop: theme.spacing.md,
     paddingHorizontal: theme.screenPaddingX,
-    backgroundColor: theme.colors.surface,
-    borderTopWidth: 1,
-    borderTopColor: theme.colors.border,
+    backgroundColor: theme.colors.bg,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: theme.colors.line,
   },
   detailsRow: {
     minHeight: theme.sizes.touch,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
-    borderColor: theme.colors.border,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderColor: theme.colors.line,
   },
   detailsLabel: {
     ...theme.typography.bodyMedium,
@@ -442,16 +448,16 @@ const styles = StyleSheet.create({
   wearBlock: {
     gap: theme.spacing.xs,
     paddingBottom: theme.spacing.sm,
-    borderBottomWidth: 1,
-    borderBottomColor: theme.colors.border,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: theme.colors.line,
   },
   historyCount: {
-    ...theme.typography.bodyStrong,
+    ...theme.typography.label,
     color: theme.colors.ink,
   },
   historyLast: {
     ...theme.typography.body,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
   productLink: {
     minHeight: theme.sizes.touch,
@@ -461,9 +467,8 @@ const styles = StyleSheet.create({
     gap: theme.spacing.xs,
   },
   productLinkText: {
-    ...theme.typography.bodyMedium,
-    color: theme.colors.ink,
-    textDecorationLine: 'underline',
+    ...theme.typography.label,
+    color: theme.colors.primary,
   },
   menuRow: {
     minHeight: theme.sizes.touch,
@@ -474,6 +479,6 @@ const styles = StyleSheet.create({
     color: theme.colors.ink,
   },
   menuDanger: {
-    color: theme.colors.warning,
+    color: theme.colors.danger,
   },
 });

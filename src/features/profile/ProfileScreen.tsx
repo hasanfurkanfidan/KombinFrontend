@@ -4,6 +4,7 @@ import { useRouter } from 'expo-router';
 
 import type { Persona } from '@/api/models';
 import { Button } from '@/components/Button';
+import { Card } from '@/components/Card';
 import { ErrorState } from '@/components/ErrorState';
 import { Icon } from '@/components/Icon';
 import { Screen } from '@/components/Screen';
@@ -57,7 +58,7 @@ export function ProfileScreen() {
       <Text style={styles.title}>{tr.profileTitle}</Text>
 
       {!isSignedIn ? (
-        <View style={styles.card}>
+        <Card>
           <Text style={styles.cardTitle}>{tr.profileLoggedOutTitle}</Text>
           <Text style={styles.body}>{tr.profileLoggedOutBody}</Text>
           <Button
@@ -65,7 +66,7 @@ export function ProfileScreen() {
             onPress={() => router.push('/login')}
             testID="profile-sign-in"
           />
-        </View>
+        </Card>
       ) : me.isError ? (
         <ErrorState body={tr.profileLoadFailed} onRetry={() => void me.refetch()} />
       ) : (
@@ -89,9 +90,9 @@ export function ProfileScreen() {
               </View>
             ) : (
               <View style={styles.identity}>
-                <Skeleton height={24} width="50%" radius={theme.radius.sm} />
-                <Skeleton height={16} width="70%" radius={theme.radius.sm} />
-                <Skeleton height={14} width="40%" radius={theme.radius.sm} />
+                <Skeleton height={24} width="50%" radius={theme.radius.tag} />
+                <Skeleton height={16} width="70%" radius={theme.radius.tag} />
+                <Skeleton height={14} width="40%" radius={theme.radius.tag} />
               </View>
             )}
           </View>
@@ -117,7 +118,7 @@ export function ProfileScreen() {
                 style={styles.newPersona}
                 testID="profile-new-persona"
               >
-                <Icon name="plus" size={18} color={theme.colors.inkMuted} />
+                <Icon name="plus" size={18} color={theme.colors.muted} />
                 <Text style={styles.newPersonaText}>{tr.profileNewPersona}</Text>
               </Pressable>
             ) : null}
@@ -203,7 +204,7 @@ function PersonaRow({ persona, onPress }: { persona: Persona; onPress: () => voi
               key={position}
               style={[
                 styles.swatch,
-                { backgroundColor: name ? swatchColor(name) : theme.colors.surfaceAlt2 },
+                { backgroundColor: name ? swatchColor(name) : theme.colors.surface },
               ]}
             />
           );
@@ -220,7 +221,7 @@ function PersonaRow({ persona, onPress }: { persona: Persona; onPress: () => voi
           <Text style={styles.activeText}>{tr.personaActive}</Text>
         </View>
       ) : (
-        <Icon name="chevronRight" size={18} color={theme.colors.inkMuted} />
+        <Icon name="chevronRight" size={18} color={theme.colors.muted} />
       )}
     </Pressable>
   );
@@ -251,7 +252,7 @@ function SettingsRow({
         <Text style={styles.personaName}>{title}</Text>
         <Text style={styles.caption}>{caption}</Text>
       </View>
-      {onPress ? <Icon name="chevronRight" size={18} color={theme.colors.inkMuted} /> : null}
+      {onPress ? <Icon name="chevronRight" size={18} color={theme.colors.muted} /> : null}
     </Pressable>
   );
 }
@@ -266,14 +267,8 @@ const styles = StyleSheet.create({
     ...theme.typography.display,
     color: theme.colors.ink,
   },
-  card: {
-    backgroundColor: theme.colors.surfaceAlt,
-    borderRadius: theme.radius.xl,
-    padding: theme.spacing.xl,
-    gap: theme.spacing.lg,
-  },
   cardTitle: {
-    ...theme.typography.heading,
+    ...theme.typography.subhead,
     color: theme.colors.ink,
   },
   identityRow: {
@@ -284,36 +279,36 @@ const styles = StyleSheet.create({
   avatar: {
     width: theme.sizes.avatar,
     height: theme.sizes.avatar,
-    borderRadius: theme.radius.pill,
-    backgroundColor: theme.colors.ink,
+    borderRadius: theme.sizes.avatar / 2,
+    backgroundColor: theme.colors.bg,
     alignItems: 'center',
     justifyContent: 'center',
   },
   avatarText: {
-    ...theme.typography.headingLarge,
-    color: theme.colors.onInk,
+    ...theme.typography.heading,
+    color: theme.colors.ink,
   },
   identity: {
     flex: 1,
     gap: theme.spacing.xs,
   },
   name: {
-    ...theme.typography.headingLarge,
+    ...theme.typography.heading,
     color: theme.colors.ink,
   },
   body: {
     ...theme.typography.body,
-    color: theme.colors.inkSoft,
+    color: theme.colors.ink2,
   },
   caption: {
     ...theme.typography.caption,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
   section: {
     gap: theme.spacing.md,
   },
   sectionTitle: {
-    ...theme.typography.heading,
+    ...theme.typography.subhead,
     color: theme.colors.ink,
   },
   personaRow: {
@@ -321,8 +316,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: theme.spacing.md,
     padding: theme.spacing.lg,
-    borderRadius: theme.radius.xl,
-    backgroundColor: theme.colors.surfaceAlt,
+    borderRadius: theme.radius.tile,
+    backgroundColor: theme.colors.surface,
   },
   swatches: {
     flexDirection: 'row',
@@ -331,27 +326,27 @@ const styles = StyleSheet.create({
   swatch: {
     width: theme.sizes.personaSwatchWidth,
     height: theme.sizes.personaSwatchHeight,
-    borderRadius: theme.radius.sm / 2,
+    borderRadius: theme.radius.tag / 2,
     borderWidth: 1,
-    borderColor: theme.colors.border,
+    borderColor: theme.colors.line,
   },
   personaText: {
     flex: 1,
     gap: 2,
   },
   personaName: {
-    ...theme.typography.bodyStrong,
+    ...theme.typography.label,
     color: theme.colors.ink,
   },
   activePill: {
-    paddingHorizontal: theme.spacing.md,
-    paddingVertical: theme.spacing.xs,
-    borderRadius: theme.radius.pill,
-    backgroundColor: theme.colors.accentSoft,
+    paddingHorizontal: theme.spacing.sm,
+    paddingVertical: 2,
+    borderRadius: theme.radius.tag,
+    backgroundColor: theme.colors.primarySoft,
   },
   activeText: {
-    ...theme.typography.captionMedium,
-    color: theme.colors.accent,
+    ...theme.typography.captionStrong,
+    color: theme.colors.primary,
   },
   newPersona: {
     minHeight: theme.sizes.touch + theme.spacing.md,
@@ -359,19 +354,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: theme.spacing.sm,
-    borderRadius: theme.radius.xl,
+    borderRadius: theme.radius.tile,
     borderWidth: 1,
     borderStyle: 'dashed',
-    borderColor: theme.colors.borderStrong,
+    borderColor: theme.colors.control,
   },
   newPersonaText: {
     ...theme.typography.bodyMedium,
-    color: theme.colors.inkSoft,
+    color: theme.colors.ink2,
   },
   rows: {
-    borderWidth: 1,
-    borderColor: theme.colors.border,
-    borderRadius: theme.radius.xl,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: theme.colors.line,
+    borderRadius: theme.radius.tile,
     overflow: 'hidden',
   },
   settingsRow: {
@@ -383,7 +378,7 @@ const styles = StyleSheet.create({
     paddingVertical: theme.spacing.md,
   },
   settingsDivider: {
-    borderTopWidth: 1,
-    borderTopColor: theme.colors.border,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: theme.colors.line,
   },
 });

@@ -1,11 +1,12 @@
 import { useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useRouter } from 'expo-router';
 
 import type { ProductColor, WardrobeGaps, WardrobeStats } from '@/api/models';
 import { BottomSheet } from '@/components/BottomSheet';
 import { Chip } from '@/components/Chip';
 import { Icon } from '@/components/Icon';
+import { PressableScale } from '@/components/PressableScale';
 import { colorLabels } from '@/features/catalog/filters';
 import { OptionSheet, type Option } from '@/features/catalog/OptionSheet';
 import { ProductCard } from '@/features/catalog/ProductCard';
@@ -113,7 +114,7 @@ export function GapHint({ gaps }: { gaps: WardrobeGaps | undefined }) {
   return (
     <>
       <Text style={styles.gapHint} testID="gap-hint">
-        {gapHintText(first)}
+        <Text style={styles.gapPhrase}>{gapHintText(first)}</Text>
         {' · '}
         <Text
           accessibilityRole="link"
@@ -224,18 +225,18 @@ export function FilterChips({ filters, onChange, suspended = false }: FilterChip
   );
 }
 
-/** "Parça ekle": the black pill in the header. */
+/** "Parça ekle": the screen's one filled (green) action, in the header. */
 export function AddButton({ onPress }: { onPress: () => void }) {
   return (
-    <Pressable
+    <PressableScale
       accessibilityRole="button"
       onPress={onPress}
       style={styles.addButton}
       testID="wardrobe-add"
     >
-      <Icon name="camera" size={18} color={theme.colors.onInk} />
+      <Icon name="camera" size={18} color={theme.colors.onPrimary} />
       <Text style={styles.addButtonText}>{tr.wardrobeAddButton}</Text>
-    </Pressable>
+    </PressableScale>
   );
 }
 
@@ -245,21 +246,30 @@ const styles = StyleSheet.create({
     color: theme.colors.ink,
   },
   summaryLink: {
-    ...theme.typography.bodyStrong,
-    textDecorationLine: 'underline',
+    ...theme.typography.label,
+    color: theme.colors.primary,
   },
   gapHint: {
     ...theme.typography.body,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
+  },
+  /**
+   * The gap itself is what Kombin points at: a chalk dashed underline. iOS draws it dashed in chalk; Android has no
+   * decoration style or colour, so it falls back to a solid underline in the text colour.
+   */
+  gapPhrase: {
+    color: theme.colors.ink2,
+    textDecorationLine: 'underline',
+    textDecorationStyle: 'dashed',
+    textDecorationColor: theme.colors.chalkLine,
   },
   gapLink: {
-    ...theme.typography.bodyMedium,
-    color: theme.colors.ink,
-    textDecorationLine: 'underline',
+    ...theme.typography.label,
+    color: theme.colors.primary,
   },
   sheetEmpty: {
     ...theme.typography.body,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
     textAlign: 'center',
   },
   sheetGrid: {
@@ -277,11 +287,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: theme.spacing.sm,
     paddingHorizontal: theme.spacing.lg,
-    borderRadius: theme.radius.pill,
-    backgroundColor: theme.colors.ink,
+    borderRadius: theme.radius.control,
+    backgroundColor: theme.colors.primary,
   },
   addButtonText: {
-    ...theme.typography.bodyStrong,
-    color: theme.colors.onInk,
+    ...theme.typography.label,
+    color: theme.colors.onPrimary,
   },
 });

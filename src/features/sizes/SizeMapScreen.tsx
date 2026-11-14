@@ -4,6 +4,7 @@ import { useRouter } from 'expo-router';
 
 import type { SizeEntry } from '@/api/models';
 import { Button } from '@/components/Button';
+import { Card } from '@/components/Card';
 import { EmptyState } from '@/components/EmptyState';
 import { ErrorState } from '@/components/ErrorState';
 import { Icon } from '@/components/Icon';
@@ -65,13 +66,7 @@ export function SizeMapScreen() {
   return (
     <Screen scroll contentStyle={styles.content}>
       <View style={styles.titleRow}>
-        <IconButton
-          icon="arrowLeft"
-          label={tr.back}
-          tone="tinted"
-          onPress={goBack}
-          testID="sizes-back"
-        />
+        <IconButton icon="arrowLeft" label={tr.back} onPress={goBack} testID="sizes-back" />
         <Text style={styles.title}>{tr.sizeMapTitle}</Text>
       </View>
 
@@ -97,7 +92,7 @@ export function SizeMapScreen() {
           {sizes.isError ? (
             <ErrorState body={tr.sizeMapLoadFailed} onRetry={() => void sizes.refetch()} />
           ) : sizes.isPending ? (
-            <Skeleton height={160} radius={theme.radius.lg} />
+            <Skeleton height={160} radius={theme.radius.control} />
           ) : rows.length === 0 ? (
             <Text style={styles.empty}>{tr.sizeMapEmpty}</Text>
           ) : (
@@ -126,7 +121,7 @@ export function SizeMapScreen() {
           )}
 
           <View style={styles.info}>
-            <Icon name="info" size={18} color={theme.colors.accent} />
+            <Icon name="info" size={18} color={theme.colors.ink2} />
             <Text style={styles.infoText}>{tr.sizeMapInfo}</Text>
           </View>
 
@@ -180,13 +175,13 @@ function MeasurementsCard({
     { label: `${tr.measurementWaist} ${tr.measurementUnitCm}`, value: profile?.waistCm },
   ];
   return (
-    <View style={styles.card}>
+    <Card>
       <Text style={styles.cardLabel}>{tr.measurementsTitle}</Text>
       <View style={styles.cardRow}>
         {cells.map((cell) => (
           <View key={cell.label} style={styles.cardCell}>
             {loading ? (
-              <Skeleton height={22} width={36} radius={theme.radius.sm} />
+              <Skeleton height={22} width={36} radius={theme.radius.tag} />
             ) : (
               <Text style={styles.cardValue}>
                 {cell.value === null || cell.value === undefined
@@ -205,7 +200,7 @@ function MeasurementsCard({
         style={styles.cardButton}
         testID="measurements-edit"
       />
-    </View>
+    </Card>
   );
 }
 
@@ -221,18 +216,12 @@ const styles = StyleSheet.create({
     gap: theme.spacing.md,
   },
   title: {
-    ...theme.typography.display,
+    ...theme.typography.title,
     color: theme.colors.ink,
   },
-  card: {
-    backgroundColor: theme.colors.ink,
-    borderRadius: theme.radius.xl,
-    padding: theme.spacing.xl,
-    gap: theme.spacing.lg,
-  },
   cardLabel: {
-    ...theme.typography.overline,
-    color: theme.colors.borderStrong,
+    ...theme.typography.captionStrong,
+    color: theme.colors.muted,
   },
   cardRow: {
     flexDirection: 'row',
@@ -243,37 +232,35 @@ const styles = StyleSheet.create({
   },
   cardValue: {
     ...theme.typography.priceLarge,
-    color: theme.colors.onInk,
+    color: theme.colors.ink,
   },
   cardCaption: {
     ...theme.typography.caption,
-    color: theme.colors.borderStrong,
+    color: theme.colors.muted,
   },
   cardButton: {
     alignSelf: 'flex-start',
     height: theme.sizes.touch,
-    backgroundColor: 'transparent',
-    borderColor: theme.colors.inkMuted,
   },
   headingBlock: {
     gap: theme.spacing.xs,
   },
   heading: {
-    ...theme.typography.heading,
+    ...theme.typography.subhead,
     color: theme.colors.ink,
   },
   subtitle: {
     ...theme.typography.body,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
   empty: {
     ...theme.typography.body,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
   table: {
-    borderWidth: 1,
-    borderColor: theme.colors.border,
-    borderRadius: theme.radius.lg,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: theme.colors.line,
+    borderRadius: theme.radius.tile,
     overflow: 'hidden',
   },
   tableRow: {
@@ -282,13 +269,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: theme.spacing.lg,
   },
   tableHead: {
-    height: 40,
-    backgroundColor: theme.colors.surfaceAlt,
+    minHeight: theme.sizes.touch - theme.spacing.xs,
+    backgroundColor: theme.colors.surface,
   },
   tableBody: {
     minHeight: theme.sizes.touch + theme.spacing.sm,
-    borderTopWidth: 1,
-    borderTopColor: theme.colors.border,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: theme.colors.line,
   },
   brandCol: {
     flex: 1.6,
@@ -297,34 +284,34 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   headCell: {
-    ...theme.typography.overline,
-    color: theme.colors.inkMuted,
+    ...theme.typography.captionStrong,
+    color: theme.colors.muted,
   },
   brandCell: {
     ...theme.typography.bodyMedium,
     color: theme.colors.ink,
   },
   sizeCell: {
-    ...theme.typography.bodyStrong,
+    ...theme.typography.label,
     color: theme.colors.ink,
   },
   sizeInferred: {
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
   emptyCell: {
     ...theme.typography.body,
-    color: theme.colors.borderStrong,
+    color: theme.colors.muted,
   },
   info: {
     flexDirection: 'row',
     gap: theme.spacing.md,
     padding: theme.spacing.lg,
-    borderRadius: theme.radius.lg,
-    backgroundColor: theme.colors.accentSoft,
+    borderRadius: theme.radius.tile,
+    backgroundColor: theme.colors.surface,
   },
   infoText: {
     ...theme.typography.caption,
     flex: 1,
-    color: theme.colors.accent,
+    color: theme.colors.ink2,
   },
 });

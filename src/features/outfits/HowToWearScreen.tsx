@@ -49,7 +49,7 @@ export function HowToWearScreen({ productId, wardrobeItemId }: HowToWearScreenPr
   } else if (query.isPending) {
     body = (
       <View style={styles.skeleton} testID="outfit-skeleton">
-        <Skeleton height={width - theme.screenPaddingX * 2} radius={theme.radius.xxl} />
+        <Skeleton height={theme.sizes.outfitFigureSkeleton} radius={theme.radius.panel} />
       </View>
     );
   } else if (query.isError) {
@@ -125,8 +125,8 @@ const styles = StyleSheet.create({
   dot: {
     width: theme.spacing.sm,
     height: theme.spacing.sm,
-    borderRadius: theme.radius.pill,
-    backgroundColor: theme.colors.borderStrong,
+    borderRadius: theme.spacing.sm / 2,
+    backgroundColor: theme.colors.control,
   },
   dotActive: {
     width: theme.spacing.xl,

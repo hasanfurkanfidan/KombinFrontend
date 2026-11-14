@@ -21,7 +21,6 @@ export function RegisterScreen() {
         <IconButton
           icon="arrowLeft"
           label={tr.back}
-          tone="tinted"
           onPress={() => (router.canGoBack() ? router.back() : router.replace('/'))}
         />
         <View style={styles.header}>
@@ -57,7 +56,7 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     ...theme.typography.body,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
   footer: {
     flexDirection: 'row',
@@ -66,10 +65,10 @@ const styles = StyleSheet.create({
   },
   footerText: {
     ...theme.typography.body,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
   footerLink: {
-    ...theme.typography.bodyStrong,
+    ...theme.typography.label,
     color: theme.colors.ink,
   },
 });

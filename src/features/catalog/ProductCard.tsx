@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Image, StyleSheet, Text, View } from 'react-native';
 
 import type { ProductListItem } from '@/api/models';
 import { Icon } from '@/components/Icon';
+import { PressableScale } from '@/components/PressableScale';
 import { tr } from '@/i18n/tr';
 import { SaveButton } from '@/features/saved/SaveButton';
 import { theme } from '@/theme';
@@ -34,7 +35,7 @@ export function ProductCard({ product, width, onPress }: ProductCardProps) {
   const inactive = product.isActive === false;
 
   return (
-    <Pressable
+    <PressableScale
       accessibilityRole="button"
       accessibilityLabel={`${product.brand.name}, ${product.name}, ${formatTry(price)}`}
       onPress={() => onPress(product.id)}
@@ -50,7 +51,7 @@ export function ProductCard({ product, width, onPress }: ProductCardProps) {
             onError={() => setImageFailed(true)}
           />
         ) : (
-          <Icon name="shirt" size={48} color={theme.colors.borderStrong} strokeWidth={1.4} />
+          <Icon name="shirt" size={48} color={theme.colors.control} strokeWidth={1.4} />
         )}
         {discount > 0 ? (
           <View style={styles.discountPill}>
@@ -72,13 +73,9 @@ export function ProductCard({ product, width, onPress }: ProductCardProps) {
           {product.name}
         </Text>
         <View style={styles.priceRow}>
-          <Text style={styles.price} numberOfLines={1}>
-            {formatTry(price)}
-          </Text>
+          <Text style={styles.price}>{formatTry(price)}</Text>
           {originalPrice !== null && originalPrice > price ? (
-            <Text style={styles.originalPrice} numberOfLines={1}>
-              {formatTry(originalPrice)}
-            </Text>
+            <Text style={styles.originalPrice}>{formatTry(originalPrice)}</Text>
           ) : null}
         </View>
         {/* Under the price, not on the image: the discount badge owns the photo's corner. */}
@@ -95,7 +92,7 @@ export function ProductCard({ product, width, onPress }: ProductCardProps) {
           </Text>
         ) : null}
       </View>
-    </Pressable>
+    </PressableScale>
   );
 }
 
@@ -105,8 +102,8 @@ const styles = StyleSheet.create({
   },
   imageBox: {
     height: theme.sizes.productImageHeight,
-    borderRadius: theme.radius.xl,
-    backgroundColor: theme.colors.surfaceAlt,
+    borderRadius: theme.radius.tile,
+    backgroundColor: theme.colors.surface,
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
@@ -118,14 +115,14 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: theme.spacing.md,
     left: theme.spacing.md,
-    backgroundColor: theme.colors.accent,
-    borderRadius: theme.radius.pill,
+    backgroundColor: theme.colors.chalk,
+    borderRadius: theme.radius.tag,
     paddingHorizontal: theme.spacing.sm,
-    paddingVertical: theme.spacing.xs,
+    paddingVertical: 2,
   },
   discountText: {
-    ...theme.typography.captionMedium,
-    color: theme.colors.onInk,
+    ...theme.typography.match,
+    color: theme.colors.chalkInk,
   },
   save: {
     position: 'absolute',
@@ -140,8 +137,8 @@ const styles = StyleSheet.create({
     padding: theme.spacing.md,
   },
   inactiveText: {
-    ...theme.typography.bodyStrong,
-    color: theme.colors.onInk,
+    ...theme.typography.label,
+    color: theme.colors.onImage,
     textAlign: 'center',
   },
   info: {
@@ -149,32 +146,35 @@ const styles = StyleSheet.create({
   },
   brand: {
     ...theme.typography.caption,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
   name: {
     ...theme.typography.bodyMedium,
     color: theme.colors.ink,
   },
+  // Wraps instead of cutting: the original price drops to the next line on a narrow card.
   priceRow: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     alignItems: 'baseline',
-    gap: theme.spacing.sm,
+    columnGap: theme.spacing.sm,
   },
   price: {
-    ...theme.typography.bodyStrong,
+    ...theme.typography.price,
     color: theme.colors.ink,
   },
   originalPrice: {
     ...theme.typography.caption,
-    color: theme.colors.inkMuted,
+    fontVariant: ['tabular-nums'],
+    color: theme.colors.muted,
     textDecorationLine: 'line-through',
   },
   match: {
-    ...theme.typography.captionMedium,
-    color: theme.colors.ink,
+    ...theme.typography.match,
+    color: theme.colors.primary,
   },
   footer: {
     ...theme.typography.caption,
-    color: theme.colors.accent,
+    color: theme.colors.muted,
   },
 });

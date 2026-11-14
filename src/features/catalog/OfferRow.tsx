@@ -10,7 +10,7 @@ export function isSellable(offer: Pick<Offer, 'stockStatus'>): boolean {
   return offer.stockStatus === 'InStock' || offer.stockStatus === 'LowStock';
 }
 
-type CaptionTone = 'accent' | 'muted' | 'warning';
+type CaptionTone = 'positive' | 'muted' | 'warning';
 
 /** The line under the seller name: sold out, free shipping or the shipping fee. Null when shipping is unknown. */
 export function getOfferCaption(offer: Offer): { text: string; tone: CaptionTone } | null {
@@ -24,7 +24,7 @@ export function getOfferCaption(offer: Offer): { text: string; tone: CaptionTone
   const shipping = toNumber(offer.effectivePrice) - toNumber(offer.currentPrice);
   return shipping > 0
     ? { text: tr.offerShipping(formatAmount(shipping)), tone: 'muted' }
-    : { text: tr.offerFreeShipping, tone: 'accent' };
+    : { text: tr.offerFreeShipping, tone: 'positive' };
 }
 
 interface OfferRowProps {
@@ -63,10 +63,10 @@ export function OfferRow({ offer, highlighted, onPress }: OfferRowProps) {
           </Text>
         ) : null}
       </View>
-      <Text style={[styles.price, !sellable && styles.priceMuted]} numberOfLines={1}>
+      <Text style={[styles.price, !sellable && styles.priceMuted]}>
         {formatTry(offer.currentPrice)}
       </Text>
-      {sellable ? <Icon name="chevronRight" size={18} color={theme.colors.inkMuted} /> : null}
+      {sellable ? <Icon name="chevronRight" size={18} color={theme.colors.muted} /> : null}
     </Pressable>
   );
 }
@@ -81,55 +81,57 @@ const styles = StyleSheet.create({
     paddingVertical: theme.spacing.md,
   },
   highlighted: {
-    backgroundColor: theme.colors.surfaceAlt,
+    backgroundColor: theme.colors.surface,
   },
   badge: {
     width: theme.sizes.sellerBadge,
     height: theme.sizes.sellerBadge,
-    borderRadius: theme.radius.sm,
+    borderRadius: theme.radius.tag,
     alignItems: 'center',
     justifyContent: 'center',
   },
+  // The cheapest row sits on `surface`, so its badge flips to the page colour to stay visible.
   badgeStrong: {
-    backgroundColor: theme.colors.ink,
+    backgroundColor: theme.colors.bg,
   },
   badgeSoft: {
-    backgroundColor: theme.colors.surfaceAlt,
+    backgroundColor: theme.colors.surface,
   },
   badgeText: {
-    ...theme.typography.bodyStrong,
+    ...theme.typography.label,
     color: theme.colors.ink,
   },
   badgeTextStrong: {
-    color: theme.colors.onInk,
+    color: theme.colors.ink,
   },
   middle: {
     flex: 1,
     gap: 2,
   },
   seller: {
-    ...theme.typography.bodyStrong,
-    fontSize: 14,
+    ...theme.typography.label,
     color: theme.colors.ink,
   },
   caption: {
     ...theme.typography.caption,
   },
-  accent: {
-    color: theme.colors.accent,
+  positive: {
+    ...theme.typography.captionMedium,
+    color: theme.colors.ink2,
   },
   muted: {
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
   warning: {
-    color: theme.colors.warning,
+    color: theme.colors.danger,
   },
   price: {
-    ...theme.typography.bodyStrong,
+    ...theme.typography.price,
     color: theme.colors.ink,
     textAlign: 'right',
+    flexShrink: 0,
   },
   priceMuted: {
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
 });

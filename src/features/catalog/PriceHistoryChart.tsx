@@ -45,7 +45,7 @@ export function PriceHistoryChart({ points, variant = 'mini', lowPrice }: PriceH
       >
         <Path d={geometry.path} stroke={theme.colors.ink} strokeWidth={1.5} fill="none" />
         {geometry.last ? (
-          <Circle cx={geometry.last.x} cy={geometry.last.y} r={3} fill={theme.colors.accent} />
+          <Circle cx={geometry.last.x} cy={geometry.last.y} r={3} fill={theme.colors.ink} />
         ) : null}
       </Svg>
     );
@@ -70,21 +70,21 @@ export function PriceHistoryChart({ points, variant = 'mini', lowPrice }: PriceH
               x2={fullWidth - FULL_PADDING.paddingX}
               y1={geometry.lowY}
               y2={geometry.lowY}
-              stroke={theme.colors.borderStrong}
-              strokeWidth={1}
+              stroke={theme.colors.chalkLine}
+              strokeWidth={1.5}
               strokeDasharray="4 4"
             />
           ) : null}
           <Path d={geometry.path} stroke={theme.colors.ink} strokeWidth={2} fill="none" />
           {geometry.last ? (
-            <Circle cx={geometry.last.x} cy={geometry.last.y} r={5} fill={theme.colors.accent} />
+            <Circle cx={geometry.last.x} cy={geometry.last.y} r={5} fill={theme.colors.ink} />
           ) : null}
           <SvgText
             x={FULL_PADDING.paddingX}
             y={16}
             fontSize={11}
-            fontFamily={theme.fontFamilies.bodyMedium}
-            fill={theme.colors.inkMuted}
+            fontFamily={theme.fontFamilies.medium}
+            fill={theme.colors.muted}
           >
             {formatTry(geometry.maxPrice)}
           </SvgText>
@@ -92,8 +92,8 @@ export function PriceHistoryChart({ points, variant = 'mini', lowPrice }: PriceH
             x={FULL_PADDING.paddingX}
             y={height - 10}
             fontSize={11}
-            fontFamily={theme.fontFamilies.body}
-            fill={theme.colors.inkMuted}
+            fontFamily={theme.fontFamilies.regular}
+            fill={theme.colors.muted}
           >
             {formatShortDate(firstPoint.date)}
           </SvgText>
@@ -101,8 +101,8 @@ export function PriceHistoryChart({ points, variant = 'mini', lowPrice }: PriceH
             x={fullWidth - FULL_PADDING.paddingX}
             y={height - 10}
             fontSize={11}
-            fontFamily={theme.fontFamilies.body}
-            fill={theme.colors.inkMuted}
+            fontFamily={theme.fontFamilies.regular}
+            fill={theme.colors.muted}
             textAnchor="end"
           >
             {formatShortDate(lastPoint.date)}
@@ -112,8 +112,8 @@ export function PriceHistoryChart({ points, variant = 'mini', lowPrice }: PriceH
               x={fullWidth - FULL_PADDING.paddingX}
               y={geometry.lowY - 6}
               fontSize={11}
-              fontFamily={theme.fontFamilies.bodyStrong}
-              fill={theme.colors.inkMuted}
+              fontFamily={theme.fontFamilies.semibold}
+              fill={theme.colors.chalkInk}
               textAnchor="end"
             >
               {formatTry(geometry.minPrice)}

@@ -38,12 +38,12 @@ describe('quality warnings', () => {
 
 describe('colorTint', () => {
   it('mixes the colour at 15 % over the card colour', () => {
-    // #141414 (Black) at 15 % over #F3F2EE: 0.15 * 20 + 0.85 * 243 = 210 (d2), 0.15 * 20 + 0.85 * 242 = 209 (d1), 0.15 * 20 + 0.85 * 238 = 205 (cd).
-    expect(colorTint('Black')).toBe('#d2d1cd');
+    // #141414 (Black) at 15 % over #EFF4F0: 0.15 * 20 + 0.85 * 239 = 206 (ce), 0.15 * 20 + 0.85 * 244 = 210 (d2), 0.15 * 20 + 0.85 * 240 = 207 (cf).
+    expect(colorTint('Black')).toBe('#ced2cf');
   });
 
   it('keeps white and pale garments visible against a white screen', () => {
-    expect(colorTint('White')).not.toBe(theme.colors.surface.toLowerCase());
+    expect(colorTint('White')).not.toBe(theme.colors.bg.toLowerCase());
     expect(colorTint('Beige')).toMatch(/^#[0-9a-f]{6}$/);
   });
 });

@@ -35,7 +35,8 @@ export function OutfitFrame({
       <View style={styles.header}>
         <IconButton icon="close" label={tr.outfitClose} onPress={onClose} testID="outfit-close" />
         <View style={styles.titles}>
-          <Text style={styles.title} numberOfLines={1} testID="outfit-title">
+          {/* Two lines when the header's right side is full (previous + "Başka öneri"): never cut. */}
+          <Text style={styles.title} numberOfLines={2} testID="outfit-title">
             {title}
           </Text>
           {subtitle ? (
@@ -64,9 +65,10 @@ export function NarrationRow({ text }: { text: string }) {
 }
 
 const styles = StyleSheet.create({
+  // White, so the figure's surface panel and the sheet's hairline carry the depth.
   root: {
     flex: 1,
-    backgroundColor: theme.colors.surfaceAlt,
+    backgroundColor: theme.colors.bg,
   },
   header: {
     flexDirection: 'row',
@@ -82,16 +84,17 @@ const styles = StyleSheet.create({
     gap: 2,
   },
   title: {
-    ...theme.typography.heading,
+    ...theme.typography.subhead,
     color: theme.colors.ink,
   },
   subtitle: {
     ...theme.typography.caption,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
   right: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
+    alignItems: 'center',
     // Keeps the title centred while the close button on the left is one button wide.
     minWidth: theme.sizes.outfitHeaderButton,
     gap: theme.spacing.sm,
@@ -109,12 +112,12 @@ const styles = StyleSheet.create({
     width: theme.spacing.sm,
     height: theme.spacing.sm,
     marginTop: theme.spacing.xs + 1,
-    borderRadius: theme.radius.pill,
-    backgroundColor: theme.colors.accent,
+    borderRadius: theme.spacing.sm / 2,
+    backgroundColor: theme.colors.control,
   },
   narrationText: {
     ...theme.typography.body,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
     flexShrink: 1,
   },
 });

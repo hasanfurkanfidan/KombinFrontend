@@ -52,7 +52,7 @@ export function StyleSwitcher() {
             <Text style={[styles.optionText, persona.isActive && styles.optionTextActive]}>
               {persona.name}
             </Text>
-            {persona.isActive ? <Icon name="check" size={20} /> : null}
+            {persona.isActive ? <Icon name="check" size={20} color={theme.colors.primary} /> : null}
           </Pressable>
         ))}
         {personas.length < MAX_PERSONAS ? (
@@ -66,7 +66,7 @@ export function StyleSwitcher() {
             testID="style-add"
           >
             <Text style={styles.optionText}>{tr.styleSheetNew}</Text>
-            <Icon name="plus" size={20} color={theme.colors.inkMuted} />
+            <Icon name="plus" size={20} color={theme.colors.muted} />
           </Pressable>
         ) : null}
       </BottomSheet>
@@ -89,14 +89,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    borderBottomWidth: 1,
-    borderBottomColor: theme.colors.border,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: theme.colors.line,
   },
   optionText: {
     ...theme.typography.bodyMedium,
     color: theme.colors.ink,
   },
   optionTextActive: {
-    fontFamily: theme.fontFamilies.bodyStrong,
+    fontFamily: theme.fontFamilies.semibold,
+    color: theme.colors.primary,
   },
 });

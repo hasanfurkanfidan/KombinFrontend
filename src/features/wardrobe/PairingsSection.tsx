@@ -119,7 +119,7 @@ function CompanionTile({
             onError={() => setImageFailed(true)}
           />
         ) : (
-          <Icon name="shirt" size={32} color={theme.colors.borderStrong} strokeWidth={1.4} />
+          <Icon name="shirt" size={32} color={theme.colors.control} strokeWidth={1.4} />
         )}
       </Pressable>
       {showWhy ? (
@@ -179,7 +179,7 @@ const styles = StyleSheet.create({
     gap: theme.spacing.sm,
   },
   rowTitle: {
-    ...theme.typography.bodyStrong,
+    ...theme.typography.label,
     color: theme.colors.ink,
   },
   rowContent: {
@@ -192,7 +192,7 @@ const styles = StyleSheet.create({
   tile: {
     width: theme.sizes.pairingTile,
     height: theme.sizes.pairingTile,
-    borderRadius: theme.radius.xl,
+    borderRadius: theme.radius.tile,
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
@@ -201,12 +201,12 @@ const styles = StyleSheet.create({
     padding: theme.spacing.md,
     borderWidth: 1,
     borderStyle: 'dashed',
-    borderColor: theme.colors.borderStrong,
-    backgroundColor: theme.colors.surface,
+    borderColor: theme.colors.control,
+    backgroundColor: theme.colors.bg,
   },
   emptyText: {
     ...theme.typography.caption,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
     textAlign: 'center',
   },
   image: {
@@ -215,17 +215,21 @@ const styles = StyleSheet.create({
   },
   reason: {
     ...theme.typography.caption,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
+  // A piece the wardrobe lacks: a surface panel with the chalk dashed edge every missing piece wears.
   unlock: {
     gap: theme.spacing.md,
-    borderRadius: theme.radius.xxl,
-    backgroundColor: theme.colors.ink,
+    borderRadius: theme.radius.panel,
+    backgroundColor: theme.colors.surface,
+    borderWidth: 1.5,
+    borderStyle: 'dashed',
+    borderColor: theme.colors.chalkLine,
     padding: theme.spacing.xl,
   },
   unlockTitle: {
-    ...theme.typography.bodyStrong,
-    color: theme.colors.onInk,
+    ...theme.typography.subhead,
+    color: theme.colors.ink,
   },
   unlockBody: {
     flexDirection: 'row',
@@ -235,8 +239,8 @@ const styles = StyleSheet.create({
   unlockThumb: {
     width: theme.sizes.thumbWidth,
     height: theme.sizes.thumbHeight,
-    borderRadius: theme.radius.lg,
-    backgroundColor: theme.colors.surfaceAlt,
+    borderRadius: theme.radius.control,
+    backgroundColor: theme.colors.bg,
     overflow: 'hidden',
   },
   unlockText: {
@@ -245,22 +249,25 @@ const styles = StyleSheet.create({
   },
   unlockName: {
     ...theme.typography.bodyMedium,
-    color: theme.colors.onInk,
+    color: theme.colors.ink,
   },
   unlockMeta: {
     ...theme.typography.caption,
-    color: theme.colors.borderStrong,
+    fontVariant: ['tabular-nums'],
+    color: theme.colors.muted,
   },
   unlockButton: {
     minHeight: theme.sizes.touch,
     paddingHorizontal: theme.spacing.lg,
-    borderRadius: theme.radius.pill,
-    backgroundColor: theme.colors.surface,
+    borderRadius: theme.radius.control,
+    borderWidth: 1,
+    borderColor: theme.colors.control,
+    backgroundColor: theme.colors.bg,
     alignItems: 'center',
     justifyContent: 'center',
   },
   unlockButtonText: {
-    ...theme.typography.bodyStrong,
+    ...theme.typography.label,
     color: theme.colors.ink,
   },
 });

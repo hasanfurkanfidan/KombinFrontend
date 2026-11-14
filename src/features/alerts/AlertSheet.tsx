@@ -186,13 +186,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: theme.spacing.md,
     paddingHorizontal: theme.spacing.lg,
-    borderRadius: theme.radius.lg,
+    borderRadius: theme.radius.control,
     borderWidth: 1,
-    borderColor: theme.colors.border,
+    borderColor: theme.colors.control,
   },
   optionSelected: {
-    borderColor: theme.colors.ink,
-    backgroundColor: theme.colors.surfaceAlt,
+    borderColor: theme.colors.primary,
+    backgroundColor: theme.colors.primarySoft,
   },
   disabled: {
     opacity: 0.4,
@@ -202,33 +202,33 @@ const styles = StyleSheet.create({
     color: theme.colors.ink,
   },
   radio: {
-    width: 20,
-    height: 20,
-    borderRadius: theme.radius.pill,
+    width: theme.sizes.radio,
+    height: theme.sizes.radio,
+    borderRadius: theme.sizes.radio / 2,
     borderWidth: 1.5,
-    borderColor: theme.colors.borderStrong,
+    borderColor: theme.colors.control,
     alignItems: 'center',
     justifyContent: 'center',
   },
   radioSelected: {
-    borderColor: theme.colors.ink,
+    borderColor: theme.colors.primary,
   },
   radioDot: {
-    width: 10,
-    height: 10,
-    borderRadius: theme.radius.pill,
-    backgroundColor: theme.colors.ink,
+    width: theme.sizes.radioDot,
+    height: theme.sizes.radioDot,
+    borderRadius: theme.sizes.radioDot / 2,
+    backgroundColor: theme.colors.primary,
   },
   sizes: {
     gap: theme.spacing.sm,
   },
   sizesLabel: {
-    ...theme.typography.captionMedium,
-    color: theme.colors.inkSoft,
+    ...theme.typography.captionStrong,
+    color: theme.colors.ink2,
   },
   sizesHint: {
     ...theme.typography.caption,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
   sizeChips: {
     flexDirection: 'row',
@@ -237,6 +237,6 @@ const styles = StyleSheet.create({
   },
   error: {
     ...theme.typography.caption,
-    color: theme.colors.warning,
+    color: theme.colors.danger,
   },
 });

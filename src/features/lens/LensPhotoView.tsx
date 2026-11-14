@@ -109,13 +109,14 @@ function area(region: LensRegion): number {
 const styles = StyleSheet.create({
   frame: {
     alignItems: 'center',
-    backgroundColor: theme.colors.ink,
+    backgroundColor: theme.colors.surface,
   },
+  // White outlines read on any photo; the selected one is thicker and its badge turns green.
   region: {
     position: 'absolute',
-    borderRadius: theme.radius.md,
+    borderRadius: theme.radius.control,
     borderWidth: theme.sizes.lensRegionBorder,
-    borderColor: theme.colors.onInk,
+    borderColor: theme.colors.onImage,
   },
   regionSelected: {
     borderWidth: theme.sizes.lensRegionBorderSelected,
@@ -127,23 +128,22 @@ const styles = StyleSheet.create({
     left: theme.spacing.xs,
     width: theme.sizes.lensRegionBadge,
     height: theme.sizes.lensRegionBadge,
-    borderRadius: theme.radius.pill,
-    backgroundColor: theme.colors.ink,
+    borderRadius: theme.sizes.lensRegionBadge / 2,
+    backgroundColor: theme.colors.bg,
     borderWidth: 2,
-    borderColor: theme.colors.onInk,
+    borderColor: theme.colors.onImage,
     alignItems: 'center',
     justifyContent: 'center',
   },
   badgeSelected: {
-    backgroundColor: theme.colors.onInk,
-    borderColor: theme.colors.ink,
+    backgroundColor: theme.colors.primary,
   },
   badgeText: {
-    ...theme.typography.captionMedium,
-    color: theme.colors.onInk,
+    ...theme.typography.captionStrong,
+    color: theme.colors.ink,
   },
   badgeTextSelected: {
-    color: theme.colors.ink,
+    color: theme.colors.onPrimary,
   },
   scanning: {
     ...StyleSheet.absoluteFill,
@@ -153,8 +153,8 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   scanningPill: {
-    borderRadius: theme.radius.pill,
-    backgroundColor: theme.colors.surface,
+    borderRadius: theme.radius.control,
+    backgroundColor: theme.colors.bg,
     paddingHorizontal: theme.spacing.lg,
     paddingVertical: theme.spacing.sm,
   },

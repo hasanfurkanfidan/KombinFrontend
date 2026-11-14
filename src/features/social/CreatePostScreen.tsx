@@ -396,13 +396,7 @@ export function CreatePostScreen({ resumePostId }: CreatePostScreenProps) {
   return (
     <Screen scroll padded contentStyle={styles.content}>
       <View style={styles.header}>
-        <IconButton
-          icon="close"
-          label={tr.close}
-          tone="tinted"
-          onPress={close}
-          testID="post-new-close"
-        />
+        <IconButton icon="close" label={tr.close} onPress={close} testID="post-new-close" />
         <Text style={styles.heading}>{tr.postNewTitle}</Text>
       </View>
       {body}
@@ -459,7 +453,7 @@ function DetailsStep({ post, dots, onBack, onPublished }: DetailsStepProps) {
           value={caption}
           onChangeText={setCaption}
           placeholder={tr.publishCaptionPlaceholder}
-          placeholderTextColor={theme.colors.borderStrong}
+          placeholderTextColor={theme.colors.muted}
           maxLength={MAX_CAPTION}
           multiline
           style={styles.captionInput}
@@ -569,21 +563,21 @@ const styles = StyleSheet.create({
     paddingTop: theme.spacing.md,
   },
   heading: {
-    ...theme.typography.headingLarge,
+    ...theme.typography.heading,
     color: theme.colors.ink,
   },
   title: {
-    ...theme.typography.heading,
+    ...theme.typography.subhead,
     color: theme.colors.ink,
   },
   muted: {
     ...theme.typography.body,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
     textAlign: 'center',
   },
   intro: {
     ...theme.typography.body,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
   sources: {
     gap: theme.spacing.md,
@@ -594,11 +588,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: theme.spacing.md,
     paddingHorizontal: theme.spacing.lg,
-    borderRadius: theme.radius.xl,
-    backgroundColor: theme.colors.surfaceAlt,
+    borderRadius: theme.radius.tile,
+    backgroundColor: theme.colors.surface,
   },
   sourceLabel: {
-    ...theme.typography.bodyStrong,
+    ...theme.typography.label,
     color: theme.colors.ink,
   },
   centered: {
@@ -619,16 +613,16 @@ const styles = StyleSheet.create({
   captionInput: {
     minHeight: theme.sizes.captionInputHeight,
     padding: theme.spacing.md,
-    borderRadius: theme.radius.lg,
+    borderRadius: theme.radius.control,
     borderWidth: 1,
-    borderColor: theme.colors.border,
+    borderColor: theme.colors.line,
     textAlignVertical: 'top',
     ...theme.typography.body,
     color: theme.colors.ink,
   },
   counter: {
     ...theme.typography.caption,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
     textAlign: 'right',
   },
   outfitRow: {
@@ -642,6 +636,6 @@ const styles = StyleSheet.create({
   outfitText: {
     flex: 1,
     ...theme.typography.body,
-    color: theme.colors.inkSoft,
+    color: theme.colors.ink2,
   },
 });

@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
   },
   label: {
     ...theme.typography.captionMedium,
-    color: theme.colors.inkSoft,
+    color: theme.colors.ink2,
   },
   pickers: {
     flexDirection: 'row',
@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
     gap: theme.spacing.sm,
   },
   colon: {
-    ...theme.typography.bodyStrong,
-    color: theme.colors.inkMuted,
+    ...theme.typography.label,
+    color: theme.colors.muted,
   },
 });

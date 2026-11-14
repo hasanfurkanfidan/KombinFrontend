@@ -1,21 +1,19 @@
 import type { ReactNode } from 'react';
-import {
-  ActivityIndicator,
-  Pressable,
-  StyleSheet,
-  Text,
-  type StyleProp,
-  type ViewStyle,
-} from 'react-native';
+import { ActivityIndicator, StyleSheet, Text, type StyleProp, type ViewStyle } from 'react-native';
 
 import { theme } from '@/theme';
 
 import { Icon, type IconName } from './Icon';
+import { PressableScale } from './PressableScale';
 
 interface ButtonProps {
   label: string;
   onPress: () => void;
-  variant?: 'primary' | 'secondary';
+  /**
+   * `primary` is the screen's one filled green action; `secondary` is outlined (bg + control border, ink text);
+   * `quiet` is text only, in the link colour.
+   */
+  variant?: 'primary' | 'secondary' | 'quiet';
   loading?: boolean;
   disabled?: boolean;
   trailingIcon?: IconName;
@@ -24,6 +22,12 @@ interface ButtonProps {
   style?: StyleProp<ViewStyle>;
   testID?: string;
 }
+
+const FOREGROUND = {
+  primary: theme.colors.onPrimary,
+  secondary: theme.colors.ink,
+  quiet: theme.colors.primary,
+} as const;
 
 export function Button({
   label,
@@ -36,23 +40,17 @@ export function Button({
   style,
   testID,
 }: ButtonProps) {
-  const primary = variant === 'primary';
   const inactive = disabled || loading;
-  const foreground = primary ? theme.colors.onInk : theme.colors.ink;
+  const foreground = FOREGROUND[variant];
 
   return (
-    <Pressable
+    <PressableScale
       accessibilityRole="button"
       accessibilityState={{ disabled: inactive, busy: loading }}
       disabled={inactive}
       onPress={onPress}
       testID={testID}
-      style={({ pressed }) => [
-        styles.base,
-        primary ? styles.primary : styles.secondary,
-        (pressed || inactive) && styles.dimmed,
-        style,
-      ]}
+      style={[styles.base, styles[variant], disabled && styles.disabled, style]}
     >
       {loading ? (
         <ActivityIndicator color={foreground} />
@@ -65,14 +63,13 @@ export function Button({
           {trailingIcon ? <Icon name={trailingIcon} size={18} color={foreground} /> : null}
         </>
       )}
-    </Pressable>
+    </PressableScale>
   );
 }
 
 const styles = StyleSheet.create({
   base: {
     height: theme.sizes.buttonHeight,
-    borderRadius: theme.radius.lg,
     paddingHorizontal: theme.spacing.xl,
     flexDirection: 'row',
     alignItems: 'center',
@@ -80,17 +77,24 @@ const styles = StyleSheet.create({
     gap: theme.spacing.sm,
   },
   primary: {
-    backgroundColor: theme.colors.ink,
+    backgroundColor: theme.colors.primary,
+    borderRadius: theme.radius.cta,
   },
   secondary: {
-    backgroundColor: theme.colors.surface,
+    backgroundColor: theme.colors.bg,
+    borderRadius: theme.radius.control,
     borderWidth: 1,
-    borderColor: theme.colors.borderStrong,
+    borderColor: theme.colors.control,
   },
-  dimmed: {
-    opacity: 0.6,
+  quiet: {
+    height: theme.sizes.touch,
+    paddingHorizontal: theme.spacing.sm,
+    borderRadius: theme.radius.control,
+  },
+  disabled: {
+    opacity: 0.4,
   },
   label: {
-    ...theme.typography.bodyStrong,
+    ...theme.typography.label,
   },
 });

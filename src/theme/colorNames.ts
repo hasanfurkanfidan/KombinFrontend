@@ -32,7 +32,7 @@ const channel = (hex: string, start: number) => parseInt(hex.slice(start, start 
  */
 export function colorTint(name: ProductColor, alpha = 0.15): string {
   const color = colorNames[name];
-  const base = colors.surfaceAlt;
+  const base = colors.surface;
   const mixed = [1, 3, 5].map((start) =>
     Math.round(channel(color, start) * alpha + channel(base, start) * (1 - alpha)),
   );

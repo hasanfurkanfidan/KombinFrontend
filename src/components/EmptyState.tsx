@@ -36,13 +36,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: theme.spacing.xxl,
   },
   title: {
-    ...theme.typography.heading,
+    ...theme.typography.subhead,
     color: theme.colors.ink,
     textAlign: 'center',
   },
   body: {
     ...theme.typography.body,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
     textAlign: 'center',
   },
   action: {

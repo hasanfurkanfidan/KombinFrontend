@@ -131,7 +131,7 @@ function ProductPicker({
           title={product.name}
           caption={`${product.brand.name} · ${formatTry(toNumber(product.lowestPrice))}`}
           imageUrl={product.primaryImageUrl}
-          tint={theme.colors.surfaceAlt}
+          tint={theme.colors.surface}
           onPress={() =>
             onChoose(dot.key, { kind: 'Product', productId: product.id, name: product.name })
           }
@@ -205,7 +205,7 @@ function PickRow({
         {imageUrl ? (
           <Image source={{ uri: imageUrl }} style={styles.thumbImage} resizeMode="contain" />
         ) : (
-          <Icon name="shirt" size={22} color={theme.colors.borderStrong} strokeWidth={1.4} />
+          <Icon name="shirt" size={22} color={theme.colors.control} strokeWidth={1.4} />
         )}
       </View>
       <View style={styles.rowText}>
@@ -227,12 +227,12 @@ const styles = StyleSheet.create({
   },
   empty: {
     ...theme.typography.body,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
     textAlign: 'center',
   },
   body: {
     ...theme.typography.body,
-    color: theme.colors.inkSoft,
+    color: theme.colors.ink2,
   },
   row: {
     minHeight: theme.sizes.pickerThumb,
@@ -243,7 +243,7 @@ const styles = StyleSheet.create({
   thumb: {
     width: theme.sizes.pickerThumb,
     height: theme.sizes.pickerThumb,
-    borderRadius: theme.radius.md,
+    borderRadius: theme.radius.control,
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
@@ -262,6 +262,6 @@ const styles = StyleSheet.create({
   },
   rowCaption: {
     ...theme.typography.caption,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
 });

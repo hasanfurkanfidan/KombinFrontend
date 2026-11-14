@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Image, StyleSheet, Text, View } from 'react-native';
 
 import type { WardrobeItemSummary } from '@/api/models';
 import { Icon } from '@/components/Icon';
+import { PressableScale } from '@/components/PressableScale';
 import { Shimmer } from '@/components/Shimmer';
 import { tr } from '@/i18n/tr';
 import { theme } from '@/theme';
@@ -47,7 +48,7 @@ export function ItemTile({ item, width, onPress, onRetry }: ItemTileProps) {
 
   return (
     <View style={{ width }}>
-      <Pressable
+      <PressableScale
         accessibilityRole="button"
         accessibilityLabel={item.name ?? tr.wardrobeItemUnnamed}
         disabled={processing}
@@ -66,7 +67,7 @@ export function ItemTile({ item, width, onPress, onRetry }: ItemTileProps) {
             onError={() => setImageFailed(true)}
           />
         ) : (
-          <Icon name="shirt" size={40} color={theme.colors.borderStrong} strokeWidth={1.4} />
+          <Icon name="shirt" size={40} color={theme.colors.control} strokeWidth={1.4} />
         )}
 
         {processing ? (
@@ -86,7 +87,7 @@ export function ItemTile({ item, width, onPress, onRetry }: ItemTileProps) {
             </View>
           </>
         ) : null}
-      </Pressable>
+      </PressableScale>
       {caption ? (
         <Text style={styles.caption} numberOfLines={1} testID={`wardrobe-companions-${item.id}`}>
           {caption}
@@ -104,33 +105,33 @@ export function ItemTile({ item, width, onPress, onRetry }: ItemTileProps) {
 /** The dashed "+" cell that closes the grid. */
 export function AddTile({ width, onPress }: { width: number; onPress: () => void }) {
   return (
-    <Pressable
+    <PressableScale
       accessibilityRole="button"
       accessibilityLabel={tr.wardrobeAddButton}
       onPress={onPress}
       style={[styles.tile, styles.addTile, { width, height: width }]}
       testID="wardrobe-add-tile"
     >
-      <Icon name="plus" size={28} color={theme.colors.inkMuted} />
-    </Pressable>
+      <Icon name="plus" size={28} color={theme.colors.muted} />
+    </PressableScale>
   );
 }
 
 const styles = StyleSheet.create({
   tile: {
-    borderRadius: theme.radius.xl,
+    borderRadius: theme.radius.tile,
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
   },
   caption: {
     ...theme.typography.caption,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
     marginTop: theme.spacing.xs,
   },
   reason: {
     ...theme.typography.caption,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
     marginTop: theme.spacing.xs,
   },
   image: {
@@ -142,22 +143,22 @@ const styles = StyleSheet.create({
   addTile: {
     borderWidth: 1,
     borderStyle: 'dashed',
-    borderColor: theme.colors.borderStrong,
-    backgroundColor: theme.colors.surface,
+    borderColor: theme.colors.control,
+    backgroundColor: theme.colors.bg,
   },
   pill: {
     position: 'absolute',
     left: theme.spacing.sm,
     bottom: theme.spacing.sm,
-    borderRadius: theme.radius.pill,
+    borderRadius: theme.radius.tag,
     paddingHorizontal: theme.spacing.sm,
-    paddingVertical: theme.spacing.xs,
+    paddingVertical: 2,
   },
   pillLight: {
-    backgroundColor: theme.colors.surface,
+    backgroundColor: theme.colors.bg,
   },
   pillWarning: {
-    backgroundColor: theme.colors.warning,
+    backgroundColor: theme.colors.danger,
   },
   pillTextDark: {
     ...theme.typography.captionMedium,
@@ -165,7 +166,7 @@ const styles = StyleSheet.create({
   },
   pillTextLight: {
     ...theme.typography.captionMedium,
-    color: theme.colors.onInk,
+    color: theme.colors.onDanger,
   },
   failedBadge: {
     position: 'absolute',
@@ -173,13 +174,13 @@ const styles = StyleSheet.create({
     right: theme.spacing.sm,
     width: theme.sizes.statusBadge,
     height: theme.sizes.statusBadge,
-    borderRadius: theme.radius.pill,
-    backgroundColor: theme.colors.warning,
+    borderRadius: theme.sizes.statusBadge / 2,
+    backgroundColor: theme.colors.danger,
     alignItems: 'center',
     justifyContent: 'center',
   },
   failedMark: {
-    ...theme.typography.bodyStrong,
-    color: theme.colors.onInk,
+    ...theme.typography.label,
+    color: theme.colors.onDanger,
   },
 });

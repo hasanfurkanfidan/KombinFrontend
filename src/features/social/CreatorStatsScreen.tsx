@@ -3,6 +3,7 @@ import { useRouter } from 'expo-router';
 
 import { ApiError } from '@/api/client';
 import type { CreatorStats } from '@/api/models';
+import { Card } from '@/components/Card';
 import { ErrorState } from '@/components/ErrorState';
 import { Icon } from '@/components/Icon';
 import { Screen } from '@/components/Screen';
@@ -35,7 +36,7 @@ export function CreatorStatsScreen() {
         />
       ) : (
         <View style={styles.skeleton} testID="stats-skeleton">
-          <Skeleton height={theme.sizes.postThumbHeight} radius={theme.radius.xl} />
+          <Skeleton height={theme.sizes.postThumbHeight} radius={theme.radius.tile} />
         </View>
       )}
     </Screen>
@@ -48,13 +49,13 @@ function StatsBody({ stats }: { stats: CreatorStats }) {
 
   return (
     <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-      <View style={styles.hero} testID="stats-estimate">
+      <Card style={styles.hero} testID="stats-estimate">
         <Text style={styles.heroLabel}>{tr.creatorDays(toNumber(stats.days))}</Text>
         <Text style={styles.heroAmount}>{formatTry(estimate.amount)}</Text>
         <View style={styles.estimateChip}>
           <Text style={styles.estimateText}>{tr.creatorEstimated}</Text>
         </View>
-      </View>
+      </Card>
       <Text style={styles.note}>
         {tr.creatorHow(
           toNumber(estimate.clicks),
@@ -91,18 +92,13 @@ function StatsBody({ stats }: { stats: CreatorStats }) {
                     resizeMode="cover"
                   />
                 ) : (
-                  <Icon
-                    name="shirt"
-                    size={22}
-                    color={theme.colors.borderStrong}
-                    strokeWidth={1.4}
-                  />
+                  <Icon name="shirt" size={22} color={theme.colors.control} strokeWidth={1.4} />
                 )}
               </View>
               <Text style={styles.topPostText}>
                 {tr.creatorTopPostStats(toNumber(post.clicks), toNumber(post.likeCount))}
               </Text>
-              <Icon name="chevronRight" size={18} color={theme.colors.inkMuted} />
+              <Icon name="chevronRight" size={18} color={theme.colors.muted} />
             </Pressable>
           ))}
         </>
@@ -131,24 +127,23 @@ const styles = StyleSheet.create({
   },
   hero: {
     gap: theme.spacing.xs,
-    padding: theme.spacing.xl,
-    borderRadius: theme.radius.xl,
-    backgroundColor: theme.colors.ink,
   },
   heroLabel: {
     ...theme.typography.caption,
-    color: theme.colors.onInk,
+    color: theme.colors.ink2,
   },
   heroAmount: {
     ...theme.typography.display,
-    color: theme.colors.onInk,
+    fontFamily: theme.fontFamilies.numeric,
+    fontVariant: ['tabular-nums'],
+    color: theme.colors.ink,
   },
   estimateChip: {
     alignSelf: 'flex-start',
-    paddingHorizontal: theme.spacing.md,
-    paddingVertical: theme.spacing.xs,
-    borderRadius: theme.radius.pill,
-    backgroundColor: theme.colors.surface,
+    paddingHorizontal: theme.spacing.sm,
+    paddingVertical: 2,
+    borderRadius: theme.radius.tag,
+    backgroundColor: theme.colors.bg,
   },
   estimateText: {
     ...theme.typography.captionMedium,
@@ -156,7 +151,7 @@ const styles = StyleSheet.create({
   },
   note: {
     ...theme.typography.caption,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
   counters: {
     flexDirection: 'row',
@@ -166,19 +161,20 @@ const styles = StyleSheet.create({
     flex: 1,
     gap: 2,
     padding: theme.spacing.md,
-    borderRadius: theme.radius.lg,
-    backgroundColor: theme.colors.surfaceAlt,
+    borderRadius: theme.radius.control,
+    backgroundColor: theme.colors.surface,
   },
   counterValue: {
-    ...theme.typography.bodyStrong,
+    ...theme.typography.label,
+    fontVariant: ['tabular-nums'],
     color: theme.colors.ink,
   },
   counterLabel: {
     ...theme.typography.caption,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
   section: {
-    ...theme.typography.heading,
+    ...theme.typography.subhead,
     color: theme.colors.ink,
   },
   topPost: {
@@ -190,8 +186,8 @@ const styles = StyleSheet.create({
   thumb: {
     width: theme.sizes.postThumbWidth,
     height: theme.sizes.postThumbHeight,
-    borderRadius: theme.radius.md,
-    backgroundColor: theme.colors.surfaceAlt,
+    borderRadius: theme.radius.control,
+    backgroundColor: theme.colors.surface,
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',

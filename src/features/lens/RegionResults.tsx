@@ -71,7 +71,7 @@ export function RegionResults({
                     resizeMode="cover"
                   />
                 ) : (
-                  <Icon name="shirt" size={24} color={theme.colors.borderStrong} />
+                  <Icon name="shirt" size={24} color={theme.colors.control} />
                 )}
               </Pressable>
             ))}
@@ -130,7 +130,7 @@ function ResultCard({ result, onPress }: { result: LensResult; onPress: () => vo
             onError={() => setImageFailed(true)}
           />
         ) : (
-          <Icon name="shirt" size={32} color={theme.colors.borderStrong} />
+          <Icon name="shirt" size={32} color={theme.colors.control} />
         )}
         <View style={[styles.level, result.level === 'close' && styles.levelClose]}>
           <Text style={[styles.levelText, result.level === 'close' && styles.levelTextClose]}>
@@ -165,32 +165,32 @@ const styles = StyleSheet.create({
   number: {
     width: theme.sizes.lensRegionBadge,
     height: theme.sizes.lensRegionBadge,
-    borderRadius: theme.radius.pill,
-    backgroundColor: theme.colors.ink,
+    borderRadius: theme.sizes.lensRegionBadge / 2,
+    backgroundColor: theme.colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
   },
   numberText: {
-    ...theme.typography.captionMedium,
-    color: theme.colors.onInk,
+    ...theme.typography.captionStrong,
+    color: theme.colors.onPrimary,
   },
   headingText: {
     flex: 1,
     gap: 2,
   },
   title: {
-    ...theme.typography.heading,
+    ...theme.typography.subhead,
     color: theme.colors.ink,
   },
   subtitle: {
     ...theme.typography.caption,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
   owned: {
     gap: theme.spacing.sm,
   },
   ownedTitle: {
-    ...theme.typography.bodyStrong,
+    ...theme.typography.label,
     color: theme.colors.ink,
     paddingHorizontal: theme.screenPaddingX,
   },
@@ -201,8 +201,8 @@ const styles = StyleSheet.create({
   ownedThumb: {
     width: theme.sizes.lensWardrobeThumb,
     height: theme.sizes.lensWardrobeThumb,
-    borderRadius: theme.radius.md,
-    backgroundColor: theme.colors.surfaceAlt,
+    borderRadius: theme.radius.control,
+    backgroundColor: theme.colors.surface,
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
@@ -213,7 +213,7 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     ...theme.typography.body,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
   rail: {
     gap: theme.spacing.md,
@@ -225,8 +225,8 @@ const styles = StyleSheet.create({
   },
   cardImage: {
     height: theme.sizes.lensRailImageHeight,
-    borderRadius: theme.radius.lg,
-    backgroundColor: theme.colors.surfaceAlt,
+    borderRadius: theme.radius.control,
+    backgroundColor: theme.colors.surface,
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
@@ -236,35 +236,38 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: theme.spacing.sm,
     left: theme.spacing.sm,
-    borderRadius: theme.radius.pill,
-    backgroundColor: theme.colors.surface,
+    borderRadius: theme.radius.tag,
+    borderWidth: 1,
+    borderColor: theme.colors.line,
+    backgroundColor: theme.colors.bg,
     paddingHorizontal: theme.spacing.sm,
     paddingVertical: 2,
   },
   levelClose: {
-    backgroundColor: theme.colors.ink,
+    borderColor: theme.colors.ink,
   },
   levelText: {
     ...theme.typography.captionMedium,
-    color: theme.colors.ink,
+    color: theme.colors.ink2,
   },
   levelTextClose: {
-    color: theme.colors.onInk,
+    fontFamily: theme.fontFamilies.semibold,
+    color: theme.colors.ink,
   },
   cardBrand: {
     ...theme.typography.caption,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
   cardName: {
     ...theme.typography.bodyMedium,
     color: theme.colors.ink,
   },
   cardPrice: {
-    ...theme.typography.bodyStrong,
+    ...theme.typography.price,
     color: theme.colors.ink,
   },
   cardSeller: {
     ...theme.typography.caption,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
 });

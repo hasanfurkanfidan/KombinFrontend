@@ -40,7 +40,8 @@ export const NotificationRow = memo(function NotificationRow({
 }: NotificationRowProps) {
   const unread = notification.readAt === null;
   const priceDrop = notification.kind === 'PriceDrop';
-  const iconColor = unread ? theme.colors.onInk : theme.colors.ink;
+  // A price drop is Kombin's signal (chalk); everything else is ink, filled or not by read state.
+  const iconColor = priceDrop && unread ? theme.colors.chalkInk : theme.colors.ink;
 
   return (
     <Pressable
@@ -77,48 +78,48 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: theme.spacing.md,
     padding: theme.spacing.lg,
-    borderRadius: theme.radius.xl,
+    borderRadius: theme.radius.tile,
   },
   cardUnread: {
-    backgroundColor: theme.colors.surfaceAlt,
+    backgroundColor: theme.colors.surface,
   },
   cardPrice: {
-    backgroundColor: theme.colors.accentSoft,
+    backgroundColor: theme.colors.surface,
   },
   cardRead: {
-    borderWidth: 1,
-    borderColor: theme.colors.border,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: theme.colors.line,
   },
   iconBox: {
     width: theme.sizes.notificationIcon,
     height: theme.sizes.notificationIcon,
-    borderRadius: theme.radius.md,
+    borderRadius: theme.radius.control,
     alignItems: 'center',
     justifyContent: 'center',
   },
   iconUnread: {
-    backgroundColor: theme.colors.ink,
+    backgroundColor: theme.colors.bg,
   },
   iconPrice: {
-    backgroundColor: theme.colors.accent,
+    backgroundColor: theme.colors.chalk,
   },
   iconRead: {
-    backgroundColor: theme.colors.surfaceAlt,
+    backgroundColor: theme.colors.surface,
   },
   text: {
     flex: 1,
     gap: theme.spacing.xs,
   },
   title: {
-    ...theme.typography.bodyStrong,
+    ...theme.typography.label,
     color: theme.colors.ink,
   },
   body: {
     ...theme.typography.body,
-    color: theme.colors.inkSoft,
+    color: theme.colors.ink2,
   },
   meta: {
     ...theme.typography.caption,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
 });

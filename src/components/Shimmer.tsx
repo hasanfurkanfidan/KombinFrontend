@@ -52,7 +52,7 @@ export function Shimmer() {
 const styles = StyleSheet.create({
   band: {
     height: '100%',
-    backgroundColor: theme.colors.surface,
+    backgroundColor: theme.colors.bg,
     opacity: 0.55,
   },
 });

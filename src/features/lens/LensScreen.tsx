@@ -203,7 +203,7 @@ export function LensScreen({ entry }: LensScreenProps) {
                 testID="lens-audience"
               >
                 <Text style={styles.audienceText}>{audienceLabels[audience]}</Text>
-                <Icon name="close" size={14} color={theme.colors.onInk} />
+                <Icon name="close" size={14} color={theme.colors.primary} />
               </Pressable>
             </View>
           ) : null}
@@ -286,7 +286,7 @@ function Capture({ onChoose }: { onChoose: (source: LensSource) => void }) {
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: theme.colors.surface,
+    backgroundColor: theme.colors.bg,
   },
   header: {
     flexDirection: 'row',
@@ -296,7 +296,7 @@ const styles = StyleSheet.create({
     paddingVertical: theme.spacing.sm,
   },
   title: {
-    ...theme.typography.heading,
+    ...theme.typography.subhead,
     color: theme.colors.ink,
     flex: 1,
   },
@@ -327,7 +327,7 @@ const styles = StyleSheet.create({
   },
   captureHint: {
     ...theme.typography.body,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
     textAlign: 'center',
   },
   results: {
@@ -339,24 +339,27 @@ const styles = StyleSheet.create({
     paddingHorizontal: theme.screenPaddingX,
   },
   audienceChip: {
+    // The selected-chip look: the audience is a filter the user can drop.
     height: theme.sizes.chipHeight,
-    borderRadius: theme.radius.pill,
-    paddingHorizontal: theme.spacing.lg,
+    borderRadius: theme.radius.control,
+    borderWidth: 1,
+    borderColor: theme.colors.primary,
+    paddingHorizontal: theme.spacing.md,
     flexDirection: 'row',
     alignItems: 'center',
     gap: theme.spacing.xs,
-    backgroundColor: theme.colors.ink,
+    backgroundColor: theme.colors.primarySoft,
   },
   audienceText: {
     ...theme.typography.bodyMedium,
-    color: theme.colors.onInk,
+    color: theme.colors.primary,
   },
   noRegion: {
     paddingHorizontal: theme.screenPaddingX,
   },
   noRegionText: {
     ...theme.typography.body,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
   bar: {
     position: 'absolute',
@@ -365,8 +368,8 @@ const styles = StyleSheet.create({
     bottom: 0,
     paddingHorizontal: theme.screenPaddingX,
     paddingTop: theme.spacing.md,
-    backgroundColor: theme.colors.surface,
+    backgroundColor: theme.colors.bg,
     borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: theme.colors.border,
+    borderTopColor: theme.colors.line,
   },
 });

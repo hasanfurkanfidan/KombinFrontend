@@ -192,8 +192,8 @@ function ProfileCard({ profile, disclosure }: { profile: UserProfile; disclosure
 function ProfileSkeleton() {
   return (
     <View style={styles.card} testID="profile-skeleton">
-      <Skeleton height={theme.sizes.avatar} width="60%" radius={theme.radius.pill} />
-      <Skeleton height={16} width="80%" radius={theme.radius.sm} />
+      <Skeleton height={theme.sizes.avatar} width="60%" radius={theme.radius.control} />
+      <Skeleton height={16} width="80%" radius={theme.radius.tag} />
     </View>
   );
 }
@@ -212,35 +212,34 @@ const styles = StyleSheet.create({
   avatar: {
     width: theme.sizes.avatar,
     height: theme.sizes.avatar,
-    borderRadius: theme.radius.pill,
-    backgroundColor: theme.colors.ink,
+    borderRadius: theme.sizes.avatar / 2,
+    backgroundColor: theme.colors.surface,
     alignItems: 'center',
     justifyContent: 'center',
   },
   avatarText: {
-    ...theme.typography.headingLarge,
-    color: theme.colors.onInk,
+    ...theme.typography.heading,
+    color: theme.colors.ink,
   },
   identityText: {
     flex: 1,
     gap: 2,
   },
   name: {
-    ...theme.typography.headingLarge,
+    ...theme.typography.heading,
     color: theme.colors.ink,
   },
   handle: {
     ...theme.typography.caption,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
   bio: {
     ...theme.typography.body,
-    color: theme.colors.inkSoft,
+    color: theme.colors.ink2,
   },
   link: {
-    ...theme.typography.bodyMedium,
-    color: theme.colors.ink,
-    textDecorationLine: 'underline',
+    ...theme.typography.label,
+    color: theme.colors.primary,
   },
   counters: {
     flexDirection: 'row',
@@ -249,10 +248,10 @@ const styles = StyleSheet.create({
   },
   counter: {
     ...theme.typography.captionMedium,
-    color: theme.colors.inkSoft,
+    color: theme.colors.ink2,
   },
   disclosure: {
     ...theme.typography.caption,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
 });

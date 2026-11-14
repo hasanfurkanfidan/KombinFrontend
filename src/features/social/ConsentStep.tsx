@@ -37,11 +37,11 @@ const styles = StyleSheet.create({
     gap: theme.spacing.lg,
   },
   title: {
-    ...theme.typography.display,
+    ...theme.typography.title,
     color: theme.colors.ink,
   },
   text: {
     ...theme.typography.body,
-    color: theme.colors.inkSoft,
+    color: theme.colors.ink2,
   },
 });

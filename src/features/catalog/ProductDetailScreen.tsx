@@ -137,7 +137,7 @@ export function ProductDetailScreen({ id, source = 'direct' }: ProductDetailScre
                 <Text style={styles.howToWearTitle}>{tr.productHowToWear}</Text>
                 <Text style={styles.howToWearCaption}>{tr.productHowToWearCaption}</Text>
               </View>
-              <Icon name="chevronRight" size={20} color={theme.colors.inkMuted} />
+              <Icon name="chevronRight" size={20} color={theme.colors.muted} />
             </Pressable>
             <View style={styles.offers}>
               <Text style={styles.offersTitle}>
@@ -164,12 +164,19 @@ export function ProductDetailScreen({ id, source = 'direct' }: ProductDetailScre
       )}
 
       <View style={[styles.topBar, { top: insets.top + theme.spacing.sm }]}>
-        <IconButton icon="arrowLeft" label={tr.back} onPress={goBack} testID="detail-back" />
+        <IconButton
+          icon="arrowLeft"
+          label={tr.back}
+          onPress={goBack}
+          tone="onImage"
+          testID="detail-back"
+        />
         {product.data ? (
           <IconButton
             icon="bell"
             label={hasAlert ? tr.productAlertActive : tr.productAlertBell}
             filled={hasAlert}
+            tone="onImage"
             onPress={() => requireSignIn(() => setAlertOpen(true))}
             testID="detail-bell"
           />
@@ -235,9 +242,9 @@ function MatchPill({ score }: { score: Product['matchScore'] }) {
     return null;
   }
   return (
-    <View style={styles.matchPill} testID="detail-match">
-      <Text style={styles.matchText}>{tr.productMatch(value)}</Text>
-    </View>
+    <Text style={styles.matchText} testID="detail-match">
+      {tr.productMatch(value)}
+    </Text>
   );
 }
 
@@ -292,7 +299,7 @@ function ProductImages({ product }: { product: Product }) {
     <View style={styles.imageArea}>
       {images.length === 0 ? (
         <View style={[styles.imagePlaceholder, { width }]}>
-          <Icon name="shirt" size={72} color={theme.colors.borderStrong} strokeWidth={1.2} />
+          <Icon name="shirt" size={72} color={theme.colors.control} strokeWidth={1.2} />
         </View>
       ) : (
         <FlatList
@@ -332,14 +339,14 @@ function DetailSkeleton() {
     <View>
       <Skeleton height={theme.sizes.detailImageHeight} radius={0} />
       <View style={styles.body}>
-        <Skeleton height={14} width="25%" radius={theme.radius.sm} />
-        <Skeleton height={26} width="80%" radius={theme.radius.sm} />
+        <Skeleton height={14} width="25%" radius={theme.radius.tag} />
+        <Skeleton height={26} width="80%" radius={theme.radius.tag} />
         <View style={styles.skeletonCards}>
-          <Skeleton height={96} radius={theme.radius.lg} style={styles.skeletonCard} />
-          <Skeleton height={96} radius={theme.radius.lg} style={styles.skeletonCard} />
+          <Skeleton height={96} radius={theme.radius.tile} style={styles.skeletonCard} />
+          <Skeleton height={96} radius={theme.radius.tile} style={styles.skeletonCard} />
         </View>
-        <Skeleton height={64} radius={theme.radius.lg} />
-        <Skeleton height={64} radius={theme.radius.lg} />
+        <Skeleton height={64} radius={theme.radius.tile} />
+        <Skeleton height={64} radius={theme.radius.tile} />
       </View>
     </View>
   );
@@ -348,7 +355,7 @@ function DetailSkeleton() {
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: theme.colors.surface,
+    backgroundColor: theme.colors.bg,
   },
   errorWrap: {
     flex: 1,
@@ -364,7 +371,7 @@ const styles = StyleSheet.create({
   },
   imageArea: {
     height: theme.sizes.detailImageHeight,
-    backgroundColor: theme.colors.surfaceAlt,
+    backgroundColor: theme.colors.surface,
   },
   imagePlaceholder: {
     height: theme.sizes.detailImageHeight,
@@ -379,13 +386,13 @@ const styles = StyleSheet.create({
     gap: theme.spacing.xs,
   },
   dot: {
-    width: 6,
-    height: 6,
-    borderRadius: theme.radius.pill,
-    backgroundColor: theme.colors.borderStrong,
+    width: theme.sizes.carouselDot,
+    height: theme.sizes.carouselDot,
+    borderRadius: theme.sizes.carouselDot / 2,
+    backgroundColor: theme.colors.control,
   },
   dotActive: {
-    width: 18,
+    width: theme.sizes.carouselDotActive,
     backgroundColor: theme.colors.ink,
   },
   body: {
@@ -410,17 +417,11 @@ const styles = StyleSheet.create({
   },
   brand: {
     ...theme.typography.caption,
-    color: theme.colors.inkMuted,
-  },
-  matchPill: {
-    backgroundColor: theme.colors.surfaceAlt,
-    borderRadius: theme.radius.pill,
-    paddingHorizontal: theme.spacing.sm,
-    paddingVertical: 2,
+    color: theme.colors.muted,
   },
   matchText: {
-    ...theme.typography.captionMedium,
-    color: theme.colors.ink,
+    ...theme.typography.match,
+    color: theme.colors.primary,
   },
   sizeSlot: {
     alignItems: 'flex-end',
@@ -428,32 +429,31 @@ const styles = StyleSheet.create({
   },
   sizeCaption: {
     ...theme.typography.caption,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
   sizePill: {
     minWidth: 36,
     height: 36,
     paddingHorizontal: theme.spacing.sm,
-    borderRadius: theme.radius.md,
+    borderRadius: theme.radius.control,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: theme.colors.ink,
+    backgroundColor: theme.colors.primarySoft,
   },
   sizePillText: {
-    ...theme.typography.bodyStrong,
-    color: theme.colors.onInk,
+    ...theme.typography.label,
+    color: theme.colors.primary,
   },
   sizeGuess: {
-    ...theme.typography.bodyStrong,
+    ...theme.typography.label,
     color: theme.colors.ink,
   },
   sizeLink: {
-    ...theme.typography.captionMedium,
-    color: theme.colors.ink,
-    textDecorationLine: 'underline',
+    ...theme.typography.captionStrong,
+    color: theme.colors.primary,
   },
   name: {
-    ...theme.typography.headingLarge,
+    ...theme.typography.heading,
     color: theme.colors.ink,
   },
   howToWear: {
@@ -462,41 +462,41 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: theme.spacing.md,
     padding: theme.spacing.lg,
-    borderRadius: theme.radius.lg,
-    backgroundColor: theme.colors.surfaceAlt,
+    borderRadius: theme.radius.tile,
+    backgroundColor: theme.colors.surface,
   },
   howToWearText: {
     flex: 1,
     gap: 2,
   },
   howToWearTitle: {
-    ...theme.typography.bodyStrong,
+    ...theme.typography.label,
     color: theme.colors.ink,
   },
   howToWearCaption: {
     ...theme.typography.caption,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
   offers: {
     gap: theme.spacing.md,
   },
   offersTitle: {
-    ...theme.typography.bodyMedium,
-    color: theme.colors.inkSoft,
+    ...theme.typography.subhead,
+    color: theme.colors.ink,
   },
   noOffers: {
     ...theme.typography.body,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
   offerList: {
-    borderWidth: 1,
-    borderColor: theme.colors.border,
-    borderRadius: theme.radius.lg,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: theme.colors.line,
+    borderRadius: theme.radius.tile,
     overflow: 'hidden',
   },
   offerDivider: {
-    borderTopWidth: 1,
-    borderTopColor: theme.colors.border,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: theme.colors.line,
   },
   bar: {
     position: 'absolute',
@@ -507,9 +507,9 @@ const styles = StyleSheet.create({
     gap: theme.spacing.md,
     paddingTop: BAR_PADDING,
     paddingHorizontal: theme.screenPaddingX,
-    backgroundColor: theme.colors.surface,
-    borderTopWidth: 1,
-    borderTopColor: theme.colors.border,
+    backgroundColor: theme.colors.bg,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: theme.colors.line,
   },
   buyButton: {
     flex: 1,

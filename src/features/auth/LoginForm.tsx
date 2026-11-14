@@ -107,6 +107,6 @@ const styles = StyleSheet.create({
   },
   formError: {
     ...theme.typography.bodyMedium,
-    color: theme.colors.warning,
+    color: theme.colors.danger,
   },
 });

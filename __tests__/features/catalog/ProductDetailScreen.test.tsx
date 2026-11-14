@@ -26,7 +26,7 @@ describe('ProductDetailScreen', () => {
 
     expect(await screen.findByText('Yün karışımlı blazer, koyu yeşil')).toBeTruthy();
     expect(screen.getByText('Mavi')).toBeTruthy();
-    expect(screen.getByText('EN DÜŞÜK FİYAT')).toBeTruthy();
+    expect(screen.getByText('En düşük fiyat')).toBeTruthy();
     expect(screen.getByTestId('lowest-price').props.children).toBe('2.149 ₺');
     expect(screen.getByText('Son 90 günün en ucuzu')).toBeTruthy();
     expect(screen.getByText('3 satıcıda bulundu')).toBeTruthy();

@@ -86,8 +86,9 @@ export function ExternalSignInButtons({ onSuccess }: ExternalSignInButtonsProps)
         {apple ? (
           <apple.AppleAuthenticationButton
             buttonType={apple.AppleAuthenticationButtonType.CONTINUE}
-            buttonStyle={apple.AppleAuthenticationButtonStyle.BLACK}
-            cornerRadius={theme.radius.lg}
+            // Apple's outlined style: the app has no black buttons, and the HIG allows white-outline.
+            buttonStyle={apple.AppleAuthenticationButtonStyle.WHITE_OUTLINE}
+            cornerRadius={theme.radius.control}
             onPress={() => void run('apple')}
             style={[styles.appleButton, busy !== null && styles.dimmed]}
           />
@@ -115,7 +116,7 @@ const styles = StyleSheet.create({
     gap: theme.spacing.md,
   },
   googleMark: {
-    ...theme.typography.bodyStrong,
+    ...theme.typography.label,
     color: theme.colors.ink,
   },
   appleButton: {
@@ -127,7 +128,7 @@ const styles = StyleSheet.create({
   },
   error: {
     ...theme.typography.bodyMedium,
-    color: theme.colors.warning,
+    color: theme.colors.danger,
   },
   divider: {
     flexDirection: 'row',
@@ -137,10 +138,10 @@ const styles = StyleSheet.create({
   rule: {
     flex: 1,
     height: 1,
-    backgroundColor: theme.colors.border,
+    backgroundColor: theme.colors.line,
   },
   dividerLabel: {
     ...theme.typography.body,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
 });

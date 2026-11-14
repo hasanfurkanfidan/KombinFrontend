@@ -5,5 +5,5 @@ import { theme } from '@/theme';
 export function swatchColor(name: string): string {
   return Object.hasOwn(theme.colorNames, name)
     ? theme.colorNames[name as ProductColor]
-    : theme.colors.borderStrong;
+    : theme.colors.control;
 }

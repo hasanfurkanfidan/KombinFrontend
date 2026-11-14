@@ -13,7 +13,7 @@ interface SkeletonProps {
 export function Skeleton({
   width = '100%',
   height,
-  radius = theme.radius.md,
+  radius = theme.radius.control,
   style,
 }: SkeletonProps) {
   const [opacity] = useState(() => new Animated.Value(0.55));
@@ -34,7 +34,7 @@ export function Skeleton({
       accessibilityElementsHidden
       importantForAccessibility="no-hide-descendants"
       style={[
-        { width, height, borderRadius: radius, backgroundColor: theme.colors.surfaceAlt2, opacity },
+        { width, height, borderRadius: radius, backgroundColor: theme.colors.surface, opacity },
         style,
       ]}
     />

@@ -17,7 +17,6 @@ export function NotificationBell() {
       <IconButton
         icon="bell"
         label={tr.notifBellLabel(unread)}
-        tone="tinted"
         onPress={() => router.push('/notifications')}
         testID="notification-bell"
       />
@@ -38,16 +37,17 @@ const styles = StyleSheet.create({
     minWidth: theme.sizes.badge,
     height: theme.sizes.badge,
     paddingHorizontal: theme.spacing.xs,
-    borderRadius: theme.radius.pill,
-    backgroundColor: theme.colors.ink,
+    borderRadius: theme.sizes.badge / 2,
+    backgroundColor: theme.colors.chalk,
     borderWidth: 2,
-    borderColor: theme.colors.surface,
+    borderColor: theme.colors.bg,
     alignItems: 'center',
     justifyContent: 'center',
   },
   badgeText: {
-    ...theme.typography.overline,
-    letterSpacing: 0,
-    color: theme.colors.onInk,
+    ...theme.typography.tab,
+    fontFamily: theme.fontFamilies.semibold,
+    fontVariant: ['tabular-nums'],
+    color: theme.colors.chalkInk,
   },
 });

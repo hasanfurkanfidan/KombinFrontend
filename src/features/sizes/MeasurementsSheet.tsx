@@ -128,6 +128,6 @@ export function MeasurementsSheet({ visible, onClose, profile }: MeasurementsShe
 const styles = StyleSheet.create({
   error: {
     ...theme.typography.caption,
-    color: theme.colors.warning,
+    color: theme.colors.danger,
   },
 });

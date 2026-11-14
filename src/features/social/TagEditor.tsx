@@ -264,7 +264,7 @@ function DotRow({ dot, index, selected, onPick, onConfirmSuggestion, onRemove }:
           {choice === null ? (
             <Text style={styles.badgeText}>{index + 1}</Text>
           ) : (
-            <Icon name="check" size={14} color={theme.colors.onInk} />
+            <Icon name="check" size={14} color={theme.colors.onPrimary} />
           )}
         </View>
         <View style={styles.rowText}>
@@ -317,13 +317,13 @@ const styles = StyleSheet.create({
   },
   hint: {
     ...theme.typography.body,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
   photo: {
     width: '100%',
-    borderRadius: theme.radius.xl,
+    borderRadius: theme.radius.tile,
     overflow: 'hidden',
-    backgroundColor: theme.colors.surfaceAlt,
+    backgroundColor: theme.colors.surface,
   },
   fill: {
     ...StyleSheet.absoluteFill,
@@ -332,24 +332,25 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: theme.sizes.tagDot,
     height: theme.sizes.tagDot,
-    borderRadius: theme.radius.pill,
-    backgroundColor: theme.colors.ink,
+    borderRadius: theme.sizes.tagDot / 2,
+    backgroundColor: theme.colors.primary,
     borderWidth: 2,
-    borderColor: theme.colors.surface,
+    borderColor: theme.colors.bg,
     alignItems: 'center',
     justifyContent: 'center',
   },
+  // An unconfirmed proposal is Kombin pointing at something: chalk, dashed, until the author names it.
   dotPending: {
-    backgroundColor: theme.colors.surface,
-    borderColor: theme.colors.ink,
+    backgroundColor: theme.colors.chalk,
+    borderColor: theme.colors.chalkLine,
     borderStyle: 'dashed',
   },
   dotSelected: {
-    borderColor: theme.colors.accent,
+    borderColor: theme.colors.ink,
   },
   dotNumber: {
-    ...theme.typography.overline,
-    color: theme.colors.inkSoft,
+    ...theme.typography.captionStrong,
+    color: theme.colors.chalkInk,
   },
   rows: {
     gap: theme.spacing.md,
@@ -357,12 +358,12 @@ const styles = StyleSheet.create({
   row: {
     gap: theme.spacing.sm,
     padding: theme.spacing.md,
-    borderRadius: theme.radius.xl,
+    borderRadius: theme.radius.tile,
     borderWidth: 1,
-    borderColor: theme.colors.border,
+    borderColor: theme.colors.line,
   },
   rowSelected: {
-    borderColor: theme.colors.ink,
+    borderColor: theme.colors.primary,
   },
   rowHead: {
     flexDirection: 'row',
@@ -372,33 +373,33 @@ const styles = StyleSheet.create({
   badge: {
     width: theme.sizes.statusBadge,
     height: theme.sizes.statusBadge,
-    borderRadius: theme.radius.pill,
-    backgroundColor: theme.colors.ink,
+    borderRadius: theme.sizes.statusBadge / 2,
+    backgroundColor: theme.colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
   },
   badgePending: {
-    backgroundColor: theme.colors.surfaceAlt2,
+    backgroundColor: theme.colors.chalk,
   },
   badgeText: {
-    ...theme.typography.overline,
-    color: theme.colors.inkSoft,
+    ...theme.typography.captionStrong,
+    color: theme.colors.chalkInk,
   },
   rowText: {
     flex: 1,
     gap: 2,
   },
   rowTitle: {
-    ...theme.typography.bodyStrong,
+    ...theme.typography.label,
     color: theme.colors.ink,
   },
   rowPending: {
     ...theme.typography.caption,
-    color: theme.colors.warning,
+    color: theme.colors.danger,
   },
   rowChosen: {
     ...theme.typography.caption,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
   remove: {
     width: theme.sizes.touch,
@@ -413,7 +414,7 @@ const styles = StyleSheet.create({
   },
   pending: {
     ...theme.typography.captionMedium,
-    color: theme.colors.warning,
+    color: theme.colors.danger,
     textAlign: 'center',
   },
 });

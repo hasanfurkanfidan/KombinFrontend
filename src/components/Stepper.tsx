@@ -82,8 +82,8 @@ const styles = StyleSheet.create({
   button: {
     width: theme.sizes.touch,
     height: theme.sizes.touch,
-    borderRadius: theme.radius.pill,
-    backgroundColor: theme.colors.surfaceAlt,
+    borderRadius: theme.radius.control,
+    backgroundColor: theme.colors.surface,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -91,7 +91,8 @@ const styles = StyleSheet.create({
     opacity: 0.4,
   },
   value: {
-    ...theme.typography.bodyStrong,
+    ...theme.typography.label,
+    fontVariant: ['tabular-nums'],
     color: theme.colors.ink,
     minWidth: 28,
     textAlign: 'center',

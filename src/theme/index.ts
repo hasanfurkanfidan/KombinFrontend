@@ -1,5 +1,5 @@
 import { colorNames } from './colorNames';
-import { colors, radius, shadows, sizes } from './tokens';
+import { colors, motion, radius, sizes } from './tokens';
 import { gridGap, screenPaddingX, spacing } from './spacing';
 import { fontFamilies, typography } from './typography';
 
@@ -8,7 +8,7 @@ export const theme = {
   colorNames,
   radius,
   sizes,
-  shadows,
+  motion,
   spacing,
   screenPaddingX,
   gridGap,

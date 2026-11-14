@@ -148,11 +148,11 @@ function SizeForm({ onClose, initial }: Pick<SizeSheetProps, 'onClose' | 'initia
 const styles = StyleSheet.create({
   label: {
     ...theme.typography.captionMedium,
-    color: theme.colors.inkSoft,
+    color: theme.colors.ink2,
   },
   hint: {
     ...theme.typography.caption,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
   selectedBrand: {
     gap: theme.spacing.sm,
@@ -165,7 +165,7 @@ const styles = StyleSheet.create({
     minHeight: theme.sizes.touch,
     justifyContent: 'center',
     borderBottomWidth: 1,
-    borderBottomColor: theme.colors.border,
+    borderBottomColor: theme.colors.line,
   },
   brandName: {
     ...theme.typography.bodyMedium,

@@ -57,22 +57,48 @@ export function PostCard({ post }: PostCardProps) {
 
   return (
     <View style={styles.card} testID={`post-${post.id}`}>
-      <View style={styles.authorRow}>
-        <Pressable
-          accessibilityRole="button"
-          onPress={openAuthor}
-          style={styles.author}
-          testID="post-author"
-        >
-          <View style={styles.avatar}>
-            <Text style={styles.avatarText}>{initialOf(post.author.displayName)}</Text>
-          </View>
-          {/* Three short lines, none of which has to truncate at 390 px: the name; the "Kreatör" chip and the handle;
-              then "Sana uygun %N" on its own. */}
-          <View style={styles.authorText}>
+      {/* The name shares its row with follow and the menu; the "Kreatör" chip with the handle, and then
+          "Sana uygun %N", sit under it across the full width, so nothing truncates at 390 px. */}
+      <View style={styles.authorBlock}>
+        <View style={styles.authorRow}>
+          <Pressable
+            accessibilityRole="button"
+            onPress={openAuthor}
+            style={styles.author}
+            testID="post-author"
+          >
+            <View style={styles.avatar}>
+              <Text style={styles.avatarText}>{initialOf(post.author.displayName)}</Text>
+            </View>
             <Text style={styles.name} numberOfLines={2}>
               {post.author.displayName}
             </Text>
+          </Pressable>
+          {!isMine ? (
+            <Pressable
+              accessibilityRole="button"
+              accessibilityState={{ busy: follow.pending }}
+              onPress={follow.toggle}
+              style={[styles.followButton, follow.following && styles.followButtonActive]}
+              testID="post-follow"
+            >
+              <Text style={[styles.followText, follow.following && styles.followTextActive]}>
+                {follow.following ? tr.postFollowing : tr.postFollow}
+              </Text>
+            </Pressable>
+          ) : null}
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={tr.postMenu}
+            onPress={() => setMenuOpen(true)}
+            style={styles.menuButton}
+            testID="post-menu"
+          >
+            <Icon name="more" size={20} />
+          </Pressable>
+        </View>
+        {post.author.isCreator || post.author.handle || match ? (
+          <Pressable onPress={openAuthor} style={styles.authorLines} accessible={false}>
             {post.author.isCreator || post.author.handle ? (
               <View style={styles.subRow}>
                 {post.author.isCreator ? (
@@ -88,34 +114,12 @@ export function PostCard({ post }: PostCardProps) {
               </View>
             ) : null}
             {match ? (
-              <Text style={styles.sub} testID="post-match">
+              <Text style={styles.match} testID="post-match">
                 {match}
               </Text>
             ) : null}
-          </View>
-        </Pressable>
-        {!isMine ? (
-          <Pressable
-            accessibilityRole="button"
-            accessibilityState={{ busy: follow.pending }}
-            onPress={follow.toggle}
-            style={[styles.followButton, follow.following && styles.followButtonActive]}
-            testID="post-follow"
-          >
-            <Text style={[styles.followText, follow.following && styles.followTextActive]}>
-              {follow.following ? tr.postFollowing : tr.postFollow}
-            </Text>
           </Pressable>
         ) : null}
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel={tr.postMenu}
-          onPress={() => setMenuOpen(true)}
-          style={styles.menuButton}
-          testID="post-menu"
-        >
-          <Icon name="more" size={20} />
-        </Pressable>
       </View>
 
       <PostPhoto post={post} onTagPress={tapTag} onBandPress={() => setTagSheet(post.tags)} />
@@ -129,7 +133,12 @@ export function PostCard({ post }: PostCardProps) {
           style={styles.action}
           testID="post-like"
         >
-          <Icon name="heart" size={22} filled={like.liked} />
+          <Icon
+            name="heart"
+            size={22}
+            filled={like.liked}
+            color={like.liked ? theme.colors.primary : theme.colors.ink}
+          />
           <Text style={styles.count} testID="post-like-count">
             {likeCount}
           </Text>
@@ -143,7 +152,12 @@ export function PostCard({ post }: PostCardProps) {
             style={styles.action}
             testID="post-save"
           >
-            <Icon name="bookmark" size={22} filled={save.saved} />
+            <Icon
+              name="bookmark"
+              size={22}
+              filled={save.saved}
+              color={save.saved ? theme.colors.primary : theme.colors.ink}
+            />
           </Pressable>
         ) : null}
         <View style={styles.spacer} />
@@ -285,18 +299,26 @@ const styles = StyleSheet.create({
   avatar: {
     width: theme.sizes.postAvatar,
     height: theme.sizes.postAvatar,
-    borderRadius: theme.radius.pill,
-    backgroundColor: theme.colors.ink,
+    borderRadius: theme.sizes.postAvatar / 2,
+    backgroundColor: theme.colors.surface,
     alignItems: 'center',
     justifyContent: 'center',
   },
   avatarText: {
-    ...theme.typography.bodyStrong,
-    color: theme.colors.onInk,
+    ...theme.typography.label,
+    color: theme.colors.ink,
   },
-  authorText: {
-    flex: 1,
+  authorBlock: {
     gap: 2,
+  },
+  // Under the name, from the name's left edge to the card's right edge.
+  authorLines: {
+    marginLeft: theme.sizes.postAvatar + theme.spacing.md,
+    gap: 2,
+  },
+  match: {
+    ...theme.typography.match,
+    color: theme.colors.primary,
   },
   subRow: {
     flexDirection: 'row',
@@ -304,42 +326,45 @@ const styles = StyleSheet.create({
     gap: theme.spacing.sm,
   },
   name: {
-    ...theme.typography.bodyStrong,
+    ...theme.typography.label,
     color: theme.colors.ink,
+    flex: 1,
   },
   creatorChip: {
     paddingHorizontal: theme.spacing.sm,
     paddingVertical: 2,
-    borderRadius: theme.radius.pill,
-    backgroundColor: theme.colors.surfaceAlt2,
+    borderRadius: theme.radius.tag,
+    backgroundColor: theme.colors.surface,
   },
   creatorChipText: {
-    ...theme.typography.overline,
-    color: theme.colors.inkSoft,
+    ...theme.typography.captionStrong,
+    color: theme.colors.ink2,
   },
   sub: {
     ...theme.typography.caption,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
     flexShrink: 1,
   },
+  // "Takip et" is the outlined green action; once following it goes quiet (muted text, no edge).
   followButton: {
     minHeight: theme.sizes.touch,
-    paddingHorizontal: theme.spacing.lg,
-    borderRadius: theme.radius.pill,
+    paddingHorizontal: theme.spacing.md,
+    borderRadius: theme.radius.control,
     borderWidth: 1,
-    borderColor: theme.colors.border,
+    borderColor: theme.colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
   },
   followButtonActive: {
-    backgroundColor: theme.colors.surfaceAlt,
+    borderColor: 'transparent',
+    paddingHorizontal: theme.spacing.xs,
   },
   followText: {
-    ...theme.typography.captionMedium,
-    color: theme.colors.ink,
+    ...theme.typography.captionStrong,
+    color: theme.colors.primary,
   },
   followTextActive: {
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
   menuButton: {
     width: theme.sizes.touch,
@@ -360,7 +385,7 @@ const styles = StyleSheet.create({
     gap: theme.spacing.xs,
   },
   count: {
-    ...theme.typography.bodyMedium,
+    ...theme.typography.numeric,
     color: theme.colors.ink,
   },
   spacer: {
@@ -369,30 +394,32 @@ const styles = StyleSheet.create({
   tryButton: {
     minHeight: theme.sizes.touch,
     paddingHorizontal: theme.spacing.lg,
-    borderRadius: theme.radius.pill,
-    backgroundColor: theme.colors.accentSoft,
+    borderRadius: theme.radius.control,
+    borderWidth: 1,
+    borderColor: theme.colors.primary,
+    backgroundColor: theme.colors.bg,
     alignItems: 'center',
     justifyContent: 'center',
   },
   tryText: {
-    ...theme.typography.bodyStrong,
-    color: theme.colors.accent,
+    ...theme.typography.label,
+    color: theme.colors.primary,
   },
   caption: {
     ...theme.typography.body,
-    color: theme.colors.inkSoft,
+    color: theme.colors.ink2,
   },
   captionAuthor: {
-    ...theme.typography.bodyStrong,
+    ...theme.typography.label,
     color: theme.colors.ink,
   },
   disclosure: {
     ...theme.typography.caption,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
   menuHint: {
     ...theme.typography.body,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
   menuRow: {
     minHeight: theme.sizes.touch,

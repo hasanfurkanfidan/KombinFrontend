@@ -13,7 +13,6 @@ export function LensHeaderButton() {
     <IconButton
       icon="camera"
       label={tr.lensTitle}
-      tone="tinted"
       onPress={() => router.push('/lens?entry=explore')}
       testID="lens-header-button"
     />
@@ -34,7 +33,7 @@ export function LensEntryTile() {
         <Icon name="camera" size={22} />
       </View>
       <Text style={styles.text}>{tr.lensTile}</Text>
-      <Icon name="chevronRight" size={20} color={theme.colors.inkMuted} />
+      <Icon name="chevronRight" size={20} color={theme.colors.muted} />
     </Pressable>
   );
 }
@@ -47,15 +46,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: theme.spacing.md,
     padding: theme.spacing.md,
-    borderRadius: theme.radius.xl,
-    borderWidth: 1,
-    borderColor: theme.colors.border,
+    borderRadius: theme.radius.tile,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: theme.colors.line,
   },
   icon: {
     width: theme.sizes.touch,
     height: theme.sizes.touch,
-    borderRadius: theme.radius.pill,
-    backgroundColor: theme.colors.surfaceAlt,
+    borderRadius: theme.radius.control,
+    backgroundColor: theme.colors.surface,
     alignItems: 'center',
     justifyContent: 'center',
   },

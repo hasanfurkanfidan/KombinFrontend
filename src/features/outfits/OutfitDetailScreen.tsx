@@ -39,7 +39,7 @@ export function OutfitDetailScreen({ id }: { id: string }) {
   } else if (query.isPending) {
     body = (
       <View style={styles.padded}>
-        <Skeleton height={320} radius={theme.radius.xxl} />
+        <Skeleton height={theme.sizes.outfitFigureSkeleton} radius={theme.radius.panel} />
       </View>
     );
   } else if (query.isError) {

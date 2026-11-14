@@ -59,9 +59,9 @@ const styles = StyleSheet.create({
   },
   sheet: {
     maxHeight: '80%',
-    backgroundColor: theme.colors.surface,
-    borderTopLeftRadius: theme.radius.xxl,
-    borderTopRightRadius: theme.radius.xxl,
+    backgroundColor: theme.colors.bg,
+    borderTopLeftRadius: theme.radius.panel,
+    borderTopRightRadius: theme.radius.panel,
     paddingTop: theme.spacing.xl,
     paddingHorizontal: theme.screenPaddingX,
     paddingBottom: theme.spacing.xxxl,

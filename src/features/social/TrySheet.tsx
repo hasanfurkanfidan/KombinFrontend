@@ -147,26 +147,26 @@ const styles = StyleSheet.create({
   },
   message: {
     ...theme.typography.body,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
     textAlign: 'center',
   },
   group: {
     gap: theme.spacing.md,
   },
   groupMessage: {
-    ...theme.typography.bodyStrong,
+    ...theme.typography.label,
     color: theme.colors.ink,
   },
   owned: {
-    ...theme.typography.captionMedium,
-    color: theme.colors.inkSoft,
+    ...theme.typography.captionStrong,
+    color: theme.colors.primary,
   },
   outfit: {
     flexDirection: 'row',
     gap: theme.spacing.md,
     padding: theme.spacing.md,
-    borderRadius: theme.radius.xl,
-    backgroundColor: theme.colors.surfaceAlt,
+    borderRadius: theme.radius.tile,
+    backgroundColor: theme.colors.surface,
   },
   collage: {
     width: COLLAGE_SIZE,
@@ -194,7 +194,7 @@ const styles = StyleSheet.create({
   },
   gapMeta: {
     ...theme.typography.caption,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
   buy: {
     height: theme.sizes.touch,

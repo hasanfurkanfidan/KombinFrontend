@@ -11,6 +11,7 @@ import {
 } from '@/api/endpoints/engagement';
 import { TrackingScreen } from '@/features/tracking/TrackingScreen';
 import { useSessionStore } from '@/session/sessionStore';
+import { theme } from '@/theme';
 
 import { alert, page, savedProduct, trigger } from '../../fixtures';
 import { renderWithQuery, resetSession, signedInSession } from '../../testUtils';
@@ -120,7 +121,7 @@ describe('Takip: Alarmlar', () => {
     expect(screen.getByText('Son 30 günde değişmedi')).toBeTruthy();
   });
 
-  it('draws the accent border only on rows with a trigger in the last 7 days', async () => {
+  it('draws the chalk border only on rows with a trigger in the last 7 days', async () => {
     await renderWithQuery(<TrackingScreen />);
 
     const border = (id: string) => {
@@ -130,8 +131,8 @@ describe('Takip: Alarmlar', () => {
     };
     await screen.findByTestId('alert-row-a1');
 
-    expect(border('a1')).toBe('#0F5C3F');
-    expect(border('a2')).not.toBe('#0F5C3F');
+    expect(border('a1')).toBe(theme.colors.chalkLine);
+    expect(border('a2')).not.toBe(theme.colors.chalkLine);
   });
 
   it('hides the average card and shows 0 ₺ savings without triggers', async () => {

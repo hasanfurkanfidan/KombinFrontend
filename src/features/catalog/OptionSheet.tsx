@@ -43,7 +43,7 @@ export function OptionSheet<T extends string>({
             <Text style={[styles.optionLabel, active && styles.optionLabelActive]}>
               {option.label}
             </Text>
-            {active ? <Icon name="check" size={20} /> : null}
+            {active ? <Icon name="check" size={20} color={theme.colors.primary} /> : null}
           </Pressable>
         );
       })}
@@ -60,10 +60,10 @@ const styles = StyleSheet.create({
   },
   optionLabel: {
     ...theme.typography.body,
-    color: theme.colors.inkSoft,
+    color: theme.colors.ink2,
   },
   optionLabelActive: {
-    ...theme.typography.bodyStrong,
-    color: theme.colors.ink,
+    ...theme.typography.label,
+    color: theme.colors.primary,
   },
 });

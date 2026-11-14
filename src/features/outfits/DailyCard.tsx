@@ -1,7 +1,8 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 
 import { Icon } from '@/components/Icon';
+import { PressableScale } from '@/components/PressableScale';
 import { Skeleton } from '@/components/Skeleton';
 import { useWardrobeStats } from '@/features/wardrobe/hooks';
 import { tr } from '@/i18n/tr';
@@ -41,14 +42,14 @@ export function DailyCard() {
       <View style={styles.card} testID="tomorrow-prompt">
         <Text style={styles.label}>{label}</Text>
         <Text style={styles.title}>{tr.homeCardPromptTitle}</Text>
-        <Pressable
+        <PressableScale
           accessibilityRole="button"
           onPress={() => router.navigate('/wardrobe')}
           style={styles.promptButton}
           testID="tomorrow-add"
         >
           <Text style={styles.promptButtonText}>{tr.homeCardPromptCta}</Text>
-        </Pressable>
+        </PressableScale>
       </View>
     );
   }
@@ -57,7 +58,7 @@ export function DailyCard() {
     return (
       <View style={styles.card} testID="tomorrow-loading">
         <Text style={styles.label}>{label}</Text>
-        <Skeleton height={theme.sizes.homeCardThumbHeight} radius={theme.radius.lg} />
+        <Skeleton height={theme.sizes.homeCardThumbHeight} radius={theme.radius.control} />
       </View>
     );
   }
@@ -69,7 +70,7 @@ export function DailyCard() {
     : null;
 
   return (
-    <Pressable
+    <PressableScale
       accessibilityRole="button"
       accessibilityLabel={tr.homeCardCta}
       onPress={() =>
@@ -85,80 +86,86 @@ export function DailyCard() {
         <View style={styles.topText}>
           <Text style={styles.label}>{label}</Text>
           <Text style={styles.title}>{outfit ? tr.discoverTomorrowTitle : tr.homeCardNothing}</Text>
-        </View>
-        {weatherText ? (
-          <View style={styles.weather} testID="tomorrow-weather">
-            <Text style={styles.weatherText}>{weatherText}</Text>
+          {weatherText ? (
+            <View style={styles.weather} testID="tomorrow-weather">
+              <Text style={styles.weatherText}>{weatherText}</Text>
+            </View>
+          ) : null}
+          <View style={styles.cta}>
+            <Text style={styles.ctaText}>{tr.homeCardCta}</Text>
+            <Icon name="arrowRight" size={18} color={theme.colors.primary} />
           </View>
+        </View>
+        {outfit ? (
+          <OutfitCollage pieces={outfit.pieces} layout="figure" testID="tomorrow-collage" />
         ) : null}
       </View>
-      {outfit ? (
-        <OutfitCollage pieces={outfit.pieces} layout="row" testID="tomorrow-collage" />
-      ) : null}
-      <View style={styles.cta}>
-        <Text style={styles.ctaText}>{tr.homeCardCta}</Text>
-        <Icon name="arrowRight" size={20} color={theme.colors.onInk} />
-      </View>
-    </Pressable>
+    </PressableScale>
   );
 }
 
 const styles = StyleSheet.create({
+  // Was a black card: now a surface panel with ink text, the small standing figure on the right.
   card: {
     marginHorizontal: theme.screenPaddingX,
     padding: theme.spacing.xl,
-    borderRadius: theme.radius.xxl,
-    backgroundColor: theme.colors.ink,
+    borderRadius: theme.radius.panel,
+    backgroundColor: theme.colors.surface,
     gap: theme.spacing.lg,
   },
   top: {
     flexDirection: 'row',
-    alignItems: 'flex-start',
+    alignItems: 'center',
     justifyContent: 'space-between',
-    gap: theme.spacing.md,
+    gap: theme.spacing.lg,
   },
   topText: {
     flex: 1,
-    gap: theme.spacing.xs,
+    gap: theme.spacing.sm,
   },
   label: {
-    ...theme.typography.overline,
-    color: theme.colors.borderStrong,
+    ...theme.typography.captionStrong,
+    color: theme.colors.muted,
   },
   title: {
-    ...theme.typography.headingLarge,
-    color: theme.colors.onInk,
+    ...theme.typography.heading,
+    color: theme.colors.ink,
   },
   weather: {
-    borderRadius: theme.radius.pill,
-    backgroundColor: theme.colors.inkSoft,
-    paddingHorizontal: theme.spacing.md,
-    paddingVertical: theme.spacing.xs,
+    alignSelf: 'flex-start',
+    borderRadius: theme.radius.tag,
+    backgroundColor: theme.colors.bg,
+    paddingHorizontal: theme.spacing.sm,
+    paddingVertical: 2,
   },
   weatherText: {
     ...theme.typography.captionMedium,
-    color: theme.colors.onInk,
+    fontVariant: ['tabular-nums'],
+    color: theme.colors.ink2,
   },
   cta: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    gap: theme.spacing.xs,
+    marginTop: theme.spacing.xs,
   },
   ctaText: {
-    ...theme.typography.bodyMedium,
-    color: theme.colors.onInk,
+    ...theme.typography.label,
+    color: theme.colors.primary,
   },
   promptButton: {
     alignSelf: 'flex-start',
     minHeight: theme.sizes.touch,
     paddingHorizontal: theme.spacing.xl,
-    borderRadius: theme.radius.pill,
-    backgroundColor: theme.colors.surface,
+    borderRadius: theme.radius.control,
+    borderWidth: 1,
+    borderColor: theme.colors.control,
+    backgroundColor: theme.colors.bg,
     alignItems: 'center',
     justifyContent: 'center',
   },
   promptButtonText: {
-    ...theme.typography.bodyStrong,
+    ...theme.typography.label,
     color: theme.colors.ink,
   },
 });

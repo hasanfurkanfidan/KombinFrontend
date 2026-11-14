@@ -113,7 +113,7 @@ function SignedInDaily() {
     dismiss.mutate({ id, reason }, { onError: () => showToast(tr.outfitActionFailed) });
   };
 
-  // One row: "Nereye?" with the occasion chips, and the labelled shuffle on the right.
+  // One scrollable row: "Nereye?" and the occasion chips. The shuffle sits in the header, opposite the close button.
   const controls = (
     <View style={styles.controls}>
       <ScrollView
@@ -133,6 +133,22 @@ function SignedInDaily() {
           />
         ))}
       </ScrollView>
+    </View>
+  );
+
+  const right = (
+    <>
+      {seeds.history.length > 0 ? (
+        <IconButton
+          icon="arrowLeft"
+          label={tr.outfitPrevious}
+          onPress={() => {
+            setSeeds(previousSeed);
+            setDismissed([]);
+          }}
+          testID="outfit-previous"
+        />
+      ) : null}
       <Pressable
         accessibilityRole="button"
         onPress={shuffle}
@@ -142,21 +158,8 @@ function SignedInDaily() {
         <Icon name="shuffle" size={16} />
         <Text style={styles.shuffleText}>{tr.outfitShuffle}</Text>
       </Pressable>
-    </View>
+    </>
   );
-
-  const right =
-    seeds.history.length > 0 ? (
-      <IconButton
-        icon="arrowLeft"
-        label={tr.outfitPrevious}
-        onPress={() => {
-          setSeeds(previousSeed);
-          setDismissed([]);
-        }}
-        testID="outfit-previous"
-      />
-    ) : null;
 
   const title = outfitTitle(outfit, daily.data?.outfit?.date ?? todayIso());
   const subtitle = outfitSubtitle(daily.data?.weather ?? null, persona?.name);
@@ -264,37 +267,25 @@ function EmptyWardrobe({ daily, outfit }: { daily: DailyOutfit; outfit: Outfit |
 function DailySkeleton() {
   return (
     <View style={styles.scroll} testID="outfit-skeleton">
-      <View style={styles.skeletonRow}>
-        <Skeleton height={160} radius={theme.radius.xxl} style={styles.skeletonCell} />
-        <Skeleton height={160} radius={theme.radius.xxl} style={styles.skeletonCell} />
-      </View>
-      <View style={styles.skeletonRow}>
-        <Skeleton height={160} radius={theme.radius.xxl} style={styles.skeletonCell} />
-        <Skeleton height={160} radius={theme.radius.xxl} style={styles.skeletonCell} />
-      </View>
+      <Skeleton height={theme.sizes.outfitFigureSkeleton} radius={theme.radius.panel} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   controls: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: theme.spacing.sm,
-    paddingRight: theme.screenPaddingX,
     paddingBottom: theme.spacing.md,
   },
   chipScroll: {
-    flex: 1,
+    flexGrow: 0,
   },
   chips: {
     alignItems: 'center',
     gap: theme.spacing.sm,
-    paddingLeft: theme.screenPaddingX,
-    paddingRight: theme.spacing.sm,
+    paddingHorizontal: theme.screenPaddingX,
   },
   occasionLabel: {
-    ...theme.typography.bodyStrong,
+    ...theme.typography.label,
     color: theme.colors.ink,
   },
   shuffle: {
@@ -303,8 +294,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: theme.spacing.xs,
     paddingHorizontal: theme.spacing.md,
-    borderRadius: theme.radius.pill,
-    backgroundColor: theme.colors.surface,
+    borderRadius: theme.radius.control,
+    borderWidth: 1,
+    borderColor: theme.colors.control,
+    backgroundColor: theme.colors.bg,
   },
   shuffleText: {
     ...theme.typography.bodyMedium,
@@ -316,12 +309,12 @@ const styles = StyleSheet.create({
     gap: theme.spacing.lg,
   },
   emptyTitle: {
-    ...theme.typography.heading,
+    ...theme.typography.subhead,
     color: theme.colors.ink,
   },
   emptyBody: {
     ...theme.typography.body,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
   shopping: {
     gap: theme.spacing.md,
@@ -332,25 +325,17 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   storePill: {
-    borderRadius: theme.radius.pill,
-    backgroundColor: theme.colors.ink,
-    paddingHorizontal: theme.spacing.md,
-    paddingVertical: theme.spacing.xs,
+    borderRadius: theme.radius.tag,
+    backgroundColor: theme.colors.surface,
+    paddingHorizontal: theme.spacing.sm,
+    paddingVertical: 2,
   },
   storePillText: {
-    ...theme.typography.captionMedium,
-    color: theme.colors.onInk,
+    ...theme.typography.captionStrong,
+    color: theme.colors.ink2,
   },
   shoppingTotal: {
-    ...theme.typography.bodyStrong,
+    ...theme.typography.price,
     color: theme.colors.ink,
-  },
-  skeletonRow: {
-    flexDirection: 'row',
-    gap: theme.spacing.md,
-  },
-  skeletonCell: {
-    flex: 1,
-    width: undefined,
   },
 });

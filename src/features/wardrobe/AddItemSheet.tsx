@@ -159,7 +159,7 @@ function CatalogPickerSheet({ visible, onClose }: AddItemSheetProps) {
                 resizeMode="cover"
               />
             ) : (
-              <Icon name="shirt" size={24} color={theme.colors.borderStrong} />
+              <Icon name="shirt" size={24} color={theme.colors.control} />
             )}
           </View>
           <View style={styles.productText}>
@@ -190,7 +190,7 @@ const styles = StyleSheet.create({
   },
   empty: {
     ...theme.typography.body,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
     textAlign: 'center',
   },
   product: {
@@ -205,8 +205,8 @@ const styles = StyleSheet.create({
   thumb: {
     width: theme.sizes.thumbWidth,
     height: theme.sizes.thumbHeight,
-    borderRadius: theme.radius.md,
-    backgroundColor: theme.colors.surfaceAlt,
+    borderRadius: theme.radius.control,
+    backgroundColor: theme.colors.surface,
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
@@ -220,14 +220,14 @@ const styles = StyleSheet.create({
   },
   brand: {
     ...theme.typography.caption,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
   productName: {
     ...theme.typography.bodyMedium,
     color: theme.colors.ink,
   },
   price: {
-    ...theme.typography.bodyStrong,
+    ...theme.typography.price,
     color: theme.colors.ink,
   },
 });

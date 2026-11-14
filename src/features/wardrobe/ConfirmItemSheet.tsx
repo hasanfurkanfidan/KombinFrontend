@@ -69,7 +69,7 @@ export function ConfirmItemSheet({ itemId, mode, onClose, onDone }: ConfirmItemS
           <ItemForm key={item.data.id} item={item.data} mode={mode} onDone={onDone} />
         )
       ) : (
-        <Skeleton height={theme.sizes.itemCutoutHeight} radius={theme.radius.xl} />
+        <Skeleton height={theme.sizes.itemCutoutHeight} radius={theme.radius.tile} />
       )}
     </BottomSheet>
   );
@@ -86,7 +86,7 @@ function Cutout({ item, color }: { item: WardrobeItem; color: ProductColor }) {
       {uri ? (
         <Image source={{ uri }} style={styles.cutoutImage} resizeMode="contain" />
       ) : (
-        <Icon name="shirt" size={64} color={theme.colors.borderStrong} strokeWidth={1.2} />
+        <Icon name="shirt" size={64} color={theme.colors.control} strokeWidth={1.2} />
       )}
     </View>
   );
@@ -211,7 +211,7 @@ function ItemForm({
       <Cutout item={item} color={color} />
       {hint ? (
         <View style={styles.hintRow} testID="item-warning">
-          <Icon name="info" size={16} color={theme.colors.inkMuted} />
+          <Icon name="info" size={16} color={theme.colors.muted} />
           <Text style={styles.hint}>{hint}</Text>
         </View>
       ) : null}
@@ -418,7 +418,7 @@ function ChipRow({ label, children }: { label: string; children: ReactNode }) {
 const styles = StyleSheet.create({
   cutout: {
     height: theme.sizes.itemCutoutHeight,
-    borderRadius: theme.radius.xl,
+    borderRadius: theme.radius.tile,
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
@@ -428,7 +428,7 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   notGarmentTitle: {
-    ...theme.typography.heading,
+    ...theme.typography.subhead,
     color: theme.colors.ink,
   },
   hintRow: {
@@ -438,15 +438,15 @@ const styles = StyleSheet.create({
   },
   hint: {
     ...theme.typography.body,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
     flexShrink: 1,
   },
   block: {
     gap: theme.spacing.sm,
   },
   label: {
-    ...theme.typography.captionMedium,
-    color: theme.colors.inkSoft,
+    ...theme.typography.captionStrong,
+    color: theme.colors.ink2,
   },
   chips: {
     flexDirection: 'row',
@@ -461,13 +461,13 @@ const styles = StyleSheet.create({
   swatch: {
     width: theme.sizes.colorSwatch,
     height: theme.sizes.colorSwatch,
-    borderRadius: theme.radius.pill,
+    borderRadius: theme.sizes.colorSwatch / 2,
     borderWidth: 1,
-    borderColor: theme.colors.border,
+    borderColor: theme.colors.line,
   },
   swatchSelected: {
     borderWidth: 3,
-    borderColor: theme.colors.ink,
+    borderColor: theme.colors.primary,
   },
   detailsToggle: {
     minHeight: theme.sizes.touch,
@@ -481,6 +481,6 @@ const styles = StyleSheet.create({
   },
   brandName: {
     ...theme.typography.body,
-    color: theme.colors.inkSoft,
+    color: theme.colors.ink2,
   },
 });
