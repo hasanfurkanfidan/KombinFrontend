@@ -172,17 +172,19 @@ function DiscoverTop() {
   const now = new Date();
 
   return (
-    <View style={styles.greetingRow}>
-      <View style={styles.greeting}>
-        <Text style={styles.date}>{formatLongDay(now)}</Text>
-        <Text style={styles.hello} numberOfLines={1}>
-          {buildGreeting(now, me.data?.displayName)}
+    // The date shares its row with the two icon buttons; the greeting gets the full width below, and may wrap, so
+    // the user's name is never cut.
+    <View style={styles.greeting}>
+      <View style={styles.greetingRow}>
+        <Text style={styles.date} numberOfLines={1}>
+          {formatLongDay(now)}
         </Text>
+        <View style={styles.headerActions}>
+          <LensHeaderButton />
+          <NotificationBell />
+        </View>
       </View>
-      <View style={styles.headerActions}>
-        <LensHeaderButton />
-        <NotificationBell />
-      </View>
+      <Text style={styles.hello}>{buildGreeting(now, me.data?.displayName)}</Text>
     </View>
   );
 }
@@ -213,8 +215,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: theme.screenPaddingX,
-    paddingTop: theme.spacing.lg,
+    gap: theme.spacing.md,
   },
   headerActions: {
     flexDirection: 'row',
@@ -222,12 +223,14 @@ const styles = StyleSheet.create({
     gap: theme.spacing.sm,
   },
   greeting: {
-    flex: 1,
     gap: theme.spacing.xs,
+    paddingHorizontal: theme.screenPaddingX,
+    paddingTop: theme.spacing.lg,
   },
   date: {
     ...theme.typography.body,
     color: theme.colors.muted,
+    flex: 1,
   },
   hello: {
     ...theme.typography.display,

@@ -42,13 +42,28 @@ export function PieceTile({
   shopping,
   width,
   height,
-  style,
-}: PieceProps & { width: number; height: number; style?: object }) {
+  layer,
+}: PieceProps & {
+  width: number;
+  height: number;
+  /** In a layered torso: the top sits behind, the outerwear in front. */
+  layer?: 'back' | 'front';
+}) {
   const gap = piece.role === 'Gap' && !shopping;
   const anchor = piece.role === 'Anchor';
   return (
     <View
-      style={[styles.well, { width, height }, gap && styles.ghost, anchor && styles.anchor, style]}
+      style={[
+        styles.well,
+        { width, height },
+        layer === 'back' && styles.layerBack,
+        layer === 'front' && styles.layerFront,
+        // The ghost and anchor edges win over the layer gap; a ghost in front gets the panel fill so the top behind
+        // does not show through it.
+        gap && styles.ghost,
+        gap && layer === 'front' && styles.ghostFront,
+        anchor && styles.anchor,
+      ]}
       testID={`piece-${piece.slot}`}
     >
       {piece.imageUrl ? (
@@ -67,16 +82,18 @@ export function PieceTile({
       )}
       {gap ? (
         <View style={styles.missingTag} testID={`piece-pill-${piece.slot}`}>
-          <Text style={styles.missingText} numberOfLines={1}>
-            {tr.outfitMissing(priceOf(piece) ?? '')}
-          </Text>
+          <Text style={styles.missingText}>{tr.outfitMissing(priceOf(piece) ?? '')}</Text>
         </View>
       ) : null}
     </View>
   );
 }
 
-/** The short label beside a well: a leader line, the piece's name and what it is (yours, the anchor, its price). */
+/**
+ * The short label beside a well: a leader line and the piece's name. Only the exceptions get a status: the anchor
+ * ("Ana parça"), a store piece of a shopping outfit (its price) and a missing piece (its seller; the ghost carries
+ * "Eksik · price"). Owned pieces say nothing more: the sheet's "Bu kombin dolabından hazır" says it once.
+ */
 function Leader({ piece, shopping }: PieceProps) {
   const gap = piece.role === 'Gap' && !shopping;
   const status = shopping
@@ -85,9 +102,7 @@ function Leader({ piece, shopping }: PieceProps) {
       ? null
       : piece.role === 'Anchor'
         ? tr.outfitAnchor
-        : piece.source === 'Wardrobe'
-          ? tr.outfitInWardrobe
-          : null;
+        : null;
   return (
     <View style={styles.leader}>
       <View style={[styles.leaderLine, gap && styles.leaderLineGap]} />
@@ -97,9 +112,7 @@ function Leader({ piece, shopping }: PieceProps) {
         </Text>
         {status ? (
           <View testID={`piece-pill-${piece.slot}`}>
-            <Text style={shopping ? styles.price : styles.status} numberOfLines={1}>
-              {status}
-            </Text>
+            <Text style={shopping ? styles.price : styles.status}>{status}</Text>
           </View>
         ) : null}
         {/* The ghost already says "Eksik · price"; the label adds where it is cheapest. */}
@@ -134,9 +147,11 @@ function AccessoryTile({ piece, shopping }: PieceProps) {
         <Text style={styles.name} numberOfLines={2}>
           {piece.name}
         </Text>
-        <Text style={gap ? styles.missingInline : styles.status} numberOfLines={1}>
-          {shopping ? price : gap && price ? tr.outfitMissing(price) : tr.outfitInWardrobe}
-        </Text>
+        {shopping && price ? (
+          <Text style={styles.price}>{price}</Text>
+        ) : gap && price ? (
+          <Text style={styles.missingInline}>{tr.outfitMissing(price)}</Text>
+        ) : null}
       </View>
     </View>
   );
@@ -172,24 +187,13 @@ export function OutfitPieces({
           return (
             <View key="torso" style={styles.band}>
               <View style={[styles.figureCell, { width: figure, height: h }]}>
-                <PieceTile
-                  piece={outer}
-                  shopping={shopping}
-                  width={w}
-                  height={h}
-                  style={styles.layerBack}
-                />
-                <PieceTile
-                  piece={top}
-                  shopping={shopping}
-                  width={w}
-                  height={h}
-                  style={styles.layerFront}
-                />
+                {/* The top behind, peeking out on the right; the outerwear in front of it, as it is worn. */}
+                <PieceTile piece={top} shopping={shopping} width={w} height={h} layer="back" />
+                <PieceTile piece={outer} shopping={shopping} width={w} height={h} layer="front" />
               </View>
               <View style={styles.labels}>
-                <Leader piece={top} shopping={shopping} />
                 <Leader piece={outer} shopping={shopping} />
+                <Leader piece={top} shopping={shopping} />
               </View>
             </View>
           );
@@ -270,13 +274,19 @@ const styles = StyleSheet.create({
   ghostImage: {
     opacity: 0.45,
   },
+  ghostFront: {
+    backgroundColor: theme.colors.surface,
+  },
   layerBack: {
     position: 'absolute',
-    left: 0,
+    right: 0,
   },
+  // In front: a panel-coloured edge keeps the two white wells apart where they overlap.
   layerFront: {
     position: 'absolute',
-    right: 0,
+    left: 0,
+    borderWidth: theme.sizes.layerGap,
+    borderColor: theme.colors.surface,
   },
   image: {
     ...StyleSheet.absoluteFill,

@@ -129,7 +129,7 @@ export function AlertRow({ alert, triggers, now, onOpen }: AlertRowProps) {
             </Text>
             <View style={styles.priceRow}>
               {price !== null ? (
-                <Text style={[styles.price, below && styles.priceBelow]} numberOfLines={1}>
+                <Text style={[styles.price, below && styles.priceBelow]}>
                   {formatTry(toNumber(price))}
                 </Text>
               ) : null}
@@ -225,6 +225,7 @@ const styles = StyleSheet.create({
   price: {
     ...theme.typography.price,
     color: theme.colors.ink,
+    flexShrink: 0,
   },
   priceBelow: {
     color: theme.colors.chalkInk,

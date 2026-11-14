@@ -113,7 +113,7 @@ function SignedInDaily() {
     dismiss.mutate({ id, reason }, { onError: () => showToast(tr.outfitActionFailed) });
   };
 
-  // One row: "Nereye?" with the occasion chips, and the labelled shuffle on the right.
+  // One scrollable row: "Nereye?" and the occasion chips. The shuffle sits in the header, opposite the close button.
   const controls = (
     <View style={styles.controls}>
       <ScrollView
@@ -133,6 +133,22 @@ function SignedInDaily() {
           />
         ))}
       </ScrollView>
+    </View>
+  );
+
+  const right = (
+    <>
+      {seeds.history.length > 0 ? (
+        <IconButton
+          icon="arrowLeft"
+          label={tr.outfitPrevious}
+          onPress={() => {
+            setSeeds(previousSeed);
+            setDismissed([]);
+          }}
+          testID="outfit-previous"
+        />
+      ) : null}
       <Pressable
         accessibilityRole="button"
         onPress={shuffle}
@@ -142,21 +158,8 @@ function SignedInDaily() {
         <Icon name="shuffle" size={16} />
         <Text style={styles.shuffleText}>{tr.outfitShuffle}</Text>
       </Pressable>
-    </View>
+    </>
   );
-
-  const right =
-    seeds.history.length > 0 ? (
-      <IconButton
-        icon="arrowLeft"
-        label={tr.outfitPrevious}
-        onPress={() => {
-          setSeeds(previousSeed);
-          setDismissed([]);
-        }}
-        testID="outfit-previous"
-      />
-    ) : null;
 
   const title = outfitTitle(outfit, daily.data?.outfit?.date ?? todayIso());
   const subtitle = outfitSubtitle(daily.data?.weather ?? null, persona?.name);
@@ -271,20 +274,15 @@ function DailySkeleton() {
 
 const styles = StyleSheet.create({
   controls: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: theme.spacing.sm,
-    paddingRight: theme.screenPaddingX,
     paddingBottom: theme.spacing.md,
   },
   chipScroll: {
-    flex: 1,
+    flexGrow: 0,
   },
   chips: {
     alignItems: 'center',
     gap: theme.spacing.sm,
-    paddingLeft: theme.screenPaddingX,
-    paddingRight: theme.spacing.sm,
+    paddingHorizontal: theme.screenPaddingX,
   },
   occasionLabel: {
     ...theme.typography.label,

@@ -31,7 +31,7 @@ export function PriceSummary({ summary, history }: PriceSummaryProps) {
           {lowestNow === null ? (
             <Text style={styles.noStock}>{tr.productNoStock}</Text>
           ) : (
-            <Text style={styles.price} numberOfLines={1} testID="lowest-price">
+            <Text style={styles.price} testID="lowest-price">
               {formatTry(lowestNow)}
             </Text>
           )}
@@ -61,9 +61,8 @@ export function PriceSummary({ summary, history }: PriceSummaryProps) {
             )}
           </View>
           {highest !== null && lowestNow !== null ? (
-            <Text style={styles.caption} numberOfLines={1}>
-              {`${formatTry(highest)} → ${formatTry(lowestNow)}`}
-            </Text>
+            // May wrap to two lines on a narrow card: a price is never cut.
+            <Text style={styles.caption}>{`${formatTry(highest)} → ${formatTry(lowestNow)}`}</Text>
           ) : null}
         </Pressable>
       </View>

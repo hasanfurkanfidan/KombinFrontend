@@ -35,7 +35,8 @@ export function OutfitFrame({
       <View style={styles.header}>
         <IconButton icon="close" label={tr.outfitClose} onPress={onClose} testID="outfit-close" />
         <View style={styles.titles}>
-          <Text style={styles.title} numberOfLines={1} testID="outfit-title">
+          {/* Two lines when the header's right side is full (previous + "Başka öneri"): never cut. */}
+          <Text style={styles.title} numberOfLines={2} testID="outfit-title">
             {title}
           </Text>
           {subtitle ? (
@@ -93,6 +94,7 @@ const styles = StyleSheet.create({
   right: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
+    alignItems: 'center',
     // Keeps the title centred while the close button on the left is one button wide.
     minWidth: theme.sizes.outfitHeaderButton,
     gap: theme.spacing.sm,

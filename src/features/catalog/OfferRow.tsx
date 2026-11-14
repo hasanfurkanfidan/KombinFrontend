@@ -63,7 +63,7 @@ export function OfferRow({ offer, highlighted, onPress }: OfferRowProps) {
           </Text>
         ) : null}
       </View>
-      <Text style={[styles.price, !sellable && styles.priceMuted]} numberOfLines={1}>
+      <Text style={[styles.price, !sellable && styles.priceMuted]}>
         {formatTry(offer.currentPrice)}
       </Text>
       {sellable ? <Icon name="chevronRight" size={18} color={theme.colors.muted} /> : null}
@@ -129,6 +129,7 @@ const styles = StyleSheet.create({
     ...theme.typography.price,
     color: theme.colors.ink,
     textAlign: 'right',
+    flexShrink: 0,
   },
   priceMuted: {
     color: theme.colors.muted,

@@ -52,7 +52,8 @@ describe('OutfitPieces (the standing figure)', () => {
     expect(within(ghost).getByTestId(`piece-pill-${gapPiece.slot}`)).toBeTruthy();
     expect(within(ghost).getByText(/^Eksik · /)).toBeTruthy();
     expect(screen.getByText(/^En ucuzu /)).toBeTruthy();
-    expect(within(screen.getByTestId('piece-pill-Bottom')).getByText('Dolabında var')).toBeTruthy();
+    expect(screen.queryByTestId('piece-pill-Bottom')).toBeNull();
+    expect(screen.queryByText('Dolabında var')).toBeNull();
   });
 
   it('sizes the wells by role: the shoes are smaller than the bottom', async () => {
@@ -64,5 +65,19 @@ describe('OutfitPieces (the standing figure)', () => {
     };
     expect(height('Shoes')).toBeLessThan(height('Bottom'));
     expect(height('Top')).toBeLessThan(height('Bottom'));
+  });
+
+  it('draws the outerwear in front of the top, which peeks out beside it', async () => {
+    await render(<OutfitPieces pieces={[top, outer, bottom]} width={342} />);
+
+    const flat = (slot: string) => {
+      const style = screen.getByTestId(`piece-${slot}`).props.style as object[];
+      return Object.assign({}, ...style.flat(Infinity).filter(Boolean)) as Record<string, unknown>;
+    };
+    // Later siblings paint on top: the top well comes first, the outerwear after it.
+    const order = screen.getAllByTestId(/^piece-(Top|Outerwear)$/).map((node) => node.props.testID);
+    expect(order).toEqual(['piece-Top', 'piece-Outerwear']);
+    expect(flat('Outerwear').left).toBe(0);
+    expect(flat('Top').right).toBe(0);
   });
 });

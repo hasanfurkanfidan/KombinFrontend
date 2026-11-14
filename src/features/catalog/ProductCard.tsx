@@ -73,13 +73,9 @@ export function ProductCard({ product, width, onPress }: ProductCardProps) {
           {product.name}
         </Text>
         <View style={styles.priceRow}>
-          <Text style={styles.price} numberOfLines={1}>
-            {formatTry(price)}
-          </Text>
+          <Text style={styles.price}>{formatTry(price)}</Text>
           {originalPrice !== null && originalPrice > price ? (
-            <Text style={styles.originalPrice} numberOfLines={1}>
-              {formatTry(originalPrice)}
-            </Text>
+            <Text style={styles.originalPrice}>{formatTry(originalPrice)}</Text>
           ) : null}
         </View>
         {/* Under the price, not on the image: the discount badge owns the photo's corner. */}
@@ -156,10 +152,12 @@ const styles = StyleSheet.create({
     ...theme.typography.bodyMedium,
     color: theme.colors.ink,
   },
+  // Wraps instead of cutting: the original price drops to the next line on a narrow card.
   priceRow: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     alignItems: 'baseline',
-    gap: theme.spacing.sm,
+    columnGap: theme.spacing.sm,
   },
   price: {
     ...theme.typography.price,

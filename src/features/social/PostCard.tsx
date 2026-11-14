@@ -57,22 +57,48 @@ export function PostCard({ post }: PostCardProps) {
 
   return (
     <View style={styles.card} testID={`post-${post.id}`}>
-      <View style={styles.authorRow}>
-        <Pressable
-          accessibilityRole="button"
-          onPress={openAuthor}
-          style={styles.author}
-          testID="post-author"
-        >
-          <View style={styles.avatar}>
-            <Text style={styles.avatarText}>{initialOf(post.author.displayName)}</Text>
-          </View>
-          {/* Three short lines, none of which has to truncate at 390 px: the name; the "Kreatör" chip and the handle;
-              then "Sana uygun %N" on its own. */}
-          <View style={styles.authorText}>
+      {/* The name shares its row with follow and the menu; the "Kreatör" chip with the handle, and then
+          "Sana uygun %N", sit under it across the full width, so nothing truncates at 390 px. */}
+      <View style={styles.authorBlock}>
+        <View style={styles.authorRow}>
+          <Pressable
+            accessibilityRole="button"
+            onPress={openAuthor}
+            style={styles.author}
+            testID="post-author"
+          >
+            <View style={styles.avatar}>
+              <Text style={styles.avatarText}>{initialOf(post.author.displayName)}</Text>
+            </View>
             <Text style={styles.name} numberOfLines={2}>
               {post.author.displayName}
             </Text>
+          </Pressable>
+          {!isMine ? (
+            <Pressable
+              accessibilityRole="button"
+              accessibilityState={{ busy: follow.pending }}
+              onPress={follow.toggle}
+              style={[styles.followButton, follow.following && styles.followButtonActive]}
+              testID="post-follow"
+            >
+              <Text style={[styles.followText, follow.following && styles.followTextActive]}>
+                {follow.following ? tr.postFollowing : tr.postFollow}
+              </Text>
+            </Pressable>
+          ) : null}
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={tr.postMenu}
+            onPress={() => setMenuOpen(true)}
+            style={styles.menuButton}
+            testID="post-menu"
+          >
+            <Icon name="more" size={20} />
+          </Pressable>
+        </View>
+        {post.author.isCreator || post.author.handle || match ? (
+          <Pressable onPress={openAuthor} style={styles.authorLines} accessible={false}>
             {post.author.isCreator || post.author.handle ? (
               <View style={styles.subRow}>
                 {post.author.isCreator ? (
@@ -88,34 +114,12 @@ export function PostCard({ post }: PostCardProps) {
               </View>
             ) : null}
             {match ? (
-              <Text style={styles.sub} testID="post-match">
+              <Text style={styles.match} testID="post-match">
                 {match}
               </Text>
             ) : null}
-          </View>
-        </Pressable>
-        {!isMine ? (
-          <Pressable
-            accessibilityRole="button"
-            accessibilityState={{ busy: follow.pending }}
-            onPress={follow.toggle}
-            style={[styles.followButton, follow.following && styles.followButtonActive]}
-            testID="post-follow"
-          >
-            <Text style={[styles.followText, follow.following && styles.followTextActive]}>
-              {follow.following ? tr.postFollowing : tr.postFollow}
-            </Text>
           </Pressable>
         ) : null}
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel={tr.postMenu}
-          onPress={() => setMenuOpen(true)}
-          style={styles.menuButton}
-          testID="post-menu"
-        >
-          <Icon name="more" size={20} />
-        </Pressable>
       </View>
 
       <PostPhoto post={post} onTagPress={tapTag} onBandPress={() => setTagSheet(post.tags)} />
@@ -304,9 +308,17 @@ const styles = StyleSheet.create({
     ...theme.typography.label,
     color: theme.colors.ink,
   },
-  authorText: {
-    flex: 1,
+  authorBlock: {
     gap: 2,
+  },
+  // Under the name, from the name's left edge to the card's right edge.
+  authorLines: {
+    marginLeft: theme.sizes.postAvatar + theme.spacing.md,
+    gap: 2,
+  },
+  match: {
+    ...theme.typography.match,
+    color: theme.colors.primary,
   },
   subRow: {
     flexDirection: 'row',
@@ -316,6 +328,7 @@ const styles = StyleSheet.create({
   name: {
     ...theme.typography.label,
     color: theme.colors.ink,
+    flex: 1,
   },
   creatorChip: {
     paddingHorizontal: theme.spacing.sm,
@@ -332,26 +345,26 @@ const styles = StyleSheet.create({
     color: theme.colors.muted,
     flexShrink: 1,
   },
+  // "Takip et" is the outlined green action; once following it goes quiet (muted text, no edge).
   followButton: {
     minHeight: theme.sizes.touch,
-    paddingHorizontal: theme.spacing.lg,
+    paddingHorizontal: theme.spacing.md,
     borderRadius: theme.radius.control,
     borderWidth: 1,
-    borderColor: theme.colors.control,
+    borderColor: theme.colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  // Following someone is the user's choice: the selected-chip treatment.
   followButtonActive: {
-    backgroundColor: theme.colors.primarySoft,
-    borderColor: theme.colors.primary,
+    borderColor: 'transparent',
+    paddingHorizontal: theme.spacing.xs,
   },
   followText: {
     ...theme.typography.captionStrong,
-    color: theme.colors.ink,
+    color: theme.colors.primary,
   },
   followTextActive: {
-    color: theme.colors.primary,
+    color: theme.colors.muted,
   },
   menuButton: {
     width: theme.sizes.touch,

@@ -112,6 +112,8 @@ export const sizes = {
   leaderLine: 16,
   /** Dashed chalk edge of a missing piece (the ghost) and of the unlock card. */
   dashedBorder: 1.5,
+  /** Panel-coloured edge between the overlapping wells of a layered torso. */
+  layerGap: 3,
   /** Round shuffle / close buttons in the outfit header. */
   outfitHeaderButton: 44,
   /** Loading placeholder of the home card. */

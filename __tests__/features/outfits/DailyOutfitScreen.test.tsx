@@ -65,9 +65,10 @@ describe('daily outfit with everything in the wardrobe (Complete)', () => {
     expect(screen.getByTestId('outfit-subtitle').props.children).toBe('Ofis · 9° yağmurlu');
     expect(screen.getByText('Koyu yeşil blazer')).toBeTruthy();
     expect(screen.getByText('Siyah kumaş pantolon')).toBeTruthy();
-    // Every piece is from the wardrobe: the white pill, no gap pill.
-    expect(within(screen.getByTestId('piece-pill-Top')).getByText('Dolabında var')).toBeTruthy();
-    expect(within(screen.getByTestId('piece-pill-Shoes')).getByText('Dolabında var')).toBeTruthy();
+    // Every piece is from the wardrobe: owned pieces show their name only (the sheet says it once).
+    expect(screen.queryByTestId('piece-pill-Top')).toBeNull();
+    expect(screen.queryByTestId('piece-pill-Shoes')).toBeNull();
+    expect(screen.queryByText('Dolabında var')).toBeNull();
     // Said once: no caption repeating the pill.
     expect(screen.queryByText('Sahip olduğun parça')).toBeNull();
     expect(screen.queryByText(/Eksik ·/)).toBeNull();
@@ -257,8 +258,8 @@ describe('daily outfit that needs one piece (NeedsOne)', () => {
       within(await screen.findByTestId('piece-pill-Top')).getByText('Eksik · 649 ₺'),
     ).toBeTruthy();
     expect(screen.getByText('En ucuzu Koton')).toBeTruthy();
-    // The other pieces are still the user's own.
-    expect(within(screen.getByTestId('piece-pill-Bottom')).getByText('Dolabında var')).toBeTruthy();
+    // The other pieces are the user's own: name only, no status.
+    expect(screen.queryByTestId('piece-pill-Bottom')).toBeNull();
     expect(screen.getByText('Eksik 1 parçayı tamamla')).toBeTruthy();
     expect(screen.getByTestId('outfit-price').props.children).toBe('649 ₺');
     expect(
