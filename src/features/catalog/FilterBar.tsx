@@ -28,10 +28,10 @@ interface FilterBarProps {
 type Picker = 'color' | 'audience' | 'sort';
 
 /** Sentinel option that clears a picker's filter. */
-const ALL = 'all';
+export const ALL = 'all';
 
 const allOption = { value: ALL, label: tr.filterAll } as const;
-const colorOptions: Option<ProductColor | typeof ALL>[] = [
+export const colorOptions: Option<ProductColor | typeof ALL>[] = [
   allOption,
   ...(Object.keys(colorLabels) as ProductColor[]).map((value) => ({
     value,
@@ -45,7 +45,7 @@ const audienceOptions: Option<Audience | typeof ALL>[] = [
     label: audienceLabels[value],
   })),
 ];
-const sortOptionsFor = (personaId: string | undefined): Option<SortValue>[] =>
+export const sortOptionsFor = (personaId: string | undefined): Option<SortValue>[] =>
   SORT_VALUES.filter((value) => value !== 'match' || personaId).map((value) => ({
     value,
     label: sortLabels[value],

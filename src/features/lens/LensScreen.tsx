@@ -34,7 +34,7 @@ export function parseLensEntry(value: unknown): LensEntry {
 }
 
 interface LensScreenProps {
-  /** Where it was opened (`entry` route param): the Keşfet header button or the tile under the daily card. */
+  /** Where it was opened (`entry` route param): `explore` is the camera in Keşfet's search field; `home` (the old tile) is kept valid. */
   entry?: string;
 }
 

@@ -62,6 +62,9 @@ export function ProductGrid({
       refreshing={refreshing}
       onRefresh={onRefresh}
       showsVerticalScrollIndicator={false}
+      // The search screen shows this grid under a focused field: the first tap on a card opens it.
+      keyboardShouldPersistTaps="handled"
+      keyboardDismissMode="on-drag"
     />
   );
 }
