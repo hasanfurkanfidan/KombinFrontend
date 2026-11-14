@@ -130,7 +130,7 @@ export function SearchScreen() {
 
   let placeholder = <ProductGridSkeleton />;
   if (products.isError && items.length === 0) {
-    placeholder = <ErrorState onRetry={() => void products.refetch()} />;
+    placeholder = <ErrorState error={products.error} onRetry={() => void products.refetch()} />;
   } else if (products.isSuccess && items.length === 0) {
     placeholder = (
       <EmptyState
@@ -311,13 +311,14 @@ const styles = StyleSheet.create({
   },
   filterRow: {
     paddingHorizontal: theme.screenPaddingX,
-    paddingVertical: theme.spacing.xs,
+    paddingTop: theme.spacing.xs,
+    // The standard gap between a chip row and what it filters: the grid, or its brand row, starts below it.
+    paddingBottom: theme.spacing.md,
     gap: theme.spacing.sm,
   },
   brands: {
     gap: theme.spacing.sm,
     paddingHorizontal: theme.screenPaddingX,
-    paddingTop: theme.spacing.md,
     paddingBottom: theme.spacing.lg,
   },
   brandChips: {

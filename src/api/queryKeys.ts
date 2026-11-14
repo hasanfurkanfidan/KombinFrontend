@@ -2,6 +2,7 @@ import type { ListProductsQuery } from './models';
 
 export const queryKeys = {
   me: ['me'] as const,
+  legal: ['legal'] as const,
   categories: ['catalog', 'categories'] as const,
   products: (filters: ListProductsQuery) => ['catalog', 'products', filters] as const,
   /** Prefix of every product list, for refreshing all filter sets at once. */

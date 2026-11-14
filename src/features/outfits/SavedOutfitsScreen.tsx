@@ -48,7 +48,11 @@ export function SavedOutfitsScreen() {
     );
   } else if (saved.isError && outfits.length === 0) {
     placeholder = (
-      <ErrorState title={tr.outfitSavedLoadFailed} onRetry={() => void saved.refetch()} />
+      <ErrorState
+        title={tr.outfitSavedLoadFailed}
+        error={saved.error}
+        onRetry={() => void saved.refetch()}
+      />
     );
   } else if (outfits.length === 0) {
     placeholder = (

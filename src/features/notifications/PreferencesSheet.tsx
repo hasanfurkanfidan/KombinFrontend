@@ -80,7 +80,7 @@ export function PreferencesSheet({ visible, onClose }: PreferencesSheetProps) {
   return (
     <BottomSheet visible={visible} title={tr.profileNotifications} onClose={onClose}>
       {prefs.isError ? (
-        <ErrorState onRetry={() => void prefs.refetch()} />
+        <ErrorState error={prefs.error} onRetry={() => void prefs.refetch()} />
       ) : prefs.data ? (
         <PreferencesForm initial={prefs.data} onSaved={onClose} />
       ) : (

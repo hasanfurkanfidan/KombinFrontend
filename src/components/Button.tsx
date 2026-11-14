@@ -11,9 +11,10 @@ interface ButtonProps {
   onPress: () => void;
   /**
    * `primary` is the screen's one filled green action; `secondary` is outlined (bg + control border, ink text);
-   * `quiet` is text only, in the link colour.
+   * `quiet` is text only, in the link colour; `danger` is the filled red action that cannot be undone
+   * (deleting the account), the only filled action on its screen.
    */
-  variant?: 'primary' | 'secondary' | 'quiet';
+  variant?: 'primary' | 'secondary' | 'quiet' | 'danger';
   loading?: boolean;
   disabled?: boolean;
   trailingIcon?: IconName;
@@ -27,6 +28,7 @@ const FOREGROUND = {
   primary: theme.colors.onPrimary,
   secondary: theme.colors.ink,
   quiet: theme.colors.primary,
+  danger: theme.colors.onDanger,
 } as const;
 
 export function Button({
@@ -78,6 +80,10 @@ const styles = StyleSheet.create({
   },
   primary: {
     backgroundColor: theme.colors.primary,
+    borderRadius: theme.radius.cta,
+  },
+  danger: {
+    backgroundColor: theme.colors.danger,
     borderRadius: theme.radius.cta,
   },
   secondary: {

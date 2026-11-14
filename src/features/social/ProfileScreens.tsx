@@ -38,6 +38,7 @@ export function UserProfileScreen({ id }: { id: string }) {
       {profile.isError ? (
         <ErrorState
           title={notFound ? tr.userNotFound : tr.userLoadFailed}
+          error={profile.error}
           onRetry={notFound ? undefined : () => void profile.refetch()}
         />
       ) : (
@@ -74,6 +75,7 @@ export function CreatorScreen({ handle }: { handle: string }) {
       {creator.isError ? (
         <ErrorState
           title={notFound ? tr.creatorNotFound : tr.creatorLoadFailed}
+          error={creator.error}
           onRetry={notFound ? undefined : () => void creator.refetch()}
         />
       ) : (
@@ -113,7 +115,7 @@ function ProfilePosts({ header, posts, source, emptyTitle }: ProfilePostsProps) 
       ListHeaderComponent={header}
       ListEmptyComponent={
         posts.isError ? (
-          <ErrorState onRetry={() => void posts.refetch()} />
+          <ErrorState error={posts.error} onRetry={() => void posts.refetch()} />
         ) : posts.isPending ? undefined : (
           <EmptyState title={emptyTitle} />
         )

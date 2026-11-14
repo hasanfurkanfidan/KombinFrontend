@@ -166,6 +166,7 @@ export function LensScreen({ entry }: LensScreenProps) {
         />
       ) : (
         <ErrorState
+          error={search.error}
           onRetry={() => {
             if (search.variables) {
               search.mutate(search.variables);

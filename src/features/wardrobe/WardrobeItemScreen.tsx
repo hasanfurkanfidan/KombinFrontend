@@ -103,7 +103,7 @@ export function WardrobeItemScreen({ id }: { id: string }) {
           {item.error instanceof ApiError && item.error.status === 404 ? (
             <ErrorState title={tr.wardrobeItemNotFound} />
           ) : (
-            <ErrorState onRetry={() => void item.refetch()} />
+            <ErrorState error={item.error} onRetry={() => void item.refetch()} />
           )}
         </View>
       ) : (

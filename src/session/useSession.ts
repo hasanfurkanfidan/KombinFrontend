@@ -8,8 +8,8 @@ import { queryKeys } from '@/api/queryKeys';
 import { resetPushRegistration } from '@/push';
 
 import { usePrefsStore } from './prefsStore';
-import { applyAuthTokens, endSession, useSessionStore } from './sessionStore';
-import { getRefreshToken } from './tokenStorage';
+import { applyAuthTokens, endSession, rememberSignInMethod, useSessionStore } from './sessionStore';
+import { getRefreshToken, getSignInMethod, type SignInMethod } from './tokenStorage';
 
 let bootstrapPromise: Promise<void> | null = null;
 
@@ -24,6 +24,7 @@ export function bootstrapSession(): Promise<void> {
         return;
       }
       await refreshSession();
+      useSessionStore.getState().setSignInMethod(await getSignInMethod());
       await queryClient.fetchQuery({
         queryKey: queryKeys.me,
         queryFn: ({ signal }) => getMe(signal),
@@ -54,9 +55,12 @@ export function useSession() {
   return { status, isSignedIn: status === 'signedIn' };
 }
 
-/** Called by the auth forms after a successful register/login response. */
-export async function completeSignIn(tokens: AuthTokens): Promise<void> {
+/** Called by the auth forms after a successful register/login response; `method` says which credentials opened it. */
+export async function completeSignIn(tokens: AuthTokens, method?: SignInMethod): Promise<void> {
   await applyAuthTokens(tokens);
+  if (method) {
+    await rememberSignInMethod(method);
+  }
   await queryClient.invalidateQueries({ queryKey: queryKeys.me });
 }
 
@@ -73,8 +77,19 @@ export async function signOut(): Promise<void> {
   } catch {
     // Offline or already expired: the user still leaves, the server-side token ages out on its own.
   } finally {
-    resetPushRegistration();
-    await endSession();
-    queryClient.removeQueries({ queryKey: queryKeys.me });
+    await clearLocalSession();
   }
+}
+
+/** Forgets the session on this phone without asking the server: logout's last step, and what a deleted account needs (its tokens are already gone). */
+export async function clearLocalSession(): Promise<void> {
+  resetPushRegistration();
+  await endSession();
+  queryClient.removeQueries({ queryKey: queryKeys.me });
+}
+
+/** Whether the signed-in account has a password: `false` for a Google/Apple account, `null` when this session cannot tell. */
+export function useHasPassword(): boolean | null {
+  const method = useSessionStore((state) => state.signInMethod);
+  return method === null ? null : method === 'password';
 }

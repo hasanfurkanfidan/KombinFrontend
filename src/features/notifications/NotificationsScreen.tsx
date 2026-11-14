@@ -107,7 +107,13 @@ export function NotificationsScreen() {
       </View>
     );
   } else if (feed.isError && items.length === 0) {
-    placeholder = <ErrorState body={tr.notifLoadFailed} onRetry={() => void feed.refetch()} />;
+    placeholder = (
+      <ErrorState
+        body={tr.notifLoadFailed}
+        error={feed.error}
+        onRetry={() => void feed.refetch()}
+      />
+    );
   } else if (sections.length === 0) {
     placeholder = (
       <EmptyState

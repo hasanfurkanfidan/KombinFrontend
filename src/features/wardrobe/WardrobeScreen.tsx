@@ -126,7 +126,13 @@ function SignedInWardrobe() {
   if (source.isPending) {
     placeholder = <GridSkeleton tileWidth={tileWidth} />;
   } else if (source.isError && list.length === 0) {
-    placeholder = <ErrorState body={tr.wardrobeLoadFailed} onRetry={() => void source.refetch()} />;
+    placeholder = (
+      <ErrorState
+        body={tr.wardrobeLoadFailed}
+        error={source.error}
+        onRetry={() => void source.refetch()}
+      />
+    );
   }
 
   const emptyWardrobe = !source.isPending && !source.isError && list.length === 0 && !filtered;

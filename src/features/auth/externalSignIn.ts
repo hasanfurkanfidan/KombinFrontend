@@ -8,6 +8,9 @@ import { externalSignIn } from '@/api/endpoints/auth';
 import type { ExternalSignInRequest } from '@/api/models';
 import { tr } from '@/i18n/tr';
 import { completeSignIn } from '@/session/useSession';
+import { rateLimitedText } from '@/utils/rateLimit';
+
+import { isPendingDeletion, usePendingDeletionStore } from './pendingDeletion';
 
 /**
  * Sign in with Google and Apple: the device obtains an ID token, `POST /auth/external` swaps it for our own tokens,
@@ -77,12 +80,23 @@ async function exchange(
   body: ExternalSignInRequest,
   provider: ExternalProvider,
 ): Promise<ExternalSignInResult> {
-  const tokens = await externalSignIn({
-    ...body,
-    deviceName: Device.deviceName ?? null,
-    anonymousId: await getAnonymousId(),
-  });
-  await completeSignIn(tokens);
+  let tokens: Awaited<ReturnType<typeof externalSignIn>>;
+  try {
+    tokens = await externalSignIn({
+      ...body,
+      deviceName: Device.deviceName ?? null,
+      anonymousId: await getAnonymousId(),
+    });
+  } catch (error) {
+    if (error instanceof ApiError && isPendingDeletion(error)) {
+      // The ID token is what proves who is cancelling; it goes to `POST /auth/cancel-deletion` if the user chooses so.
+      usePendingDeletionStore
+        .getState()
+        .begin(error.deletionScheduledFor, { kind: 'external', provider, idToken: body.idToken });
+    }
+    throw error;
+  }
+  await completeSignIn(tokens, 'external');
   track('auth_external', { provider, isNewUser: tokens.isNewUser });
   return { provider, isNewUser: tokens.isNewUser };
 }
@@ -149,6 +163,10 @@ export async function signInWithApple(): Promise<ExternalSignInResult | null> {
 /** Turkish copy for whatever went wrong after the user did pick an account. */
 export function externalSignInMessage(error: unknown): string {
   if (error instanceof ApiError) {
+    const limited = rateLimitedText(error);
+    if (limited) {
+      return limited;
+    }
     switch (error.errorCode) {
       case 'Identity.ExternalTokenInvalid':
         return tr.authExternalTokenInvalid;

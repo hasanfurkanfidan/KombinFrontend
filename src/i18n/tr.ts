@@ -15,6 +15,9 @@ export const tr = {
   errorTitle: 'Bir şeyler ters gitti',
   errorBody: 'Lütfen biraz sonra tekrar dene.',
   errorNetwork: 'Sunucuya ulaşılamadı. İnternet bağlantını kontrol et.',
+  rateLimited: (amount: number | string, unit: string) =>
+    `Çok fazla deneme yaptın. ${amount} ${unit} sonra tekrar dene.`,
+  rateLimitedSoon: 'Çok fazla deneme yaptın. Biraz sonra tekrar dene.',
 
   // Validation
   validationEmailRequired: 'E-posta adresini gir',
@@ -52,6 +55,40 @@ export const tr = {
   authExternalProviderDisabled: 'Bu giriş yöntemi şu an kullanılamıyor.',
   authExternalProviderUnavailable: 'Giriş servisine şu an ulaşılamıyor. Biraz sonra tekrar dene.',
   authEmailTaken: 'Bu e-posta adresiyle zaten bir hesap var',
+  authAccountDisabled: 'Bu hesap kapatıldı.',
+  authAccountDisabledContact: (contact: string) => `Bu hesap kapatıldı. Destek için ${contact}`,
+  authConsentBefore: 'Devam ederek ',
+  authConsentTerms: 'Kullanım şartları',
+  authConsentMiddle: "'nı ve ",
+  authConsentPrivacy: 'Gizlilik politikası',
+  authConsentAfter: "'nı kabul etmiş olursun.",
+
+  // Legal pages (opened in the in-app browser from the URLs of GET /legal)
+  legalPrivacy: 'Gizlilik politikası',
+  legalTerms: 'Kullanım şartları',
+  legalOpenFailed: 'Sayfa şu an açılamadı. Biraz sonra tekrar dene.',
+
+  // Account: delete, pending deletion
+  profileAccount: 'Hesap',
+  profileDeleteAccount: 'Hesabımı sil',
+  deleteTitle: 'Hesabını sil',
+  deleteIntro: 'Hesabını silmeyi seçersen şunlar olur:',
+  deleteStepEverything:
+    'Dolabın, kombinlerin, paylaşımların, tarzların ve ölçülerin 7 gün sonra tamamen silinir.',
+  deleteStepPosts: 'Paylaşımların hemen herkese gizlenir.',
+  deleteStepCancel: '7 gün içinde tekrar giriş yaparsan silmeyi iptal edebilirsin.',
+  deleteConfirmLabel: 'Onaylamak için SİL yaz',
+  deleteConfirmPlaceholder: 'SİL',
+  deletePasswordRequired: 'Şifreni gir',
+  deletePasswordWrong: 'Şifre hatalı',
+  deleteSubmit: 'Hesabımı kalıcı olarak sil',
+  deleteScheduledToast: (date: string) => `Hesabın ${date} tarihinde silinecek`,
+  pendingTitle: (date: string) => `Hesabın ${date} tarihinde silinecek`,
+  pendingTitleNoDate: 'Hesabın silinmek üzere',
+  pendingBody: 'Silmeyi iptal edersen hesabın ve verilerin olduğu gibi kalır.',
+  pendingCancel: 'Silmeyi iptal et ve giriş yap',
+  pendingDismiss: 'Vazgeç',
+  pendingFailed: 'Silme iptal edilemedi. Lütfen tekrar dene.',
 
   // Discover (Keşfet)
   discoverGreetingMorning: 'Günaydın',

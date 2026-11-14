@@ -5,6 +5,8 @@ import { Button } from '@/components/Button';
 import { tr } from '@/i18n/tr';
 import { theme } from '@/theme';
 
+import { accountDisabledMessage } from './accountMessages';
+import { isAccountDisabled, isPendingDeletion } from './pendingDeletion';
 import {
   externalSignInMessage,
   externalSignInSupported,
@@ -18,6 +20,8 @@ import {
 interface ExternalSignInButtonsProps {
   /** Called after the tokens are stored. `result.isNewUser` is informational: onboarding is `OnboardingGate`'s job. */
   onSuccess: (result: ExternalSignInResult) => void;
+  /** The ID token was valid but the account is waiting to be deleted: the screen offers to cancel it. */
+  onPendingDeletion: () => void;
 }
 
 type AppleModule = NonNullable<Awaited<ReturnType<typeof loadAppleAuthentication>>>;
@@ -27,7 +31,10 @@ type AppleModule = NonNullable<Awaited<ReturnType<typeof loadAppleAuthentication
  * divider, for the top of the sign-in and register screens. Renders nothing where the native modules do not exist
  * (Expo Go, web), so the e-mail form stands alone there.
  */
-export function ExternalSignInButtons({ onSuccess }: ExternalSignInButtonsProps) {
+export function ExternalSignInButtons({
+  onSuccess,
+  onPendingDeletion,
+}: ExternalSignInButtonsProps) {
   const supported = externalSignInSupported();
   const [apple, setApple] = useState<AppleModule | null>(null);
   const [busy, setBusy] = useState<ExternalProvider | null>(null);
@@ -65,7 +72,14 @@ export function ExternalSignInButtons({ onSuccess }: ExternalSignInButtonsProps)
         onSuccess(result);
       }
     } catch (failure) {
-      setError(externalSignInMessage(failure));
+      if (isPendingDeletion(failure)) {
+        // `exchange` has already kept the ID token for the cancel call.
+        onPendingDeletion();
+      } else if (isAccountDisabled(failure)) {
+        setError(await accountDisabledMessage());
+      } else {
+        setError(externalSignInMessage(failure));
+      }
     } finally {
       setBusy(null);
     }

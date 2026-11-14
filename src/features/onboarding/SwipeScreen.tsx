@@ -106,7 +106,11 @@ export function SwipeScreen({ personaId, flow, returnTo }: SwipeScreenProps) {
       returnTo={returnTo}
     >
       {cards.isError ? (
-        <ErrorState title={tr.onboardingSwipeLoadFailed} onRetry={() => void cards.refetch()} />
+        <ErrorState
+          title={tr.onboardingSwipeLoadFailed}
+          error={cards.error}
+          onRetry={() => void cards.refetch()}
+        />
       ) : !items ? (
         <View style={styles.skeleton}>
           <Skeleton height={theme.sizes.swipeCardHeight} radius={theme.radius.panel} />

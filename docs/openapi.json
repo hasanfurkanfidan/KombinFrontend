@@ -10,6 +10,26 @@
     }
   ],
   "paths": {
+    "/api/v1/legal": {
+      "get": {
+        "tags": [
+          "Legal"
+        ],
+        "operationId": "GetLegal",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LegalResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/auth/register": {
       "post": {
         "tags": [
@@ -106,6 +126,16 @@
                 }
               }
             }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
           }
         }
       }
@@ -149,6 +179,16 @@
           },
           "401": {
             "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
             "content": {
               "application/problem+json": {
                 "schema": {
@@ -206,6 +246,16 @@
                 }
               }
             }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
           }
         }
       }
@@ -243,6 +293,86 @@
         }
       }
     },
+    "/api/v1/auth/cancel-deletion": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "operationId": "CancelDeletion",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CancelDeletionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthTokensResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/me": {
       "get": {
         "tags": [
@@ -262,6 +392,166 @@
           },
           "401": {
             "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Me"
+        ],
+        "operationId": "DeleteAccount",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteAccountRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "description": "Accepted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteAccountResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/internal/identity/users/{userId}/disable": {
+      "post": {
+        "tags": [
+          "Identity (internal)"
+        ],
+        "operationId": "DisableAccount",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountAccessResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/internal/identity/users/{userId}/enable": {
+      "post": {
+        "tags": [
+          "Identity (internal)"
+        ],
+        "operationId": "EnableAccount",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountAccessResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
             "content": {
               "application/problem+json": {
                 "schema": {
@@ -5332,6 +5622,55 @@
             }
           }
         }
+      },
+      "delete": {
+        "tags": [
+          "Social (internal)"
+        ],
+        "operationId": "RevokeCreator",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreatorProfileResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/api/v1/internal/social/review-queue": {
@@ -5570,6 +5909,40 @@
         },
         "description": "The version the user saw and accepted; only the current one is accepted."
       },
+      "AccountAccessResponse": {
+        "required": [
+          "userId",
+          "isDisabled",
+          "disabledAt",
+          "revokedTokens"
+        ],
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "isDisabled": {
+            "type": "boolean"
+          },
+          "disabledAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "revokedTokens": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          }
+        },
+        "description": "What disabling or enabling did. `RevokedTokens` is how many refresh tokens this call ended (0 when enabling)."
+      },
       "AddFromProductRequest": {
         "required": [
           "productId",
@@ -5780,6 +6153,54 @@
             "type": "string"
           }
         }
+      },
+      "CancelDeletionRequest": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "password": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "provider": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "idToken": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "nonce": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "deviceName": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "anonymousId": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        },
+        "description": "The same credentials as signing in: `Email` and `Password`, or `Provider` and `IdToken` (with `Nonce` when the app\nused one). They are what proves who is cancelling; nothing else in the body is trusted."
       },
       "CategoryCount": {
         "required": [
@@ -6436,6 +6857,46 @@
         },
         "description": "`Outfit` is null only when nothing wearable could be built (then `Message` says so). `WardrobeEmpty` means the outfits\nare catalog shopping ideas (`kind` Shopping, `completeness` CatalogOnly). `Weather` is the forecast used, if any."
       },
+      "DeleteAccountRequest": {
+        "required": [
+          "password",
+          "confirm"
+        ],
+        "type": "object",
+        "properties": {
+          "password": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "confirm": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        },
+        "description": "`Password` is required for an account that has one; `Confirm` is the word \"SİL\" (any casing)."
+      },
+      "DeleteAccountResponse": {
+        "required": [
+          "deletionRequestedAt",
+          "deletionScheduledFor"
+        ],
+        "type": "object",
+        "properties": {
+          "deletionRequestedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "deletionScheduledFor": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "description": "`DeletionScheduledFor` is the date the data will be gone; signing in again before it offers to cancel."
+      },
       "EarningsEstimate": {
         "required": [
           "amount",
@@ -6710,6 +7171,30 @@
         "format": "binary"
       },
       "JsonElement": { },
+      "LegalResponse": {
+        "required": [
+          "version",
+          "privacyUrl",
+          "termsUrl",
+          "deleteAccountUrl"
+        ],
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "string"
+          },
+          "privacyUrl": {
+            "type": "string"
+          },
+          "termsUrl": {
+            "type": "string"
+          },
+          "deleteAccountUrl": {
+            "type": "string"
+          }
+        },
+        "description": "What the app needs to link to the legal texts and to know when to ask users to read them again."
+      },
       "LensBox": {
         "required": [
           "x",
@@ -8791,7 +9276,8 @@
           "Live",
           "Hidden",
           "Deleted",
-          "Failed"
+          "Failed",
+          "AccountPending"
         ],
         "description": "`Processing` → `Blocked` | `NeedsReview` | `Draft` (or `Failed` when the photo could not be processed); the\nauthor's confirmation turns a `Draft` into `Live` (a `NeedsReview` post waits for a reviewer). Three reports hide a\n`Live` post. `Deleted` is a tombstone until the purge job."
       },
@@ -10124,9 +10610,15 @@
               "null",
               "string"
             ]
+          },
+          "reason": {
+            "type": [
+              "null",
+              "string"
+            ]
           }
         },
-        "description": "`Decision`: `Approve` or `Remove`."
+        "description": "`Decision`: `Approve`, `Remove` or `Keep` (leave it as it is, at the back of the queue). `Reason` is what the\nauthor reads when the post is removed (at most 200 characters; the standard copy when left out)."
       },
       "ReviewPostResponse": {
         "required": [
@@ -12733,10 +13225,16 @@
   },
   "tags": [
     {
+      "name": "Legal"
+    },
+    {
       "name": "Auth"
     },
     {
       "name": "Me"
+    },
+    {
+      "name": "Identity (internal)"
     },
     {
       "name": "Catalog"

@@ -9,7 +9,8 @@ export const queryClient = new QueryClient({
     queries: {
       staleTime: 60_000,
       retry: (failureCount, error) => {
-        // A 4xx answer is final; only connection problems and 5xx are worth another attempt.
+        // A 4xx answer is final (a 429 included: retrying only extends the wait); only connection problems and 5xx
+        // are worth another attempt.
         const clientError = error instanceof ApiError && error.status >= 400 && error.status < 500;
         return !clientError && failureCount < MAX_RETRIES;
       },

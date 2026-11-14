@@ -118,7 +118,11 @@ function AlertsSection({ segment, onChangeSegment }: SectionProps) {
       ListHeaderComponent={header}
       ListEmptyComponent={
         alerts.isError ? (
-          <ErrorState body={tr.trackLoadFailed} onRetry={() => void alerts.refetch()} />
+          <ErrorState
+            body={tr.trackLoadFailed}
+            error={alerts.error}
+            onRetry={() => void alerts.refetch()}
+          />
         ) : alerts.isPending ? (
           <View style={styles.skeletons}>
             <Skeleton height={104} radius={theme.radius.tile} />
@@ -162,7 +166,11 @@ function SavedSection({ segment, onChangeSegment }: SectionProps) {
       header={header}
       placeholder={
         saved.isError ? (
-          <ErrorState body={tr.trackLoadFailed} onRetry={() => void saved.refetch()} />
+          <ErrorState
+            body={tr.trackLoadFailed}
+            error={saved.error}
+            onRetry={() => void saved.refetch()}
+          />
         ) : saved.isPending ? (
           <ProductGridSkeleton />
         ) : (

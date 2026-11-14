@@ -90,7 +90,11 @@ export function SizeMapScreen() {
           </View>
 
           {sizes.isError ? (
-            <ErrorState body={tr.sizeMapLoadFailed} onRetry={() => void sizes.refetch()} />
+            <ErrorState
+              body={tr.sizeMapLoadFailed}
+              error={sizes.error}
+              onRetry={() => void sizes.refetch()}
+            />
           ) : sizes.isPending ? (
             <Skeleton height={160} radius={theme.radius.control} />
           ) : rows.length === 0 ? (

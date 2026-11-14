@@ -105,7 +105,7 @@ function ProductsSection() {
 
   let placeholder = <ProductGridSkeleton />;
   if (products.isError && !products.isFetchingNextPage && items.length === 0) {
-    placeholder = <ErrorState onRetry={() => void products.refetch()} />;
+    placeholder = <ErrorState error={products.error} onRetry={() => void products.refetch()} />;
   } else if (!products.isPending && personasReady && items.length === 0) {
     placeholder = (
       <EmptyState

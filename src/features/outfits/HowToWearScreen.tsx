@@ -53,7 +53,13 @@ export function HowToWearScreen({ productId, wardrobeItemId }: HowToWearScreenPr
       </View>
     );
   } else if (query.isError) {
-    body = <ErrorState title={tr.outfitLoadFailed} onRetry={() => void query.refetch()} />;
+    body = (
+      <ErrorState
+        title={tr.outfitLoadFailed}
+        error={query.error}
+        onRetry={() => void query.refetch()}
+      />
+    );
   } else if (outfits.length === 0) {
     body = (
       <EmptyState

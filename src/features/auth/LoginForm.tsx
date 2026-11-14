@@ -10,15 +10,20 @@ import { TextField } from '@/components/TextField';
 import { tr } from '@/i18n/tr';
 import { completeSignIn } from '@/session/useSession';
 import { theme } from '@/theme';
+import { rateLimitedText } from '@/utils/rateLimit';
 
+import { accountDisabledMessage } from './accountMessages';
 import { applyFieldErrors } from './formErrors';
+import { isAccountDisabled, isPendingDeletion, usePendingDeletionStore } from './pendingDeletion';
 import { loginSchema, type LoginValues } from './schemas';
 
 interface LoginFormProps {
   onSuccess: () => void;
+  /** The password was right but the account is waiting to be deleted: the screen offers to cancel it. */
+  onPendingDeletion: () => void;
 }
 
-export function LoginForm({ onSuccess }: LoginFormProps) {
+export function LoginForm({ onSuccess, onPendingDeletion }: LoginFormProps) {
   const {
     control,
     handleSubmit,
@@ -31,11 +36,25 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
 
   const submit = handleSubmit(async (values) => {
     try {
-      await completeSignIn(await login({ ...values, anonymousId: await getAnonymousId() }));
+      await completeSignIn(
+        await login({ ...values, anonymousId: await getAnonymousId() }),
+        'password',
+      );
       onSuccess();
     } catch (error) {
       if (!(error instanceof ApiError)) {
         setError('root', { message: tr.errorBody });
+      } else if (isPendingDeletion(error)) {
+        usePendingDeletionStore.getState().begin(error.deletionScheduledFor, {
+          kind: 'password',
+          email: values.email,
+          password: values.password,
+        });
+        onPendingDeletion();
+      } else if (isAccountDisabled(error)) {
+        setError('root', { message: await accountDisabledMessage() });
+      } else if (error.isRateLimited) {
+        setError('root', { message: rateLimitedText(error) ?? tr.errorBody });
       } else if (error.errorCode === 'Identity.InvalidCredentials') {
         setError('root', { message: tr.authInvalidCredentials });
       } else if (!applyFieldErrors(error, setError, ['email', 'password'])) {

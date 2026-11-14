@@ -1,6 +1,9 @@
 import { request } from '../client';
 import type {
   AuthTokens,
+  CancelDeletionRequest,
+  DeleteAccountRequest,
+  DeleteAccountResponse,
   ExternalSignInRequest,
   LoginRequest,
   LogoutRequest,
@@ -29,4 +32,14 @@ export function logout(refreshToken: string, expoPushToken?: string | null): Pro
 
 export function getMe(signal?: AbortSignal): Promise<Me> {
   return request<Me>('/api/v1/me', { auth: true, signal });
+}
+
+/** `DELETE /me`: starts the 7-day deletion. A password account sends its password; `confirm` is the word "SİL". */
+export function deleteAccount(body: DeleteAccountRequest): Promise<DeleteAccountResponse> {
+  return request<DeleteAccountResponse>('/api/v1/me', { method: 'DELETE', body, auth: true });
+}
+
+/** Takes a pending deletion back and signs in: the same credentials as the sign-in that answered 403 `AccountPendingDeletion`. */
+export function cancelDeletion(body: CancelDeletionRequest): Promise<AuthTokens> {
+  return request<AuthTokens>('/api/v1/auth/cancel-deletion', { method: 'POST', body });
 }
