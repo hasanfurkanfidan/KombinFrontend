@@ -1,10 +1,9 @@
 import { useEffect, type ReactNode } from 'react';
-import {
-  Archivo_400Regular,
-  Archivo_500Medium,
-  Archivo_600SemiBold,
-  Archivo_700Bold,
-} from '@expo-google-fonts/archivo';
+// One subpath per weight: the package root requires all 18 faces, which would all land in the bundle.
+import { Archivo_400Regular } from '@expo-google-fonts/archivo/400Regular';
+import { Archivo_500Medium } from '@expo-google-fonts/archivo/500Medium';
+import { Archivo_600SemiBold } from '@expo-google-fonts/archivo/600SemiBold';
+import { Archivo_700Bold } from '@expo-google-fonts/archivo/700Bold';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { useRouter } from 'expo-router';
 import { useFonts } from 'expo-font';

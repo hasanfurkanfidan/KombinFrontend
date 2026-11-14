@@ -4,6 +4,7 @@ import { useRouter } from 'expo-router';
 
 import type { Persona } from '@/api/models';
 import { Button } from '@/components/Button';
+import { Card } from '@/components/Card';
 import { ErrorState } from '@/components/ErrorState';
 import { Icon } from '@/components/Icon';
 import { Screen } from '@/components/Screen';
@@ -57,7 +58,7 @@ export function ProfileScreen() {
       <Text style={styles.title}>{tr.profileTitle}</Text>
 
       {!isSignedIn ? (
-        <View style={styles.card}>
+        <Card>
           <Text style={styles.cardTitle}>{tr.profileLoggedOutTitle}</Text>
           <Text style={styles.body}>{tr.profileLoggedOutBody}</Text>
           <Button
@@ -65,7 +66,7 @@ export function ProfileScreen() {
             onPress={() => router.push('/login')}
             testID="profile-sign-in"
           />
-        </View>
+        </Card>
       ) : me.isError ? (
         <ErrorState body={tr.profileLoadFailed} onRetry={() => void me.refetch()} />
       ) : (
@@ -265,12 +266,6 @@ const styles = StyleSheet.create({
   title: {
     ...theme.typography.display,
     color: theme.colors.ink,
-  },
-  card: {
-    backgroundColor: theme.colors.surface,
-    borderRadius: theme.radius.tile,
-    padding: theme.spacing.xl,
-    gap: theme.spacing.lg,
   },
   cardTitle: {
     ...theme.typography.subhead,

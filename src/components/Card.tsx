@@ -23,8 +23,8 @@ export function Card({ children, tone = 'surface', style, testID }: CardProps) {
 const styles = StyleSheet.create({
   base: {
     borderRadius: theme.radius.panel,
-    padding: theme.spacing.lg,
-    gap: theme.spacing.md,
+    padding: theme.spacing.xl,
+    gap: theme.spacing.lg,
   },
   surface: {
     backgroundColor: theme.colors.surface,

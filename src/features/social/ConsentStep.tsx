@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
     gap: theme.spacing.lg,
   },
   title: {
-    ...theme.typography.display,
+    ...theme.typography.title,
     color: theme.colors.ink,
   },
   text: {

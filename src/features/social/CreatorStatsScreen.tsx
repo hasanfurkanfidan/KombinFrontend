@@ -3,6 +3,7 @@ import { useRouter } from 'expo-router';
 
 import { ApiError } from '@/api/client';
 import type { CreatorStats } from '@/api/models';
+import { Card } from '@/components/Card';
 import { ErrorState } from '@/components/ErrorState';
 import { Icon } from '@/components/Icon';
 import { Screen } from '@/components/Screen';
@@ -48,13 +49,13 @@ function StatsBody({ stats }: { stats: CreatorStats }) {
 
   return (
     <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-      <View style={styles.hero} testID="stats-estimate">
+      <Card style={styles.hero} testID="stats-estimate">
         <Text style={styles.heroLabel}>{tr.creatorDays(toNumber(stats.days))}</Text>
         <Text style={styles.heroAmount}>{formatTry(estimate.amount)}</Text>
         <View style={styles.estimateChip}>
           <Text style={styles.estimateText}>{tr.creatorEstimated}</Text>
         </View>
-      </View>
+      </Card>
       <Text style={styles.note}>
         {tr.creatorHow(
           toNumber(estimate.clicks),
@@ -126,9 +127,6 @@ const styles = StyleSheet.create({
   },
   hero: {
     gap: theme.spacing.xs,
-    padding: theme.spacing.xl,
-    borderRadius: theme.radius.panel,
-    backgroundColor: theme.colors.surface,
   },
   heroLabel: {
     ...theme.typography.caption,

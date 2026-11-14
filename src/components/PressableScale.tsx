@@ -12,7 +12,8 @@ import { theme } from '@/theme';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
-const easeOut = Easing.out(Easing.quad);
+// Ease-out quart: fast start, soft landing, no bounce.
+const easeOut = Easing.out(Easing.poly(4));
 
 export interface PressableScaleProps extends Omit<PressableProps, 'style' | 'children'> {
   /** A plain style: the press feedback is the scale, so there is no `pressed` callback to style with. */

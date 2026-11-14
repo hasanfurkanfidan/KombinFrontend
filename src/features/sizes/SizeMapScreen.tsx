@@ -4,6 +4,7 @@ import { useRouter } from 'expo-router';
 
 import type { SizeEntry } from '@/api/models';
 import { Button } from '@/components/Button';
+import { Card } from '@/components/Card';
 import { EmptyState } from '@/components/EmptyState';
 import { ErrorState } from '@/components/ErrorState';
 import { Icon } from '@/components/Icon';
@@ -174,7 +175,7 @@ function MeasurementsCard({
     { label: `${tr.measurementWaist} ${tr.measurementUnitCm}`, value: profile?.waistCm },
   ];
   return (
-    <View style={styles.card}>
+    <Card>
       <Text style={styles.cardLabel}>{tr.measurementsTitle}</Text>
       <View style={styles.cardRow}>
         {cells.map((cell) => (
@@ -199,7 +200,7 @@ function MeasurementsCard({
         style={styles.cardButton}
         testID="measurements-edit"
       />
-    </View>
+    </Card>
   );
 }
 
@@ -217,13 +218,6 @@ const styles = StyleSheet.create({
   title: {
     ...theme.typography.title,
     color: theme.colors.ink,
-  },
-  // Was a black card: a surface panel with ink text.
-  card: {
-    backgroundColor: theme.colors.surface,
-    borderRadius: theme.radius.panel,
-    padding: theme.spacing.xl,
-    gap: theme.spacing.lg,
   },
   cardLabel: {
     ...theme.typography.captionStrong,
