@@ -91,7 +91,7 @@ export function SizeMapScreen() {
           {sizes.isError ? (
             <ErrorState body={tr.sizeMapLoadFailed} onRetry={() => void sizes.refetch()} />
           ) : sizes.isPending ? (
-            <Skeleton height={160} radius={theme.radius.lg} />
+            <Skeleton height={160} radius={theme.radius.control} />
           ) : rows.length === 0 ? (
             <Text style={styles.empty}>{tr.sizeMapEmpty}</Text>
           ) : (
@@ -120,7 +120,7 @@ export function SizeMapScreen() {
           )}
 
           <View style={styles.info}>
-            <Icon name="info" size={18} color={theme.colors.accent} />
+            <Icon name="info" size={18} color={theme.colors.ink2} />
             <Text style={styles.infoText}>{tr.sizeMapInfo}</Text>
           </View>
 
@@ -180,7 +180,7 @@ function MeasurementsCard({
         {cells.map((cell) => (
           <View key={cell.label} style={styles.cardCell}>
             {loading ? (
-              <Skeleton height={22} width={36} radius={theme.radius.sm} />
+              <Skeleton height={22} width={36} radius={theme.radius.tag} />
             ) : (
               <Text style={styles.cardValue}>
                 {cell.value === null || cell.value === undefined
@@ -218,15 +218,16 @@ const styles = StyleSheet.create({
     ...theme.typography.title,
     color: theme.colors.ink,
   },
+  // Was a black card: a surface panel with ink text.
   card: {
-    backgroundColor: theme.colors.ink,
-    borderRadius: theme.radius.xl,
+    backgroundColor: theme.colors.surface,
+    borderRadius: theme.radius.panel,
     padding: theme.spacing.xl,
     gap: theme.spacing.lg,
   },
   cardLabel: {
     ...theme.typography.captionStrong,
-    color: theme.colors.borderStrong,
+    color: theme.colors.muted,
   },
   cardRow: {
     flexDirection: 'row',
@@ -237,17 +238,15 @@ const styles = StyleSheet.create({
   },
   cardValue: {
     ...theme.typography.priceLarge,
-    color: theme.colors.onInk,
+    color: theme.colors.ink,
   },
   cardCaption: {
     ...theme.typography.caption,
-    color: theme.colors.borderStrong,
+    color: theme.colors.muted,
   },
   cardButton: {
     alignSelf: 'flex-start',
     height: theme.sizes.touch,
-    backgroundColor: 'transparent',
-    borderColor: theme.colors.muted,
   },
   headingBlock: {
     gap: theme.spacing.xs,
@@ -265,9 +264,9 @@ const styles = StyleSheet.create({
     color: theme.colors.muted,
   },
   table: {
-    borderWidth: 1,
+    borderWidth: StyleSheet.hairlineWidth,
     borderColor: theme.colors.line,
-    borderRadius: theme.radius.lg,
+    borderRadius: theme.radius.tile,
     overflow: 'hidden',
   },
   tableRow: {
@@ -276,12 +275,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: theme.spacing.lg,
   },
   tableHead: {
-    height: 40,
+    minHeight: theme.sizes.touch - theme.spacing.xs,
     backgroundColor: theme.colors.surface,
   },
   tableBody: {
     minHeight: theme.sizes.touch + theme.spacing.sm,
-    borderTopWidth: 1,
+    borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: theme.colors.line,
   },
   brandCol: {
@@ -307,18 +306,18 @@ const styles = StyleSheet.create({
   },
   emptyCell: {
     ...theme.typography.body,
-    color: theme.colors.borderStrong,
+    color: theme.colors.muted,
   },
   info: {
     flexDirection: 'row',
     gap: theme.spacing.md,
     padding: theme.spacing.lg,
-    borderRadius: theme.radius.lg,
-    backgroundColor: theme.colors.accentSoft,
+    borderRadius: theme.radius.tile,
+    backgroundColor: theme.colors.surface,
   },
   infoText: {
     ...theme.typography.caption,
     flex: 1,
-    color: theme.colors.accent,
+    color: theme.colors.ink2,
   },
 });

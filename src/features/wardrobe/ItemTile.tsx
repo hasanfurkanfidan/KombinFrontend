@@ -166,7 +166,7 @@ const styles = StyleSheet.create({
   },
   pillTextLight: {
     ...theme.typography.captionMedium,
-    color: theme.colors.onImage,
+    color: theme.colors.onDanger,
   },
   failedBadge: {
     position: 'absolute',
@@ -181,6 +181,6 @@ const styles = StyleSheet.create({
   },
   failedMark: {
     ...theme.typography.label,
-    color: theme.colors.onImage,
+    color: theme.colors.onDanger,
   },
 });

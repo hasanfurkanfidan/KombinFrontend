@@ -203,7 +203,7 @@ export function LensScreen({ entry }: LensScreenProps) {
                 testID="lens-audience"
               >
                 <Text style={styles.audienceText}>{audienceLabels[audience]}</Text>
-                <Icon name="close" size={14} color={theme.colors.onInk} />
+                <Icon name="close" size={14} color={theme.colors.primary} />
               </Pressable>
             </View>
           ) : null}
@@ -339,17 +339,20 @@ const styles = StyleSheet.create({
     paddingHorizontal: theme.screenPaddingX,
   },
   audienceChip: {
+    // The selected-chip look: the audience is a filter the user can drop.
     height: theme.sizes.chipHeight,
-    borderRadius: theme.radius.pill,
-    paddingHorizontal: theme.spacing.lg,
+    borderRadius: theme.radius.control,
+    borderWidth: 1,
+    borderColor: theme.colors.primary,
+    paddingHorizontal: theme.spacing.md,
     flexDirection: 'row',
     alignItems: 'center',
     gap: theme.spacing.xs,
-    backgroundColor: theme.colors.ink,
+    backgroundColor: theme.colors.primarySoft,
   },
   audienceText: {
     ...theme.typography.bodyMedium,
-    color: theme.colors.onInk,
+    color: theme.colors.primary,
   },
   noRegion: {
     paddingHorizontal: theme.screenPaddingX,

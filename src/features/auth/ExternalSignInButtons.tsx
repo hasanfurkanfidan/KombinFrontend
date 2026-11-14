@@ -86,8 +86,9 @@ export function ExternalSignInButtons({ onSuccess }: ExternalSignInButtonsProps)
         {apple ? (
           <apple.AppleAuthenticationButton
             buttonType={apple.AppleAuthenticationButtonType.CONTINUE}
-            buttonStyle={apple.AppleAuthenticationButtonStyle.BLACK}
-            cornerRadius={theme.radius.lg}
+            // Apple's outlined style: the app has no black buttons, and the HIG allows white-outline.
+            buttonStyle={apple.AppleAuthenticationButtonStyle.WHITE_OUTLINE}
+            cornerRadius={theme.radius.control}
             onPress={() => void run('apple')}
             style={[styles.appleButton, busy !== null && styles.dimmed]}
           />

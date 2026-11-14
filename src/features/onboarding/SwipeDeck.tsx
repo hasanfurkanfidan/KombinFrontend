@@ -214,7 +214,7 @@ export function SwipeDeck({ cards, onSwipe, onFinish }: SwipeDeckProps) {
           style={[styles.button, styles.buttonLarge, styles.buttonLike]}
           testID="swipe-like"
         >
-          <Icon name="heart" size={26} color={theme.colors.onInk} />
+          <Icon name="heart" size={26} color={theme.colors.onPrimary} />
         </Pressable>
       </View>
     </View>
@@ -233,7 +233,7 @@ function CardFace({
     <View style={styles.face}>
       {failed ? (
         <View style={styles.imageFallback}>
-          <Icon name="shirt" size={64} color={theme.colors.borderStrong} strokeWidth={1.2} />
+          <Icon name="shirt" size={64} color={theme.colors.control} strokeWidth={1.2} />
         </View>
       ) : (
         <Image
@@ -316,7 +316,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 0,
     height: theme.sizes.swipeCardHeight,
-    borderRadius: theme.radius.xxl,
+    borderRadius: theme.radius.panel,
     backgroundColor: theme.colors.surface,
     overflow: 'hidden',
     borderWidth: 1,
@@ -349,8 +349,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: theme.spacing.md,
     padding: theme.spacing.md,
-    borderRadius: theme.radius.lg,
-    backgroundColor: theme.colors.ink2,
+    borderRadius: theme.radius.control,
+    backgroundColor: theme.colors.surface,
   },
   labelText: {
     flex: 1,
@@ -358,34 +358,35 @@ const styles = StyleSheet.create({
   },
   labelTitle: {
     ...theme.typography.label,
-    color: theme.colors.onInk,
+    color: theme.colors.ink,
   },
   labelSub: {
     ...theme.typography.caption,
-    color: theme.colors.borderStrong,
+    color: theme.colors.muted,
   },
   progress: {
-    paddingHorizontal: theme.spacing.md,
-    paddingVertical: theme.spacing.xs,
-    borderRadius: theme.radius.pill,
-    backgroundColor: theme.colors.muted,
+    paddingHorizontal: theme.spacing.sm,
+    paddingVertical: 2,
+    borderRadius: theme.radius.tag,
+    backgroundColor: theme.colors.bg,
   },
   progressText: {
     ...theme.typography.captionMedium,
-    color: theme.colors.onInk,
+    fontVariant: ['tabular-nums'],
+    color: theme.colors.ink2,
   },
   stamp: {
     position: 'absolute',
     top: theme.spacing.xxl,
     paddingHorizontal: theme.spacing.md,
     paddingVertical: theme.spacing.xs,
-    borderRadius: theme.radius.sm,
+    borderRadius: theme.radius.tag,
     borderWidth: 3,
     backgroundColor: theme.colors.bg,
   },
   stampLike: {
     left: theme.spacing.xl,
-    borderColor: theme.colors.accent,
+    borderColor: theme.colors.primary,
   },
   stampNope: {
     right: theme.spacing.xl,
@@ -395,7 +396,7 @@ const styles = StyleSheet.create({
     ...theme.typography.subhead,
   },
   stampTextLike: {
-    color: theme.colors.accent,
+    color: theme.colors.primary,
   },
   stampTextNope: {
     color: theme.colors.danger,
@@ -406,24 +407,25 @@ const styles = StyleSheet.create({
     gap: theme.spacing.xl,
   },
   button: {
-    borderRadius: theme.radius.pill,
     alignItems: 'center',
     justifyContent: 'center',
   },
   buttonLarge: {
     width: theme.sizes.swipeButtonLarge,
     height: theme.sizes.swipeButtonLarge,
+    borderRadius: theme.radius.tile,
   },
   buttonSmall: {
     width: theme.sizes.swipeButtonSmall,
     height: theme.sizes.swipeButtonSmall,
+    borderRadius: theme.radius.control,
   },
   buttonOutline: {
     backgroundColor: theme.colors.bg,
     borderWidth: 1,
-    borderColor: theme.colors.line,
+    borderColor: theme.colors.control,
   },
   buttonLike: {
-    backgroundColor: theme.colors.accent,
+    backgroundColor: theme.colors.primary,
   },
 });

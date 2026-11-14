@@ -85,9 +85,9 @@ export function PreferencesSheet({ visible, onClose }: PreferencesSheetProps) {
         <PreferencesForm initial={prefs.data} onSaved={onClose} />
       ) : (
         <View style={styles.skeletons}>
-          <Skeleton height={48} radius={theme.radius.lg} />
-          <Skeleton height={48} radius={theme.radius.lg} />
-          <Skeleton height={48} radius={theme.radius.lg} />
+          <Skeleton height={48} radius={theme.radius.control} />
+          <Skeleton height={48} radius={theme.radius.control} />
+          <Skeleton height={48} radius={theme.radius.control} />
         </View>
       )}
     </BottomSheet>
@@ -242,7 +242,7 @@ function ToggleRow({ title, caption, value, onChange, testID }: ToggleRowProps) 
         accessibilityLabel={title}
         value={value}
         onValueChange={onChange}
-        trackColor={{ false: theme.colors.surface, true: theme.colors.ink }}
+        trackColor={{ false: theme.colors.control, true: theme.colors.primary }}
         thumbColor={theme.colors.bg}
         testID={testID}
       />
@@ -280,7 +280,7 @@ const styles = StyleSheet.create({
   notice: {
     gap: theme.spacing.md,
     padding: theme.spacing.lg,
-    borderRadius: theme.radius.lg,
+    borderRadius: theme.radius.control,
     backgroundColor: theme.colors.surface,
   },
   noticeText: {

@@ -109,7 +109,7 @@ export function SwipeScreen({ personaId, flow, returnTo }: SwipeScreenProps) {
         <ErrorState title={tr.onboardingSwipeLoadFailed} onRetry={() => void cards.refetch()} />
       ) : !items ? (
         <View style={styles.skeleton}>
-          <Skeleton height={theme.sizes.swipeCardHeight} radius={theme.radius.xxl} />
+          <Skeleton height={theme.sizes.swipeCardHeight} radius={theme.radius.panel} />
         </View>
       ) : items.length === 0 ? (
         // Nothing left to show (e.g. every card was already swiped): move on.

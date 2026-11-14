@@ -30,7 +30,7 @@ jest.mock('expo-apple-authentication', () => {
   return {
     AppleAuthenticationScope: { FULL_NAME: 0, EMAIL: 1 },
     AppleAuthenticationButtonType: { CONTINUE: 1 },
-    AppleAuthenticationButtonStyle: { BLACK: 2 },
+    AppleAuthenticationButtonStyle: { BLACK: 2, WHITE_OUTLINE: 1 },
     AppleAuthenticationButton: (props: { onPress: () => void }) =>
       createElement(Pressable, { testID: 'apple-button', onPress: props.onPress }),
     isAvailableAsync: jest.fn(),

@@ -121,8 +121,8 @@ function AlertsSection({ segment, onChangeSegment }: SectionProps) {
           <ErrorState body={tr.trackLoadFailed} onRetry={() => void alerts.refetch()} />
         ) : alerts.isPending ? (
           <View style={styles.skeletons}>
-            <Skeleton height={104} radius={theme.radius.xl} />
-            <Skeleton height={104} radius={theme.radius.xl} />
+            <Skeleton height={104} radius={theme.radius.tile} />
+            <Skeleton height={104} radius={theme.radius.tile} />
           </View>
         ) : (
           <EmptyState
@@ -214,19 +214,20 @@ const styles = StyleSheet.create({
   stat: {
     flex: 1,
     padding: theme.spacing.lg,
-    borderRadius: theme.radius.lg,
+    borderRadius: theme.radius.tile,
     backgroundColor: theme.colors.surface,
     gap: theme.spacing.xs,
   },
+  // Savings are a price signal: chalk.
   statAccent: {
-    backgroundColor: theme.colors.accentSoft,
+    backgroundColor: theme.colors.chalk,
   },
   statValue: {
     ...theme.typography.priceLarge,
     color: theme.colors.ink,
   },
   statValueAccent: {
-    color: theme.colors.accent,
+    color: theme.colors.chalkInk,
   },
   statLabel: {
     ...theme.typography.caption,
@@ -234,7 +235,7 @@ const styles = StyleSheet.create({
   },
   statLabelAccent: {
     ...theme.typography.caption,
-    color: theme.colors.accent,
+    color: theme.colors.chalkInk,
   },
   listContent: {
     paddingHorizontal: theme.screenPaddingX,

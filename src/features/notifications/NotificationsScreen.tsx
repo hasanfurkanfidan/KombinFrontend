@@ -101,9 +101,9 @@ export function NotificationsScreen() {
   if (feed.isPending) {
     placeholder = (
       <View style={styles.skeletons}>
-        <Skeleton height={96} radius={theme.radius.xl} />
-        <Skeleton height={96} radius={theme.radius.xl} />
-        <Skeleton height={96} radius={theme.radius.xl} />
+        <Skeleton height={96} radius={theme.radius.tile} />
+        <Skeleton height={96} radius={theme.radius.tile} />
+        <Skeleton height={96} radius={theme.radius.tile} />
       </View>
     );
   } else if (feed.isError && items.length === 0) {

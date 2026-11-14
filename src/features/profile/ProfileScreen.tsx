@@ -89,9 +89,9 @@ export function ProfileScreen() {
               </View>
             ) : (
               <View style={styles.identity}>
-                <Skeleton height={24} width="50%" radius={theme.radius.sm} />
-                <Skeleton height={16} width="70%" radius={theme.radius.sm} />
-                <Skeleton height={14} width="40%" radius={theme.radius.sm} />
+                <Skeleton height={24} width="50%" radius={theme.radius.tag} />
+                <Skeleton height={16} width="70%" radius={theme.radius.tag} />
+                <Skeleton height={14} width="40%" radius={theme.radius.tag} />
               </View>
             )}
           </View>
@@ -268,7 +268,7 @@ const styles = StyleSheet.create({
   },
   card: {
     backgroundColor: theme.colors.surface,
-    borderRadius: theme.radius.xl,
+    borderRadius: theme.radius.tile,
     padding: theme.spacing.xl,
     gap: theme.spacing.lg,
   },
@@ -284,14 +284,14 @@ const styles = StyleSheet.create({
   avatar: {
     width: theme.sizes.avatar,
     height: theme.sizes.avatar,
-    borderRadius: theme.radius.pill,
-    backgroundColor: theme.colors.ink,
+    borderRadius: theme.sizes.avatar / 2,
+    backgroundColor: theme.colors.bg,
     alignItems: 'center',
     justifyContent: 'center',
   },
   avatarText: {
     ...theme.typography.heading,
-    color: theme.colors.onInk,
+    color: theme.colors.ink,
   },
   identity: {
     flex: 1,
@@ -321,7 +321,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: theme.spacing.md,
     padding: theme.spacing.lg,
-    borderRadius: theme.radius.xl,
+    borderRadius: theme.radius.tile,
     backgroundColor: theme.colors.surface,
   },
   swatches: {
@@ -331,7 +331,7 @@ const styles = StyleSheet.create({
   swatch: {
     width: theme.sizes.personaSwatchWidth,
     height: theme.sizes.personaSwatchHeight,
-    borderRadius: theme.radius.sm / 2,
+    borderRadius: theme.radius.tag / 2,
     borderWidth: 1,
     borderColor: theme.colors.line,
   },
@@ -344,14 +344,14 @@ const styles = StyleSheet.create({
     color: theme.colors.ink,
   },
   activePill: {
-    paddingHorizontal: theme.spacing.md,
-    paddingVertical: theme.spacing.xs,
-    borderRadius: theme.radius.pill,
-    backgroundColor: theme.colors.accentSoft,
+    paddingHorizontal: theme.spacing.sm,
+    paddingVertical: 2,
+    borderRadius: theme.radius.tag,
+    backgroundColor: theme.colors.primarySoft,
   },
   activeText: {
-    ...theme.typography.captionMedium,
-    color: theme.colors.accent,
+    ...theme.typography.captionStrong,
+    color: theme.colors.primary,
   },
   newPersona: {
     minHeight: theme.sizes.touch + theme.spacing.md,
@@ -359,19 +359,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: theme.spacing.sm,
-    borderRadius: theme.radius.xl,
+    borderRadius: theme.radius.tile,
     borderWidth: 1,
     borderStyle: 'dashed',
-    borderColor: theme.colors.borderStrong,
+    borderColor: theme.colors.control,
   },
   newPersonaText: {
     ...theme.typography.bodyMedium,
     color: theme.colors.ink2,
   },
   rows: {
-    borderWidth: 1,
+    borderWidth: StyleSheet.hairlineWidth,
     borderColor: theme.colors.line,
-    borderRadius: theme.radius.xl,
+    borderRadius: theme.radius.tile,
     overflow: 'hidden',
   },
   settingsRow: {
@@ -383,7 +383,7 @@ const styles = StyleSheet.create({
     paddingVertical: theme.spacing.md,
   },
   settingsDivider: {
-    borderTopWidth: 1,
+    borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: theme.colors.line,
   },
 });

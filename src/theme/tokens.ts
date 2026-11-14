@@ -33,6 +33,8 @@ export const colors = {
   chalkLine: '#9D7B19',
   /** Sold out, price up, errors; always next to an icon or a word. */
   danger: '#A8372E',
+  /** Text and icons on a `danger` fill. */
+  onDanger: '#FFFFFF',
   /** Text and icons drawn straight over a photo or the scrim. */
   onImage: '#FFFFFF',
   /** Scrim behind modals and over a photo being scanned. */
@@ -104,6 +106,9 @@ export const sizes = {
   /** Alert row thumbnail (design screen 10). */
   thumbWidth: 64,
   thumbHeight: 72,
+  /** Step dashes at the top of onboarding. */
+  progressDash: 32,
+  progressDashHeight: 4,
   swipeButtonLarge: 64,
   swipeButtonSmall: 48,
   swipeCardHeight: 380,

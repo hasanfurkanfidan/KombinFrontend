@@ -14,16 +14,16 @@ import { formatAmount, formatTry, toNumber } from '@/utils/money';
 
 import { alertStatus, hasRecentTrigger, isBelowTarget, type AlertStatus } from './stats';
 
-function statusText(status: AlertStatus): { text: string; tone: 'accent' | 'warning' | 'muted' } {
+function statusText(status: AlertStatus): { text: string; tone: 'signal' | 'warning' | 'muted' } {
   switch (status.kind) {
     case 'belowTarget':
-      return { text: tr.trackStatusBelow, tone: 'accent' };
+      return { text: tr.trackStatusBelow, tone: 'signal' };
     case 'increase':
       return { text: tr.trackStatusIncrease(formatAmount(status.amount)), tone: 'warning' };
     case 'drop':
-      return { text: tr.trackStatusDrop(formatAmount(status.amount)), tone: 'accent' };
+      return { text: tr.trackStatusDrop(formatAmount(status.amount)), tone: 'signal' };
     case 'backInStock':
-      return { text: tr.trackStatusBackInStock, tone: 'accent' };
+      return { text: tr.trackStatusBackInStock, tone: 'signal' };
     case 'unchanged':
       return { text: tr.trackStatusUnchanged, tone: 'muted' };
   }
@@ -96,7 +96,7 @@ export function AlertRow({ alert, triggers, now, onOpen }: AlertRowProps) {
               style={[styles.action, styles.actionDelete]}
               testID={`alert-delete-${alert.id}`}
             >
-              <Icon name="trash" size={20} color={theme.colors.onInk} />
+              <Icon name="trash" size={20} color={theme.colors.onDanger} />
             </Pressable>
           </View>
         )}
@@ -117,7 +117,7 @@ export function AlertRow({ alert, triggers, now, onOpen }: AlertRowProps) {
                 onError={() => setImageFailed(true)}
               />
             ) : (
-              <Icon name="shirt" size={28} color={theme.colors.borderStrong} strokeWidth={1.4} />
+              <Icon name="shirt" size={28} color={theme.colors.control} strokeWidth={1.4} />
             )}
           </View>
           <View style={styles.body}>
@@ -159,7 +159,7 @@ export function AlertRow({ alert, triggers, now, onOpen }: AlertRowProps) {
                 { onError: () => showToast(tr.trackUpdateFailed) },
               )
             }
-            trackColor={{ true: theme.colors.accent, false: theme.colors.borderStrong }}
+            trackColor={{ true: theme.colors.primary, false: theme.colors.control }}
             testID={`alert-switch-${alert.id}`}
           />
         </View>
@@ -180,13 +180,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: theme.spacing.md,
     padding: theme.spacing.md,
-    borderRadius: theme.radius.xl,
+    borderRadius: theme.radius.tile,
     borderWidth: 1,
     borderColor: theme.colors.line,
     backgroundColor: theme.colors.bg,
   },
+  // A trigger in the last 7 days: Kombin points at the row.
   rowRecent: {
-    borderColor: theme.colors.accent,
+    borderWidth: theme.sizes.dashedBorder,
+    borderColor: theme.colors.chalkLine,
   },
   rowInactive: {
     opacity: 0.55,
@@ -194,7 +196,7 @@ const styles = StyleSheet.create({
   thumb: {
     width: theme.sizes.thumbWidth,
     height: theme.sizes.thumbHeight,
-    borderRadius: theme.radius.md,
+    borderRadius: theme.radius.control,
     backgroundColor: theme.colors.surface,
     alignItems: 'center',
     justifyContent: 'center',
@@ -221,11 +223,11 @@ const styles = StyleSheet.create({
     gap: theme.spacing.sm,
   },
   price: {
-    ...theme.typography.label,
+    ...theme.typography.price,
     color: theme.colors.ink,
   },
   priceBelow: {
-    color: theme.colors.accent,
+    color: theme.colors.chalkInk,
   },
   caption: {
     ...theme.typography.caption,
@@ -234,9 +236,16 @@ const styles = StyleSheet.create({
   },
   status: {
     ...theme.typography.captionMedium,
+    alignSelf: 'flex-start',
   },
-  accent: {
-    color: theme.colors.accent,
+  // Price drop, below target, back in stock: a chalk tag.
+  signal: {
+    ...theme.typography.captionStrong,
+    color: theme.colors.chalkInk,
+    backgroundColor: theme.colors.chalk,
+    borderRadius: theme.radius.tag,
+    paddingHorizontal: theme.spacing.sm,
+    overflow: 'hidden',
   },
   warning: {
     color: theme.colors.danger,
@@ -252,7 +261,7 @@ const styles = StyleSheet.create({
   },
   action: {
     width: theme.sizes.touch + theme.spacing.md,
-    borderRadius: theme.radius.xl,
+    borderRadius: theme.radius.tile,
     alignItems: 'center',
     justifyContent: 'center',
   },

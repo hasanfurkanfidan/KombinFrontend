@@ -8,7 +8,10 @@ interface SegmentedControlProps<T extends string> {
   onChange: (value: T) => void;
 }
 
-/** Two-or-three-way switch under the Takip stats (Alarmlar / Kaydedilenler). */
+/**
+ * Two-or-three-way switch (Fiyatlar's lists, Akış's Herkes / Takip ettiklerim). The segments wear the chip's two
+ * states, so there is one selected look across the app.
+ */
 export function SegmentedControl<T extends string>({
   options,
   value,
@@ -38,25 +41,27 @@ export function SegmentedControl<T extends string>({
 const styles = StyleSheet.create({
   track: {
     flexDirection: 'row',
-    padding: theme.spacing.xs,
-    borderRadius: theme.radius.pill,
-    backgroundColor: theme.colors.surface,
+    gap: theme.spacing.sm,
   },
   segment: {
     flex: 1,
-    minHeight: theme.sizes.touch - theme.spacing.sm,
-    borderRadius: theme.radius.pill,
+    minHeight: theme.sizes.touch,
+    borderRadius: theme.radius.control,
+    borderWidth: 1,
+    borderColor: theme.colors.control,
+    backgroundColor: theme.colors.bg,
     alignItems: 'center',
     justifyContent: 'center',
   },
   segmentSelected: {
-    backgroundColor: theme.colors.ink,
+    backgroundColor: theme.colors.primarySoft,
+    borderColor: theme.colors.primary,
   },
   label: {
     ...theme.typography.bodyMedium,
-    color: theme.colors.muted,
+    color: theme.colors.ink,
   },
   labelSelected: {
-    color: theme.colors.onInk,
+    color: theme.colors.primary,
   },
 });
