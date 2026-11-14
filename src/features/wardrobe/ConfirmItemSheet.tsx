@@ -69,7 +69,7 @@ export function ConfirmItemSheet({ itemId, mode, onClose, onDone }: ConfirmItemS
           <ItemForm key={item.data.id} item={item.data} mode={mode} onDone={onDone} />
         )
       ) : (
-        <Skeleton height={theme.sizes.itemCutoutHeight} radius={theme.radius.xl} />
+        <Skeleton height={theme.sizes.itemCutoutHeight} radius={theme.radius.tile} />
       )}
     </BottomSheet>
   );
@@ -86,7 +86,7 @@ function Cutout({ item, color }: { item: WardrobeItem; color: ProductColor }) {
       {uri ? (
         <Image source={{ uri }} style={styles.cutoutImage} resizeMode="contain" />
       ) : (
-        <Icon name="shirt" size={64} color={theme.colors.borderStrong} strokeWidth={1.2} />
+        <Icon name="shirt" size={64} color={theme.colors.control} strokeWidth={1.2} />
       )}
     </View>
   );
@@ -418,7 +418,7 @@ function ChipRow({ label, children }: { label: string; children: ReactNode }) {
 const styles = StyleSheet.create({
   cutout: {
     height: theme.sizes.itemCutoutHeight,
-    borderRadius: theme.radius.xl,
+    borderRadius: theme.radius.tile,
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
@@ -445,7 +445,7 @@ const styles = StyleSheet.create({
     gap: theme.spacing.sm,
   },
   label: {
-    ...theme.typography.captionMedium,
+    ...theme.typography.captionStrong,
     color: theme.colors.ink2,
   },
   chips: {
@@ -461,13 +461,13 @@ const styles = StyleSheet.create({
   swatch: {
     width: theme.sizes.colorSwatch,
     height: theme.sizes.colorSwatch,
-    borderRadius: theme.radius.pill,
+    borderRadius: theme.sizes.colorSwatch / 2,
     borderWidth: 1,
     borderColor: theme.colors.line,
   },
   swatchSelected: {
     borderWidth: 3,
-    borderColor: theme.colors.ink,
+    borderColor: theme.colors.primary,
   },
   detailsToggle: {
     minHeight: theme.sizes.touch,

@@ -219,7 +219,12 @@ function GridSkeleton({ tileWidth }: { tileWidth: number }) {
       {[0, 1, 2].map((row) => (
         <View key={row} style={styles.row}>
           {[0, 1, 2].map((column) => (
-            <Skeleton key={column} width={tileWidth} height={tileWidth} radius={theme.radius.xl} />
+            <Skeleton
+              key={column}
+              width={tileWidth}
+              height={tileWidth}
+              radius={theme.radius.tile}
+            />
           ))}
         </View>
       ))}
@@ -256,13 +261,14 @@ const styles = StyleSheet.create({
   },
   progress: {
     alignSelf: 'flex-start',
-    borderRadius: theme.radius.pill,
+    borderRadius: theme.radius.tag,
     backgroundColor: theme.colors.surface,
     paddingHorizontal: theme.spacing.md,
     paddingVertical: theme.spacing.xs,
   },
   progressText: {
     ...theme.typography.captionMedium,
+    fontVariant: ['tabular-nums'],
     color: theme.colors.ink,
   },
   footer: {

@@ -134,10 +134,17 @@ export function WardrobeItemScreen({ id }: { id: string }) {
       ) : null}
 
       <View style={[styles.topBar, { top: insets.top + theme.spacing.sm }]}>
-        <IconButton icon="arrowLeft" label={tr.back} onPress={goBack} testID="item-back" />
+        <IconButton
+          icon="arrowLeft"
+          label={tr.back}
+          onPress={goBack}
+          tone="onImage"
+          testID="item-back"
+        />
         {item.data ? (
           <IconButton
             icon="more"
+            tone="onImage"
             label={tr.wardrobeMenu}
             onPress={() => setMenuOpen(true)}
             testID="item-menu"
@@ -242,7 +249,7 @@ function ItemBody({
         {uri ? (
           <Image source={{ uri }} style={styles.cutoutImage} resizeMode="contain" />
         ) : (
-          <Icon name="shirt" size={72} color={theme.colors.borderStrong} strokeWidth={1.2} />
+          <Icon name="shirt" size={72} color={theme.colors.control} strokeWidth={1.2} />
         )}
       </View>
       <View style={styles.body}>
@@ -312,8 +319,8 @@ function PairingsBody({
   if (pairings.isPending) {
     return (
       <View style={styles.pairingsSkeleton} testID="pairings-loading">
-        <Skeleton height={theme.sizes.pairingTile} radius={theme.radius.xl} />
-        <Skeleton height={theme.sizes.pairingTile} radius={theme.radius.xl} />
+        <Skeleton height={theme.sizes.pairingTile} radius={theme.radius.tile} />
+        <Skeleton height={theme.sizes.pairingTile} radius={theme.radius.tile} />
       </View>
     );
   }
@@ -411,9 +418,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   whyText: {
-    ...theme.typography.captionMedium,
-    color: theme.colors.ink,
-    textDecorationLine: 'underline',
+    ...theme.typography.captionStrong,
+    color: theme.colors.primary,
   },
   bar: {
     position: 'absolute',
@@ -423,7 +429,7 @@ const styles = StyleSheet.create({
     paddingTop: theme.spacing.md,
     paddingHorizontal: theme.screenPaddingX,
     backgroundColor: theme.colors.bg,
-    borderTopWidth: 1,
+    borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: theme.colors.line,
   },
   detailsRow: {
@@ -431,8 +437,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderBottomWidth: StyleSheet.hairlineWidth,
     borderColor: theme.colors.line,
   },
   detailsLabel: {
@@ -442,7 +448,7 @@ const styles = StyleSheet.create({
   wearBlock: {
     gap: theme.spacing.xs,
     paddingBottom: theme.spacing.sm,
-    borderBottomWidth: 1,
+    borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: theme.colors.line,
   },
   historyCount: {
@@ -461,9 +467,8 @@ const styles = StyleSheet.create({
     gap: theme.spacing.xs,
   },
   productLinkText: {
-    ...theme.typography.bodyMedium,
-    color: theme.colors.ink,
-    textDecorationLine: 'underline',
+    ...theme.typography.label,
+    color: theme.colors.primary,
   },
   menuRow: {
     minHeight: theme.sizes.touch,
