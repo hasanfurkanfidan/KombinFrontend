@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
   },
   title: {
     flex: 1,
-    ...theme.typography.heading,
+    ...theme.typography.title,
     color: theme.colors.ink,
   },
 });

@@ -184,7 +184,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: theme.screenPaddingX,
   },
   title: {
-    ...theme.typography.display,
+    ...theme.typography.title,
     color: theme.colors.ink,
     flex: 1,
   },

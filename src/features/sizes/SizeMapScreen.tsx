@@ -215,7 +215,7 @@ const styles = StyleSheet.create({
     gap: theme.spacing.md,
   },
   title: {
-    ...theme.typography.display,
+    ...theme.typography.title,
     color: theme.colors.ink,
   },
   card: {
