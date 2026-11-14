@@ -179,7 +179,7 @@ const styles = StyleSheet.create({
     gap: theme.spacing.sm,
   },
   rowTitle: {
-    ...theme.typography.bodyStrong,
+    ...theme.typography.label,
     color: theme.colors.ink,
   },
   rowContent: {
@@ -202,11 +202,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderStyle: 'dashed',
     borderColor: theme.colors.borderStrong,
-    backgroundColor: theme.colors.surface,
+    backgroundColor: theme.colors.bg,
   },
   emptyText: {
     ...theme.typography.caption,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
     textAlign: 'center',
   },
   image: {
@@ -215,7 +215,7 @@ const styles = StyleSheet.create({
   },
   reason: {
     ...theme.typography.caption,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
   unlock: {
     gap: theme.spacing.md,
@@ -224,7 +224,7 @@ const styles = StyleSheet.create({
     padding: theme.spacing.xl,
   },
   unlockTitle: {
-    ...theme.typography.bodyStrong,
+    ...theme.typography.label,
     color: theme.colors.onInk,
   },
   unlockBody: {
@@ -236,7 +236,7 @@ const styles = StyleSheet.create({
     width: theme.sizes.thumbWidth,
     height: theme.sizes.thumbHeight,
     borderRadius: theme.radius.lg,
-    backgroundColor: theme.colors.surfaceAlt,
+    backgroundColor: theme.colors.surface,
     overflow: 'hidden',
   },
   unlockText: {
@@ -255,12 +255,12 @@ const styles = StyleSheet.create({
     minHeight: theme.sizes.touch,
     paddingHorizontal: theme.spacing.lg,
     borderRadius: theme.radius.pill,
-    backgroundColor: theme.colors.surface,
+    backgroundColor: theme.colors.bg,
     alignItems: 'center',
     justifyContent: 'center',
   },
   unlockButtonText: {
-    ...theme.typography.bodyStrong,
+    ...theme.typography.label,
     color: theme.colors.ink,
   },
 });

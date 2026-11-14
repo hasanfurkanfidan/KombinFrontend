@@ -60,10 +60,10 @@ const styles = StyleSheet.create({
   },
   optionLabel: {
     ...theme.typography.body,
-    color: theme.colors.inkSoft,
+    color: theme.colors.ink2,
   },
   optionLabelActive: {
-    ...theme.typography.bodyStrong,
+    ...theme.typography.label,
     color: theme.colors.ink,
   },
 });

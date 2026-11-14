@@ -50,7 +50,7 @@ export function TabBar({ state, emitter, navigateToTab, insets }: TabBarProps) {
           }
         };
 
-        const color = focused ? theme.colors.ink : theme.colors.inkMuted;
+        const color = focused ? theme.colors.ink : theme.colors.muted;
         return (
           <Pressable
             key={route.key}
@@ -77,9 +77,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-start',
     paddingTop: theme.spacing.md,
-    backgroundColor: theme.colors.surface,
+    backgroundColor: theme.colors.bg,
     borderTopWidth: 1,
-    borderTopColor: theme.colors.border,
+    borderTopColor: theme.colors.line,
   },
   slot: {
     flex: 1,
@@ -91,6 +91,6 @@ const styles = StyleSheet.create({
     ...theme.typography.caption,
   },
   labelFocused: {
-    fontFamily: theme.fontFamilies.bodyStrong,
+    fontFamily: theme.fontFamilies.semibold,
   },
 });

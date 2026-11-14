@@ -120,8 +120,8 @@ const styles = StyleSheet.create({
     height: 96,
     borderRadius: theme.radius.xl,
     borderWidth: 1,
-    borderColor: theme.colors.border,
-    backgroundColor: theme.colors.surfaceAlt,
+    borderColor: theme.colors.line,
+    backgroundColor: theme.colors.surface,
     justifyContent: 'center',
     paddingHorizontal: theme.spacing.xl,
   },
@@ -133,7 +133,7 @@ const styles = StyleSheet.create({
     opacity: 0.6,
   },
   cardLabel: {
-    ...theme.typography.headingLarge,
+    ...theme.typography.heading,
     color: theme.colors.ink,
   },
 });

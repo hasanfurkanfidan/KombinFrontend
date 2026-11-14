@@ -133,7 +133,7 @@ export function NotificationsScreen() {
         ListHeaderComponent={header}
         ListEmptyComponent={placeholder}
         renderSectionHeader={({ section }) => (
-          <Text style={styles.sectionTitle}>{section.title.toLocaleUpperCase('tr-TR')}</Text>
+          <Text style={styles.sectionTitle}>{section.title}</Text>
         )}
         renderItem={({ item }) => (
           <View style={styles.row}>
@@ -204,8 +204,8 @@ const styles = StyleSheet.create({
     paddingBottom: theme.spacing.xxxl,
   },
   sectionTitle: {
-    ...theme.typography.overline,
-    color: theme.colors.inkMuted,
+    ...theme.typography.captionStrong,
+    color: theme.colors.muted,
     paddingHorizontal: theme.screenPaddingX,
     paddingTop: theme.spacing.xl,
     paddingBottom: theme.spacing.md,

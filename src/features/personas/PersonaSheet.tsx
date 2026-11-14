@@ -144,11 +144,11 @@ function PersonaActions({ persona, onClose }: { persona: Persona; onClose: () =>
 
 const styles = StyleSheet.create({
   heading: {
-    ...theme.typography.bodyStrong,
+    ...theme.typography.label,
     color: theme.colors.ink,
   },
   body: {
     ...theme.typography.body,
-    color: theme.colors.inkSoft,
+    color: theme.colors.ink2,
   },
 });

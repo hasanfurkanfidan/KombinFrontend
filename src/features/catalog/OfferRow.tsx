@@ -66,7 +66,7 @@ export function OfferRow({ offer, highlighted, onPress }: OfferRowProps) {
       <Text style={[styles.price, !sellable && styles.priceMuted]} numberOfLines={1}>
         {formatTry(offer.currentPrice)}
       </Text>
-      {sellable ? <Icon name="chevronRight" size={18} color={theme.colors.inkMuted} /> : null}
+      {sellable ? <Icon name="chevronRight" size={18} color={theme.colors.muted} /> : null}
     </Pressable>
   );
 }
@@ -81,7 +81,7 @@ const styles = StyleSheet.create({
     paddingVertical: theme.spacing.md,
   },
   highlighted: {
-    backgroundColor: theme.colors.surfaceAlt,
+    backgroundColor: theme.colors.surface,
   },
   badge: {
     width: theme.sizes.sellerBadge,
@@ -94,10 +94,10 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.ink,
   },
   badgeSoft: {
-    backgroundColor: theme.colors.surfaceAlt,
+    backgroundColor: theme.colors.surface,
   },
   badgeText: {
-    ...theme.typography.bodyStrong,
+    ...theme.typography.label,
     color: theme.colors.ink,
   },
   badgeTextStrong: {
@@ -108,7 +108,7 @@ const styles = StyleSheet.create({
     gap: 2,
   },
   seller: {
-    ...theme.typography.bodyStrong,
+    ...theme.typography.label,
     fontSize: 14,
     color: theme.colors.ink,
   },
@@ -119,17 +119,17 @@ const styles = StyleSheet.create({
     color: theme.colors.accent,
   },
   muted: {
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
   warning: {
-    color: theme.colors.warning,
+    color: theme.colors.danger,
   },
   price: {
-    ...theme.typography.bodyStrong,
+    ...theme.typography.label,
     color: theme.colors.ink,
     textAlign: 'right',
   },
   priceMuted: {
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
 });

@@ -75,9 +75,9 @@ describe('NotificationsScreen', () => {
   it('groups the feed into Bugün / Dün / Daha önce, newest first', async () => {
     await renderWithQuery(<NotificationsScreen />);
 
-    expect(await screen.findByText('BUGÜN')).toBeTruthy();
-    expect(screen.getByText('DÜN')).toBeTruthy();
-    expect(screen.getByText('DAHA ÖNCE')).toBeTruthy();
+    expect(await screen.findByText('Bugün')).toBeTruthy();
+    expect(screen.getByText('Dün')).toBeTruthy();
+    expect(screen.getByText('Daha önce')).toBeTruthy();
     expect(screen.getByText('Takip ettiğin blazer 850 ₺ düştü')).toBeTruthy();
     expect(screen.getByText('L bedeni tekrar stokta')).toBeTruthy();
     expect(screen.getByText('Tam sana göre 3 yeni parça')).toBeTruthy();
@@ -87,12 +87,12 @@ describe('NotificationsScreen', () => {
 
   it('filters by Fiyat, Stok and Öneri, and back to Tümü', async () => {
     await renderWithQuery(<NotificationsScreen />);
-    await screen.findByText('BUGÜN');
+    await screen.findByText('Bugün');
 
     await fireEvent.press(screen.getByTestId('notifications-filter-price'));
     expect(screen.getByText('Takip ettiğin blazer 850 ₺ düştü')).toBeTruthy();
     expect(screen.queryByText('L bedeni tekrar stokta')).toBeNull();
-    expect(screen.queryByText('DÜN')).toBeNull();
+    expect(screen.queryByText('Dün')).toBeNull();
 
     await fireEvent.press(screen.getByTestId('notifications-filter-stock'));
     expect(screen.getByText('L bedeni tekrar stokta')).toBeTruthy();
@@ -100,7 +100,7 @@ describe('NotificationsScreen', () => {
 
     await fireEvent.press(screen.getByTestId('notifications-filter-recommendation'));
     expect(screen.getByText('Tam sana göre 3 yeni parça')).toBeTruthy();
-    expect(screen.queryByText('BUGÜN')).toBeNull();
+    expect(screen.queryByText('Bugün')).toBeNull();
 
     await fireEvent.press(screen.getByTestId('notifications-filter-all'));
     expect(screen.getByText("Kombin'e hoş geldin")).toBeTruthy();
@@ -109,7 +109,7 @@ describe('NotificationsScreen', () => {
   it('shows an empty state, and a filter-specific one when a chip has nothing', async () => {
     listMock.mockResolvedValue(notificationPage([todayDrop]));
     await renderWithQuery(<NotificationsScreen />);
-    await screen.findByText('BUGÜN');
+    await screen.findByText('Bugün');
 
     await fireEvent.press(screen.getByTestId('notifications-filter-stock'));
     expect(screen.getByText('Bu başlık altında bildirim yok.')).toBeTruthy();
@@ -123,7 +123,7 @@ describe('NotificationsScreen', () => {
     await renderWithQuery(<NotificationsScreen />);
 
     expect(await screen.findByText('Henüz bildirimin yok')).toBeTruthy();
-    expect(screen.queryByText('BUGÜN')).toBeNull();
+    expect(screen.queryByText('Bugün')).toBeNull();
     await fireEvent.press(screen.getByText('Ürünlere göz at'));
     expect(router.navigate).toHaveBeenCalledWith('/');
   });
@@ -134,7 +134,7 @@ describe('NotificationsScreen', () => {
 
     expect(await screen.findByText('Bildirimlerin yüklenemedi')).toBeTruthy();
     await fireEvent.press(screen.getByText('Tekrar dene'));
-    expect(await screen.findByText('BUGÜN')).toBeTruthy();
+    expect(await screen.findByText('Bugün')).toBeTruthy();
   });
 
   it('asks a signed-out user to log in and never calls the feed', async () => {
@@ -183,7 +183,7 @@ describe('NotificationsScreen', () => {
 
   it('marks every notification read from the header menu', async () => {
     await renderWithQuery(<NotificationsScreen />);
-    await screen.findByText('BUGÜN');
+    await screen.findByText('Bugün');
 
     await fireEvent.press(screen.getByTestId('notifications-menu'));
     await fireEvent.press(await screen.findByText('Tümünü okundu işaretle'));
@@ -193,7 +193,7 @@ describe('NotificationsScreen', () => {
 
   it('opens the preferences sheet from the header button', async () => {
     await renderWithQuery(<NotificationsScreen />);
-    await screen.findByText('BUGÜN');
+    await screen.findByText('Bugün');
 
     await fireEvent.press(screen.getByTestId('notifications-preferences'));
 

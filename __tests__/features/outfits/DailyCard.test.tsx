@@ -34,7 +34,7 @@ describe('home card "Bugün için" / "Yarın için"', () => {
     await renderWithQuery(<DailyCard />);
 
     const card = await screen.findByTestId('tomorrow-card');
-    expect(screen.getByText('BUGÜN İÇİN')).toBeTruthy();
+    expect(screen.getByText('Bugün için')).toBeTruthy();
     expect(dailyMock.mock.calls[0]?.[0]).toMatchObject({ date: 'today', seed: 0 });
     await fireEvent.press(card);
     expect(router.push).toHaveBeenCalledWith({

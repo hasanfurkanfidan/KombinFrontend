@@ -245,12 +245,12 @@ const styles = StyleSheet.create({
     color: theme.colors.ink,
   },
   summaryLink: {
-    ...theme.typography.bodyStrong,
+    ...theme.typography.label,
     textDecorationLine: 'underline',
   },
   gapHint: {
     ...theme.typography.body,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
   gapLink: {
     ...theme.typography.bodyMedium,
@@ -259,7 +259,7 @@ const styles = StyleSheet.create({
   },
   sheetEmpty: {
     ...theme.typography.body,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
     textAlign: 'center',
   },
   sheetGrid: {
@@ -281,7 +281,7 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.ink,
   },
   addButtonText: {
-    ...theme.typography.bodyStrong,
+    ...theme.typography.label,
     color: theme.colors.onInk,
   },
 });

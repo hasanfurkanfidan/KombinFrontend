@@ -98,16 +98,16 @@ const styles = StyleSheet.create({
     gap: 2,
   },
   name: {
-    ...theme.typography.bodyStrong,
+    ...theme.typography.label,
     color: theme.colors.ink,
   },
   owned: {
     ...theme.typography.captionMedium,
-    color: theme.colors.inkSoft,
+    color: theme.colors.ink2,
   },
   meta: {
     ...theme.typography.caption,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
   buy: {
     height: theme.sizes.touch,

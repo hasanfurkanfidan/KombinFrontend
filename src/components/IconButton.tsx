@@ -50,10 +50,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   plain: {
-    backgroundColor: theme.colors.surface,
+    backgroundColor: theme.colors.bg,
   },
   tinted: {
-    backgroundColor: theme.colors.surfaceAlt,
+    backgroundColor: theme.colors.surface,
   },
   pressed: {
     opacity: 0.7,

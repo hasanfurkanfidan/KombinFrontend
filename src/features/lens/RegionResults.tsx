@@ -179,18 +179,18 @@ const styles = StyleSheet.create({
     gap: 2,
   },
   title: {
-    ...theme.typography.heading,
+    ...theme.typography.subhead,
     color: theme.colors.ink,
   },
   subtitle: {
     ...theme.typography.caption,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
   owned: {
     gap: theme.spacing.sm,
   },
   ownedTitle: {
-    ...theme.typography.bodyStrong,
+    ...theme.typography.label,
     color: theme.colors.ink,
     paddingHorizontal: theme.screenPaddingX,
   },
@@ -202,7 +202,7 @@ const styles = StyleSheet.create({
     width: theme.sizes.lensWardrobeThumb,
     height: theme.sizes.lensWardrobeThumb,
     borderRadius: theme.radius.md,
-    backgroundColor: theme.colors.surfaceAlt,
+    backgroundColor: theme.colors.surface,
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
@@ -213,7 +213,7 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     ...theme.typography.body,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
   rail: {
     gap: theme.spacing.md,
@@ -226,7 +226,7 @@ const styles = StyleSheet.create({
   cardImage: {
     height: theme.sizes.lensRailImageHeight,
     borderRadius: theme.radius.lg,
-    backgroundColor: theme.colors.surfaceAlt,
+    backgroundColor: theme.colors.surface,
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
@@ -237,7 +237,7 @@ const styles = StyleSheet.create({
     top: theme.spacing.sm,
     left: theme.spacing.sm,
     borderRadius: theme.radius.pill,
-    backgroundColor: theme.colors.surface,
+    backgroundColor: theme.colors.bg,
     paddingHorizontal: theme.spacing.sm,
     paddingVertical: 2,
   },
@@ -253,18 +253,18 @@ const styles = StyleSheet.create({
   },
   cardBrand: {
     ...theme.typography.caption,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
   cardName: {
     ...theme.typography.bodyMedium,
     color: theme.colors.ink,
   },
   cardPrice: {
-    ...theme.typography.bodyStrong,
+    ...theme.typography.label,
     color: theme.colors.ink,
   },
   cardSeller: {
     ...theme.typography.caption,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
 });

@@ -53,11 +53,11 @@ const styles = StyleSheet.create({
     padding: theme.spacing.md,
     borderRadius: theme.radius.xl,
     borderWidth: 1,
-    borderColor: theme.colors.border,
+    borderColor: theme.colors.line,
   },
   optionSelected: {
     borderColor: theme.colors.ink,
-    backgroundColor: theme.colors.surfaceAlt,
+    backgroundColor: theme.colors.surface,
   },
   radio: {
     width: RADIO,
@@ -82,11 +82,11 @@ const styles = StyleSheet.create({
     gap: 2,
   },
   label: {
-    ...theme.typography.bodyStrong,
+    ...theme.typography.label,
     color: theme.colors.ink,
   },
   hint: {
     ...theme.typography.caption,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
 });

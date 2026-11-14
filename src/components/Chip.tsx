@@ -59,9 +59,9 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.ink,
   },
   unselected: {
-    backgroundColor: theme.colors.surface,
+    backgroundColor: theme.colors.bg,
     borderWidth: 1,
-    borderColor: theme.colors.border,
+    borderColor: theme.colors.line,
   },
   disabled: {
     opacity: 0.5,

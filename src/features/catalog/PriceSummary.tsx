@@ -95,12 +95,12 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.accentSoft,
   },
   history: {
-    backgroundColor: theme.colors.surfaceAlt,
+    backgroundColor: theme.colors.surface,
     justifyContent: 'space-between',
   },
   overline: {
-    ...theme.typography.overline,
-    color: theme.colors.inkMuted,
+    ...theme.typography.captionStrong,
+    color: theme.colors.muted,
   },
   overlineAccent: {
     color: theme.colors.accent,
@@ -110,8 +110,8 @@ const styles = StyleSheet.create({
     color: theme.colors.accent,
   },
   noStock: {
-    ...theme.typography.heading,
-    color: theme.colors.inkMuted,
+    ...theme.typography.subhead,
+    color: theme.colors.muted,
   },
   captionAccent: {
     ...theme.typography.caption,
@@ -119,14 +119,14 @@ const styles = StyleSheet.create({
   },
   caption: {
     ...theme.typography.caption,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
   miniChart: {
     minHeight: theme.sizes.chartMiniHeight,
     justifyContent: 'center',
   },
   expanded: {
-    backgroundColor: theme.colors.surfaceAlt,
+    backgroundColor: theme.colors.surface,
     borderRadius: theme.radius.lg,
     paddingVertical: theme.spacing.md,
   },

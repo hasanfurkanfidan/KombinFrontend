@@ -182,8 +182,8 @@ const styles = StyleSheet.create({
     padding: theme.spacing.md,
     borderRadius: theme.radius.xl,
     borderWidth: 1,
-    borderColor: theme.colors.border,
-    backgroundColor: theme.colors.surface,
+    borderColor: theme.colors.line,
+    backgroundColor: theme.colors.bg,
   },
   rowRecent: {
     borderColor: theme.colors.accent,
@@ -195,7 +195,7 @@ const styles = StyleSheet.create({
     width: theme.sizes.thumbWidth,
     height: theme.sizes.thumbHeight,
     borderRadius: theme.radius.md,
-    backgroundColor: theme.colors.surfaceAlt,
+    backgroundColor: theme.colors.surface,
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
@@ -209,10 +209,10 @@ const styles = StyleSheet.create({
   },
   brand: {
     ...theme.typography.caption,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
   name: {
-    ...theme.typography.bodyStrong,
+    ...theme.typography.label,
     color: theme.colors.ink,
   },
   priceRow: {
@@ -221,7 +221,7 @@ const styles = StyleSheet.create({
     gap: theme.spacing.sm,
   },
   price: {
-    ...theme.typography.bodyStrong,
+    ...theme.typography.label,
     color: theme.colors.ink,
   },
   priceBelow: {
@@ -229,7 +229,7 @@ const styles = StyleSheet.create({
   },
   caption: {
     ...theme.typography.caption,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
     flexShrink: 1,
   },
   status: {
@@ -239,10 +239,10 @@ const styles = StyleSheet.create({
     color: theme.colors.accent,
   },
   warning: {
-    color: theme.colors.warning,
+    color: theme.colors.danger,
   },
   muted: {
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
   actions: {
     flexDirection: 'row',
@@ -257,10 +257,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   actionSettings: {
-    backgroundColor: theme.colors.surfaceAlt,
+    backgroundColor: theme.colors.surface,
   },
   actionDelete: {
-    backgroundColor: theme.colors.warning,
+    backgroundColor: theme.colors.danger,
   },
   switchRow: {
     flexDirection: 'row',

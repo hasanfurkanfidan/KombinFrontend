@@ -205,7 +205,7 @@ const styles = StyleSheet.create({
   },
   summary: {
     ...theme.typography.body,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
   stats: {
     flexDirection: 'row',
@@ -215,7 +215,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: theme.spacing.lg,
     borderRadius: theme.radius.lg,
-    backgroundColor: theme.colors.surfaceAlt,
+    backgroundColor: theme.colors.surface,
     gap: theme.spacing.xs,
   },
   statAccent: {
@@ -230,7 +230,7 @@ const styles = StyleSheet.create({
   },
   statLabel: {
     ...theme.typography.caption,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
   statLabelAccent: {
     ...theme.typography.caption,

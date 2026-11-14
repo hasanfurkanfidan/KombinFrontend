@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
     width: theme.sizes.bookmarkButton,
     height: theme.sizes.bookmarkButton,
     borderRadius: theme.radius.pill,
-    backgroundColor: theme.colors.surface,
+    backgroundColor: theme.colors.bg,
     alignItems: 'center',
     justifyContent: 'center',
   },

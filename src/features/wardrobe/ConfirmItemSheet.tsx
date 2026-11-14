@@ -211,7 +211,7 @@ function ItemForm({
       <Cutout item={item} color={color} />
       {hint ? (
         <View style={styles.hintRow} testID="item-warning">
-          <Icon name="info" size={16} color={theme.colors.inkMuted} />
+          <Icon name="info" size={16} color={theme.colors.muted} />
           <Text style={styles.hint}>{hint}</Text>
         </View>
       ) : null}
@@ -428,7 +428,7 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   notGarmentTitle: {
-    ...theme.typography.heading,
+    ...theme.typography.subhead,
     color: theme.colors.ink,
   },
   hintRow: {
@@ -438,7 +438,7 @@ const styles = StyleSheet.create({
   },
   hint: {
     ...theme.typography.body,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
     flexShrink: 1,
   },
   block: {
@@ -446,7 +446,7 @@ const styles = StyleSheet.create({
   },
   label: {
     ...theme.typography.captionMedium,
-    color: theme.colors.inkSoft,
+    color: theme.colors.ink2,
   },
   chips: {
     flexDirection: 'row',
@@ -463,7 +463,7 @@ const styles = StyleSheet.create({
     height: theme.sizes.colorSwatch,
     borderRadius: theme.radius.pill,
     borderWidth: 1,
-    borderColor: theme.colors.border,
+    borderColor: theme.colors.line,
   },
   swatchSelected: {
     borderWidth: 3,
@@ -481,6 +481,6 @@ const styles = StyleSheet.create({
   },
   brandName: {
     ...theme.typography.body,
-    color: theme.colors.inkSoft,
+    color: theme.colors.ink2,
   },
 });

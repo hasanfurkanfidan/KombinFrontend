@@ -227,14 +227,14 @@ const styles = StyleSheet.create({
   },
   date: {
     ...theme.typography.body,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
   hello: {
     ...theme.typography.display,
     color: theme.colors.ink,
   },
   sectionTitle: {
-    ...theme.typography.heading,
+    ...theme.typography.subhead,
     color: theme.colors.ink,
     paddingHorizontal: theme.screenPaddingX,
     marginTop: theme.spacing.sm,
@@ -249,7 +249,7 @@ const styles = StyleSheet.create({
   },
   loadMoreFailedText: {
     ...theme.typography.body,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
     textAlign: 'center',
   },
 });

@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.ink,
   },
   dashTodo: {
-    backgroundColor: theme.colors.surfaceAlt2,
+    backgroundColor: theme.colors.surface,
   },
   skip: {
     minHeight: theme.sizes.touch,
@@ -108,7 +108,7 @@ const styles = StyleSheet.create({
   },
   skipText: {
     ...theme.typography.bodyMedium,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
   titles: {
     gap: theme.spacing.sm,
@@ -119,6 +119,6 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     ...theme.typography.body,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
 });

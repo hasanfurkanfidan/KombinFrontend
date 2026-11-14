@@ -42,6 +42,6 @@ const styles = StyleSheet.create({
   },
   text: {
     ...theme.typography.body,
-    color: theme.colors.inkSoft,
+    color: theme.colors.ink2,
   },
 });

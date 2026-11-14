@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
     gap: theme.spacing.md,
   },
   googleMark: {
-    ...theme.typography.bodyStrong,
+    ...theme.typography.label,
     color: theme.colors.ink,
   },
   appleButton: {
@@ -127,7 +127,7 @@ const styles = StyleSheet.create({
   },
   error: {
     ...theme.typography.bodyMedium,
-    color: theme.colors.warning,
+    color: theme.colors.danger,
   },
   divider: {
     flexDirection: 'row',
@@ -137,10 +137,10 @@ const styles = StyleSheet.create({
   rule: {
     flex: 1,
     height: 1,
-    backgroundColor: theme.colors.border,
+    backgroundColor: theme.colors.line,
   },
   dividerLabel: {
     ...theme.typography.body,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
 });

@@ -569,21 +569,21 @@ const styles = StyleSheet.create({
     paddingTop: theme.spacing.md,
   },
   heading: {
-    ...theme.typography.headingLarge,
+    ...theme.typography.heading,
     color: theme.colors.ink,
   },
   title: {
-    ...theme.typography.heading,
+    ...theme.typography.subhead,
     color: theme.colors.ink,
   },
   muted: {
     ...theme.typography.body,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
     textAlign: 'center',
   },
   intro: {
     ...theme.typography.body,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
   sources: {
     gap: theme.spacing.md,
@@ -595,10 +595,10 @@ const styles = StyleSheet.create({
     gap: theme.spacing.md,
     paddingHorizontal: theme.spacing.lg,
     borderRadius: theme.radius.xl,
-    backgroundColor: theme.colors.surfaceAlt,
+    backgroundColor: theme.colors.surface,
   },
   sourceLabel: {
-    ...theme.typography.bodyStrong,
+    ...theme.typography.label,
     color: theme.colors.ink,
   },
   centered: {
@@ -621,14 +621,14 @@ const styles = StyleSheet.create({
     padding: theme.spacing.md,
     borderRadius: theme.radius.lg,
     borderWidth: 1,
-    borderColor: theme.colors.border,
+    borderColor: theme.colors.line,
     textAlignVertical: 'top',
     ...theme.typography.body,
     color: theme.colors.ink,
   },
   counter: {
     ...theme.typography.caption,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
     textAlign: 'right',
   },
   outfitRow: {
@@ -642,6 +642,6 @@ const styles = StyleSheet.create({
   outfitText: {
     flex: 1,
     ...theme.typography.body,
-    color: theme.colors.inkSoft,
+    color: theme.colors.ink2,
   },
 });

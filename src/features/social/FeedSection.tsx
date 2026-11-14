@@ -144,7 +144,7 @@ const styles = StyleSheet.create({
   },
   loadMoreFailedText: {
     ...theme.typography.body,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
     textAlign: 'center',
   },
 });

@@ -286,7 +286,7 @@ function Capture({ onChoose }: { onChoose: (source: LensSource) => void }) {
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: theme.colors.surface,
+    backgroundColor: theme.colors.bg,
   },
   header: {
     flexDirection: 'row',
@@ -296,7 +296,7 @@ const styles = StyleSheet.create({
     paddingVertical: theme.spacing.sm,
   },
   title: {
-    ...theme.typography.heading,
+    ...theme.typography.subhead,
     color: theme.colors.ink,
     flex: 1,
   },
@@ -327,7 +327,7 @@ const styles = StyleSheet.create({
   },
   captureHint: {
     ...theme.typography.body,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
     textAlign: 'center',
   },
   results: {
@@ -356,7 +356,7 @@ const styles = StyleSheet.create({
   },
   noRegionText: {
     ...theme.typography.body,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
   bar: {
     position: 'absolute',
@@ -365,8 +365,8 @@ const styles = StyleSheet.create({
     bottom: 0,
     paddingHorizontal: theme.screenPaddingX,
     paddingTop: theme.spacing.md,
-    backgroundColor: theme.colors.surface,
+    backgroundColor: theme.colors.bg,
     borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: theme.colors.border,
+    borderTopColor: theme.colors.line,
   },
 });

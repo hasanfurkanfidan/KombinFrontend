@@ -180,7 +180,7 @@ const styles = StyleSheet.create({
     paddingVertical: theme.spacing.xs,
   },
   pillOwned: {
-    backgroundColor: theme.colors.surface,
+    backgroundColor: theme.colors.bg,
   },
   pillGap: {
     backgroundColor: theme.colors.accent,
@@ -205,7 +205,7 @@ const styles = StyleSheet.create({
   },
   owned: {
     ...theme.typography.caption,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
   seller: {
     ...theme.typography.caption,

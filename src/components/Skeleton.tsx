@@ -34,7 +34,7 @@ export function Skeleton({
       accessibilityElementsHidden
       importantForAccessibility="no-hide-descendants"
       style={[
-        { width, height, borderRadius: radius, backgroundColor: theme.colors.surfaceAlt2, opacity },
+        { width, height, borderRadius: radius, backgroundColor: theme.colors.surface, opacity },
         style,
       ]}
     />

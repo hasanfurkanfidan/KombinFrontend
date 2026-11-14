@@ -218,7 +218,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   avatarText: {
-    ...theme.typography.headingLarge,
+    ...theme.typography.heading,
     color: theme.colors.onInk,
   },
   identityText: {
@@ -226,16 +226,16 @@ const styles = StyleSheet.create({
     gap: 2,
   },
   name: {
-    ...theme.typography.headingLarge,
+    ...theme.typography.heading,
     color: theme.colors.ink,
   },
   handle: {
     ...theme.typography.caption,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
   bio: {
     ...theme.typography.body,
-    color: theme.colors.inkSoft,
+    color: theme.colors.ink2,
   },
   link: {
     ...theme.typography.bodyMedium,
@@ -249,10 +249,10 @@ const styles = StyleSheet.create({
   },
   counter: {
     ...theme.typography.captionMedium,
-    color: theme.colors.inkSoft,
+    color: theme.colors.ink2,
   },
   disclosure: {
     ...theme.typography.caption,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
 });

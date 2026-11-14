@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.ink,
   },
   secondary: {
-    backgroundColor: theme.colors.surface,
+    backgroundColor: theme.colors.bg,
     borderWidth: 1,
     borderColor: theme.colors.borderStrong,
   },
@@ -91,6 +91,6 @@ const styles = StyleSheet.create({
     opacity: 0.6,
   },
   label: {
-    ...theme.typography.bodyStrong,
+    ...theme.typography.label,
   },
 });

@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
     flexShrink: 1,
   },
   action: {
-    ...theme.typography.bodyStrong,
+    ...theme.typography.label,
     color: theme.colors.onInk,
     textDecorationLine: 'underline',
   },

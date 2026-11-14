@@ -102,7 +102,7 @@ function StatsBody({ stats }: { stats: CreatorStats }) {
               <Text style={styles.topPostText}>
                 {tr.creatorTopPostStats(toNumber(post.clicks), toNumber(post.likeCount))}
               </Text>
-              <Icon name="chevronRight" size={18} color={theme.colors.inkMuted} />
+              <Icon name="chevronRight" size={18} color={theme.colors.muted} />
             </Pressable>
           ))}
         </>
@@ -148,7 +148,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: theme.spacing.md,
     paddingVertical: theme.spacing.xs,
     borderRadius: theme.radius.pill,
-    backgroundColor: theme.colors.surface,
+    backgroundColor: theme.colors.bg,
   },
   estimateText: {
     ...theme.typography.captionMedium,
@@ -156,7 +156,7 @@ const styles = StyleSheet.create({
   },
   note: {
     ...theme.typography.caption,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
   counters: {
     flexDirection: 'row',
@@ -167,18 +167,18 @@ const styles = StyleSheet.create({
     gap: 2,
     padding: theme.spacing.md,
     borderRadius: theme.radius.lg,
-    backgroundColor: theme.colors.surfaceAlt,
+    backgroundColor: theme.colors.surface,
   },
   counterValue: {
-    ...theme.typography.bodyStrong,
+    ...theme.typography.label,
     color: theme.colors.ink,
   },
   counterLabel: {
     ...theme.typography.caption,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
   section: {
-    ...theme.typography.heading,
+    ...theme.typography.subhead,
     color: theme.colors.ink,
   },
   topPost: {
@@ -191,7 +191,7 @@ const styles = StyleSheet.create({
     width: theme.sizes.postThumbWidth,
     height: theme.sizes.postThumbHeight,
     borderRadius: theme.radius.md,
-    backgroundColor: theme.colors.surfaceAlt,
+    backgroundColor: theme.colors.surface,
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',

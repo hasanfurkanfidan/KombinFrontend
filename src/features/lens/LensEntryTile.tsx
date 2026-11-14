@@ -34,7 +34,7 @@ export function LensEntryTile() {
         <Icon name="camera" size={22} />
       </View>
       <Text style={styles.text}>{tr.lensTile}</Text>
-      <Icon name="chevronRight" size={20} color={theme.colors.inkMuted} />
+      <Icon name="chevronRight" size={20} color={theme.colors.muted} />
     </Pressable>
   );
 }
@@ -49,13 +49,13 @@ const styles = StyleSheet.create({
     padding: theme.spacing.md,
     borderRadius: theme.radius.xl,
     borderWidth: 1,
-    borderColor: theme.colors.border,
+    borderColor: theme.colors.line,
   },
   icon: {
     width: theme.sizes.touch,
     height: theme.sizes.touch,
     borderRadius: theme.radius.pill,
-    backgroundColor: theme.colors.surfaceAlt,
+    backgroundColor: theme.colors.surface,
     alignItems: 'center',
     justifyContent: 'center',
   },

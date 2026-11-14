@@ -131,7 +131,7 @@ function ProductPicker({
           title={product.name}
           caption={`${product.brand.name} · ${formatTry(toNumber(product.lowestPrice))}`}
           imageUrl={product.primaryImageUrl}
-          tint={theme.colors.surfaceAlt}
+          tint={theme.colors.surface}
           onPress={() =>
             onChoose(dot.key, { kind: 'Product', productId: product.id, name: product.name })
           }
@@ -227,12 +227,12 @@ const styles = StyleSheet.create({
   },
   empty: {
     ...theme.typography.body,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
     textAlign: 'center',
   },
   body: {
     ...theme.typography.body,
-    color: theme.colors.inkSoft,
+    color: theme.colors.ink2,
   },
   row: {
     minHeight: theme.sizes.pickerThumb,
@@ -262,6 +262,6 @@ const styles = StyleSheet.create({
   },
   rowCaption: {
     ...theme.typography.caption,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
 });

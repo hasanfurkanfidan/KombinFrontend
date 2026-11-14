@@ -190,7 +190,7 @@ const styles = StyleSheet.create({
   },
   empty: {
     ...theme.typography.body,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
     textAlign: 'center',
   },
   product: {
@@ -206,7 +206,7 @@ const styles = StyleSheet.create({
     width: theme.sizes.thumbWidth,
     height: theme.sizes.thumbHeight,
     borderRadius: theme.radius.md,
-    backgroundColor: theme.colors.surfaceAlt,
+    backgroundColor: theme.colors.surface,
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
@@ -220,14 +220,14 @@ const styles = StyleSheet.create({
   },
   brand: {
     ...theme.typography.caption,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
   productName: {
     ...theme.typography.bodyMedium,
     color: theme.colors.ink,
   },
   price: {
-    ...theme.typography.bodyStrong,
+    ...theme.typography.label,
     color: theme.colors.ink,
   },
 });

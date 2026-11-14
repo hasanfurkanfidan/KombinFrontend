@@ -294,7 +294,7 @@ const styles = StyleSheet.create({
     paddingRight: theme.spacing.sm,
   },
   occasionLabel: {
-    ...theme.typography.bodyStrong,
+    ...theme.typography.label,
     color: theme.colors.ink,
   },
   shuffle: {
@@ -304,7 +304,7 @@ const styles = StyleSheet.create({
     gap: theme.spacing.xs,
     paddingHorizontal: theme.spacing.md,
     borderRadius: theme.radius.pill,
-    backgroundColor: theme.colors.surface,
+    backgroundColor: theme.colors.bg,
   },
   shuffleText: {
     ...theme.typography.bodyMedium,
@@ -316,12 +316,12 @@ const styles = StyleSheet.create({
     gap: theme.spacing.lg,
   },
   emptyTitle: {
-    ...theme.typography.heading,
+    ...theme.typography.subhead,
     color: theme.colors.ink,
   },
   emptyBody: {
     ...theme.typography.body,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
   shopping: {
     gap: theme.spacing.md,
@@ -342,7 +342,7 @@ const styles = StyleSheet.create({
     color: theme.colors.onInk,
   },
   shoppingTotal: {
-    ...theme.typography.bodyStrong,
+    ...theme.typography.label,
     color: theme.colors.ink,
   },
   skeletonRow: {

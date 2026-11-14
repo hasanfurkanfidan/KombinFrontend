@@ -47,15 +47,15 @@ describe('SizeMapScreen', () => {
     expect(screen.getByText('84')).toBeTruthy();
     expect(screen.getByText('Boy cm')).toBeTruthy();
     expect(screen.getByText('Kilo kg')).toBeTruthy();
-    expect(screen.getByText('ÖLÇÜLERİM')).toBeTruthy();
+    expect(screen.getByText('Ölçülerim')).toBeTruthy();
   });
 
   it('shows one table row per brand with top, bottom and shoe sizes', async () => {
     await renderWithQuery(<SizeMapScreen />);
 
     expect(await screen.findByTestId('size-table')).toBeTruthy();
-    expect(screen.getByText('MARKA')).toBeTruthy();
-    expect(screen.getByText('AYAKKABI')).toBeTruthy();
+    expect(screen.getByText('Marka')).toBeTruthy();
+    expect(screen.getByText('Ayakkabı')).toBeTruthy();
     expect(screen.getByText('Mavi')).toBeTruthy();
     expect(screen.getByText('32/32')).toBeTruthy();
     expect(screen.getByText('43')).toBeTruthy();

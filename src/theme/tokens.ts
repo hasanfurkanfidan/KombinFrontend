@@ -1,34 +1,82 @@
+/**
+ * The "Prova odası" palette (docs/design/identity.md). Two fixed meanings run through every screen:
+ * green (`primary`) is the user and their choices, chalk is Kombin pointing at something. Light only.
+ */
 export const colors = {
-  /** Primary text, primary buttons, active navigation. */
-  ink: '#141414',
-  /** Secondary text, inactive navigation. */
-  inkMuted: '#6B6B66',
-  /** Body text on tinted cards. */
-  inkSoft: '#3A3A36',
-  surface: '#FFFFFF',
-  /** Cards, chip backgrounds, image placeholders. */
-  surfaceAlt: '#F3F2EE',
-  surfaceAlt2: '#ECEBE6',
-  border: '#E4E2DC',
-  borderStrong: '#B5B3AC',
-  /** "Good for you": price drops, in stock, savings. Use only for positive price/stock signals. */
-  accent: '#0F5C3F',
-  accentSoft: '#E3F0E8',
-  /** Price increased, size sold out, form errors. */
-  warning: '#A14A1E',
-  /** Text on `ink` or `accent` backgrounds. */
+  /** Page background. */
+  bg: '#FFFFFF',
+  /** Panels, image wells, tiles, icon buttons: depth comes from `surface` on `bg`, never from shadows. */
+  surface: '#EFF4F0',
+  /** Hairlines and dividers. */
+  line: '#DCE1DC',
+  /** Borders of unselected controls (chips, secondary buttons, fields). */
+  control: '#8D948E',
+  /** Primary text. */
+  ink: '#131E15',
+  /** Body text on panels, secondary emphasis. */
+  ink2: '#38433A',
+  /** Captions, inactive navigation, placeholders. */
+  muted: '#5D665E',
+  /** The one filled action per screen, selection, links and "Sana uygun". */
+  primary: '#075726',
+  primaryPressed: '#00451B',
+  /** Fill of a selected chip. */
+  primarySoft: '#DFF3E2',
+  /** Text and icons on `primary`. */
+  onPrimary: '#FFFFFF',
+  /**
+   * Only for what Kombin marks for attention: a missing piece, a price drop, back in stock.
+   * Text on a chalk fill is always `chalkInk`; `chalkLine` draws dashed outlines and underlines.
+   */
+  chalk: '#F7E9A7',
+  chalkInk: '#5B4404',
+  chalkLine: '#9D7B19',
+  /** Sold out, price up, errors; always next to an icon or a word. */
+  danger: '#A8372E',
+  /** Text and icons drawn straight over a photo or the scrim. */
+  onImage: '#FFFFFF',
+  /** Scrim behind modals and over a photo being scanned. */
+  scrim: 'rgba(19, 30, 21, 0.45)',
+
+  // Deprecated aliases, removed by the cleanup commit of Task 15b-B once every screen is migrated.
+  /** @deprecated use `control` (borders) or `muted` (text, icons). */
+  borderStrong: '#8D948E',
+  /** @deprecated use `primary` (the user's choice) or `chalkInk` (Kombin's signal). */
+  accent: '#075726',
+  /** @deprecated use `primarySoft` or `chalk`. */
+  accentSoft: '#DFF3E2',
+  /** @deprecated use `onPrimary` (on a green fill) or `ink` (on a surface panel). */
   onInk: '#FFFFFF',
-  /** Scrim behind modals. */
-  scrim: 'rgba(20, 20, 20, 0.45)',
 } as const;
 
+/** Shape: 6 tags, 12 controls, 14 the primary CTA, 16 tiles, 20 panels. Round things use half their size. */
 export const radius = {
-  sm: 8,
+  tag: 6,
+  control: 12,
+  cta: 14,
+  tile: 16,
+  panel: 20,
+
+  // Deprecated aliases (see above).
+  /** @deprecated */
+  sm: 6,
+  /** @deprecated */
   md: 12,
-  lg: 14,
+  /** @deprecated */
+  lg: 12,
+  /** @deprecated */
   xl: 16,
+  /** @deprecated */
   xxl: 20,
+  /** @deprecated no pills: controls use `control`, round things half their size. */
   pill: 999,
+} as const;
+
+/** Press feedback and state changes; skipped when the OS asks for reduced motion. */
+export const motion = {
+  pressScale: 0.96,
+  pressMs: 150,
+  stateMs: 200,
 } as const;
 
 export const sizes = {
@@ -36,7 +84,8 @@ export const sizes = {
   touch: 44,
   chipHeight: 36,
   fieldHeight: 52,
-  buttonHeight: 54,
+  /** Every `Button`; the primary CTA is 52 high. */
+  buttonHeight: 52,
   tabBarHeight: 84,
   productImageHeight: 180,
   detailImageHeight: 300,
@@ -106,14 +155,4 @@ export const sizes = {
   lensRailImageHeight: 168,
   /** A wardrobe piece in the "Dolabında benzeri var" strip. */
   lensWardrobeThumb: 64,
-} as const;
-
-export const shadows = {
-  raised: {
-    shadowColor: '#000000',
-    shadowOpacity: 0.18,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 4 },
-    elevation: 6,
-  },
 } as const;

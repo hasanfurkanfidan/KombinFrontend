@@ -122,16 +122,16 @@ const styles = StyleSheet.create({
     gap: theme.spacing.xs,
   },
   label: {
-    ...theme.typography.overline,
+    ...theme.typography.captionStrong,
     color: theme.colors.borderStrong,
   },
   title: {
-    ...theme.typography.headingLarge,
+    ...theme.typography.heading,
     color: theme.colors.onInk,
   },
   weather: {
     borderRadius: theme.radius.pill,
-    backgroundColor: theme.colors.inkSoft,
+    backgroundColor: theme.colors.ink2,
     paddingHorizontal: theme.spacing.md,
     paddingVertical: theme.spacing.xs,
   },
@@ -153,12 +153,12 @@ const styles = StyleSheet.create({
     minHeight: theme.sizes.touch,
     paddingHorizontal: theme.spacing.xl,
     borderRadius: theme.radius.pill,
-    backgroundColor: theme.colors.surface,
+    backgroundColor: theme.colors.bg,
     alignItems: 'center',
     justifyContent: 'center',
   },
   promptButtonText: {
-    ...theme.typography.bodyStrong,
+    ...theme.typography.label,
     color: theme.colors.ink,
   },
 });

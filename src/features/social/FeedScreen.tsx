@@ -70,7 +70,7 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.ink,
   },
   shareText: {
-    ...theme.typography.bodyStrong,
+    ...theme.typography.label,
     color: theme.colors.onInk,
   },
 });

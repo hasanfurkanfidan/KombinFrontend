@@ -59,30 +59,30 @@ const styles = StyleSheet.create({
   },
   label: {
     ...theme.typography.captionMedium,
-    color: theme.colors.inkSoft,
+    color: theme.colors.ink2,
   },
   input: {
     ...theme.typography.body,
     height: theme.sizes.fieldHeight,
     borderRadius: theme.radius.lg,
     borderWidth: 1,
-    borderColor: theme.colors.border,
+    borderColor: theme.colors.line,
     paddingHorizontal: theme.spacing.lg,
     color: theme.colors.ink,
-    backgroundColor: theme.colors.surface,
+    backgroundColor: theme.colors.bg,
   },
   inputFocused: {
     borderColor: theme.colors.ink,
   },
   inputError: {
-    borderColor: theme.colors.warning,
+    borderColor: theme.colors.danger,
   },
   error: {
     ...theme.typography.caption,
-    color: theme.colors.warning,
+    color: theme.colors.danger,
   },
   hint: {
     ...theme.typography.caption,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
 });

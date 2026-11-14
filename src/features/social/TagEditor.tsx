@@ -317,13 +317,13 @@ const styles = StyleSheet.create({
   },
   hint: {
     ...theme.typography.body,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
   photo: {
     width: '100%',
     borderRadius: theme.radius.xl,
     overflow: 'hidden',
-    backgroundColor: theme.colors.surfaceAlt,
+    backgroundColor: theme.colors.surface,
   },
   fill: {
     ...StyleSheet.absoluteFill,
@@ -335,12 +335,12 @@ const styles = StyleSheet.create({
     borderRadius: theme.radius.pill,
     backgroundColor: theme.colors.ink,
     borderWidth: 2,
-    borderColor: theme.colors.surface,
+    borderColor: theme.colors.bg,
     alignItems: 'center',
     justifyContent: 'center',
   },
   dotPending: {
-    backgroundColor: theme.colors.surface,
+    backgroundColor: theme.colors.bg,
     borderColor: theme.colors.ink,
     borderStyle: 'dashed',
   },
@@ -348,8 +348,8 @@ const styles = StyleSheet.create({
     borderColor: theme.colors.accent,
   },
   dotNumber: {
-    ...theme.typography.overline,
-    color: theme.colors.inkSoft,
+    ...theme.typography.captionStrong,
+    color: theme.colors.ink2,
   },
   rows: {
     gap: theme.spacing.md,
@@ -359,7 +359,7 @@ const styles = StyleSheet.create({
     padding: theme.spacing.md,
     borderRadius: theme.radius.xl,
     borderWidth: 1,
-    borderColor: theme.colors.border,
+    borderColor: theme.colors.line,
   },
   rowSelected: {
     borderColor: theme.colors.ink,
@@ -378,27 +378,27 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   badgePending: {
-    backgroundColor: theme.colors.surfaceAlt2,
+    backgroundColor: theme.colors.surface,
   },
   badgeText: {
-    ...theme.typography.overline,
-    color: theme.colors.inkSoft,
+    ...theme.typography.captionStrong,
+    color: theme.colors.ink2,
   },
   rowText: {
     flex: 1,
     gap: 2,
   },
   rowTitle: {
-    ...theme.typography.bodyStrong,
+    ...theme.typography.label,
     color: theme.colors.ink,
   },
   rowPending: {
     ...theme.typography.caption,
-    color: theme.colors.warning,
+    color: theme.colors.danger,
   },
   rowChosen: {
     ...theme.typography.caption,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
   remove: {
     width: theme.sizes.touch,
@@ -413,7 +413,7 @@ const styles = StyleSheet.create({
   },
   pending: {
     ...theme.typography.captionMedium,
-    color: theme.colors.warning,
+    color: theme.colors.danger,
     textAlign: 'center',
   },
 });

@@ -66,7 +66,7 @@ export function StyleSwitcher() {
             testID="style-add"
           >
             <Text style={styles.optionText}>{tr.styleSheetNew}</Text>
-            <Icon name="plus" size={20} color={theme.colors.inkMuted} />
+            <Icon name="plus" size={20} color={theme.colors.muted} />
           </Pressable>
         ) : null}
       </BottomSheet>
@@ -90,13 +90,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     borderBottomWidth: 1,
-    borderBottomColor: theme.colors.border,
+    borderBottomColor: theme.colors.line,
   },
   optionText: {
     ...theme.typography.bodyMedium,
     color: theme.colors.ink,
   },
   optionTextActive: {
-    fontFamily: theme.fontFamilies.bodyStrong,
+    fontFamily: theme.fontFamilies.semibold,
   },
 });

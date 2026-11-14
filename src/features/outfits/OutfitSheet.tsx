@@ -191,7 +191,7 @@ export function DismissSheet({
 
 const styles = StyleSheet.create({
   sheet: {
-    backgroundColor: theme.colors.surface,
+    backgroundColor: theme.colors.bg,
     borderTopLeftRadius: theme.radius.xxl,
     borderTopRightRadius: theme.radius.xxl,
     paddingHorizontal: theme.screenPaddingX,
@@ -207,11 +207,11 @@ const styles = StyleSheet.create({
     width: theme.sizes.grabberWidth,
     height: theme.sizes.grabberHeight,
     borderRadius: theme.radius.pill,
-    backgroundColor: theme.colors.border,
+    backgroundColor: theme.colors.line,
   },
   caption: {
     ...theme.typography.body,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
   price: {
     ...theme.typography.display,
@@ -219,7 +219,7 @@ const styles = StyleSheet.create({
   },
   rows: {
     borderRadius: theme.radius.lg,
-    backgroundColor: theme.colors.surfaceAlt,
+    backgroundColor: theme.colors.surface,
     paddingHorizontal: theme.spacing.lg,
   },
   row: {
@@ -231,11 +231,11 @@ const styles = StyleSheet.create({
   },
   rowText: {
     ...theme.typography.body,
-    color: theme.colors.inkSoft,
+    color: theme.colors.ink2,
     flexShrink: 1,
   },
   rowPrice: {
-    ...theme.typography.bodyStrong,
+    ...theme.typography.label,
     color: theme.colors.ink,
   },
   buttons: {
@@ -254,6 +254,6 @@ const styles = StyleSheet.create({
     color: theme.colors.ink,
   },
   reasonMuted: {
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
 });

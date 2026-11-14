@@ -257,7 +257,7 @@ const styles = StyleSheet.create({
   progress: {
     alignSelf: 'flex-start',
     borderRadius: theme.radius.pill,
-    backgroundColor: theme.colors.surfaceAlt,
+    backgroundColor: theme.colors.surface,
     paddingHorizontal: theme.spacing.md,
     paddingVertical: theme.spacing.xs,
   },
@@ -271,7 +271,7 @@ const styles = StyleSheet.create({
   },
   footerText: {
     ...theme.typography.body,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
     textAlign: 'center',
   },
 });

@@ -137,7 +137,7 @@ export function ProductDetailScreen({ id, source = 'direct' }: ProductDetailScre
                 <Text style={styles.howToWearTitle}>{tr.productHowToWear}</Text>
                 <Text style={styles.howToWearCaption}>{tr.productHowToWearCaption}</Text>
               </View>
-              <Icon name="chevronRight" size={20} color={theme.colors.inkMuted} />
+              <Icon name="chevronRight" size={20} color={theme.colors.muted} />
             </Pressable>
             <View style={styles.offers}>
               <Text style={styles.offersTitle}>
@@ -348,7 +348,7 @@ function DetailSkeleton() {
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: theme.colors.surface,
+    backgroundColor: theme.colors.bg,
   },
   errorWrap: {
     flex: 1,
@@ -364,7 +364,7 @@ const styles = StyleSheet.create({
   },
   imageArea: {
     height: theme.sizes.detailImageHeight,
-    backgroundColor: theme.colors.surfaceAlt,
+    backgroundColor: theme.colors.surface,
   },
   imagePlaceholder: {
     height: theme.sizes.detailImageHeight,
@@ -410,10 +410,10 @@ const styles = StyleSheet.create({
   },
   brand: {
     ...theme.typography.caption,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
   matchPill: {
-    backgroundColor: theme.colors.surfaceAlt,
+    backgroundColor: theme.colors.surface,
     borderRadius: theme.radius.pill,
     paddingHorizontal: theme.spacing.sm,
     paddingVertical: 2,
@@ -428,7 +428,7 @@ const styles = StyleSheet.create({
   },
   sizeCaption: {
     ...theme.typography.caption,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
   sizePill: {
     minWidth: 36,
@@ -440,11 +440,11 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.ink,
   },
   sizePillText: {
-    ...theme.typography.bodyStrong,
+    ...theme.typography.label,
     color: theme.colors.onInk,
   },
   sizeGuess: {
-    ...theme.typography.bodyStrong,
+    ...theme.typography.label,
     color: theme.colors.ink,
   },
   sizeLink: {
@@ -453,7 +453,7 @@ const styles = StyleSheet.create({
     textDecorationLine: 'underline',
   },
   name: {
-    ...theme.typography.headingLarge,
+    ...theme.typography.heading,
     color: theme.colors.ink,
   },
   howToWear: {
@@ -463,40 +463,40 @@ const styles = StyleSheet.create({
     gap: theme.spacing.md,
     padding: theme.spacing.lg,
     borderRadius: theme.radius.lg,
-    backgroundColor: theme.colors.surfaceAlt,
+    backgroundColor: theme.colors.surface,
   },
   howToWearText: {
     flex: 1,
     gap: 2,
   },
   howToWearTitle: {
-    ...theme.typography.bodyStrong,
+    ...theme.typography.label,
     color: theme.colors.ink,
   },
   howToWearCaption: {
     ...theme.typography.caption,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
   offers: {
     gap: theme.spacing.md,
   },
   offersTitle: {
     ...theme.typography.bodyMedium,
-    color: theme.colors.inkSoft,
+    color: theme.colors.ink2,
   },
   noOffers: {
     ...theme.typography.body,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
   offerList: {
     borderWidth: 1,
-    borderColor: theme.colors.border,
+    borderColor: theme.colors.line,
     borderRadius: theme.radius.lg,
     overflow: 'hidden',
   },
   offerDivider: {
     borderTopWidth: 1,
-    borderTopColor: theme.colors.border,
+    borderTopColor: theme.colors.line,
   },
   bar: {
     position: 'absolute',
@@ -507,9 +507,9 @@ const styles = StyleSheet.create({
     gap: theme.spacing.md,
     paddingTop: BAR_PADDING,
     paddingHorizontal: theme.screenPaddingX,
-    backgroundColor: theme.colors.surface,
+    backgroundColor: theme.colors.bg,
     borderTopWidth: 1,
-    borderTopColor: theme.colors.border,
+    borderTopColor: theme.colors.line,
   },
   buyButton: {
     flex: 1,

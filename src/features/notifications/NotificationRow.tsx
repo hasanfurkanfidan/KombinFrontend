@@ -80,14 +80,14 @@ const styles = StyleSheet.create({
     borderRadius: theme.radius.xl,
   },
   cardUnread: {
-    backgroundColor: theme.colors.surfaceAlt,
+    backgroundColor: theme.colors.surface,
   },
   cardPrice: {
     backgroundColor: theme.colors.accentSoft,
   },
   cardRead: {
     borderWidth: 1,
-    borderColor: theme.colors.border,
+    borderColor: theme.colors.line,
   },
   iconBox: {
     width: theme.sizes.notificationIcon,
@@ -103,22 +103,22 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.accent,
   },
   iconRead: {
-    backgroundColor: theme.colors.surfaceAlt,
+    backgroundColor: theme.colors.surface,
   },
   text: {
     flex: 1,
     gap: theme.spacing.xs,
   },
   title: {
-    ...theme.typography.bodyStrong,
+    ...theme.typography.label,
     color: theme.colors.ink,
   },
   body: {
     ...theme.typography.body,
-    color: theme.colors.inkSoft,
+    color: theme.colors.ink2,
   },
   meta: {
     ...theme.typography.caption,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
 });

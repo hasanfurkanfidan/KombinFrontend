@@ -66,7 +66,7 @@ export function NarrationRow({ text }: { text: string }) {
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: theme.colors.surfaceAlt,
+    backgroundColor: theme.colors.surface,
   },
   header: {
     flexDirection: 'row',
@@ -82,12 +82,12 @@ const styles = StyleSheet.create({
     gap: 2,
   },
   title: {
-    ...theme.typography.heading,
+    ...theme.typography.subhead,
     color: theme.colors.ink,
   },
   subtitle: {
     ...theme.typography.caption,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
   right: {
     flexDirection: 'row',
@@ -114,7 +114,7 @@ const styles = StyleSheet.create({
   },
   narrationText: {
     ...theme.typography.body,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
     flexShrink: 1,
   },
 });

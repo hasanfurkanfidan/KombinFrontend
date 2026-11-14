@@ -117,7 +117,7 @@ export function ProfileScreen() {
                 style={styles.newPersona}
                 testID="profile-new-persona"
               >
-                <Icon name="plus" size={18} color={theme.colors.inkMuted} />
+                <Icon name="plus" size={18} color={theme.colors.muted} />
                 <Text style={styles.newPersonaText}>{tr.profileNewPersona}</Text>
               </Pressable>
             ) : null}
@@ -203,7 +203,7 @@ function PersonaRow({ persona, onPress }: { persona: Persona; onPress: () => voi
               key={position}
               style={[
                 styles.swatch,
-                { backgroundColor: name ? swatchColor(name) : theme.colors.surfaceAlt2 },
+                { backgroundColor: name ? swatchColor(name) : theme.colors.surface },
               ]}
             />
           );
@@ -220,7 +220,7 @@ function PersonaRow({ persona, onPress }: { persona: Persona; onPress: () => voi
           <Text style={styles.activeText}>{tr.personaActive}</Text>
         </View>
       ) : (
-        <Icon name="chevronRight" size={18} color={theme.colors.inkMuted} />
+        <Icon name="chevronRight" size={18} color={theme.colors.muted} />
       )}
     </Pressable>
   );
@@ -251,7 +251,7 @@ function SettingsRow({
         <Text style={styles.personaName}>{title}</Text>
         <Text style={styles.caption}>{caption}</Text>
       </View>
-      {onPress ? <Icon name="chevronRight" size={18} color={theme.colors.inkMuted} /> : null}
+      {onPress ? <Icon name="chevronRight" size={18} color={theme.colors.muted} /> : null}
     </Pressable>
   );
 }
@@ -267,13 +267,13 @@ const styles = StyleSheet.create({
     color: theme.colors.ink,
   },
   card: {
-    backgroundColor: theme.colors.surfaceAlt,
+    backgroundColor: theme.colors.surface,
     borderRadius: theme.radius.xl,
     padding: theme.spacing.xl,
     gap: theme.spacing.lg,
   },
   cardTitle: {
-    ...theme.typography.heading,
+    ...theme.typography.subhead,
     color: theme.colors.ink,
   },
   identityRow: {
@@ -290,7 +290,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   avatarText: {
-    ...theme.typography.headingLarge,
+    ...theme.typography.heading,
     color: theme.colors.onInk,
   },
   identity: {
@@ -298,22 +298,22 @@ const styles = StyleSheet.create({
     gap: theme.spacing.xs,
   },
   name: {
-    ...theme.typography.headingLarge,
+    ...theme.typography.heading,
     color: theme.colors.ink,
   },
   body: {
     ...theme.typography.body,
-    color: theme.colors.inkSoft,
+    color: theme.colors.ink2,
   },
   caption: {
     ...theme.typography.caption,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
   section: {
     gap: theme.spacing.md,
   },
   sectionTitle: {
-    ...theme.typography.heading,
+    ...theme.typography.subhead,
     color: theme.colors.ink,
   },
   personaRow: {
@@ -322,7 +322,7 @@ const styles = StyleSheet.create({
     gap: theme.spacing.md,
     padding: theme.spacing.lg,
     borderRadius: theme.radius.xl,
-    backgroundColor: theme.colors.surfaceAlt,
+    backgroundColor: theme.colors.surface,
   },
   swatches: {
     flexDirection: 'row',
@@ -333,14 +333,14 @@ const styles = StyleSheet.create({
     height: theme.sizes.personaSwatchHeight,
     borderRadius: theme.radius.sm / 2,
     borderWidth: 1,
-    borderColor: theme.colors.border,
+    borderColor: theme.colors.line,
   },
   personaText: {
     flex: 1,
     gap: 2,
   },
   personaName: {
-    ...theme.typography.bodyStrong,
+    ...theme.typography.label,
     color: theme.colors.ink,
   },
   activePill: {
@@ -366,11 +366,11 @@ const styles = StyleSheet.create({
   },
   newPersonaText: {
     ...theme.typography.bodyMedium,
-    color: theme.colors.inkSoft,
+    color: theme.colors.ink2,
   },
   rows: {
     borderWidth: 1,
-    borderColor: theme.colors.border,
+    borderColor: theme.colors.line,
     borderRadius: theme.radius.xl,
     overflow: 'hidden',
   },
@@ -384,6 +384,6 @@ const styles = StyleSheet.create({
   },
   settingsDivider: {
     borderTopWidth: 1,
-    borderTopColor: theme.colors.border,
+    borderTopColor: theme.colors.line,
   },
 });

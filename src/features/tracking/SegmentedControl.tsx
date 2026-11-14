@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     padding: theme.spacing.xs,
     borderRadius: theme.radius.pill,
-    backgroundColor: theme.colors.surfaceAlt,
+    backgroundColor: theme.colors.surface,
   },
   segment: {
     flex: 1,
@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
   },
   label: {
     ...theme.typography.bodyMedium,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
   labelSelected: {
     color: theme.colors.onInk,

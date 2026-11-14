@@ -291,7 +291,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   avatarText: {
-    ...theme.typography.bodyStrong,
+    ...theme.typography.label,
     color: theme.colors.onInk,
   },
   authorText: {
@@ -304,22 +304,22 @@ const styles = StyleSheet.create({
     gap: theme.spacing.sm,
   },
   name: {
-    ...theme.typography.bodyStrong,
+    ...theme.typography.label,
     color: theme.colors.ink,
   },
   creatorChip: {
     paddingHorizontal: theme.spacing.sm,
     paddingVertical: 2,
     borderRadius: theme.radius.pill,
-    backgroundColor: theme.colors.surfaceAlt2,
+    backgroundColor: theme.colors.surface,
   },
   creatorChipText: {
-    ...theme.typography.overline,
-    color: theme.colors.inkSoft,
+    ...theme.typography.captionStrong,
+    color: theme.colors.ink2,
   },
   sub: {
     ...theme.typography.caption,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
     flexShrink: 1,
   },
   followButton: {
@@ -327,19 +327,19 @@ const styles = StyleSheet.create({
     paddingHorizontal: theme.spacing.lg,
     borderRadius: theme.radius.pill,
     borderWidth: 1,
-    borderColor: theme.colors.border,
+    borderColor: theme.colors.line,
     alignItems: 'center',
     justifyContent: 'center',
   },
   followButtonActive: {
-    backgroundColor: theme.colors.surfaceAlt,
+    backgroundColor: theme.colors.surface,
   },
   followText: {
     ...theme.typography.captionMedium,
     color: theme.colors.ink,
   },
   followTextActive: {
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
   menuButton: {
     width: theme.sizes.touch,
@@ -375,24 +375,24 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   tryText: {
-    ...theme.typography.bodyStrong,
+    ...theme.typography.label,
     color: theme.colors.accent,
   },
   caption: {
     ...theme.typography.body,
-    color: theme.colors.inkSoft,
+    color: theme.colors.ink2,
   },
   captionAuthor: {
-    ...theme.typography.bodyStrong,
+    ...theme.typography.label,
     color: theme.colors.ink,
   },
   disclosure: {
     ...theme.typography.caption,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
   menuHint: {
     ...theme.typography.body,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
   menuRow: {
     minHeight: theme.sizes.touch,

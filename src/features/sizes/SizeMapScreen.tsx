@@ -231,7 +231,7 @@ const styles = StyleSheet.create({
     gap: theme.spacing.lg,
   },
   cardLabel: {
-    ...theme.typography.overline,
+    ...theme.typography.captionStrong,
     color: theme.colors.borderStrong,
   },
   cardRow: {
@@ -253,26 +253,26 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
     height: theme.sizes.touch,
     backgroundColor: 'transparent',
-    borderColor: theme.colors.inkMuted,
+    borderColor: theme.colors.muted,
   },
   headingBlock: {
     gap: theme.spacing.xs,
   },
   heading: {
-    ...theme.typography.heading,
+    ...theme.typography.subhead,
     color: theme.colors.ink,
   },
   subtitle: {
     ...theme.typography.body,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
   empty: {
     ...theme.typography.body,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
   table: {
     borderWidth: 1,
-    borderColor: theme.colors.border,
+    borderColor: theme.colors.line,
     borderRadius: theme.radius.lg,
     overflow: 'hidden',
   },
@@ -283,12 +283,12 @@ const styles = StyleSheet.create({
   },
   tableHead: {
     height: 40,
-    backgroundColor: theme.colors.surfaceAlt,
+    backgroundColor: theme.colors.surface,
   },
   tableBody: {
     minHeight: theme.sizes.touch + theme.spacing.sm,
     borderTopWidth: 1,
-    borderTopColor: theme.colors.border,
+    borderTopColor: theme.colors.line,
   },
   brandCol: {
     flex: 1.6,
@@ -297,19 +297,19 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   headCell: {
-    ...theme.typography.overline,
-    color: theme.colors.inkMuted,
+    ...theme.typography.captionStrong,
+    color: theme.colors.muted,
   },
   brandCell: {
     ...theme.typography.bodyMedium,
     color: theme.colors.ink,
   },
   sizeCell: {
-    ...theme.typography.bodyStrong,
+    ...theme.typography.label,
     color: theme.colors.ink,
   },
   sizeInferred: {
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
   emptyCell: {
     ...theme.typography.body,

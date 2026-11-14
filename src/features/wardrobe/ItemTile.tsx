@@ -111,7 +111,7 @@ export function AddTile({ width, onPress }: { width: number; onPress: () => void
       style={[styles.tile, styles.addTile, { width, height: width }]}
       testID="wardrobe-add-tile"
     >
-      <Icon name="plus" size={28} color={theme.colors.inkMuted} />
+      <Icon name="plus" size={28} color={theme.colors.muted} />
     </Pressable>
   );
 }
@@ -125,12 +125,12 @@ const styles = StyleSheet.create({
   },
   caption: {
     ...theme.typography.caption,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
     marginTop: theme.spacing.xs,
   },
   reason: {
     ...theme.typography.caption,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
     marginTop: theme.spacing.xs,
   },
   image: {
@@ -143,7 +143,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderStyle: 'dashed',
     borderColor: theme.colors.borderStrong,
-    backgroundColor: theme.colors.surface,
+    backgroundColor: theme.colors.bg,
   },
   pill: {
     position: 'absolute',
@@ -154,10 +154,10 @@ const styles = StyleSheet.create({
     paddingVertical: theme.spacing.xs,
   },
   pillLight: {
-    backgroundColor: theme.colors.surface,
+    backgroundColor: theme.colors.bg,
   },
   pillWarning: {
-    backgroundColor: theme.colors.warning,
+    backgroundColor: theme.colors.danger,
   },
   pillTextDark: {
     ...theme.typography.captionMedium,
@@ -174,12 +174,12 @@ const styles = StyleSheet.create({
     width: theme.sizes.statusBadge,
     height: theme.sizes.statusBadge,
     borderRadius: theme.radius.pill,
-    backgroundColor: theme.colors.warning,
+    backgroundColor: theme.colors.danger,
     alignItems: 'center',
     justifyContent: 'center',
   },
   failedMark: {
-    ...theme.typography.bodyStrong,
+    ...theme.typography.label,
     color: theme.colors.onInk,
   },
 });

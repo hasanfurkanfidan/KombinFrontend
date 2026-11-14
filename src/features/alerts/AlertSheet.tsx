@@ -188,11 +188,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: theme.spacing.lg,
     borderRadius: theme.radius.lg,
     borderWidth: 1,
-    borderColor: theme.colors.border,
+    borderColor: theme.colors.line,
   },
   optionSelected: {
     borderColor: theme.colors.ink,
-    backgroundColor: theme.colors.surfaceAlt,
+    backgroundColor: theme.colors.surface,
   },
   disabled: {
     opacity: 0.4,
@@ -224,11 +224,11 @@ const styles = StyleSheet.create({
   },
   sizesLabel: {
     ...theme.typography.captionMedium,
-    color: theme.colors.inkSoft,
+    color: theme.colors.ink2,
   },
   sizesHint: {
     ...theme.typography.caption,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
   sizeChips: {
     flexDirection: 'row',
@@ -237,6 +237,6 @@ const styles = StyleSheet.create({
   },
   error: {
     ...theme.typography.caption,
-    color: theme.colors.warning,
+    color: theme.colors.danger,
   },
 });

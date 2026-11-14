@@ -1,6 +1,10 @@
 import { useEffect, type ReactNode } from 'react';
-import { Inter_400Regular, Inter_500Medium, Inter_600SemiBold } from '@expo-google-fonts/inter';
-import { SpaceGrotesk_600SemiBold, SpaceGrotesk_700Bold } from '@expo-google-fonts/space-grotesk';
+import {
+  Archivo_400Regular,
+  Archivo_500Medium,
+  Archivo_600SemiBold,
+  Archivo_700Bold,
+} from '@expo-google-fonts/archivo';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { useRouter } from 'expo-router';
 import { useFonts } from 'expo-font';
@@ -39,11 +43,14 @@ function SessionExpiryRedirect() {
 
 export function AppProviders({ children }: { children: ReactNode }) {
   const [fontsLoaded, fontError] = useFonts({
-    Inter_400Regular,
-    Inter_500Medium,
-    Inter_600SemiBold,
-    SpaceGrotesk_600SemiBold,
-    SpaceGrotesk_700Bold,
+    Archivo_400Regular,
+    Archivo_500Medium,
+    Archivo_600SemiBold,
+    Archivo_700Bold,
+    // The package ships the normal width only; these two are static instances of Google Fonts' variable Archivo
+    // (wdth 87.5 and 75, wght 700), bundled under assets/fonts and loaded at runtime (no native build needed).
+    ArchivoSemiCondensed_700Bold: require('../../assets/fonts/Archivo_SemiCondensed-Bold.ttf'),
+    ArchivoCondensed_700Bold: require('../../assets/fonts/Archivo_Condensed-Bold.ttf'),
   });
   const sessionReady = useBootstrapSession();
   // A font failure falls back to system fonts rather than blocking the app.

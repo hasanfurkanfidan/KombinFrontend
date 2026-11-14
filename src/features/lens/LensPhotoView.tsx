@@ -154,7 +154,7 @@ const styles = StyleSheet.create({
   },
   scanningPill: {
     borderRadius: theme.radius.pill,
-    backgroundColor: theme.colors.surface,
+    backgroundColor: theme.colors.bg,
     paddingHorizontal: theme.spacing.lg,
     paddingVertical: theme.spacing.sm,
   },

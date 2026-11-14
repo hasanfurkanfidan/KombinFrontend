@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
     width: theme.sizes.touch,
     height: theme.sizes.touch,
     borderRadius: theme.radius.pill,
-    backgroundColor: theme.colors.surfaceAlt,
+    backgroundColor: theme.colors.surface,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
     opacity: 0.4,
   },
   value: {
-    ...theme.typography.bodyStrong,
+    ...theme.typography.label,
     color: theme.colors.ink,
     minWidth: 28,
     textAlign: 'center',

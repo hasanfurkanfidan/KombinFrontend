@@ -83,8 +83,8 @@ export function PriceHistoryChart({ points, variant = 'mini', lowPrice }: PriceH
             x={FULL_PADDING.paddingX}
             y={16}
             fontSize={11}
-            fontFamily={theme.fontFamilies.bodyMedium}
-            fill={theme.colors.inkMuted}
+            fontFamily={theme.fontFamilies.medium}
+            fill={theme.colors.muted}
           >
             {formatTry(geometry.maxPrice)}
           </SvgText>
@@ -92,8 +92,8 @@ export function PriceHistoryChart({ points, variant = 'mini', lowPrice }: PriceH
             x={FULL_PADDING.paddingX}
             y={height - 10}
             fontSize={11}
-            fontFamily={theme.fontFamilies.body}
-            fill={theme.colors.inkMuted}
+            fontFamily={theme.fontFamilies.regular}
+            fill={theme.colors.muted}
           >
             {formatShortDate(firstPoint.date)}
           </SvgText>
@@ -101,8 +101,8 @@ export function PriceHistoryChart({ points, variant = 'mini', lowPrice }: PriceH
             x={fullWidth - FULL_PADDING.paddingX}
             y={height - 10}
             fontSize={11}
-            fontFamily={theme.fontFamilies.body}
-            fill={theme.colors.inkMuted}
+            fontFamily={theme.fontFamilies.regular}
+            fill={theme.colors.muted}
             textAnchor="end"
           >
             {formatShortDate(lastPoint.date)}
@@ -112,8 +112,8 @@ export function PriceHistoryChart({ points, variant = 'mini', lowPrice }: PriceH
               x={fullWidth - FULL_PADDING.paddingX}
               y={geometry.lowY - 6}
               fontSize={11}
-              fontFamily={theme.fontFamilies.bodyStrong}
-              fill={theme.colors.inkMuted}
+              fontFamily={theme.fontFamilies.semibold}
+              fill={theme.colors.muted}
               textAnchor="end"
             >
               {formatTry(geometry.minPrice)}

@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
   imageBox: {
     height: theme.sizes.productImageHeight,
     borderRadius: theme.radius.xl,
-    backgroundColor: theme.colors.surfaceAlt,
+    backgroundColor: theme.colors.surface,
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
@@ -140,7 +140,7 @@ const styles = StyleSheet.create({
     padding: theme.spacing.md,
   },
   inactiveText: {
-    ...theme.typography.bodyStrong,
+    ...theme.typography.label,
     color: theme.colors.onInk,
     textAlign: 'center',
   },
@@ -149,7 +149,7 @@ const styles = StyleSheet.create({
   },
   brand: {
     ...theme.typography.caption,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
   name: {
     ...theme.typography.bodyMedium,
@@ -161,12 +161,12 @@ const styles = StyleSheet.create({
     gap: theme.spacing.sm,
   },
   price: {
-    ...theme.typography.bodyStrong,
+    ...theme.typography.label,
     color: theme.colors.ink,
   },
   originalPrice: {
     ...theme.typography.caption,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
     textDecorationLine: 'line-through',
   },
   match: {

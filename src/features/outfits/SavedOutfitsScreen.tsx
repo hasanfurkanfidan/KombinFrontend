@@ -144,7 +144,7 @@ const styles = StyleSheet.create({
     paddingVertical: theme.spacing.md,
   },
   title: {
-    ...theme.typography.headingLarge,
+    ...theme.typography.heading,
     color: theme.colors.ink,
   },
   content: {

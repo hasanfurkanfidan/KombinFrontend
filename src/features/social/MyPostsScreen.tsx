@@ -185,7 +185,7 @@ const styles = StyleSheet.create({
     gap: theme.spacing.sm,
     padding: theme.spacing.md,
     borderRadius: theme.radius.xl,
-    backgroundColor: theme.colors.surfaceAlt,
+    backgroundColor: theme.colors.surface,
   },
   main: {
     flex: 1,
@@ -197,7 +197,7 @@ const styles = StyleSheet.create({
     width: theme.sizes.postThumbWidth,
     height: theme.sizes.postThumbHeight,
     borderRadius: theme.radius.md,
-    backgroundColor: theme.colors.surfaceAlt2,
+    backgroundColor: theme.colors.surface,
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
@@ -218,9 +218,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: theme.spacing.sm,
     paddingVertical: 2,
     borderRadius: theme.radius.pill,
-    backgroundColor: theme.colors.surface,
+    backgroundColor: theme.colors.bg,
     borderWidth: 1,
-    borderColor: theme.colors.border,
+    borderColor: theme.colors.line,
   },
   statusLive: {
     backgroundColor: theme.colors.ink,
@@ -228,18 +228,18 @@ const styles = StyleSheet.create({
   },
   statusText: {
     ...theme.typography.captionMedium,
-    color: theme.colors.inkSoft,
+    color: theme.colors.ink2,
   },
   statusTextLive: {
     color: theme.colors.onInk,
   },
   meta: {
     ...theme.typography.caption,
-    color: theme.colors.inkMuted,
+    color: theme.colors.muted,
   },
   message: {
     ...theme.typography.body,
-    color: theme.colors.inkSoft,
+    color: theme.colors.ink2,
   },
   resume: {
     ...theme.typography.captionMedium,
