@@ -7,6 +7,9 @@ import * as AppleAuthentication from 'expo-apple-authentication';
 
 import { ApiError } from '@/api/client';
 import { externalSignIn } from '@/api/endpoints/auth';
+import { getLegal } from '@/api/endpoints/legal';
+import { queryClient } from '@/api/queryClient';
+import { usePendingDeletionStore } from '@/features/auth/pendingDeletion';
 import { LoginScreen } from '@/features/auth/LoginScreen';
 import { RegisterScreen } from '@/features/auth/RegisterScreen';
 import { useSessionStore } from '@/session/sessionStore';
@@ -14,6 +17,7 @@ import { useSessionStore } from '@/session/sessionStore';
 import { renderWithQuery, resetSession, tokens } from '../../testUtils';
 
 jest.mock('@/api/endpoints/auth');
+jest.mock('@/api/endpoints/legal');
 
 jest.mock('expo-constants', () => ({
   __esModule: true,
@@ -46,6 +50,8 @@ const originalPlatform = Platform.OS;
 
 beforeEach(async () => {
   jest.clearAllMocks();
+  queryClient.clear();
+  usePendingDeletionStore.getState().clear();
   await resetSession();
   constants.appOwnership = null;
   Platform.OS = 'ios';
@@ -167,5 +173,70 @@ describe('social sign-in buttons', () => {
     expect(await screen.findByText('Bu giriş yöntemi şu an kullanılamıyor.')).toBeTruthy();
     expect(router.dismissTo).not.toHaveBeenCalled();
     expect(useSessionStore.getState().status).not.toBe('signedIn');
+  });
+  it('remembers that a Google sign-in has no password', async () => {
+    await renderWithQuery(<LoginScreen />);
+
+    await fireEvent.press(screen.getByTestId('external-google'));
+
+    await waitFor(() => expect(router.dismissTo).toHaveBeenCalledWith('/'));
+    expect(useSessionStore.getState().signInMethod).toBe('external');
+  });
+
+  it('opens the pending-deletion screen and keeps the ID token when the account waits to be deleted', async () => {
+    externalSignInMock.mockRejectedValue(
+      new ApiError({
+        status: 403,
+        errorCode: 'Identity.AccountPendingDeletion',
+        deletionScheduledFor: '2026-11-21T12:00:00Z',
+        correlationId: 'c',
+      }),
+    );
+    await renderWithQuery(<LoginScreen />);
+
+    await fireEvent.press(screen.getByTestId('external-google'));
+
+    await waitFor(() => expect(router.push).toHaveBeenCalledWith('/pending-deletion'));
+    expect(usePendingDeletionStore.getState()).toMatchObject({
+      scheduledFor: '2026-11-21T12:00:00Z',
+      credentials: { kind: 'external', provider: 'google', idToken: 'g-token' },
+    });
+    expect(useSessionStore.getState().status).not.toBe('signedIn');
+    expect(screen.queryByTestId('external-error')).toBeNull();
+  });
+
+  it('says the account is closed for a disabled Google account', async () => {
+    jest.mocked(getLegal).mockResolvedValue({
+      version: '1',
+      privacyUrl: 'https://kombin.test/legal/privacy',
+      termsUrl: 'https://kombin.test/legal/terms',
+      deleteAccountUrl: 'https://kombin.test/legal/delete-account',
+    });
+    externalSignInMock.mockRejectedValue(
+      new ApiError({ status: 403, errorCode: 'Identity.AccountDisabled', correlationId: 'c' }),
+    );
+    await renderWithQuery(<LoginScreen />);
+
+    await fireEvent.press(screen.getByTestId('external-google'));
+
+    expect(await screen.findByText('Bu hesap kapatıldı.')).toBeTruthy();
+  });
+
+  it('shows the rate-limit sentence', async () => {
+    externalSignInMock.mockRejectedValue(
+      new ApiError({
+        status: 429,
+        errorCode: 'RateLimited',
+        retryAfterSeconds: 30,
+        correlationId: 'c',
+      }),
+    );
+    await renderWithQuery(<LoginScreen />);
+
+    await fireEvent.press(screen.getByTestId('external-google'));
+
+    expect(
+      await screen.findByText('Çok fazla deneme yaptın. 30 saniye sonra tekrar dene.'),
+    ).toBeTruthy();
   });
 });

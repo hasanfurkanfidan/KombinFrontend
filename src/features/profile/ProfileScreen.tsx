@@ -11,6 +11,7 @@ import { Screen } from '@/components/Screen';
 import { Skeleton } from '@/components/Skeleton';
 import { MAX_PERSONAS, usePersonas } from '@/features/personas/hooks';
 import { personaCaption } from '@/features/personas/caption';
+import { openLegalPage } from '@/features/legal/legal';
 import { PersonaSheet } from '@/features/personas/PersonaSheet';
 import { swatchColor } from '@/features/personas/swatches';
 import { PreferencesSheet } from '@/features/notifications/PreferencesSheet';
@@ -68,7 +69,11 @@ export function ProfileScreen() {
           />
         </Card>
       ) : me.isError ? (
-        <ErrorState body={tr.profileLoadFailed} onRetry={() => void me.refetch()} />
+        <ErrorState
+          body={tr.profileLoadFailed}
+          error={me.error}
+          onRetry={() => void me.refetch()}
+        />
       ) : (
         <>
           <View style={styles.identityRow}>
@@ -170,16 +175,45 @@ export function ProfileScreen() {
             />
             <SettingsRow title={tr.profileStores} caption={tr.comingSoon} divider />
           </View>
-
-          <Button
-            label={tr.profileLogout}
-            variant="secondary"
-            onPress={() => void handleSignOut()}
-            loading={signingOut}
-            testID="profile-sign-out"
-          />
         </>
       )}
+
+      {/* The legal pages are public: they show signed out too. Logout and deletion need an account. */}
+      <View style={styles.section} testID="profile-account">
+        <Text style={styles.sectionTitle}>{tr.profileAccount}</Text>
+        <View style={styles.rows}>
+          <SettingsRow
+            title={tr.legalPrivacy}
+            onPress={() => void openLegalPage('privacy')}
+            testID="profile-privacy"
+          />
+          <SettingsRow
+            title={tr.legalTerms}
+            onPress={() => void openLegalPage('terms')}
+            divider
+            testID="profile-terms"
+          />
+        </View>
+        {isSignedIn ? (
+          <>
+            <Button
+              label={tr.profileLogout}
+              variant="secondary"
+              onPress={() => void handleSignOut()}
+              loading={signingOut}
+              testID="profile-sign-out"
+            />
+            <Pressable
+              accessibilityRole="button"
+              onPress={() => router.push('/profile/delete-account')}
+              style={styles.deleteAccount}
+              testID="profile-delete-account"
+            >
+              <Text style={styles.deleteAccountText}>{tr.profileDeleteAccount}</Text>
+            </Pressable>
+          </>
+        ) : null}
+      </View>
 
       <PersonaSheet persona={sheetPersona} onClose={() => setSheetPersona(null)} />
       <PreferencesSheet visible={preferencesOpen} onClose={() => setPreferencesOpen(false)} />
@@ -235,7 +269,7 @@ function SettingsRow({
   testID,
 }: {
   title: string;
-  caption: string;
+  caption?: string;
   onPress?: () => void;
   divider?: boolean;
   testID?: string;
@@ -250,7 +284,7 @@ function SettingsRow({
     >
       <View style={styles.personaText}>
         <Text style={styles.personaName}>{title}</Text>
-        <Text style={styles.caption}>{caption}</Text>
+        {caption ? <Text style={styles.caption}>{caption}</Text> : null}
       </View>
       {onPress ? <Icon name="chevronRight" size={18} color={theme.colors.muted} /> : null}
     </Pressable>
@@ -376,6 +410,15 @@ const styles = StyleSheet.create({
     gap: theme.spacing.md,
     paddingHorizontal: theme.spacing.lg,
     paddingVertical: theme.spacing.md,
+  },
+  deleteAccount: {
+    minHeight: theme.sizes.touch,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  deleteAccountText: {
+    ...theme.typography.bodyMedium,
+    color: theme.colors.danger,
   },
   settingsDivider: {
     borderTopWidth: StyleSheet.hairlineWidth,

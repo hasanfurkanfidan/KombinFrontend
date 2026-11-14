@@ -54,7 +54,13 @@ export function MyPostsScreen() {
       </View>
     );
   } else if (mine.isError && posts.length === 0) {
-    placeholder = <ErrorState title={tr.myPostsLoadFailed} onRetry={() => void mine.refetch()} />;
+    placeholder = (
+      <ErrorState
+        title={tr.myPostsLoadFailed}
+        error={mine.error}
+        onRetry={() => void mine.refetch()}
+      />
+    );
   } else if (posts.length === 0) {
     placeholder = (
       <EmptyState

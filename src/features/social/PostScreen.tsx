@@ -36,6 +36,7 @@ export function PostScreen({ id }: { id: string }) {
       ) : post.isError ? (
         <ErrorState
           title={notFound ? tr.postNotFound : tr.postLoadFailed}
+          error={post.error}
           onRetry={notFound ? undefined : () => void post.refetch()}
         />
       ) : (

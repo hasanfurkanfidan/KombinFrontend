@@ -4,6 +4,22 @@
  */
 
 export interface paths {
+    "/api/v1/legal": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["GetLegal"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/auth/register": {
         parameters: {
             query?: never;
@@ -84,6 +100,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/auth/cancel-deletion": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["CancelDeletion"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/me": {
         parameters: {
             query?: never;
@@ -94,6 +126,38 @@ export interface paths {
         get: operations["GetMe"];
         put?: never;
         post?: never;
+        delete: operations["DeleteAccount"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/internal/identity/users/{userId}/disable": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["DisableAccount"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/internal/identity/users/{userId}/enable": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["EnableAccount"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1278,7 +1342,7 @@ export interface paths {
         get?: never;
         put: operations["PutCreator"];
         post?: never;
-        delete?: never;
+        delete: operations["RevokeCreator"];
         options?: never;
         head?: never;
         patch?: never;
@@ -1356,6 +1420,16 @@ export interface components {
         AcceptConsentRequest: {
             version: null | string;
         };
+        /** @description What disabling or enabling did. `RevokedTokens` is how many refresh tokens this call ended (0 when enabling). */
+        AccountAccessResponse: {
+            /** Format: uuid */
+            userId: string;
+            isDisabled: boolean;
+            /** Format: date-time */
+            disabledAt: null | string;
+            /** Format: int32 */
+            revokedTokens: number | string;
+        };
         AddFromProductRequest: {
             /** Format: uuid */
             productId: string;
@@ -1414,6 +1488,19 @@ export interface components {
             id: string;
             name: string;
             slug: string;
+        };
+        /**
+         * @description The same credentials as signing in: `Email` and `Password`, or `Provider` and `IdToken` (with `Nonce` when the app
+         *     used one). They are what proves who is cancelling; nothing else in the body is trusted.
+         */
+        CancelDeletionRequest: {
+            email?: null | string;
+            password?: null | string;
+            provider?: null | string;
+            idToken?: null | string;
+            nonce?: null | string;
+            deviceName?: null | string;
+            anonymousId?: null | string;
         };
         /** @description `Slug` is the item's own (leaf) category slug; null counts the items without a category. */
         CategoryCount: {
@@ -1585,6 +1672,18 @@ export interface components {
             wardrobeEmpty: boolean;
             message: null | string;
         };
+        /** @description `Password` is required for an account that has one; `Confirm` is the word "SİL" (any casing). */
+        DeleteAccountRequest: {
+            password: null | string;
+            confirm: null | string;
+        };
+        /** @description `DeletionScheduledFor` is the date the data will be gone; signing in again before it offers to cancel. */
+        DeleteAccountResponse: {
+            /** Format: date-time */
+            deletionRequestedAt: string;
+            /** Format: date-time */
+            deletionScheduledFor: string;
+        };
         /** @description An estimate of what a creator earned from clicks, with every input shown so the app can say how it was computed. */
         EarningsEstimate: {
             /** Format: double */
@@ -1664,6 +1763,13 @@ export interface components {
         /** Format: binary */
         IFormFile: string;
         JsonElement: unknown;
+        /** @description What the app needs to link to the legal texts and to know when to ask users to read them again. */
+        LegalResponse: {
+            version: string;
+            privacyUrl: string;
+            termsUrl: string;
+            deleteAccountUrl: string;
+        };
         /** @description Fractions of the photo (0-1): left, top, width, height. */
         LensBox: {
             /** Format: double */
@@ -2196,7 +2302,7 @@ export interface components {
          *     `Live` post. `Deleted` is a tombstone until the purge job.
          * @enum {unknown}
          */
-        PostStatus: "Processing" | "Draft" | "NeedsReview" | "Blocked" | "Live" | "Hidden" | "Deleted" | "Failed";
+        PostStatus: "Processing" | "Draft" | "NeedsReview" | "Blocked" | "Live" | "Hidden" | "Deleted" | "Failed" | "AccountPending";
         /** @description The band under the photo: "Bu kombin toplam `TotalPrice` ₺ · `PieceCount` parça · `OwnedCount`'si dolabında var". */
         PostSummaryResponse: {
             /** Format: double */
@@ -2520,9 +2626,13 @@ export interface components {
             /** Format: date-time */
             updatedAt: string;
         };
-        /** @description `Decision`: `Approve` or `Remove`. */
+        /**
+         * @description `Decision`: `Approve`, `Remove` or `Keep` (leave it as it is, at the back of the queue). `Reason` is what the
+         *     author reads when the post is removed (at most 200 characters; the standard copy when left out).
+         */
         ReviewPostRequest: {
             decision: null | string;
+            reason?: null | string;
         };
         ReviewPostResponse: {
             /** Format: uuid */
@@ -3173,6 +3283,26 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    GetLegal: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LegalResponse"];
+                };
+            };
+        };
+    };
     Register: {
         parameters: {
             query?: never;
@@ -3255,6 +3385,15 @@ export interface operations {
                     "application/problem+json": components["schemas"]["ProblemDetails"];
                 };
             };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
         };
     };
     ExternalSignIn: {
@@ -3290,6 +3429,15 @@ export interface operations {
             };
             /** @description Unauthorized */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -3339,6 +3487,15 @@ export interface operations {
                     "application/problem+json": components["schemas"]["ProblemDetails"];
                 };
             };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
         };
     };
     Logout: {
@@ -3372,6 +3529,75 @@ export interface operations {
             };
         };
     };
+    CancelDeletion: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CancelDeletionRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthTokensResponse"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
     GetMe: {
         parameters: {
             query?: never;
@@ -3392,6 +3618,137 @@ export interface operations {
             };
             /** @description Unauthorized */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    DeleteAccount: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DeleteAccountRequest"];
+            };
+        };
+        responses: {
+            /** @description Accepted */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DeleteAccountResponse"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    DisableAccount: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                userId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AccountAccessResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    EnableAccount: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                userId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AccountAccessResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -7187,6 +7544,46 @@ export interface operations {
             };
             /** @description Conflict */
             409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    RevokeCreator: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                userId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CreatorProfileResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };

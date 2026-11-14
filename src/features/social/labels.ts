@@ -61,6 +61,8 @@ const STATUS_LABELS: Record<PostStatus, string> = {
   Hidden: tr.postStatusHidden,
   Deleted: tr.postStatusDeleted,
   Failed: tr.postStatusFailed,
+  // The author's own posts are hidden while the account waits to be deleted; they cannot sign in to see it, so no copy of its own.
+  AccountPending: tr.postStatusHidden,
 };
 
 export function statusLabel(status: PostStatus): string {

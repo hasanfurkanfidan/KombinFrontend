@@ -15,6 +15,10 @@ export class ApiError extends Error {
   readonly detail: string | null;
   readonly fieldErrors: Record<string, string[]>;
   readonly correlationId: string;
+  /** Seconds from the `Retry-After` header of a 429; `null` when the answer carried none. */
+  readonly retryAfterSeconds: number | null;
+  /** The `deletionScheduledFor` extension of a 403 `Identity.AccountPendingDeletion` (ISO date-time). */
+  readonly deletionScheduledFor: string | null;
 
   constructor(init: {
     status: number;
@@ -23,6 +27,8 @@ export class ApiError extends Error {
     title?: string | null;
     fieldErrors?: Record<string, string[]>;
     correlationId: string;
+    retryAfterSeconds?: number | null;
+    deletionScheduledFor?: string | null;
   }) {
     super(init.detail ?? init.title ?? `HTTP ${init.status}`);
     this.name = 'ApiError';
@@ -31,12 +37,27 @@ export class ApiError extends Error {
     this.detail = init.detail ?? null;
     this.fieldErrors = init.fieldErrors ?? {};
     this.correlationId = init.correlationId;
+    this.retryAfterSeconds = init.retryAfterSeconds ?? null;
+    this.deletionScheduledFor = init.deletionScheduledFor ?? null;
   }
 
   /** `true` for connection failures: the server was never reached. */
   get isNetworkError(): boolean {
     return this.status === 0;
   }
+
+  /** `true` when the backend's rate limit refused the request (429, `errorCode: "RateLimited"`). */
+  get isRateLimited(): boolean {
+    return this.status === 429 || this.errorCode === 'RateLimited';
+  }
+}
+
+/** `Retry-After` is a whole number of seconds from this backend; an HTTP date or anything else counts as unknown. */
+function parseRetryAfter(value: string | null): number | null {
+  if (value === null || !/^\d+$/.test(value.trim())) {
+    return null;
+  }
+  return Number(value.trim());
 }
 
 type QueryValue = string | number | boolean | null | undefined;
@@ -138,6 +159,9 @@ async function send<T>(path: string, options: RequestOptions, token: string | nu
     title: problem?.title,
     fieldErrors: problem?.errors,
     correlationId: response.headers.get('X-Correlation-ID') ?? correlationId,
+    retryAfterSeconds:
+      response.status === 429 ? parseRetryAfter(response.headers.get('Retry-After')) : null,
+    deletionScheduledFor: problem?.deletionScheduledFor,
   });
   if (__DEV__) {
     console.warn(
@@ -166,8 +190,13 @@ async function performRefresh(): Promise<string> {
     await applyAuthTokens(tokens);
     return tokens.accessToken;
   } catch (error) {
-    // Only a definitive rejection ends the session; being offline must not log the user out.
-    if (error instanceof ApiError && error.status >= 400 && error.status < 500) {
+    // Only a definitive rejection ends the session; being offline or rate limited (429) must not log the user out.
+    if (
+      error instanceof ApiError &&
+      error.status >= 400 &&
+      error.status < 500 &&
+      !error.isRateLimited
+    ) {
       await endSession(wasSignedIn ? 'expired' : undefined);
     }
     throw error;

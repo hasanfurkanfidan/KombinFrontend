@@ -168,7 +168,13 @@ function SignedInDaily() {
   if (daily.isPending) {
     content = <DailySkeleton />;
   } else if (daily.isError) {
-    content = <ErrorState title={tr.outfitLoadFailed} onRetry={() => void daily.refetch()} />;
+    content = (
+      <ErrorState
+        title={tr.outfitLoadFailed}
+        error={daily.error}
+        onRetry={() => void daily.refetch()}
+      />
+    );
   } else if (daily.data.wardrobeEmpty) {
     content = <EmptyWardrobe daily={daily.data} outfit={outfit} />;
   } else if (!outfit) {

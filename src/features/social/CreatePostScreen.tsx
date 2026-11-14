@@ -262,7 +262,13 @@ export function CreatePostScreen({ resumePostId }: CreatePostScreenProps) {
   } else if (!resumePostId && consent.isPending) {
     body = <ActivityIndicator color={theme.colors.ink} testID="consent-loading" />;
   } else if (!resumePostId && consent.isError && !consent.data) {
-    body = <ErrorState title={tr.consentLoadFailed} onRetry={() => void consent.refetch()} />;
+    body = (
+      <ErrorState
+        title={tr.consentLoadFailed}
+        error={consent.error}
+        onRetry={() => void consent.refetch()}
+      />
+    );
   } else if (
     !resumePostId &&
     step === 'choose' &&

@@ -62,7 +62,7 @@ export function AudienceScreen() {
       subtitle={tr.onboardingAudienceSubtitle}
     >
       {profile.isError ? (
-        <ErrorState onRetry={() => void profile.refetch()} />
+        <ErrorState error={profile.error} onRetry={() => void profile.refetch()} />
       ) : (
         <View style={styles.cards}>
           {CHOICES.map(({ audience, label }) =>

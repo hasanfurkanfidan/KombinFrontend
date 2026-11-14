@@ -99,7 +99,7 @@ export function ProductDetailScreen({ id, source = 'direct' }: ProductDetailScre
           {product.error instanceof ApiError && product.error.status === 404 ? (
             <ErrorState title={tr.productNotFound} body={tr.productNotFoundBody} />
           ) : (
-            <ErrorState onRetry={() => void product.refetch()} />
+            <ErrorState error={product.error} onRetry={() => void product.refetch()} />
           )}
         </View>
       ) : (

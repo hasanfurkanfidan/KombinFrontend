@@ -64,7 +64,13 @@ export function FeedSection({ header, mode, onModeChange }: FeedSectionProps) {
       </View>
     );
   } else if (feed.isError && posts.length === 0) {
-    placeholder = <ErrorState title={tr.feedLoadFailed} onRetry={() => void feed.refetch()} />;
+    placeholder = (
+      <ErrorState
+        title={tr.feedLoadFailed}
+        error={feed.error}
+        onRetry={() => void feed.refetch()}
+      />
+    );
   } else if (posts.length === 0) {
     placeholder =
       mode === 'following' ? (

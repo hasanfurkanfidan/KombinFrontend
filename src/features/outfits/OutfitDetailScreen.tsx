@@ -47,7 +47,11 @@ export function OutfitDetailScreen({ id }: { id: string }) {
       query.error instanceof ApiError && query.error.status === 404 ? (
         <ErrorState title={tr.outfitNotFound} />
       ) : (
-        <ErrorState title={tr.outfitLoadFailed} onRetry={() => void query.refetch()} />
+        <ErrorState
+          title={tr.outfitLoadFailed}
+          error={query.error}
+          onRetry={() => void query.refetch()}
+        />
       );
   } else {
     body = (

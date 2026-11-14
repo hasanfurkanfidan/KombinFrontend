@@ -33,7 +33,7 @@ Measured contrast (WCAG): ink on bg 17.2, ink2 on surface 9.3, muted on bg 5.95 
 
 ## Components, before → after
 
-- **Button:** black 54 px → `primary` (green, 52 px, radius 14), `secondary` (white, control border, ink, radius 12), `quiet` (text in green, 44 px). One filled button per screen: rows of buy buttons (tag sheet with several pieces) and in-card actions ("Dolabımla dene") are outlined.
+- **Button:** black 54 px → `primary` (green, 52 px, radius 14), `secondary` (white, control border, ink, radius 12), `quiet` (text in green, 44 px), `danger` (red fill with `onDanger`, 52 px, radius 14: only the irreversible "Hesabımı kalıcı olarak sil" on its own screen, where it is the one filled button). One filled button per screen: rows of buy buttons (tag sheet with several pieces) and in-card actions ("Dolabımla dene") are outlined.
 - **Chip:** black when selected, three look-alikes → one chip: unselected white with control border, selected `primarySoft` with a green border and text. The segmented control (Fiyatlar, Akış) and the Lens audience filter wear the same two states.
 - **IconButton:** white circle → 12-radius `surface` square; `tone="onImage"` (white) over photos (product detail, wardrobe item).
 - **TextField:** hairline → control border, 2 px green on focus, 2 px danger on error, muted placeholder.

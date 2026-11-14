@@ -11,6 +11,11 @@ export type RegisterRequest = Schemas['RegisterRequest'];
 export type LoginRequest = Schemas['LoginRequest'];
 export type ExternalSignInRequest = Schemas['ExternalSignInRequest'];
 export type Me = Schemas['MeResponse'];
+export type CancelDeletionRequest = Schemas['CancelDeletionRequest'];
+export type DeleteAccountRequest = Schemas['DeleteAccountRequest'];
+export type DeleteAccountResponse = Schemas['DeleteAccountResponse'];
+/** `GET /legal`. `contactEmail` is not in the contract yet: the disabled-account message uses it when the backend adds it. */
+export type Legal = Schemas['LegalResponse'] & { contactEmail?: string | null };
 
 export type CategoryNode = Schemas['CategoryNode'];
 export type ProductListItem = Schemas['ProductListItem'];
@@ -35,6 +40,8 @@ export type ListProductsQuery = NonNullable<operations['ListProducts']['paramete
 export type ProblemBody = Schemas['ProblemDetails'] & {
   errorCode?: string;
   errors?: Record<string, string[]>;
+  /** Only on 403 `Identity.AccountPendingDeletion`. */
+  deletionScheduledFor?: string;
 };
 
 export type SizeHint = Schemas['SizeHintResponse'];

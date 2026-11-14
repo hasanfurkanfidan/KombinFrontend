@@ -28,8 +28,14 @@ export function LoginScreen() {
           <Text style={styles.subtitle}>{tr.authLoginSubtitle}</Text>
         </View>
         {/* A new account is sent to onboarding by `OnboardingGate`, exactly like a registration. */}
-        <ExternalSignInButtons onSuccess={() => router.dismissTo('/')} />
-        <LoginForm onSuccess={() => router.dismissTo('/')} />
+        <ExternalSignInButtons
+          onSuccess={() => router.dismissTo('/')}
+          onPendingDeletion={() => router.push('/pending-deletion')}
+        />
+        <LoginForm
+          onSuccess={() => router.dismissTo('/')}
+          onPendingDeletion={() => router.push('/pending-deletion')}
+        />
         <View style={styles.footer}>
           <Text style={styles.footerText}>{tr.authLoginToRegister}</Text>
           <Pressable

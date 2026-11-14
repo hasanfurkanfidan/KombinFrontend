@@ -28,7 +28,10 @@ export function RegisterScreen() {
           <Text style={styles.subtitle}>{tr.authRegisterSubtitle}</Text>
         </View>
         {/* A new account is sent to onboarding by `OnboardingGate`, exactly like a registration. */}
-        <ExternalSignInButtons onSuccess={() => router.dismissTo('/')} />
+        <ExternalSignInButtons
+          onSuccess={() => router.dismissTo('/')}
+          onPendingDeletion={() => router.push('/pending-deletion')}
+        />
         <RegisterForm onSuccess={() => router.dismissTo('/')} />
         <View style={styles.footer}>
           <Text style={styles.footerText}>{tr.authRegisterToLogin}</Text>

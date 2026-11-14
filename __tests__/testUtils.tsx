@@ -50,8 +50,10 @@ export async function resetSession() {
     accessToken: null,
     expiresAt: null,
     endReason: null,
+    signInMethod: null,
   });
   await SecureStore.deleteItemAsync('kombin.refreshToken');
+  await SecureStore.deleteItemAsync('kombin.signInMethod');
 }
 
 export async function signedInSession(suffix = 'old', expiresInSeconds = 900) {

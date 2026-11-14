@@ -3,7 +3,13 @@ import { create } from 'zustand';
 import type { AuthTokens } from '@/api/models';
 import { toNumber } from '@/utils/money';
 
-import { clearRefreshToken, setRefreshToken } from './tokenStorage';
+import {
+  clearRefreshToken,
+  clearSignInMethod,
+  setRefreshToken,
+  setStoredSignInMethod,
+  type SignInMethod,
+} from './tokenStorage';
 
 export type SessionStatus = 'booting' | 'signedOut' | 'signedIn';
 
@@ -17,6 +23,9 @@ interface SessionState {
   /** Epoch milliseconds at which the access token expires. */
   expiresAt: number | null;
   endReason: SessionEndReason | null;
+  /** `null` while unknown (a session from before the hint was stored). */
+  signInMethod: SignInMethod | null;
+  setSignInMethod: (method: SignInMethod | null) => void;
   setSignedIn: (accessToken: string, expiresInSeconds: number, now?: number) => void;
   setSignedOut: (reason?: SessionEndReason) => void;
   clearEndReason: () => void;
@@ -27,6 +36,8 @@ export const useSessionStore = create<SessionState>((set) => ({
   accessToken: null,
   expiresAt: null,
   endReason: null,
+  signInMethod: null,
+  setSignInMethod: (signInMethod) => set({ signInMethod }),
   setSignedIn: (accessToken, expiresInSeconds, now = Date.now()) =>
     set({
       status: 'signedIn',
@@ -35,7 +46,13 @@ export const useSessionStore = create<SessionState>((set) => ({
       endReason: null,
     }),
   setSignedOut: (reason) =>
-    set({ status: 'signedOut', accessToken: null, expiresAt: null, endReason: reason ?? null }),
+    set({
+      status: 'signedOut',
+      accessToken: null,
+      expiresAt: null,
+      endReason: reason ?? null,
+      signInMethod: null,
+    }),
   clearEndReason: () => set({ endReason: null }),
 }));
 
@@ -45,8 +62,15 @@ export async function applyAuthTokens(tokens: AuthTokens): Promise<void> {
   useSessionStore.getState().setSignedIn(tokens.accessToken, toNumber(tokens.expiresIn));
 }
 
+/** Remembers how this session was opened (see `getSignInMethod`). */
+export async function rememberSignInMethod(method: SignInMethod): Promise<void> {
+  useSessionStore.getState().setSignInMethod(method);
+  await setStoredSignInMethod(method);
+}
+
 /** Drops every credential. A `reason` makes the root layout send the user to the login screen. */
 export async function endSession(reason?: SessionEndReason): Promise<void> {
   useSessionStore.getState().setSignedOut(reason);
   await clearRefreshToken();
+  await clearSignInMethod();
 }

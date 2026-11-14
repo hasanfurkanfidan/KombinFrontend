@@ -7,9 +7,11 @@ import { ApiError } from '@/api/client';
 import { register } from '@/api/endpoints/auth';
 import { Button } from '@/components/Button';
 import { TextField } from '@/components/TextField';
+import { openLegalPage } from '@/features/legal/legal';
 import { tr } from '@/i18n/tr';
 import { completeSignIn } from '@/session/useSession';
 import { theme } from '@/theme';
+import { rateLimitedText } from '@/utils/rateLimit';
 
 import { applyFieldErrors } from './formErrors';
 import { registerSchema, type RegisterValues } from './schemas';
@@ -31,11 +33,16 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
 
   const submit = handleSubmit(async (values) => {
     try {
-      await completeSignIn(await register({ ...values, anonymousId: await getAnonymousId() }));
+      await completeSignIn(
+        await register({ ...values, anonymousId: await getAnonymousId() }),
+        'password',
+      );
       onSuccess();
     } catch (error) {
       if (!(error instanceof ApiError)) {
         setError('root', { message: tr.errorBody });
+      } else if (error.isRateLimited) {
+        setError('root', { message: rateLimitedText(error) ?? tr.errorBody });
       } else if (error.errorCode === 'Identity.EmailTaken') {
         setError('email', { message: tr.authEmailTaken });
       } else if (!applyFieldErrors(error, setError, ['displayName', 'email', 'password'])) {
@@ -116,6 +123,27 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
         loading={isSubmitting}
         testID="register-submit"
       />
+      <Text style={styles.consent} testID="register-consent">
+        {tr.authConsentBefore}
+        <Text
+          accessibilityRole="link"
+          style={styles.consentLink}
+          onPress={() => void openLegalPage('terms')}
+          testID="register-terms"
+        >
+          {tr.authConsentTerms}
+        </Text>
+        {tr.authConsentMiddle}
+        <Text
+          accessibilityRole="link"
+          style={styles.consentLink}
+          onPress={() => void openLegalPage('privacy')}
+          testID="register-privacy"
+        >
+          {tr.authConsentPrivacy}
+        </Text>
+        {tr.authConsentAfter}
+      </Text>
     </View>
   );
 }
@@ -127,5 +155,14 @@ const styles = StyleSheet.create({
   formError: {
     ...theme.typography.bodyMedium,
     color: theme.colors.danger,
+  },
+  consent: {
+    ...theme.typography.caption,
+    color: theme.colors.muted,
+    textAlign: 'center',
+  },
+  consentLink: {
+    ...theme.typography.captionStrong,
+    color: theme.colors.primary,
   },
 });

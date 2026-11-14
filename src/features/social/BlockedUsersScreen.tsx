@@ -25,7 +25,11 @@ export function BlockedUsersScreen() {
           <Skeleton height={theme.sizes.touch} radius={theme.radius.tile} />
         </View>
       ) : blocks.isError ? (
-        <ErrorState title={tr.blocksLoadFailed} onRetry={() => void blocks.refetch()} />
+        <ErrorState
+          title={tr.blocksLoadFailed}
+          error={blocks.error}
+          onRetry={() => void blocks.refetch()}
+        />
       ) : (
         <FlatList
           data={blocks.data}

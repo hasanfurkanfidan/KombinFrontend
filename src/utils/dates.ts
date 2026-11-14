@@ -24,6 +24,13 @@ export function formatMonthYear(iso: string): string {
   return month ? `${month} ${date.getFullYear()}` : '';
 }
 
+/** "2026-11-20T10:00:00Z" -> "20 Kasım 2026" (device time zone). */
+export function formatDayMonthYear(iso: string): string {
+  const date = new Date(iso);
+  const month = MONTHS[date.getMonth()];
+  return month ? `${date.getDate()} ${month} ${date.getFullYear()}` : '';
+}
+
 /** "2026-11-01" -> "1 Kas" (chart axis labels). */
 export function formatShortDate(isoDate: string): string {
   const [, month, day] = isoDate.split('-');
