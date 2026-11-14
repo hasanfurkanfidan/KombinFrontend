@@ -16,6 +16,7 @@ import { ApiError } from '@/api/client';
 import { getCreatorStats } from '@/api/endpoints/social';
 import { ProfileScreen } from '@/features/profile/ProfileScreen';
 import { useSessionStore } from '@/session/sessionStore';
+import { theme } from '@/theme';
 
 import { persona, profile, sizeEntry } from '../../fixtures';
 import { renderWithQuery, resetSession, signedInSession } from '../../testUtils';
@@ -94,6 +95,14 @@ describe('ProfileScreen', () => {
 
     expect(await screen.findByText('Ayşe Yılmaz')).toBeTruthy();
     expect(screen.getByText('A')).toBeTruthy();
+    // The initial sits on the `surface` circle (it used to be `bg`, i.e. no circle at all).
+    const avatar = screen.getByTestId('profile-avatar').props.style as object | object[];
+    const avatarStyle = Object.assign(
+      {},
+      ...(Array.isArray(avatar) ? avatar.flat(Infinity) : [avatar]),
+    );
+    expect(avatarStyle.backgroundColor).toBe(theme.colors.surface);
+    expect(avatarStyle.width).toBe(theme.sizes.avatar);
     expect(screen.getByText('ayse@example.com')).toBeTruthy();
     expect(screen.getByText('Üyelik: Kasım 2026')).toBeTruthy();
     await waitFor(() =>

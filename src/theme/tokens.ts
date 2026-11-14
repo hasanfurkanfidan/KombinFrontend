@@ -152,6 +152,8 @@ export const sizes = {
   /** Outline of a region on the photo, and of the selected one. */
   lensRegionBorder: 1.5,
   lensRegionBorderSelected: 3,
+  /** Round number badge of a step on the Lens capture panel. */
+  lensStepBadge: 28,
   /** A product card in a region's rail. */
   lensRailCardWidth: 140,
   lensRailImageHeight: 168,

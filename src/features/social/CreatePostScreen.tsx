@@ -16,7 +16,7 @@ import { Icon, type IconName } from '@/components/Icon';
 import { IconButton } from '@/components/IconButton';
 import { Screen } from '@/components/Screen';
 import { showToast } from '@/components/toastStore';
-import { OutfitCollage } from '@/features/outfits/OutfitCollage';
+import { OutfitMiniFigure } from '@/features/outfits/OutfitMiniFigure';
 import { useSavedOutfits } from '@/features/outfits/hooks';
 import { pickPhotos, takePhoto } from '@/features/wardrobe/picker';
 import type { PickedPhoto } from '@/features/wardrobe/addStore';
@@ -546,7 +546,7 @@ function OutfitPicker({
           testID={`post-outfit-${outfit.id}`}
         >
           <View style={styles.outfitCollage}>
-            <OutfitCollage pieces={outfit.pieces} />
+            <OutfitMiniFigure pieces={outfit.pieces} />
           </View>
           <Text style={styles.outfitText} numberOfLines={2}>
             {outfit.narration.text}

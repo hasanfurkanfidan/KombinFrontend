@@ -139,10 +139,6 @@ export function tagOffer(tag: Pick<PostTag, 'offer'>): { id: string; goPath: str
   return tag.offer ? { id: tag.offer.offerId, goPath: tag.offer.goPath } : null;
 }
 
-export function initialOf(name: string): string {
-  return (name.trim().charAt(0) || '?').toLocaleUpperCase('tr-TR');
-}
-
 /** The product ids a post's tags point at (a wardrobe piece that came from the catalog has one too). */
 export function taggedProductIds(post: Pick<Post, 'tags'>): string[] {
   return [...new Set(post.tags.flatMap((tag) => (tag.productId ? [tag.productId] : [])))];

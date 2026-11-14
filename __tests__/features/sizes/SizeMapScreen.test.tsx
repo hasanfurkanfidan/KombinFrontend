@@ -4,6 +4,7 @@ import { router } from 'expo-router';
 import { searchBrands } from '@/api/endpoints/catalog';
 import { getProfile, listSizes, updateProfile, upsertSize } from '@/api/endpoints/profile';
 import { SizeMapScreen } from '@/features/sizes/SizeMapScreen';
+import { tr } from '@/i18n/tr';
 import { useSessionStore } from '@/session/sessionStore';
 
 import { profile, sizeEntry } from '../../fixtures';
@@ -60,14 +61,20 @@ describe('SizeMapScreen', () => {
     expect(screen.getByText('32/32')).toBeTruthy();
     expect(screen.getByText('43')).toBeTruthy();
     expect(screen.getByText('Zara')).toBeTruthy();
-    // A stored guess is marked with "?".
-    expect(screen.getByText('M?')).toBeTruthy();
+    // A stored guess is the plain value with a small "tahmini" tag, never a question mark.
+    expect(screen.getByText('M')).toBeTruthy();
+    expect(screen.queryByText('M?')).toBeNull();
+    expect(screen.getAllByTestId('size-inferred-tag')).toHaveLength(1);
+    expect(screen.getByText('tahmini')).toBeTruthy();
   });
 
-  it('explains how inferred sizes get confirmed', async () => {
+  it('says in one sentence what the "tahmini" tag means', async () => {
     await renderWithQuery(<SizeMapScreen />);
 
-    expect(await screen.findByText(/İlk alışverişinden sonra "beden uydu mu\?"/)).toBeTruthy();
+    const note = await screen.findByText(/Yanında "tahmini" yazan bedenleri/);
+    expect(note.props.children).toBe(tr.sizeMapInfo);
+    expect(tr.sizeMapInfo).not.toContain('?');
+    expect(tr.sizeMapInfo.match(/[.!]/g)).toHaveLength(1);
   });
 
   it('shows an empty hint without entries', async () => {

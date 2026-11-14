@@ -15,7 +15,7 @@ import { theme } from '@/theme';
 
 import { useSavedOutfits } from './hooks';
 import { outfitTitle } from './labels';
-import { OutfitCollage } from './OutfitCollage';
+import { OutfitMiniFigure } from './OutfitMiniFigure';
 
 const COLUMNS = 2;
 
@@ -130,7 +130,9 @@ function SavedCard({
       style={{ width, gap: theme.spacing.sm }}
       testID={`saved-outfit-${outfit.id}`}
     >
-      <OutfitCollage pieces={outfit.pieces} />
+      <View style={styles.figurePanel}>
+        <OutfitMiniFigure pieces={outfit.pieces} testID={`saved-figure-${outfit.id}`} />
+      </View>
       <Text style={styles.cardTitle} numberOfLines={1}>
         {outfitTitle(outfit, outfit.date)}
       </Text>
@@ -156,6 +158,13 @@ const styles = StyleSheet.create({
   row: {
     gap: theme.gridGap,
     marginBottom: theme.gridGap,
+  },
+  // The same surface panel the Keşfet card puts its figure on.
+  figurePanel: {
+    alignItems: 'center',
+    paddingVertical: theme.spacing.lg,
+    borderRadius: theme.radius.tile,
+    backgroundColor: theme.colors.surface,
   },
   cardTitle: {
     ...theme.typography.bodyMedium,

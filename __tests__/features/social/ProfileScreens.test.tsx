@@ -21,8 +21,16 @@ import { CreatorScreen, UserProfileScreen, isWebLink } from '@/features/social/P
 import { post, postAuthor, userProfile } from '../../fixtures';
 import { renderWithQuery, resetSession, signedInSession } from '../../testUtils';
 
+import { theme } from '@/theme';
+
 jest.mock('@/api/endpoints/auth');
 jest.mock('@/api/endpoints/social');
+
+const surfaceOf = (id: string) => {
+  const style = screen.getByTestId(id).props.style as object | object[];
+  return Object.assign({}, ...(Array.isArray(style) ? style.flat(Infinity) : [style]))
+    .backgroundColor;
+};
 
 const creatorMock = jest.mocked(getCreator);
 const profileMock = jest.mocked(getUserProfile);
@@ -82,6 +90,19 @@ describe('creator page', () => {
 
     const views = jest.mocked(track).mock.calls.filter(([name]) => name === 'creator_profile_view');
     expect(views).toEqual([['creator_profile_view', { creatorId: 'u-creator' }]]);
+  });
+
+  it('draws the creator avatar on the surface circle, large', async () => {
+    creatorMock.mockResolvedValue({
+      profile: creator,
+      disclosure: 'Bu içerikten komisyon kazanabilir',
+      posts: postsPage([]),
+    });
+
+    await renderWithQuery(<CreatorScreen handle="elif.stil" />);
+
+    await screen.findByTestId('profile-card-avatar');
+    expect(surfaceOf('profile-card-avatar')).toBe(theme.colors.surface);
   });
 
   it('says when the creator does not exist', async () => {
@@ -204,6 +225,21 @@ describe('Engellenenler', () => {
     expect(await screen.findByText('Kaan Demir')).toBeTruthy();
     await fireEvent.press(screen.getByTestId('unblock-b1'));
     await waitFor(() => expect(unblockUser).toHaveBeenCalledWith('b1'));
+  });
+
+  it('draws the avatar of a blocked person on the surface circle', async () => {
+    await signedInSession();
+    jest
+      .mocked(listBlocks)
+      .mockResolvedValue([
+        { id: 'b1', displayName: 'Kaan Demir', blockedAt: '2026-11-03T10:00:00Z' },
+      ]);
+
+    await renderWithQuery(<BlockedUsersScreen />);
+
+    await screen.findByText('Kaan Demir');
+    expect(surfaceOf('blocked-avatar-b1')).toBe(theme.colors.surface);
+    expect(within(screen.getByTestId('blocked-avatar-b1')).getByText('K')).toBeTruthy();
   });
 
   it('says so when nobody is blocked', async () => {

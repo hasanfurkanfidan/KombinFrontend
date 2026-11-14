@@ -7,6 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { track } from '@/analytics';
 import type { LensResult } from '@/api/models';
 import { Button } from '@/components/Button';
+import { Card } from '@/components/Card';
 import { EmptyState } from '@/components/EmptyState';
 import { ErrorState } from '@/components/ErrorState';
 import { Icon } from '@/components/Icon';
@@ -267,8 +268,17 @@ export function LensScreen({ entry }: LensScreenProps) {
 function Capture({ onChoose }: { onChoose: (source: LensSource) => void }) {
   return (
     <View style={styles.capture} testID="lens-capture">
-      <View style={styles.captureIcon}>
-        <Icon name="camera" size={40} />
+      <View style={styles.captureSteps}>
+        <Card style={styles.stepsPanel} testID="lens-steps">
+          {tr.lensSteps.map((step, index) => (
+            <View key={step} style={styles.step} testID={`lens-step-${index + 1}`}>
+              <View style={styles.stepBadge}>
+                <Text style={styles.stepNumber}>{index + 1}</Text>
+              </View>
+              <Text style={styles.stepText}>{step}</Text>
+            </View>
+          ))}
+        </Card>
       </View>
       <View style={styles.captureActions}>
         <Button label={tr.lensCamera} onPress={() => onChoose('camera')} testID="lens-camera" />
@@ -318,10 +328,36 @@ const styles = StyleSheet.create({
     paddingHorizontal: theme.screenPaddingX,
     paddingBottom: theme.spacing.xxxl,
   },
-  captureIcon: {
+  captureSteps: {
     flex: 1,
+    justifyContent: 'center',
+  },
+  stepsPanel: {
+    gap: theme.spacing.xl,
+  },
+  step: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: theme.spacing.lg,
+  },
+  stepBadge: {
+    width: theme.sizes.lensStepBadge,
+    height: theme.sizes.lensStepBadge,
+    borderRadius: theme.sizes.lensStepBadge / 2,
+    backgroundColor: theme.colors.bg,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: theme.colors.line,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  stepNumber: {
+    ...theme.typography.label,
+    color: theme.colors.ink,
+  },
+  stepText: {
+    ...theme.typography.bodyMedium,
+    color: theme.colors.ink,
+    flex: 1,
   },
   captureActions: {
     gap: theme.spacing.md,

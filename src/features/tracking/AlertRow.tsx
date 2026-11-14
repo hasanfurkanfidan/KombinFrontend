@@ -12,18 +12,28 @@ import { tr } from '@/i18n/tr';
 import { theme } from '@/theme';
 import { formatAmount, formatTry, toNumber } from '@/utils/money';
 
-import { alertStatus, hasRecentTrigger, isBelowTarget, type AlertStatus } from './stats';
+import { alertStatus, hasRecentTrigger, isChalkStatus, type AlertStatus } from './stats';
 
-function statusText(status: AlertStatus): { text: string; tone: 'signal' | 'warning' | 'muted' } {
+/**
+ * The status line. `signal` is the chalk tag and only goes with an unseen trigger (see `isChalkStatus`); a price rise
+ * and "Tükendi" are `warning` (danger, always with their word); good news already seen is `plain`.
+ */
+function statusText(
+  status: AlertStatus,
+  chalk: boolean,
+): { text: string; tone: 'signal' | 'warning' | 'plain' | 'muted' } {
+  const plain = chalk ? 'signal' : 'plain';
   switch (status.kind) {
+    case 'soldOut':
+      return { text: tr.trackStatusSoldOut, tone: 'warning' };
     case 'belowTarget':
-      return { text: tr.trackStatusBelow, tone: 'signal' };
+      return { text: tr.trackStatusBelow, tone: plain };
     case 'increase':
       return { text: tr.trackStatusIncrease(formatAmount(status.amount)), tone: 'warning' };
     case 'drop':
-      return { text: tr.trackStatusDrop(formatAmount(status.amount)), tone: 'signal' };
+      return { text: tr.trackStatusDrop(formatAmount(status.amount)), tone: plain };
     case 'backInStock':
-      return { text: tr.trackStatusBackInStock, tone: 'signal' };
+      return { text: tr.trackStatusBackInStock, tone: plain };
     case 'unchanged':
       return { text: tr.trackStatusUnchanged, tone: 'muted' };
   }
@@ -57,9 +67,10 @@ export function AlertRow({ alert, triggers, now, onOpen }: AlertRowProps) {
   const update = useUpdateAlert();
   const remove = useDeleteAlert();
 
-  const status = statusText(alertStatus(alert, triggers));
-  const below = isBelowTarget(alert);
-  const recent = hasRecentTrigger(alert, now);
+  const unseen = hasRecentTrigger(alert, now);
+  const rawStatus = alertStatus(alert, triggers, unseen);
+  const chalk = isChalkStatus(rawStatus, unseen);
+  const status = statusText(rawStatus, chalk);
   const price = alert.product.lowestPrice;
   const showImage = Boolean(alert.product.primaryImageUrl) && !imageFailed;
 
@@ -105,7 +116,7 @@ export function AlertRow({ alert, triggers, now, onOpen }: AlertRowProps) {
           accessibilityRole="button"
           onPress={() => onOpen(alert.product.id)}
           onLongPress={openSheet}
-          style={[styles.row, recent && styles.rowRecent, !alert.isActive && styles.rowInactive]}
+          style={[styles.row, chalk && styles.rowChalk, !alert.isActive && styles.rowInactive]}
           testID={`alert-row-${alert.id}`}
         >
           <View style={styles.thumb}>
@@ -129,9 +140,7 @@ export function AlertRow({ alert, triggers, now, onOpen }: AlertRowProps) {
             </Text>
             <View style={styles.priceRow}>
               {price !== null ? (
-                <Text style={[styles.price, below && styles.priceBelow]}>
-                  {formatTry(toNumber(price))}
-                </Text>
+                <Text style={styles.price}>{formatTry(toNumber(price))}</Text>
               ) : null}
               <Text style={styles.caption} numberOfLines={1}>
                 {alertCaption(alert)}
@@ -185,8 +194,8 @@ const styles = StyleSheet.create({
     borderColor: theme.colors.line,
     backgroundColor: theme.colors.bg,
   },
-  // A trigger in the last 7 days: Kombin points at the row.
-  rowRecent: {
+  // An unseen trigger with good news: Kombin points at the row (the chalk tag goes with it).
+  rowChalk: {
     borderWidth: theme.sizes.dashedBorder,
     borderColor: theme.colors.chalkLine,
   },
@@ -227,9 +236,6 @@ const styles = StyleSheet.create({
     color: theme.colors.ink,
     flexShrink: 0,
   },
-  priceBelow: {
-    color: theme.colors.chalkInk,
-  },
   caption: {
     ...theme.typography.caption,
     color: theme.colors.muted,
@@ -239,7 +245,7 @@ const styles = StyleSheet.create({
     ...theme.typography.captionMedium,
     alignSelf: 'flex-start',
   },
-  // Price drop, below target, back in stock: a chalk tag.
+  // Unseen price drop, below target or back in stock: the chalk tag.
   signal: {
     ...theme.typography.captionStrong,
     color: theme.colors.chalkInk,
@@ -250,6 +256,9 @@ const styles = StyleSheet.create({
   },
   warning: {
     color: theme.colors.danger,
+  },
+  plain: {
+    color: theme.colors.ink2,
   },
   muted: {
     color: theme.colors.muted,

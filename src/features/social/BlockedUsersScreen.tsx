@@ -1,5 +1,6 @@
 import { FlatList, StyleSheet, Text, View } from 'react-native';
 
+import { Avatar } from '@/components/Avatar';
 import { Button } from '@/components/Button';
 import { EmptyState } from '@/components/EmptyState';
 import { ErrorState } from '@/components/ErrorState';
@@ -9,7 +10,6 @@ import { tr } from '@/i18n/tr';
 import { theme } from '@/theme';
 
 import { useBlocks, useUnblockUser } from './hooks';
-import { initialOf } from './labels';
 import { SocialHeader } from './SocialHeader';
 
 /** "Engellenenler": the people the user blocked, each with a way to undo it. */
@@ -38,9 +38,7 @@ export function BlockedUsersScreen() {
           ListEmptyComponent={<EmptyState title={tr.blocksEmpty} />}
           renderItem={({ item }) => (
             <View style={styles.row} testID={`blocked-${item.id}`}>
-              <View style={styles.avatar}>
-                <Text style={styles.avatarText}>{initialOf(item.displayName)}</Text>
-              </View>
+              <Avatar name={item.displayName} testID={`blocked-avatar-${item.id}`} />
               <Text style={styles.name} numberOfLines={1}>
                 {item.displayName}
               </Text>
@@ -74,18 +72,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: theme.spacing.md,
-  },
-  avatar: {
-    width: theme.sizes.postAvatar,
-    height: theme.sizes.postAvatar,
-    borderRadius: theme.sizes.postAvatar / 2,
-    backgroundColor: theme.colors.surface,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  avatarText: {
-    ...theme.typography.label,
-    color: theme.colors.ink2,
   },
   name: {
     flex: 1,

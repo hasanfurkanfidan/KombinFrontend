@@ -7,6 +7,7 @@ import { listProducts, searchBrands } from '@/api/endpoints/catalog';
 import { listPersonas } from '@/api/endpoints/profile';
 import { SEARCH_DEBOUNCE_MS } from '@/features/search/hooks';
 import { SearchScreen } from '@/features/search/SearchScreen';
+import { tr } from '@/i18n/tr';
 import { usePrefsStore } from '@/session/prefsStore';
 
 import { listItem, page, persona } from '../../fixtures';
@@ -248,6 +249,42 @@ describe('SearchScreen', () => {
       expect(lastQuery()).toMatchObject({ Query: 'blazer', PersonaId: 'pe1', Sort: 'match' }),
     );
     expect(listProductsMock).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('popular searches', () => {
+  it('lists the eight static terms as chips when nothing is typed and there are no recents', async () => {
+    await renderWithQuery(<SearchScreen />);
+
+    expect(screen.getByText('Popüler aramalar')).toBeTruthy();
+    expect(tr.searchPopular).toHaveLength(8);
+    for (const term of tr.searchPopular) {
+      expect(screen.getByTestId(`search-popular-${term}`)).toBeTruthy();
+    }
+    expect(screen.queryByText('Son aramalar')).toBeNull();
+    expect(listProductsMock).not.toHaveBeenCalled();
+  });
+
+  it('searches the term and fills the field when a chip is tapped', async () => {
+    await renderWithQuery(<SearchScreen />);
+
+    await fireEvent.press(screen.getByTestId('search-popular-trençkot'));
+
+    await waitFor(() => expect(lastQuery()).toMatchObject({ Query: 'trençkot' }));
+    expect(screen.getByTestId('search-input').props.value).toBe('trençkot');
+    expect(screen.queryByTestId('search-popular')).toBeNull();
+  });
+
+  it('shows the recents first, then the popular terms', async () => {
+    usePrefsStore.getState().addRecentSearch('mavi ceket');
+    await renderWithQuery(<SearchScreen />);
+
+    expect(screen.getByTestId('search-recent-mavi ceket')).toBeTruthy();
+    // Document order of the two headings: recents, then popular.
+    const headings = screen
+      .getAllByText(/^(Son aramalar|Popüler aramalar)$/)
+      .map((node) => node.props.children);
+    expect(headings).toEqual(['Son aramalar', 'Popüler aramalar']);
   });
 });
 

@@ -82,6 +82,16 @@ describe('LensScreen', () => {
     expect(searchMock).not.toHaveBeenCalled();
   });
 
+  it('explains the flow in three numbered lines on a panel instead of a blank area', async () => {
+    await renderWithQuery(<LensScreen />);
+
+    expect(screen.getByTestId('lens-steps')).toBeTruthy();
+    expect(screen.getByTestId('lens-step-1')).toHaveTextContent('1Bir parçanın fotoğrafını çek');
+    expect(screen.getByTestId('lens-step-2')).toHaveTextContent('2Aradığın parçayı seç');
+    expect(screen.getByTestId('lens-step-3')).toHaveTextContent('3En düşük fiyatı gör');
+    expect(screen.queryByTestId('lens-step-4')).toBeNull();
+  });
+
   it('counts an unknown entry as "other"', async () => {
     await renderWithQuery(<LensScreen entry="somewhere" />);
     expect(eventCalls('lens_open')).toEqual([['lens_open', { entry: 'other' }]]);

@@ -112,7 +112,8 @@ describe('Takip: Alarmlar', () => {
 
     expect(await screen.findByText('Yün karışımlı blazer')).toBeTruthy();
     expect(screen.getByText('hedef 2.300 ₺')).toBeTruthy();
-    expect(screen.getByText('Hedefin altında · şimdi al')).toBeTruthy();
+    // The Mavi alert fired yesterday and is also under its target: the news is the line.
+    expect(screen.getByText('850 ₺ düştü')).toBeTruthy();
 
     expect(screen.getByText('hedef 999 ₺')).toBeTruthy();
     expect(screen.getByText('+290 ₺ arttı')).toBeTruthy();
@@ -133,6 +134,161 @@ describe('Takip: Alarmlar', () => {
 
     expect(border('a1')).toBe(theme.colors.chalkLine);
     expect(border('a2')).not.toBe(theme.colors.chalkLine);
+  });
+
+  describe('the chalk rule', () => {
+    const flat = (style: unknown): Record<string, unknown> =>
+      Object.assign({}, ...(Array.isArray(style) ? style.flat(Infinity) : [style]));
+    const rowBorder = (id: string) =>
+      flat(screen.getByTestId(`alert-row-${id}`).props.style).borderColor;
+    const lineStyle = (text: string) => flat(screen.getByText(text).props.style);
+
+    const priceDrop = (alertId: string, id = 1) =>
+      trigger({ id, alertId, priceBefore: 2999, priceAfter: 2149, triggeredAt: daysAgo(1) });
+    const productOf = (id: string, lowestPrice: number | null) => ({
+      id,
+      name: `Ürün ${id}`,
+      brandName: 'Marka',
+      primaryImageUrl: null,
+      lowestPrice,
+    });
+
+    async function show(
+      alerts: ReturnType<typeof alert>[],
+      triggers: ReturnType<typeof trigger>[],
+    ) {
+      listAlertsMock.mockResolvedValue({ items: alerts });
+      listTriggersMock.mockResolvedValue({
+        items: triggers,
+        page: 1,
+        pageSize: 50,
+        totalCount: triggers.length,
+        totalPages: 1,
+      });
+      await renderWithQuery(<TrackingScreen />);
+      await screen.findByTestId(`alert-row-${alerts[0]?.id}`);
+    }
+
+    it('gives an unseen price drop the chalk border and the chalk "X ₺ düştü" tag, together', async () => {
+      await show(
+        [
+          alert({
+            id: 'x1',
+            targetPrice: 900,
+            lastTriggeredAt: daysAgo(1),
+            product: productOf('x1', 2149),
+          }),
+        ],
+        [priceDrop('x1')],
+      );
+
+      expect(rowBorder('x1')).toBe(theme.colors.chalkLine);
+      expect(lineStyle('850 ₺ düştü')).toMatchObject({
+        backgroundColor: theme.colors.chalk,
+        color: theme.colors.chalkInk,
+      });
+    });
+
+    it('shows a target that was reached before as a plain card with its status line', async () => {
+      await show(
+        [
+          alert({
+            id: 'x2',
+            targetPrice: 2300,
+            lastTriggeredAt: daysAgo(20),
+            product: productOf('x2', 2149),
+          }),
+        ],
+        [priceDrop('x2')],
+      );
+
+      expect(rowBorder('x2')).not.toBe(theme.colors.chalkLine);
+      const line = lineStyle('Hedefin altında · şimdi al');
+      expect(line.backgroundColor).toBeUndefined();
+      expect(line.color).toBe(theme.colors.ink2);
+      // The price is plain ink too, not chalk text.
+      expect(flat(screen.getByText('2.149 ₺').props.style).color).toBe(theme.colors.ink);
+    });
+
+    it('treats back in stock the same way: chalk only while it is unseen', async () => {
+      const stock = (id: string, days: number) =>
+        alert({
+          id,
+          kind: 'BackInStock',
+          targetPrice: null,
+          lastTriggeredAt: daysAgo(days),
+          product: productOf(id, 2499),
+        });
+      const back = (alertId: string, id: number) =>
+        trigger({
+          id,
+          alertId,
+          kind: 'BackInStock',
+          priceBefore: null,
+          priceAfter: null,
+          triggeredAt: daysAgo(1),
+        });
+      await show([stock('s1', 2), stock('s2', 30)], [back('s1', 1), back('s2', 2)]);
+
+      expect(rowBorder('s1')).toBe(theme.colors.chalkLine);
+      expect(rowBorder('s2')).not.toBe(theme.colors.chalkLine);
+      const lines = screen.getAllByText('Stokta · şimdi bak');
+      expect(flat(lines[0]?.props.style).backgroundColor).toBe(theme.colors.chalk);
+      expect(flat(lines[1]?.props.style).backgroundColor).toBeUndefined();
+    });
+
+    it('keeps an unchanged alert plain and muted', async () => {
+      await show([alert({ id: 'u1', targetPrice: 1000, product: productOf('u1', 2149) })], []);
+
+      expect(rowBorder('u1')).not.toBe(theme.colors.chalkLine);
+      expect(lineStyle('Son 30 günde değişmedi').color).toBe(theme.colors.muted);
+      expect(lineStyle('Son 30 günde değişmedi').backgroundColor).toBeUndefined();
+    });
+
+    it('says "Tükendi" in danger without chalk, even when a trigger is unseen', async () => {
+      await show(
+        [
+          alert({
+            id: 'o1',
+            targetPrice: 900,
+            lastTriggeredAt: daysAgo(1),
+            product: productOf('o1', null),
+          }),
+        ],
+        [priceDrop('o1')],
+      );
+
+      expect(rowBorder('o1')).not.toBe(theme.colors.chalkLine);
+      const line = lineStyle('Tükendi');
+      expect(line.color).toBe(theme.colors.danger);
+      expect(line.backgroundColor).toBeUndefined();
+    });
+
+    it('does not give an unseen price rise the chalk: it is danger, with its word', async () => {
+      await show(
+        [
+          alert({
+            id: 'r1',
+            targetPrice: 1000,
+            lastTriggeredAt: daysAgo(1),
+            product: productOf('r1', 1290),
+          }),
+        ],
+        [
+          trigger({
+            id: 1,
+            alertId: 'r1',
+            kind: 'AnyChange',
+            priceBefore: 1000,
+            priceAfter: 1290,
+            triggeredAt: daysAgo(1),
+          }),
+        ],
+      );
+
+      expect(rowBorder('r1')).not.toBe(theme.colors.chalkLine);
+      expect(lineStyle('+290 ₺ arttı').color).toBe(theme.colors.danger);
+    });
   });
 
   it('hides the average card and shows 0 ₺ savings without triggers', async () => {

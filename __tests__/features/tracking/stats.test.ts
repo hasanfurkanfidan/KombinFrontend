@@ -3,6 +3,7 @@ import {
   averageDiscountPercent,
   hasRecentTrigger,
   isBelowTarget,
+  isChalkStatus,
   totalSavings,
   watchSummary,
 } from '@/features/tracking/stats';
@@ -117,5 +118,28 @@ describe('tracking stats', () => {
       expect(alertStatus(above, [])).toEqual({ kind: 'unchanged' });
       expect(alertStatus(above, [trigger({ alertId: 'other' })])).toEqual({ kind: 'unchanged' });
     });
+  });
+});
+
+describe('the chalk rule', () => {
+  it('is chalk only for good news with an unseen trigger', () => {
+    for (const kind of ['drop', 'belowTarget', 'backInStock'] as const) {
+      const status = kind === 'drop' ? { kind, amount: 100 } : { kind };
+      expect(isChalkStatus(status, true)).toBe(true);
+      expect(isChalkStatus(status, false)).toBe(false);
+    }
+    expect(isChalkStatus({ kind: 'increase', amount: 100 }, true)).toBe(false);
+    expect(isChalkStatus({ kind: 'soldOut' }, true)).toBe(false);
+    expect(isChalkStatus({ kind: 'unchanged' }, true)).toBe(false);
+  });
+
+  it('puts an unseen drop ahead of "below target", and sold out ahead of everything', () => {
+    const below = alert({ targetPrice: 2300 });
+    const drop = [trigger({ priceBefore: 2999, priceAfter: 2149 })];
+    expect(alertStatus(below, drop)).toEqual({ kind: 'belowTarget' });
+    expect(alertStatus(below, drop, true)).toEqual({ kind: 'drop', amount: 850 });
+
+    const soldOut = alert({ targetPrice: 2300, product: { ...below.product, lowestPrice: null } });
+    expect(alertStatus(soldOut, drop, true)).toEqual({ kind: 'soldOut' });
   });
 });

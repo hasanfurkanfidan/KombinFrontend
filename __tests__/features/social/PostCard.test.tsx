@@ -17,6 +17,7 @@ import {
 } from '@/api/endpoints/social';
 import type { Me } from '@/api/models';
 import { useToastStore } from '@/components/toastStore';
+import { theme } from '@/theme';
 import { PostCard } from '@/features/social/PostCard';
 import { postBand } from '@/features/social/labels';
 import { resetImageUrls } from '@/features/social/imageUrl';
@@ -97,6 +98,17 @@ describe('the price band under the photo', () => {
 });
 
 describe('author row, creator chip, match and disclosure', () => {
+  it('draws the author avatar on the surface circle', async () => {
+    await renderWithQuery(
+      <PostCard post={post({ author: postAuthor({ displayName: 'Elif Y.' }) })} />,
+    );
+
+    const style = screen.getByTestId('post-avatar').props.style as object | object[];
+    const flat = Object.assign({}, ...(Array.isArray(style) ? style.flat(Infinity) : [style]));
+    expect(flat.backgroundColor).toBe(theme.colors.surface);
+    expect(within(screen.getByTestId('post-avatar')).getByText('E')).toBeTruthy();
+  });
+
   it('shows the creator chip, the handle and the commission disclosure only for a creator', async () => {
     const creator = post({
       author: postAuthor({ handle: 'elif.stil', isCreator: true }),

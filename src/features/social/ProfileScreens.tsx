@@ -5,6 +5,7 @@ import * as WebBrowser from 'expo-web-browser';
 import { track } from '@/analytics';
 import { ApiError } from '@/api/client';
 import type { UserProfile } from '@/api/models';
+import { Avatar } from '@/components/Avatar';
 import { Button } from '@/components/Button';
 import { EmptyState } from '@/components/EmptyState';
 import { ErrorState } from '@/components/ErrorState';
@@ -16,7 +17,6 @@ import { theme } from '@/theme';
 import { toNumber } from '@/utils/money';
 
 import { useCreator, useFollowToggle, useUserPosts, useUserProfile } from './hooks';
-import { initialOf } from './labels';
 import { PostCard } from './PostCard';
 import { usePostViewTracking, type PostViewSource } from './postViews';
 import { SocialHeader } from './SocialHeader';
@@ -142,9 +142,7 @@ function ProfileCard({ profile, disclosure }: { profile: UserProfile; disclosure
   return (
     <View style={styles.card} testID="profile-card">
       <View style={styles.identity}>
-        <View style={styles.avatar}>
-          <Text style={styles.avatarText}>{initialOf(profile.displayName)}</Text>
-        </View>
+        <Avatar name={profile.displayName} size="lg" testID="profile-card-avatar" />
         <View style={styles.identityText}>
           <Text style={styles.name} numberOfLines={1}>
             {profile.displayName}
@@ -210,18 +208,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: theme.spacing.lg,
-  },
-  avatar: {
-    width: theme.sizes.avatar,
-    height: theme.sizes.avatar,
-    borderRadius: theme.sizes.avatar / 2,
-    backgroundColor: theme.colors.surface,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  avatarText: {
-    ...theme.typography.heading,
-    color: theme.colors.ink,
   },
   identityText: {
     flex: 1,

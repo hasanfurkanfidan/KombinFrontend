@@ -3,7 +3,10 @@ import { toNumber } from '@/utils/money';
 
 const DAY_MS = 86_400_000;
 
-/** A row with a trigger this recent gets the accent border. */
+/**
+ * How long a trigger counts as unseen. The contract has no per-trigger "seen" flag (`consumedAt` is the backend's
+ * notification bookkeeping, not the user's), so an alert that fired within this many days is the one to point at.
+ */
 export const RECENT_TRIGGER_DAYS = 7;
 
 interface PriceChange {
@@ -66,17 +69,38 @@ export function watchSummary(alerts: readonly Alert[]): { watched: number; below
 }
 
 export type AlertStatus =
+  | { kind: 'soldOut' }
   | { kind: 'belowTarget' }
   | { kind: 'increase'; amount: number }
   | { kind: 'drop'; amount: number }
   | { kind: 'backInStock' }
   | { kind: 'unchanged' };
 
-/** The status line of an alert row, from its current price and its most recent trigger. */
-export function alertStatus(alert: Alert, triggers: readonly AlertTrigger[]): AlertStatus {
+/**
+ * The status line of an alert row, from its current price and its most recent trigger. With an unseen trigger the
+ * news itself ("850 ₺ düştü", back in stock) is the line, even when the price now also sits under the target.
+ */
+export function alertStatus(
+  alert: Alert,
+  triggers: readonly AlertTrigger[],
+  hasUnseenTrigger = false,
+): AlertStatus {
+  // No offer in stock: the product has no lowest price.
+  if (alert.product.lowestPrice === null) {
+    return { kind: 'soldOut' };
+  }
+  const news = latestNews(alert, triggers);
+  if (hasUnseenTrigger && (news?.kind === 'drop' || news?.kind === 'backInStock')) {
+    return news;
+  }
   if (isBelowTarget(alert)) {
     return { kind: 'belowTarget' };
   }
+  return news ?? { kind: 'unchanged' };
+}
+
+/** What the alert's most recent trigger says, or null when it has none (or none that moved a price). */
+function latestNews(alert: Alert, triggers: readonly AlertTrigger[]): AlertStatus | null {
   const last = triggers
     .filter((trigger) => trigger.alertId === alert.id)
     .sort((a, b) => b.triggeredAt.localeCompare(a.triggeredAt))[0];
@@ -90,5 +114,17 @@ export function alertStatus(alert: Alert, triggers: readonly AlertTrigger[]): Al
   if (change && change.after < change.before) {
     return { kind: 'drop', amount: change.before - change.after };
   }
-  return { kind: 'unchanged' };
+  return null;
+}
+
+/**
+ * The one chalk rule of a Fiyatlar card: the chalk border and the chalk tag ("850 ₺ düştü", "Hedefin altında", "Stokta")
+ * appear together, and only when the alert has an unseen trigger that is good news. Every other state is a plain card
+ * with its status line (a price rise and "Tükendi" in `danger`, with their words).
+ */
+export function isChalkStatus(status: AlertStatus, hasUnseenTrigger: boolean): boolean {
+  return (
+    hasUnseenTrigger &&
+    (status.kind === 'drop' || status.kind === 'belowTarget' || status.kind === 'backInStock')
+  );
 }

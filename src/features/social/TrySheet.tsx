@@ -7,7 +7,7 @@ import { BottomSheet } from '@/components/BottomSheet';
 import { Button } from '@/components/Button';
 import { openOffer } from '@/features/catalog/buy';
 import { gapPieces } from '@/features/outfits/labels';
-import { OutfitCollage } from '@/features/outfits/OutfitCollage';
+import { OutfitMiniFigure } from '@/features/outfits/OutfitMiniFigure';
 import { tr } from '@/i18n/tr';
 import { theme } from '@/theme';
 import { formatTry } from '@/utils/money';
@@ -91,7 +91,7 @@ function TryOutfit({ outfit }: { outfit: Outfit }) {
   return (
     <View style={styles.outfit} testID={`try-outfit-${outfit.id}`}>
       <View style={styles.collage}>
-        <OutfitCollage pieces={outfit.pieces} />
+        <OutfitMiniFigure pieces={outfit.pieces} />
       </View>
       <View style={styles.outfitText}>
         <Text style={styles.completeness}>

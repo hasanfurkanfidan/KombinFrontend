@@ -57,7 +57,7 @@ describe('DiscoverScreen', () => {
     expect(await screen.findByText('Yün karışımlı blazer')).toBeTruthy();
     expect(screen.getByText('2.149 ₺')).toBeTruthy();
     expect(screen.getByText('2.999 ₺')).toBeTruthy();
-    expect(screen.getByText('−28%')).toBeTruthy();
+    expect(screen.getByText('%28 indirim')).toBeTruthy();
     expect(screen.getByText('3 satıcıda en ucuzu')).toBeTruthy();
     expect(screen.getByText('649 ₺')).toBeTruthy();
     expect(screen.getAllByText('Tam sana göre')).toHaveLength(1);
