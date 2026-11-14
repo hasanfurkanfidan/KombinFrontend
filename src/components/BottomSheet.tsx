@@ -60,14 +60,14 @@ const styles = StyleSheet.create({
   sheet: {
     maxHeight: '80%',
     backgroundColor: theme.colors.bg,
-    borderTopLeftRadius: theme.radius.xxl,
-    borderTopRightRadius: theme.radius.xxl,
+    borderTopLeftRadius: theme.radius.panel,
+    borderTopRightRadius: theme.radius.panel,
     paddingTop: theme.spacing.xl,
     paddingHorizontal: theme.screenPaddingX,
     paddingBottom: theme.spacing.xxxl,
   },
   title: {
-    ...theme.typography.subhead,
+    ...theme.typography.heading,
     color: theme.colors.ink,
     marginBottom: theme.spacing.md,
   },

@@ -25,7 +25,7 @@ export function TextField({
       <Text style={styles.label}>{label}</Text>
       <TextInput
         accessibilityLabel={label}
-        placeholderTextColor={theme.colors.borderStrong}
+        placeholderTextColor={theme.colors.muted}
         {...inputProps}
         onFocus={(event) => {
           setFocused(true);
@@ -58,24 +58,28 @@ const styles = StyleSheet.create({
     gap: theme.spacing.sm,
   },
   label: {
-    ...theme.typography.captionMedium,
+    ...theme.typography.captionStrong,
     color: theme.colors.ink2,
   },
   input: {
     ...theme.typography.body,
     height: theme.sizes.fieldHeight,
-    borderRadius: theme.radius.lg,
+    borderRadius: theme.radius.control,
     borderWidth: 1,
-    borderColor: theme.colors.line,
+    borderColor: theme.colors.control,
     paddingHorizontal: theme.spacing.lg,
     color: theme.colors.ink,
     backgroundColor: theme.colors.bg,
   },
   inputFocused: {
-    borderColor: theme.colors.ink,
+    borderColor: theme.colors.primary,
+    borderWidth: 2,
+    paddingHorizontal: theme.spacing.lg - 1,
   },
   inputError: {
     borderColor: theme.colors.danger,
+    borderWidth: 2,
+    paddingHorizontal: theme.spacing.lg - 1,
   },
   error: {
     ...theme.typography.caption,

@@ -65,13 +65,7 @@ export function SizeMapScreen() {
   return (
     <Screen scroll contentStyle={styles.content}>
       <View style={styles.titleRow}>
-        <IconButton
-          icon="arrowLeft"
-          label={tr.back}
-          tone="tinted"
-          onPress={goBack}
-          testID="sizes-back"
-        />
+        <IconButton icon="arrowLeft" label={tr.back} onPress={goBack} testID="sizes-back" />
         <Text style={styles.title}>{tr.sizeMapTitle}</Text>
       </View>
 

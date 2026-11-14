@@ -60,8 +60,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   toast: {
-    backgroundColor: theme.colors.ink,
-    borderRadius: theme.radius.lg,
+    backgroundColor: theme.colors.surface,
+    borderWidth: 1,
+    borderColor: theme.colors.control,
+    borderRadius: theme.radius.control,
     paddingHorizontal: theme.spacing.lg,
     paddingVertical: theme.spacing.md,
     flexDirection: 'row',
@@ -70,12 +72,11 @@ const styles = StyleSheet.create({
   },
   text: {
     ...theme.typography.bodyMedium,
-    color: theme.colors.onInk,
+    color: theme.colors.ink,
     flexShrink: 1,
   },
   action: {
     ...theme.typography.label,
-    color: theme.colors.onInk,
-    textDecorationLine: 'underline',
+    color: theme.colors.primary,
   },
 });

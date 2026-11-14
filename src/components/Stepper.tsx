@@ -82,7 +82,7 @@ const styles = StyleSheet.create({
   button: {
     width: theme.sizes.touch,
     height: theme.sizes.touch,
-    borderRadius: theme.radius.pill,
+    borderRadius: theme.radius.control,
     backgroundColor: theme.colors.surface,
     alignItems: 'center',
     justifyContent: 'center',
@@ -92,6 +92,7 @@ const styles = StyleSheet.create({
   },
   value: {
     ...theme.typography.label,
+    fontVariant: ['tabular-nums'],
     color: theme.colors.ink,
     minWidth: 28,
     textAlign: 'center',

@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { Pressable, StyleSheet, Text } from 'react-native';
 
 import { theme } from '@/theme';
@@ -11,18 +12,25 @@ interface ChipProps {
   disabled?: boolean;
   /** Draws a small chevron, for chips that open a picker. */
   dropdown?: boolean;
+  /** Drawn before the label (a colour dot). */
+  leading?: ReactNode;
   testID?: string;
 }
 
+/**
+ * The one chip. Two states: unselected (bg, control border, ink text) and selected (primarySoft fill, primary border
+ * and text). Filters, choices and toggles all use it; there is no dark or pill variant.
+ */
 export function Chip({
   label,
   selected = false,
   onPress,
   disabled = false,
   dropdown = false,
+  leading,
   testID,
 }: ChipProps) {
-  const foreground = selected ? theme.colors.onInk : theme.colors.ink;
+  const foreground = selected ? theme.colors.primary : theme.colors.ink;
   return (
     <Pressable
       accessibilityRole="button"
@@ -38,6 +46,7 @@ export function Chip({
         disabled && styles.disabled,
       ]}
     >
+      {leading}
       <Text style={[styles.label, { color: foreground }]} numberOfLines={1}>
         {label}
       </Text>
@@ -49,22 +58,23 @@ export function Chip({
 const styles = StyleSheet.create({
   base: {
     height: theme.sizes.chipHeight,
-    borderRadius: theme.radius.pill,
-    paddingHorizontal: theme.spacing.lg,
+    borderRadius: theme.radius.control,
+    borderWidth: 1,
+    paddingHorizontal: theme.spacing.md,
     flexDirection: 'row',
     alignItems: 'center',
     gap: theme.spacing.xs,
   },
   selected: {
-    backgroundColor: theme.colors.ink,
+    backgroundColor: theme.colors.primarySoft,
+    borderColor: theme.colors.primary,
   },
   unselected: {
     backgroundColor: theme.colors.bg,
-    borderWidth: 1,
-    borderColor: theme.colors.line,
+    borderColor: theme.colors.control,
   },
   disabled: {
-    opacity: 0.5,
+    opacity: 0.4,
   },
   label: {
     ...theme.typography.bodyMedium,

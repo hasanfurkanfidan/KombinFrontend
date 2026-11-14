@@ -21,7 +21,6 @@ export function LoginScreen() {
         <IconButton
           icon="arrowLeft"
           label={tr.back}
-          tone="tinted"
           onPress={() => (router.canGoBack() ? router.back() : router.replace('/'))}
         />
         <View style={styles.header}>

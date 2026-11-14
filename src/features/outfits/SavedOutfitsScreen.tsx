@@ -66,7 +66,6 @@ export function SavedOutfitsScreen() {
         <IconButton
           icon="arrowLeft"
           label={tr.back}
-          tone="tinted"
           onPress={() => (router.canGoBack() ? router.back() : router.replace('/profile'))}
           testID="saved-back"
         />

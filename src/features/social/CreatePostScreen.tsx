@@ -396,13 +396,7 @@ export function CreatePostScreen({ resumePostId }: CreatePostScreenProps) {
   return (
     <Screen scroll padded contentStyle={styles.content}>
       <View style={styles.header}>
-        <IconButton
-          icon="close"
-          label={tr.close}
-          tone="tinted"
-          onPress={close}
-          testID="post-new-close"
-        />
+        <IconButton icon="close" label={tr.close} onPress={close} testID="post-new-close" />
         <Text style={styles.heading}>{tr.postNewTitle}</Text>
       </View>
       {body}

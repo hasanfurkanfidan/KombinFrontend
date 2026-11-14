@@ -1,16 +1,17 @@
-import { Pressable, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 
 import { theme } from '@/theme';
 
 import { Icon, type IconName } from './Icon';
+import { PressableScale } from './PressableScale';
 
 interface IconButtonProps {
   icon: IconName;
   /** Spoken label; icon-only controls need one. */
   label: string;
   onPress?: () => void;
-  /** `plain` is white (used over images), `tinted` uses the card background. */
-  tone?: 'plain' | 'tinted';
+  /** `surface` sits on the page (the default); `onImage` is white, for a button drawn over a photo. */
+  tone?: 'surface' | 'onImage';
   /** Fills the icon (e.g. a bell that already has an alert). */
   filled?: boolean;
   testID?: string;
@@ -20,24 +21,20 @@ export function IconButton({
   icon,
   label,
   onPress,
-  tone = 'plain',
+  tone = 'surface',
   filled = false,
   testID,
 }: IconButtonProps) {
   return (
-    <Pressable
+    <PressableScale
       accessibilityRole="button"
       accessibilityLabel={label}
       onPress={onPress}
       testID={testID}
-      style={({ pressed }) => [
-        styles.base,
-        tone === 'plain' ? styles.plain : styles.tinted,
-        pressed && styles.pressed,
-      ]}
+      style={[styles.base, tone === 'surface' ? styles.surface : styles.onImage]}
     >
       <Icon name={icon} size={22} filled={filled} />
-    </Pressable>
+    </PressableScale>
   );
 }
 
@@ -45,17 +42,14 @@ const styles = StyleSheet.create({
   base: {
     width: theme.sizes.touch,
     height: theme.sizes.touch,
-    borderRadius: theme.radius.pill,
+    borderRadius: theme.radius.control,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  plain: {
-    backgroundColor: theme.colors.bg,
-  },
-  tinted: {
+  surface: {
     backgroundColor: theme.colors.surface,
   },
-  pressed: {
-    opacity: 0.7,
+  onImage: {
+    backgroundColor: theme.colors.bg,
   },
 });

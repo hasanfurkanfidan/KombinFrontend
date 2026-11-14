@@ -43,7 +43,6 @@ export function NotificationsScreen() {
         <IconButton
           icon="arrowLeft"
           label={tr.back}
-          tone="tinted"
           onPress={() => (router.canGoBack() ? router.back() : router.replace('/'))}
           testID="notifications-back"
         />
@@ -53,14 +52,12 @@ export function NotificationsScreen() {
             <IconButton
               icon="more"
               label={tr.notifMenuButton}
-              tone="tinted"
               onPress={() => setMenuOpen(true)}
               testID="notifications-menu"
             />
             <IconButton
               icon="sliders"
               label={tr.notifPreferencesButton}
-              tone="tinted"
               onPress={() => setPreferencesOpen(true)}
               testID="notifications-preferences"
             />

@@ -13,7 +13,6 @@ export function LensHeaderButton() {
     <IconButton
       icon="camera"
       label={tr.lensTitle}
-      tone="tinted"
       onPress={() => router.push('/lens?entry=explore')}
       testID="lens-header-button"
     />

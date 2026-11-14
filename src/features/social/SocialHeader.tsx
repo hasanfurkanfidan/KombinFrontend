@@ -20,7 +20,6 @@ export function SocialHeader({ title, fallback = '/', testID }: SocialHeaderProp
       <IconButton
         icon="arrowLeft"
         label={tr.back}
-        tone="tinted"
         onPress={() => (router.canGoBack() ? router.back() : router.replace(fallback))}
         testID={testID ?? 'social-back'}
       />

@@ -17,7 +17,6 @@ export function NotificationBell() {
       <IconButton
         icon="bell"
         label={tr.notifBellLabel(unread)}
-        tone="tinted"
         onPress={() => router.push('/notifications')}
         testID="notification-bell"
       />
