@@ -205,7 +205,7 @@ function PickRow({
         {imageUrl ? (
           <Image source={{ uri: imageUrl }} style={styles.thumbImage} resizeMode="contain" />
         ) : (
-          <Icon name="shirt" size={22} color={theme.colors.borderStrong} strokeWidth={1.4} />
+          <Icon name="shirt" size={22} color={theme.colors.control} strokeWidth={1.4} />
         )}
       </View>
       <View style={styles.rowText}>
@@ -243,7 +243,7 @@ const styles = StyleSheet.create({
   thumb: {
     width: theme.sizes.pickerThumb,
     height: theme.sizes.pickerThumb,
-    borderRadius: theme.radius.md,
+    borderRadius: theme.radius.control,
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',

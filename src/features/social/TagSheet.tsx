@@ -26,14 +26,15 @@ interface TagSheetProps {
 export function TagSheet({ tags, onClose }: TagSheetProps) {
   return (
     <BottomSheet visible={tags !== null} onClose={onClose}>
+      {/* One filled action per screen: with several pieces every buy button is outlined. */}
       {(tags ?? []).map((tag) => (
-        <TagRow key={tag.id} tag={tag} />
+        <TagRow key={tag.id} tag={tag} single={(tags ?? []).length === 1} />
       ))}
     </BottomSheet>
   );
 }
 
-function TagRow({ tag }: { tag: PostTag }) {
+function TagRow({ tag, single }: { tag: PostTag; single: boolean }) {
   const offer = tagOffer(tag);
   return (
     <View style={styles.row} testID={`tag-row-${tag.id}`}>
@@ -41,7 +42,7 @@ function TagRow({ tag }: { tag: PostTag }) {
         {tag.imageUrl ? (
           <Image source={{ uri: tag.imageUrl }} style={styles.image} resizeMode="contain" />
         ) : (
-          <Icon name="shirt" size={22} color={theme.colors.borderStrong} strokeWidth={1.4} />
+          <Icon name="shirt" size={22} color={theme.colors.control} strokeWidth={1.4} />
         )}
       </View>
       <View style={styles.text}>
@@ -65,6 +66,7 @@ function TagRow({ tag }: { tag: PostTag }) {
       {offer ? (
         <Button
           label={tr.postTagBuy}
+          variant={single ? 'primary' : 'secondary'}
           onPress={() => void openOffer(offer, { source: 'feed' })}
           trailingIcon="arrowUpRight"
           style={styles.buy}
@@ -84,7 +86,7 @@ const styles = StyleSheet.create({
   thumb: {
     width: theme.sizes.tagThumb,
     height: theme.sizes.tagThumb,
-    borderRadius: theme.radius.md,
+    borderRadius: theme.radius.control,
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
@@ -102,11 +104,12 @@ const styles = StyleSheet.create({
     color: theme.colors.ink,
   },
   owned: {
-    ...theme.typography.captionMedium,
-    color: theme.colors.ink2,
+    ...theme.typography.captionStrong,
+    color: theme.colors.primary,
   },
   meta: {
     ...theme.typography.caption,
+    fontVariant: ['tabular-nums'],
     color: theme.colors.muted,
   },
   buy: {

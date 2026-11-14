@@ -40,8 +40,8 @@ export function PostScreen({ id }: { id: string }) {
         />
       ) : (
         <View style={styles.skeleton} testID="post-skeleton">
-          <Skeleton height={theme.sizes.postAvatar} radius={theme.radius.pill} />
-          <Skeleton height={theme.sizes.postSkeleton} radius={theme.radius.xl} />
+          <Skeleton height={theme.sizes.postAvatar} radius={theme.radius.control} />
+          <Skeleton height={theme.sizes.postSkeleton} radius={theme.radius.tile} />
         </View>
       )}
     </Screen>

@@ -129,7 +129,12 @@ export function PostCard({ post }: PostCardProps) {
           style={styles.action}
           testID="post-like"
         >
-          <Icon name="heart" size={22} filled={like.liked} />
+          <Icon
+            name="heart"
+            size={22}
+            filled={like.liked}
+            color={like.liked ? theme.colors.primary : theme.colors.ink}
+          />
           <Text style={styles.count} testID="post-like-count">
             {likeCount}
           </Text>
@@ -143,7 +148,12 @@ export function PostCard({ post }: PostCardProps) {
             style={styles.action}
             testID="post-save"
           >
-            <Icon name="bookmark" size={22} filled={save.saved} />
+            <Icon
+              name="bookmark"
+              size={22}
+              filled={save.saved}
+              color={save.saved ? theme.colors.primary : theme.colors.ink}
+            />
           </Pressable>
         ) : null}
         <View style={styles.spacer} />
@@ -285,14 +295,14 @@ const styles = StyleSheet.create({
   avatar: {
     width: theme.sizes.postAvatar,
     height: theme.sizes.postAvatar,
-    borderRadius: theme.radius.pill,
-    backgroundColor: theme.colors.ink,
+    borderRadius: theme.sizes.postAvatar / 2,
+    backgroundColor: theme.colors.surface,
     alignItems: 'center',
     justifyContent: 'center',
   },
   avatarText: {
     ...theme.typography.label,
-    color: theme.colors.onInk,
+    color: theme.colors.ink,
   },
   authorText: {
     flex: 1,
@@ -310,7 +320,7 @@ const styles = StyleSheet.create({
   creatorChip: {
     paddingHorizontal: theme.spacing.sm,
     paddingVertical: 2,
-    borderRadius: theme.radius.pill,
+    borderRadius: theme.radius.tag,
     backgroundColor: theme.colors.surface,
   },
   creatorChipText: {
@@ -325,21 +335,23 @@ const styles = StyleSheet.create({
   followButton: {
     minHeight: theme.sizes.touch,
     paddingHorizontal: theme.spacing.lg,
-    borderRadius: theme.radius.pill,
+    borderRadius: theme.radius.control,
     borderWidth: 1,
-    borderColor: theme.colors.line,
+    borderColor: theme.colors.control,
     alignItems: 'center',
     justifyContent: 'center',
   },
+  // Following someone is the user's choice: the selected-chip treatment.
   followButtonActive: {
-    backgroundColor: theme.colors.surface,
+    backgroundColor: theme.colors.primarySoft,
+    borderColor: theme.colors.primary,
   },
   followText: {
-    ...theme.typography.captionMedium,
+    ...theme.typography.captionStrong,
     color: theme.colors.ink,
   },
   followTextActive: {
-    color: theme.colors.muted,
+    color: theme.colors.primary,
   },
   menuButton: {
     width: theme.sizes.touch,
@@ -360,7 +372,7 @@ const styles = StyleSheet.create({
     gap: theme.spacing.xs,
   },
   count: {
-    ...theme.typography.bodyMedium,
+    ...theme.typography.numeric,
     color: theme.colors.ink,
   },
   spacer: {
@@ -369,14 +381,16 @@ const styles = StyleSheet.create({
   tryButton: {
     minHeight: theme.sizes.touch,
     paddingHorizontal: theme.spacing.lg,
-    borderRadius: theme.radius.pill,
-    backgroundColor: theme.colors.accentSoft,
+    borderRadius: theme.radius.control,
+    borderWidth: 1,
+    borderColor: theme.colors.primary,
+    backgroundColor: theme.colors.bg,
     alignItems: 'center',
     justifyContent: 'center',
   },
   tryText: {
     ...theme.typography.label,
-    color: theme.colors.accent,
+    color: theme.colors.primary,
   },
   caption: {
     ...theme.typography.body,

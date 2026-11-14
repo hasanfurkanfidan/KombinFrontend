@@ -22,7 +22,7 @@ export function BlockedUsersScreen() {
       <SocialHeader title={tr.blocksTitle} fallback="/profile" />
       {blocks.isPending ? (
         <View style={styles.skeleton} testID="blocks-skeleton">
-          <Skeleton height={theme.sizes.touch} radius={theme.radius.xl} />
+          <Skeleton height={theme.sizes.touch} radius={theme.radius.tile} />
         </View>
       ) : blocks.isError ? (
         <ErrorState title={tr.blocksLoadFailed} onRetry={() => void blocks.refetch()} />
@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
   avatar: {
     width: theme.sizes.postAvatar,
     height: theme.sizes.postAvatar,
-    borderRadius: theme.radius.pill,
+    borderRadius: theme.sizes.postAvatar / 2,
     backgroundColor: theme.colors.surface,
     alignItems: 'center',
     justifyContent: 'center',

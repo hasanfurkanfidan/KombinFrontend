@@ -29,7 +29,7 @@ export function FeedScreen() {
         style={styles.share}
         testID="feed-share"
       >
-        <Icon name="plus" size={18} color={theme.colors.onInk} />
+        <Icon name="plus" size={18} color={theme.colors.onPrimary} />
         <Text style={styles.shareText}>{tr.feedShare}</Text>
       </Pressable>
     </View>
@@ -66,11 +66,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: theme.spacing.sm,
     paddingHorizontal: theme.spacing.lg,
-    borderRadius: theme.radius.pill,
-    backgroundColor: theme.colors.ink,
+    borderRadius: theme.radius.control,
+    backgroundColor: theme.colors.primary,
   },
   shareText: {
     ...theme.typography.label,
-    color: theme.colors.onInk,
+    color: theme.colors.onPrimary,
   },
 });

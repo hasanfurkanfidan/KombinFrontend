@@ -453,7 +453,7 @@ function DetailsStep({ post, dots, onBack, onPublished }: DetailsStepProps) {
           value={caption}
           onChangeText={setCaption}
           placeholder={tr.publishCaptionPlaceholder}
-          placeholderTextColor={theme.colors.borderStrong}
+          placeholderTextColor={theme.colors.muted}
           maxLength={MAX_CAPTION}
           multiline
           style={styles.captionInput}
@@ -588,7 +588,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: theme.spacing.md,
     paddingHorizontal: theme.spacing.lg,
-    borderRadius: theme.radius.xl,
+    borderRadius: theme.radius.tile,
     backgroundColor: theme.colors.surface,
   },
   sourceLabel: {
@@ -613,7 +613,7 @@ const styles = StyleSheet.create({
   captionInput: {
     minHeight: theme.sizes.captionInputHeight,
     padding: theme.spacing.md,
-    borderRadius: theme.radius.lg,
+    borderRadius: theme.radius.control,
     borderWidth: 1,
     borderColor: theme.colors.line,
     textAlignVertical: 'top',

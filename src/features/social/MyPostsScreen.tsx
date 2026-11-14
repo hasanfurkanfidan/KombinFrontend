@@ -49,8 +49,8 @@ export function MyPostsScreen() {
   } else if (mine.isPending) {
     placeholder = (
       <View style={styles.skeleton} testID="myposts-skeleton">
-        <Skeleton height={theme.sizes.postThumbHeight} radius={theme.radius.xl} />
-        <Skeleton height={theme.sizes.postThumbHeight} radius={theme.radius.xl} />
+        <Skeleton height={theme.sizes.postThumbHeight} radius={theme.radius.tile} />
+        <Skeleton height={theme.sizes.postThumbHeight} radius={theme.radius.tile} />
       </View>
     );
   } else if (mine.isError && posts.length === 0) {
@@ -125,7 +125,7 @@ function MyPostRow({
               resizeMode="cover"
             />
           ) : (
-            <Icon name="shirt" size={24} color={theme.colors.borderStrong} strokeWidth={1.4} />
+            <Icon name="shirt" size={24} color={theme.colors.control} strokeWidth={1.4} />
           )}
         </View>
         <View style={styles.text}>
@@ -184,7 +184,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: theme.spacing.sm,
     padding: theme.spacing.md,
-    borderRadius: theme.radius.xl,
+    borderRadius: theme.radius.tile,
     backgroundColor: theme.colors.surface,
   },
   main: {
@@ -196,8 +196,8 @@ const styles = StyleSheet.create({
   thumb: {
     width: theme.sizes.postThumbWidth,
     height: theme.sizes.postThumbHeight,
-    borderRadius: theme.radius.md,
-    backgroundColor: theme.colors.surface,
+    borderRadius: theme.radius.control,
+    backgroundColor: theme.colors.bg,
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
@@ -217,21 +217,21 @@ const styles = StyleSheet.create({
   status: {
     paddingHorizontal: theme.spacing.sm,
     paddingVertical: 2,
-    borderRadius: theme.radius.pill,
+    borderRadius: theme.radius.tag,
     backgroundColor: theme.colors.bg,
     borderWidth: 1,
     borderColor: theme.colors.line,
   },
   statusLive: {
-    backgroundColor: theme.colors.ink,
-    borderColor: theme.colors.ink,
+    backgroundColor: theme.colors.primarySoft,
+    borderColor: theme.colors.primarySoft,
   },
   statusText: {
     ...theme.typography.captionMedium,
     color: theme.colors.ink2,
   },
   statusTextLive: {
-    color: theme.colors.onInk,
+    color: theme.colors.primary,
   },
   meta: {
     ...theme.typography.caption,

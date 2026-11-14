@@ -35,7 +35,7 @@ export function CreatorStatsScreen() {
         />
       ) : (
         <View style={styles.skeleton} testID="stats-skeleton">
-          <Skeleton height={theme.sizes.postThumbHeight} radius={theme.radius.xl} />
+          <Skeleton height={theme.sizes.postThumbHeight} radius={theme.radius.tile} />
         </View>
       )}
     </Screen>
@@ -91,12 +91,7 @@ function StatsBody({ stats }: { stats: CreatorStats }) {
                     resizeMode="cover"
                   />
                 ) : (
-                  <Icon
-                    name="shirt"
-                    size={22}
-                    color={theme.colors.borderStrong}
-                    strokeWidth={1.4}
-                  />
+                  <Icon name="shirt" size={22} color={theme.colors.control} strokeWidth={1.4} />
                 )}
               </View>
               <Text style={styles.topPostText}>
@@ -132,22 +127,24 @@ const styles = StyleSheet.create({
   hero: {
     gap: theme.spacing.xs,
     padding: theme.spacing.xl,
-    borderRadius: theme.radius.xl,
-    backgroundColor: theme.colors.ink,
+    borderRadius: theme.radius.panel,
+    backgroundColor: theme.colors.surface,
   },
   heroLabel: {
     ...theme.typography.caption,
-    color: theme.colors.onInk,
+    color: theme.colors.ink2,
   },
   heroAmount: {
     ...theme.typography.display,
-    color: theme.colors.onInk,
+    fontFamily: theme.fontFamilies.numeric,
+    fontVariant: ['tabular-nums'],
+    color: theme.colors.ink,
   },
   estimateChip: {
     alignSelf: 'flex-start',
-    paddingHorizontal: theme.spacing.md,
-    paddingVertical: theme.spacing.xs,
-    borderRadius: theme.radius.pill,
+    paddingHorizontal: theme.spacing.sm,
+    paddingVertical: 2,
+    borderRadius: theme.radius.tag,
     backgroundColor: theme.colors.bg,
   },
   estimateText: {
@@ -166,11 +163,12 @@ const styles = StyleSheet.create({
     flex: 1,
     gap: 2,
     padding: theme.spacing.md,
-    borderRadius: theme.radius.lg,
+    borderRadius: theme.radius.control,
     backgroundColor: theme.colors.surface,
   },
   counterValue: {
     ...theme.typography.label,
+    fontVariant: ['tabular-nums'],
     color: theme.colors.ink,
   },
   counterLabel: {
@@ -190,7 +188,7 @@ const styles = StyleSheet.create({
   thumb: {
     width: theme.sizes.postThumbWidth,
     height: theme.sizes.postThumbHeight,
-    borderRadius: theme.radius.md,
+    borderRadius: theme.radius.control,
     backgroundColor: theme.colors.surface,
     alignItems: 'center',
     justifyContent: 'center',

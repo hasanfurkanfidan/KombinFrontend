@@ -86,7 +86,7 @@ export function PostPhoto({ post, onTagPress, onBandPress }: PostPhotoProps) {
               {tag.imageUrl ? (
                 <Image source={{ uri: tag.imageUrl }} style={styles.fill} resizeMode="contain" />
               ) : (
-                <Icon name="shirt" size={28} color={theme.colors.borderStrong} strokeWidth={1.4} />
+                <Icon name="shirt" size={28} color={theme.colors.control} strokeWidth={1.4} />
               )}
             </View>
           ))}
@@ -114,7 +114,7 @@ export function PostPhoto({ post, onTagPress, onBandPress }: PostPhotoProps) {
           <Text style={styles.bandText} numberOfLines={2}>
             {postBand(post.summary)}
           </Text>
-          <Icon name="arrowRight" size={18} color={theme.colors.onInk} />
+          <Icon name="arrowRight" size={18} color={theme.colors.ink} />
         </Pressable>
       ) : null}
     </View>
@@ -124,7 +124,7 @@ export function PostPhoto({ post, onTagPress, onBandPress }: PostPhotoProps) {
 const styles = StyleSheet.create({
   frame: {
     width: '100%',
-    borderRadius: theme.radius.xl,
+    borderRadius: theme.radius.tile,
     overflow: 'hidden',
     backgroundColor: theme.colors.surface,
   },
@@ -147,7 +147,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: theme.sizes.tagDot,
     height: theme.sizes.tagDot,
-    borderRadius: theme.radius.pill,
+    borderRadius: theme.sizes.tagDot / 2,
     backgroundColor: theme.colors.bg,
     alignItems: 'center',
     justifyContent: 'center',
@@ -160,7 +160,7 @@ const styles = StyleSheet.create({
   dotCore: {
     width: theme.sizes.tagDotCore,
     height: theme.sizes.tagDotCore,
-    borderRadius: theme.radius.pill,
+    borderRadius: theme.sizes.tagDotCore / 2,
     backgroundColor: theme.colors.ink,
   },
   band: {
@@ -174,12 +174,13 @@ const styles = StyleSheet.create({
     gap: theme.spacing.md,
     paddingHorizontal: theme.spacing.lg,
     paddingVertical: theme.spacing.sm,
-    borderRadius: theme.radius.lg,
-    backgroundColor: theme.colors.ink,
+    borderRadius: theme.radius.control,
+    backgroundColor: theme.colors.surface,
   },
   bandText: {
     flex: 1,
     ...theme.typography.bodyMedium,
-    color: theme.colors.onInk,
+    fontVariant: ['tabular-nums'],
+    color: theme.colors.ink,
   },
 });

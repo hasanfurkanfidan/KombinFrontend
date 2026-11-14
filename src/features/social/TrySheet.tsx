@@ -158,14 +158,14 @@ const styles = StyleSheet.create({
     color: theme.colors.ink,
   },
   owned: {
-    ...theme.typography.captionMedium,
-    color: theme.colors.ink2,
+    ...theme.typography.captionStrong,
+    color: theme.colors.primary,
   },
   outfit: {
     flexDirection: 'row',
     gap: theme.spacing.md,
     padding: theme.spacing.md,
-    borderRadius: theme.radius.xl,
+    borderRadius: theme.radius.tile,
     backgroundColor: theme.colors.surface,
   },
   collage: {
