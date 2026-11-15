@@ -43,6 +43,16 @@ export function formatShortDate(isoDate: string): string {
   return name ? `${Number(day)} ${name.slice(0, 3)}` : isoDate;
 }
 
+/** Sunday first, like `Date.getDay()`. A fixed table: cutting the full names to three letters makes Cuma and Cumartesi both "Cum". */
+const SHORT_WEEKDAYS = ['Paz', 'Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt'];
+
+/** "2026-11-21" -> "Cmt" (chips that have no room for the full name). */
+export function formatShortWeekday(isoDate: string): string {
+  const [year, month, day] = isoDate.split('-').map(Number);
+  const weekday = new Date(Date.UTC(year ?? 1970, (month ?? 1) - 1, day ?? 1)).getUTCDay();
+  return SHORT_WEEKDAYS[weekday] ?? '';
+}
+
 /** "2026-11-02" -> "Pazartesi" (the day is read as a calendar date, not shifted by the time zone). */
 export function formatWeekday(isoDate: string): string {
   const [year, month, day] = isoDate.split('-').map(Number);

@@ -9,7 +9,6 @@ import { Icon } from '@/components/Icon';
 import { SegmentedControl } from '@/features/tracking/SegmentedControl';
 import { openOffer } from '@/features/catalog/buy';
 import { occasionLabel } from '@/features/outfits/labels';
-import { OutfitMiniFigure } from '@/features/outfits/OutfitMiniFigure';
 import { tr } from '@/i18n/tr';
 import { theme } from '@/theme';
 import { formatTry, toNumber } from '@/utils/money';
@@ -17,7 +16,7 @@ import { formatTry, toNumber } from '@/utils/money';
 import { formatDay } from './calendar';
 import {
   coverageSentence,
-  dayFigurePieces,
+  dayPieces,
   hasMissingPieces,
   slotGroupLabel,
   tripWeatherText,
@@ -152,59 +151,94 @@ function Thumb({ uri, missing, size }: { uri: string | null; missing: boolean; s
   );
 }
 
-function PackRow({ item }: { item: TripPackItem }) {
+/** A piece of the trip: its picture and name, and under it either how it is used or that it left the wardrobe. */
+function PieceRow({
+  name,
+  imageUrl,
+  missing,
+  caption,
+  testID,
+  missingTestID,
+}: {
+  name: string;
+  imageUrl: string | null;
+  missing: boolean;
+  caption?: string;
+  testID: string;
+  missingTestID: string;
+}) {
   return (
     <View
       style={styles.row}
       accessible
-      accessibilityLabel={[
-        item.name,
-        item.missing ? tr.tripMissingTag : tr.tripPackDays(toNumber(item.days)),
-      ].join(', ')}
-      testID={`trip-pack-${item.wardrobeItemId}`}
+      accessibilityLabel={[name, missing ? tr.tripMissingTag : caption].filter(Boolean).join(', ')}
+      testID={testID}
     >
-      <Thumb uri={item.imageUrl} missing={item.missing} size={theme.sizes.tagThumb} />
+      <Thumb uri={imageUrl} missing={missing} size={theme.sizes.tagThumb} />
       <View style={styles.rowText}>
         <Text style={styles.name} numberOfLines={2}>
-          {item.name}
+          {name}
         </Text>
-        {item.missing ? (
-          <View style={styles.missingTag} testID={`trip-missing-${item.wardrobeItemId}`}>
+        {missing ? (
+          <View style={styles.missingTag} testID={missingTestID}>
             <Text style={styles.missingTagText}>{tr.tripMissingTag}</Text>
           </View>
-        ) : (
-          <Text style={styles.muted}>{tr.tripPackDays(toNumber(item.days))}</Text>
-        )}
+        ) : caption ? (
+          <Text style={styles.muted}>{caption}</Text>
+        ) : null}
       </View>
     </View>
   );
 }
 
+function PackRow({ item }: { item: TripPackItem }) {
+  return (
+    <PieceRow
+      name={item.name}
+      imageUrl={item.imageUrl}
+      missing={item.missing}
+      caption={tr.tripPackDays(toNumber(item.days))}
+      testID={`trip-pack-${item.wardrobeItemId}`}
+      missingTestID={`trip-missing-${item.wardrobeItemId}`}
+    />
+  );
+}
+
+/** A day: the date, the weather and the occasion, then every piece of its outfit by name, so the suitcase can be packed from it. */
 function DayRow({ day }: { day: TripDay }) {
   const weather = tripWeatherText(day.weather);
   const occasion = occasionLabel(day.occasion);
   return (
     <View style={styles.dayRow} testID={`trip-day-${day.date}`}>
-      <View style={styles.rowText}>
-        <Text style={styles.dayTitle} accessibilityRole="header">
-          {formatDay(day.date)}
-        </Text>
-        <Text style={styles.muted}>
-          {[weather.text, weather.note, occasion].filter(Boolean).join(' · ')}
-        </Text>
-        {day.outfit ? (
+      <Text style={styles.dayTitle} accessibilityRole="header">
+        {formatDay(day.date)}
+      </Text>
+      <Text style={styles.muted}>
+        {[weather.text, weather.note, occasion].filter(Boolean).join(' · ')}
+      </Text>
+      {day.outfit ? (
+        <>
+          <View testID={`trip-day-pieces-${day.date}`}>
+            {dayPieces(day.outfit).map((piece) => (
+              <PieceRow
+                key={`${piece.slot}-${piece.wardrobeItemId}`}
+                name={piece.name}
+                imageUrl={piece.imageUrl}
+                missing={piece.missing}
+                testID={`trip-day-piece-${day.date}-${piece.wardrobeItemId}`}
+                missingTestID={`trip-day-missing-${day.date}-${piece.wardrobeItemId}`}
+              />
+            ))}
+          </View>
           <Text style={styles.narration} numberOfLines={3}>
             {day.outfit.narration.text}
           </Text>
-        ) : (
-          <Text style={styles.noOutfit} testID={`trip-day-empty-${day.date}`}>
-            {tr.tripDayNoOutfit}
-          </Text>
-        )}
-      </View>
-      {day.outfit ? (
-        <OutfitMiniFigure pieces={dayFigurePieces(day.outfit)} testID={`trip-figure-${day.date}`} />
-      ) : null}
+        </>
+      ) : (
+        <Text style={styles.noOutfit} testID={`trip-day-empty-${day.date}`}>
+          {tr.tripDayNoOutfit}
+        </Text>
+      )}
     </View>
   );
 }
@@ -341,9 +375,7 @@ const styles = StyleSheet.create({
     color: theme.colors.chalkInk,
   },
   dayRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: theme.spacing.lg,
+    gap: theme.spacing.sm,
     paddingVertical: theme.spacing.lg,
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: theme.colors.line,

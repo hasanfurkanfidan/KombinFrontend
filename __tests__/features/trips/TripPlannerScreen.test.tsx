@@ -1,4 +1,5 @@
 import { fireEvent, screen, waitFor, within } from '@testing-library/react-native';
+import { StyleSheet } from 'react-native';
 import * as WebBrowser from 'expo-web-browser';
 import { router } from 'expo-router';
 
@@ -9,7 +10,7 @@ import { planTrip, replanTrip, saveTrip } from '@/api/endpoints/trips';
 import { useToastStore } from '@/components/toastStore';
 import { TripPlannerScreen } from '@/features/trips/TripPlannerScreen';
 
-import { packItem, persona, profile, trip, tripGap, tripPlan } from '../../fixtures';
+import { packItem, persona, profile, trip, tripDay, tripGap, tripPlan } from '../../fixtures';
 import { heldOpen, renderWithQuery, resetSession, signedInSession } from '../../testUtils';
 
 jest.mock('@/api/endpoints/trips');
@@ -237,7 +238,9 @@ describe('the plan', () => {
     expect(within(first).getByText('Cuma, 20 Kasım')).toBeTruthy();
     expect(within(first).getByText('12° yağmurlu')).toBeTruthy();
     expect(within(first).getByText('Yağmurlu günde koyu tonlar rahat eder.')).toBeTruthy();
-    expect(screen.getByTestId('trip-figure-2026-11-20')).toBeTruthy();
+    // The day names its pieces; there is no picture-only figure to decode.
+    expect(within(first).getByText('Koyu yeşil blazer')).toBeTruthy();
+    expect(within(first).getByText('Siyah kumaş pantolon')).toBeTruthy();
     expect(screen.getByTestId('trip-day-empty-2026-11-22')).toHaveTextContent(
       'Bu gün için kombin çıkmadı',
     );
@@ -245,6 +248,55 @@ describe('the plan', () => {
 
     await fireEvent.press(screen.getByTestId('segment-pack'));
     expect(screen.getByTestId('trip-pack')).toBeTruthy();
+  });
+
+  it('names every piece of a day in slot order, four pieces included, and marks a missing one', async () => {
+    const piece = (
+      slot: 'Top' | 'Bottom' | 'Outerwear' | 'Shoes',
+      id: string,
+      name: string,
+      missing = false,
+    ) => ({
+      slot,
+      wardrobeItemId: id,
+      name,
+      categorySlug: null,
+      color: 'Black' as const,
+      imageUrl: null,
+      missing,
+    });
+    const day = tripDay('2026-11-20');
+    planMock.mockResolvedValue(
+      tripPlan({
+        days: [
+          {
+            ...day,
+            outfit: {
+              ...day.outfit!,
+              // Deliberately out of order: the screen sorts them.
+              pieces: [
+                piece('Shoes', 'w4', 'Kahverengi bot'),
+                piece('Outerwear', 'w3', 'Yün palto', true),
+                piece('Bottom', 'w2', 'Siyah pantolon'),
+                piece('Top', 'w1', 'Bej kazak'),
+              ],
+            },
+          },
+        ],
+      }),
+    );
+    await renderWithQuery(<TripPlannerScreen />);
+    await fillAndPlan();
+
+    await fireEvent.press(await screen.findByTestId('segment-days'));
+    const pieces = within(screen.getByTestId('trip-day-pieces-2026-11-20'));
+    expect(
+      pieces
+        .getAllByText(/Bej kazak|Siyah pantolon|Yün palto|Kahverengi bot/)
+        .map((n) => n.props.children),
+    ).toEqual(['Bej kazak', 'Siyah pantolon', 'Yün palto', 'Kahverengi bot']);
+    expect(screen.getByTestId('trip-day-missing-2026-11-20-w3')).toHaveTextContent('Dolabında yok');
+    expect(screen.queryByTestId('trip-day-missing-2026-11-20-w1')).toBeNull();
   });
 
   it("explains a thin wardrobe with the backend's sentence", async () => {
@@ -278,6 +330,10 @@ describe('the plan', () => {
       expect.objectContaining({ gapCount: 1 }),
     );
 
+    // A 52-point button: well over the 44-point minimum.
+    expect(
+      StyleSheet.flatten(screen.getByTestId('trip-gap-buy-Shoes').props.style).height,
+    ).toBeGreaterThanOrEqual(44);
     await fireEvent.press(screen.getByTestId('trip-gap-buy-Shoes'));
     expect(trackMock).toHaveBeenCalledWith('trip_gap_click', { slot: 'Shoes' });
     await waitFor(() => expect(openBrowserMock).toHaveBeenCalledTimes(1));

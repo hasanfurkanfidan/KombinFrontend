@@ -7,7 +7,7 @@ import type {
 } from '@/api/models';
 import { tr } from '@/i18n/tr';
 import type { OccasionValue } from '@/features/outfits/labels';
-import { formatWeekday } from '@/utils/dates';
+import { formatShortWeekday, formatWeekday } from '@/utils/dates';
 
 export const MIN_BUDGET = 100;
 export const MAX_BUDGET = 100_000;
@@ -203,7 +203,7 @@ export function dateOptions(now: Date): DateOption[] {
     const weekday = formatWeekday(isoOf(day));
     options.push({
       value: isoOf(day),
-      label: tr.budgetDateChip(weekday.slice(0, 3), day.getDate()),
+      label: tr.budgetDateChip(formatShortWeekday(isoOf(day)), day.getDate()),
       spoken: `${weekday}, ${day.getDate()} ${MONTHS[day.getMonth()] ?? ''}`,
     });
   }

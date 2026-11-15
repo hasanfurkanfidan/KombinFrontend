@@ -1,4 +1,5 @@
 import { fireEvent, screen, waitFor, within } from '@testing-library/react-native';
+import { StyleSheet } from 'react-native';
 import * as WebBrowser from 'expo-web-browser';
 import { router } from 'expo-router';
 
@@ -251,6 +252,14 @@ describe('the outfits', () => {
     expect(trackMock).toHaveBeenCalledWith('buy_click', { offerId: 'o-bp1', source: 'budget' });
   });
 
+  it('gives the "Satın al" link a touch target of at least 44 points', async () => {
+    await renderWithQuery(<BudgetOutfitScreen />);
+    await ask('3000');
+
+    const buy = (await screen.findAllByTestId('budget-buy-Bottom'))[0]!;
+    expect(StyleSheet.flatten(buy.props.style).minHeight).toBeGreaterThanOrEqual(44);
+  });
+
   it('shows the size hint for a piece whose size is unknown, with a way to add it', async () => {
     signedInMock.mockResolvedValue(
       budgetOutfits({
@@ -382,6 +391,20 @@ describe('the outfits', () => {
         2,
       ),
     );
+  });
+
+  it('keeps the header to the title and puts "Başka göster" beside the budget chip', async () => {
+    await renderWithQuery(<BudgetOutfitScreen />);
+    await ask('3000');
+    await screen.findAllByTestId('budget-outfit');
+
+    // One row under the header holds both; the header itself carries only close and the one-line title.
+    const chip = screen.getByTestId('budget-summary');
+    expect(screen.getByTestId('budget-shuffle').parent).toBe(chip.parent);
+    expect(screen.getByTestId('outfit-title')).toHaveTextContent('Bütçene göre kombin');
+    expect(
+      within(screen.getByTestId('outfit-title').parent!.parent!).queryByTestId('budget-shuffle'),
+    ).toBeNull();
   });
 
   it('loads with a sentence, not a bare spinner', async () => {

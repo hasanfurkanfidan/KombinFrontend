@@ -47,7 +47,7 @@ export function weatherLabel(weather: Pick<OutfitWeather, 'band' | 'rain'>): str
 /** Grid order: the outfit reads top to bottom, then outerwear and shoes. */
 const SLOT_ORDER: OutfitSlot[] = ['Top', 'Bottom', 'Outerwear', 'Shoes', 'Accessory'];
 
-export function sortPieces(pieces: readonly OutfitPiece[]): OutfitPiece[] {
+export function sortPieces<T extends { slot: OutfitSlot }>(pieces: readonly T[]): T[] {
   return [...pieces].sort((a, b) => SLOT_ORDER.indexOf(a.slot) - SLOT_ORDER.indexOf(b.slot));
 }
 

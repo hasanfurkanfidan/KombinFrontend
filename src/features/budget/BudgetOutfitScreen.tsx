@@ -240,18 +240,6 @@ export function BudgetOutfitScreen() {
   }
 
   const summary = ask ? summaryOf(ask) : null;
-  const controls = summary ? (
-    <View style={styles.controls}>
-      <Chip
-        label={summary}
-        accessibilityLabel={`${tr.budgetChange}: ${summary}`}
-        dropdown
-        onPress={openSheet}
-        testID="budget-summary"
-      />
-    </View>
-  ) : undefined;
-
   const shuffleButton =
     data && data.outfits.length > 0 ? (
       <Pressable
@@ -265,7 +253,20 @@ export function BudgetOutfitScreen() {
         <Icon name="shuffle" size={16} />
         <Text style={styles.shuffleText}>{tr.budgetShuffle}</Text>
       </Pressable>
-    ) : undefined;
+    ) : null;
+  // The header keeps its title on one line at full size: the budget chip and "Başka göster" share the row below it.
+  const controls = summary ? (
+    <View style={styles.controls}>
+      <Chip
+        label={summary}
+        accessibilityLabel={`${tr.budgetChange}: ${summary}`}
+        dropdown
+        onPress={openSheet}
+        testID="budget-summary"
+      />
+      {shuffleButton}
+    </View>
+  ) : undefined;
 
   return (
     <>
@@ -273,7 +274,6 @@ export function BudgetOutfitScreen() {
         title={tr.budgetTitle}
         subtitle={outfitSubtitle(data?.weather ?? null, undefined)}
         onClose={close}
-        right={shuffleButton}
         controls={controls}
       >
         {content}
@@ -315,9 +315,13 @@ function Banner({ message, onIncrease }: { message: string; onIncrease: () => vo
 
 const styles = StyleSheet.create({
   controls: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: theme.spacing.sm,
     paddingHorizontal: theme.screenPaddingX,
     paddingBottom: theme.spacing.md,
-    alignItems: 'flex-start',
   },
   padded: {
     paddingHorizontal: theme.screenPaddingX,

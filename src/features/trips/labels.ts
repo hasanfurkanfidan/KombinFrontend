@@ -1,5 +1,5 @@
-import type { OutfitPiece, OutfitSlot, TripOutfit, TripPlan, TripWeather } from '@/api/models';
-import { weatherLabel } from '@/features/outfits/labels';
+import type { OutfitSlot, TripOutfit, TripOutfitPiece, TripPlan, TripWeather } from '@/api/models';
+import { sortPieces, weatherLabel } from '@/features/outfits/labels';
 import { tr } from '@/i18n/tr';
 import { withPossessive } from '@/utils/turkish';
 import { toNumber } from '@/utils/money';
@@ -53,18 +53,7 @@ export function hasMissingPieces(plan: TripPlan): boolean {
   );
 }
 
-/** A day's outfit as pieces the small standing figure can draw. */
-export function dayFigurePieces(outfit: TripOutfit): OutfitPiece[] {
-  return outfit.pieces.map((piece) => ({
-    slot: piece.slot,
-    role: 'Wardrobe',
-    source: 'Wardrobe',
-    wardrobeItemId: piece.wardrobeItemId,
-    productId: null,
-    name: piece.name,
-    categorySlug: piece.categorySlug,
-    color: piece.color,
-    imageUrl: piece.imageUrl,
-    offer: null,
-  }));
+/** Every piece of a day's outfit in slot order (top, bottom, outerwear, shoes, accessories). */
+export function dayPieces(outfit: TripOutfit): TripOutfitPiece[] {
+  return sortPieces(outfit.pieces);
 }
