@@ -1,6 +1,7 @@
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 import type { Post, PostTag } from '@/api/models';
+import { AppImage } from '@/components/AppImage';
 import { BottomSheet } from '@/components/BottomSheet';
 import { Button } from '@/components/Button';
 import { Icon } from '@/components/Icon';
@@ -40,7 +41,7 @@ function TagRow({ tag, single }: { tag: PostTag; single: boolean }) {
     <View style={styles.row} testID={`tag-row-${tag.id}`}>
       <View style={[styles.thumb, { backgroundColor: colorTint(tag.color ?? 'Other') }]}>
         {tag.imageUrl ? (
-          <Image source={{ uri: tag.imageUrl }} style={styles.image} resizeMode="contain" />
+          <AppImage uri={tag.imageUrl} style={styles.image} contentFit="contain" />
         ) : (
           <Icon name="shirt" size={22} color={theme.colors.control} strokeWidth={1.4} />
         )}

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { memo, useState } from 'react';
 import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 
@@ -26,8 +26,11 @@ interface PostCardProps {
 /**
  * One post of the feed (design screen 09): author row, the photo with its tag dots and price band, like / save /
  * "Dolabımla dene", the caption and, for a creator's post, the commission disclosure.
+ *
+ * Memoised: the feed re-renders on every page fetch and refetch, but a card only re-renders when its own post object
+ * changes (the cache patches replace only the post they touch) or one of its own hooks says so.
  */
-export function PostCard({ post }: PostCardProps) {
+export const PostCard = memo(function PostCard({ post }: PostCardProps) {
   const router = useRouter();
   const { isSignedIn } = useSession();
   const me = useMe();
@@ -189,6 +192,15 @@ export function PostCard({ post }: PostCardProps) {
       <PostMenu post={post} isMine={isMine} visible={menuOpen} onClose={() => setMenuOpen(false)} />
     </View>
   );
+});
+
+/** `renderItem` / `keyExtractor` for post lists: module-level, so they never change between renders. */
+export function renderPost({ item }: { item: Post }) {
+  return <PostCard post={item} />;
+}
+
+export function postKey(post: Post): string {
+  return post.id;
 }
 
 interface PostMenuProps {

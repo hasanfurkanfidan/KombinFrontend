@@ -73,14 +73,47 @@ export interface RequestOptions {
   signal?: AbortSignal;
 }
 
-/** The API origin without a trailing slash; also the base of every `goPath` buy link. */
+/**
+ * What is wrong with an API address, or `null` when it can be used. A release build (`__DEV__` false: preview and
+ * production) only talks to an `https` origin; a development build may also use plain `http` (a LAN address or the
+ * emulator's `10.0.2.2`). The address is an origin only: no credentials, query or fragment.
+ */
+export function apiUrlProblem(url: string | undefined, dev: boolean = __DEV__): string | null {
+  if (!url) {
+    return 'EXPO_PUBLIC_API_URL is not set. Copy .env.example to .env.';
+  }
+  let parsed: URL;
+  try {
+    parsed = new URL(url);
+  } catch {
+    return 'EXPO_PUBLIC_API_URL is not a valid URL.';
+  }
+  if (parsed.protocol !== 'https:' && !(dev && parsed.protocol === 'http:')) {
+    return dev
+      ? 'EXPO_PUBLIC_API_URL must start with http:// or https://.'
+      : 'EXPO_PUBLIC_API_URL must use https:// in a release build.';
+  }
+  if (parsed.username || parsed.password || parsed.search || parsed.hash) {
+    return 'EXPO_PUBLIC_API_URL must be a plain origin (no credentials, query or fragment).';
+  }
+  return null;
+}
+
+/** The API origin without a trailing slash; also the base of every `goPath` buy link. Refuses an unsafe address. */
 export function baseUrl(): string {
   const url = process.env.EXPO_PUBLIC_API_URL;
-  if (!url) {
-    throw new Error('EXPO_PUBLIC_API_URL is not set. Copy .env.example to .env.');
+  if (checked === null || checked.url !== url) {
+    checked = { url, problem: apiUrlProblem(url) };
+  }
+  const { problem } = checked;
+  if (problem !== null || !url) {
+    throw new Error(problem ?? 'EXPO_PUBLIC_API_URL is not set.');
   }
   return url.replace(/\/+$/, '');
 }
+
+/** The address is checked once, not parsed again on every request. */
+let checked: { url: string | undefined; problem: string | null } | null = null;
 
 function buildQuery(query: RequestOptions['query']): string {
   if (!query) {

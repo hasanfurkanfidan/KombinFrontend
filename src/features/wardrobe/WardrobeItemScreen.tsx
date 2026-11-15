@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import {
   Alert,
-  Image,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -15,6 +14,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { track } from '@/analytics';
 import { ApiError } from '@/api/client';
 import type { WardrobeItem, WardrobePairings } from '@/api/models';
+import { AppImage } from '@/components/AppImage';
 import { BottomSheet } from '@/components/BottomSheet';
 import { Button } from '@/components/Button';
 import { ErrorState } from '@/components/ErrorState';
@@ -247,7 +247,7 @@ function ItemBody({
         ]}
       >
         {uri ? (
-          <Image source={{ uri }} style={styles.cutoutImage} resizeMode="contain" />
+          <AppImage uri={uri} style={styles.cutoutImage} contentFit="contain" />
         ) : (
           <Icon name="shirt" size={72} color={theme.colors.control} strokeWidth={1.2} />
         )}

@@ -14,7 +14,8 @@ export type DeepLinkTarget =
   | { type: 'matches'; personaId: string }
   | { type: 'notifications' };
 
-const ID = '[A-Za-z0-9-]+';
+/** Every id the backend puts in a deep link is a uuid; nothing else is accepted. */
+const ID = '[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}';
 
 /** `kombin://product/{id}`, `kombin://matches/{personaId}` or `kombin://notifications`; anything else is `null`. */
 export function parseDeepLink(url: string | null | undefined): DeepLinkTarget | null {

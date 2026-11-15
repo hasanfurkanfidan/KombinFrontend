@@ -16,7 +16,11 @@ import {
 import type { CreatorStats } from '@/api/models';
 import { BlockedUsersScreen } from '@/features/social/BlockedUsersScreen';
 import { CreatorStatsScreen } from '@/features/social/CreatorStatsScreen';
-import { CreatorScreen, UserProfileScreen, isWebLink } from '@/features/social/ProfileScreens';
+import {
+  CreatorScreen,
+  UserProfileScreen,
+  creatorLinkHost,
+} from '@/features/social/ProfileScreens';
 
 import { post, postAuthor, userProfile } from '../../fixtures';
 import { renderWithQuery, resetSession, signedInSession } from '../../testUtils';
@@ -117,9 +121,14 @@ describe('creator page', () => {
   });
 
   it('only opens web links', () => {
-    expect(isWebLink('https://example.com')).toBe(true);
-    expect(isWebLink('javascript:alert(1)')).toBe(false);
-    expect(isWebLink('kombin://x')).toBe(false);
+    expect(creatorLinkHost('https://example.com/ayse')).toBe('example.com');
+    expect(creatorLinkHost('https://www.instagram.com.evil.example/x')).toBe(
+      'instagram.com.evil.example',
+    );
+    expect(creatorLinkHost('http://example.com')).toBeNull();
+    expect(creatorLinkHost('https://user:pass@example.com')).toBeNull();
+    expect(creatorLinkHost('javascript:alert(1)')).toBeNull();
+    expect(creatorLinkHost('kombin://x')).toBeNull();
   });
 });
 

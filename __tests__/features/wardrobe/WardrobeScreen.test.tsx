@@ -14,6 +14,7 @@ import {
 import type { WardrobeItemSummary } from '@/api/models';
 import { useAddStore } from '@/features/wardrobe/addStore';
 import { WardrobeScreen } from '@/features/wardrobe/WardrobeScreen';
+import { resetUserScopedState } from '@/session/userScope';
 
 import {
   dailyOutfit,
@@ -76,6 +77,11 @@ beforeEach(async () => {
   jest.mocked(listProducts).mockResolvedValue(page([]));
   jest.mocked(listSavedIds).mockResolvedValue({ productIds: [] });
   jest.mocked(getDailyOutfit).mockResolvedValue(dailyOutfit());
+});
+
+afterEach(() => {
+  // A retry starts a real 40 s poll; ending the "session" stops it, so it cannot open a sheet in a later test.
+  resetUserScopedState();
 });
 
 describe('Dolap logged out', () => {

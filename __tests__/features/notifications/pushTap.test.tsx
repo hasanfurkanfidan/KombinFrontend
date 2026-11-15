@@ -26,12 +26,18 @@ const readMock = jest.mocked(markNotificationRead);
 const drop = notification({
   id: 301,
   kind: 'PriceDrop',
-  data: { productId: 'p9', deepLink: 'kombin://product/p9' },
+  data: {
+    productId: '9a9a9a9a-0000-4000-8000-000000000009',
+    deepLink: 'kombin://product/9a9a9a9a-0000-4000-8000-000000000009',
+  },
 });
 const alreadyRead = notification({
   id: 300,
   kind: 'PriceDrop',
-  data: { productId: 'p9', deepLink: 'kombin://product/p9' },
+  data: {
+    productId: '9a9a9a9a-0000-4000-8000-000000000009',
+    deepLink: 'kombin://product/9a9a9a9a-0000-4000-8000-000000000009',
+  },
   readAt: '2026-11-01T10:00:00Z',
 });
 
@@ -46,9 +52,11 @@ describe('handlePushTap', () => {
   });
 
   it('opens the product at once, then reports notification_open for the matching unread entry and marks it read', async () => {
-    await handlePushTap(router, 'kombin://product/p9');
+    await handlePushTap(router, 'kombin://product/9a9a9a9a-0000-4000-8000-000000000009');
 
-    expect(router.push).toHaveBeenCalledWith('/product/p9?source=push');
+    expect(router.push).toHaveBeenCalledWith(
+      '/product/9a9a9a9a-0000-4000-8000-000000000009?source=push',
+    );
     expect(track).toHaveBeenCalledWith('notification_open', {
       notificationId: 301,
       kind: 'PriceDrop',
@@ -68,27 +76,33 @@ describe('handlePushTap', () => {
   it('switches to the persona of a "new matches" push', async () => {
     listMock.mockResolvedValue(notificationPage([]));
 
-    await handlePushTap(router, 'kombin://matches/pe2');
+    await handlePushTap(router, 'kombin://matches/2e2e2e2e-0000-4000-8000-000000000002');
 
     await waitFor(() => expect(router.navigate).toHaveBeenCalledWith('/'));
-    expect(activatePersona).toHaveBeenCalledWith('pe2');
+    expect(activatePersona).toHaveBeenCalledWith('2e2e2e2e-0000-4000-8000-000000000002');
   });
 
   it('still opens the target when the feed cannot be read', async () => {
     listMock.mockRejectedValue(new Error('offline'));
 
-    await expect(handlePushTap(router, 'kombin://product/p9')).resolves.toBeUndefined();
+    await expect(
+      handlePushTap(router, 'kombin://product/9a9a9a9a-0000-4000-8000-000000000009'),
+    ).resolves.toBeUndefined();
 
-    expect(router.push).toHaveBeenCalledWith('/product/p9?source=push');
+    expect(router.push).toHaveBeenCalledWith(
+      '/product/9a9a9a9a-0000-4000-8000-000000000009?source=push',
+    );
     expect(track).not.toHaveBeenCalled();
   });
 
   it('only opens the target while signed out', async () => {
     await resetSession();
 
-    await handlePushTap(router, 'kombin://product/p9');
+    await handlePushTap(router, 'kombin://product/9a9a9a9a-0000-4000-8000-000000000009');
 
-    expect(router.push).toHaveBeenCalledWith('/product/p9?source=push');
+    expect(router.push).toHaveBeenCalledWith(
+      '/product/9a9a9a9a-0000-4000-8000-000000000009?source=push',
+    );
     expect(listMock).not.toHaveBeenCalled();
   });
 });
@@ -123,10 +137,16 @@ describe('NotificationHandler', () => {
   });
 
   it('routes a tapped push by its deepLink, once', async () => {
-    lastResponse.mockReturnValue(tap('push-1', 'kombin://product/p9'));
+    lastResponse.mockReturnValue(
+      tap('push-1', 'kombin://product/9a9a9a9a-0000-4000-8000-000000000009'),
+    );
     const screen = await render(<NotificationHandler />);
 
-    await waitFor(() => expect(router.push).toHaveBeenCalledWith('/product/p9?source=push'));
+    await waitFor(() =>
+      expect(router.push).toHaveBeenCalledWith(
+        '/product/9a9a9a9a-0000-4000-8000-000000000009?source=push',
+      ),
+    );
     await screen.rerender(<NotificationHandler />);
     expect(router.push).toHaveBeenCalledTimes(1);
   });

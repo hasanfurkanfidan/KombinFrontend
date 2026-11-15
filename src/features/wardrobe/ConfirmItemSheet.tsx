@@ -1,5 +1,5 @@
 import { useMemo, useState, type ReactNode } from 'react';
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import type {
   BrandRef,
@@ -10,6 +10,7 @@ import type {
   UpdateWardrobeItemRequest,
   WardrobeItem,
 } from '@/api/models';
+import { AppImage } from '@/components/AppImage';
 import { BottomSheet } from '@/components/BottomSheet';
 import { Button } from '@/components/Button';
 import { Chip } from '@/components/Chip';
@@ -84,7 +85,7 @@ function Cutout({ item, color }: { item: WardrobeItem; color: ProductColor }) {
   return (
     <View style={[styles.cutout, { backgroundColor: colorTint(color) }]}>
       {uri ? (
-        <Image source={{ uri }} style={styles.cutoutImage} resizeMode="contain" />
+        <AppImage uri={uri} style={styles.cutoutImage} contentFit="contain" />
       ) : (
         <Icon name="shirt" size={64} color={theme.colors.control} strokeWidth={1.2} />
       )}

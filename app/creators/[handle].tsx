@@ -1,8 +1,9 @@
-import { useLocalSearchParams } from 'expo-router';
+import { Redirect, useLocalSearchParams } from 'expo-router';
 
 import { CreatorScreen } from '@/features/social/ProfileScreens';
+import { handleParam } from '@/utils/routeParams';
 
 export default function CreatorRoute() {
-  const { handle } = useLocalSearchParams<{ handle: string }>();
-  return <CreatorScreen handle={handle} />;
+  const handle = handleParam(useLocalSearchParams<{ handle: string }>().handle);
+  return handle ? <CreatorScreen handle={handle} /> : <Redirect href="/" />;
 }

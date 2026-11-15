@@ -1,0 +1,16 @@
+{
+  "reviewedOn": "2026-11-15",
+  "reason": "Build-time tooling only: these come in through the Expo CLI and config tooling (`expo` -> `@expo/cli`, `@expo/config`, `@expo/fingerprint`, `@expo/metro-config`) and run on the developer's machine or EAS, never in the app. None of them is in the Android bundle (checked against the export's source map, docs/mobile-review.md). Re-check when Expo ships a patch release.",
+  "maxSeverity": "moderate",
+  "packages": [
+    "@expo/cli",
+    "@expo/config",
+    "@expo/config-plugins",
+    "@expo/fingerprint",
+    "@expo/metro-config",
+    "expo",
+    "glob",
+    "minimatch",
+    "node-forge"
+  ]
+}

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Animated, type DimensionValue, type StyleProp, type ViewStyle } from 'react-native';
+import { useReducedMotion } from 'react-native-reanimated';
 
 import { theme } from '@/theme';
 
@@ -17,8 +18,14 @@ export function Skeleton({
   style,
 }: SkeletonProps) {
   const [opacity] = useState(() => new Animated.Value(0.55));
+  // Reduced motion: a still placeholder instead of a pulsing one.
+  const reduceMotion = useReducedMotion();
 
   useEffect(() => {
+    if (reduceMotion) {
+      opacity.setValue(0.75);
+      return;
+    }
     const loop = Animated.loop(
       Animated.sequence([
         Animated.timing(opacity, { toValue: 1, duration: 700, useNativeDriver: true }),
@@ -27,7 +34,7 @@ export function Skeleton({
     );
     loop.start();
     return () => loop.stop();
-  }, [opacity]);
+  }, [opacity, reduceMotion]);
 
   return (
     <Animated.View

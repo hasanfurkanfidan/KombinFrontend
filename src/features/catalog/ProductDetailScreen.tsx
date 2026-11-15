@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   FlatList,
-  Image,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -15,6 +14,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { track } from '@/analytics';
 import { ApiError } from '@/api/client';
 import type { Offer, Product } from '@/api/models';
+import { AppImage } from '@/components/AppImage';
 import { Button } from '@/components/Button';
 import { ErrorState } from '@/components/ErrorState';
 import { Icon } from '@/components/Icon';
@@ -312,10 +312,10 @@ function ProductImages({ product }: { product: Product }) {
             setIndex(Math.round(event.nativeEvent.contentOffset.x / width))
           }
           renderItem={({ item }) => (
-            <Image
-              source={{ uri: item }}
+            <AppImage
+              uri={item}
               style={{ width, height: theme.sizes.detailImageHeight }}
-              resizeMode="cover"
+              contentFit="cover"
             />
           )}
         />

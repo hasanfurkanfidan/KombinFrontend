@@ -27,6 +27,11 @@ function nextPage(lastPage: {
   return page < totalPages ? page + 1 : undefined;
 }
 
+/** The cache key of one product list (all its pages live in one entry). */
+export function productsKey(filters: ProductFilters) {
+  return queryKeys.products(toListQuery(filters));
+}
+
 /** `enabled` lets the screen wait until the active persona is known, so the list is fetched once. */
 export function useProducts(filters: ProductFilters, enabled = true) {
   return useInfiniteQuery({

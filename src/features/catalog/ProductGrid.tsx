@@ -1,6 +1,7 @@
-import type { ReactElement } from 'react';
+import { useCallback, useEffect, useRef, type ReactElement } from 'react';
 import { ActivityIndicator, FlatList, StyleSheet, View, useWindowDimensions } from 'react-native';
 
+import { IMAGE_LIST_TUNING } from '@/components/listTuning';
 import { Skeleton } from '@/components/Skeleton';
 import { theme } from '@/theme';
 
@@ -38,16 +39,28 @@ export function ProductGrid({
   onRefresh,
 }: ProductGridProps) {
   const cardWidth = useCardWidth();
+  // Callers pass a new arrow on every render; the cards get one stable function that calls the latest one, so a parent
+  // re-render (a keystroke on the search screen, a page arriving) does not re-render every card.
+  const onPressRef = useRef(onPressItem);
+  useEffect(() => {
+    onPressRef.current = onPressItem;
+  }, [onPressItem]);
+  const onPress = useCallback((id: string) => onPressRef.current(id), []);
+  const renderItem = useCallback(
+    ({ item }: { item: CardProduct }) => (
+      <ProductCard product={item} width={cardWidth} onPress={onPress} />
+    ),
+    [cardWidth, onPress],
+  );
 
   return (
     <FlatList
+      {...IMAGE_LIST_TUNING}
       data={items}
-      keyExtractor={(item) => item.id}
+      keyExtractor={keyOf}
       numColumns={2}
       columnWrapperStyle={styles.row}
-      renderItem={({ item }) => (
-        <ProductCard product={item} width={cardWidth} onPress={onPressItem} />
-      )}
+      renderItem={renderItem}
       ListHeaderComponent={header}
       ListEmptyComponent={placeholder}
       ListFooterComponent={
@@ -67,6 +80,10 @@ export function ProductGrid({
       keyboardDismissMode="on-drag"
     />
   );
+}
+
+function keyOf(item: CardProduct): string {
+  return item.id;
 }
 
 /** First-load placeholder: three rows of two cards. */

@@ -23,9 +23,9 @@ jest.mock('@/api/endpoints/legal');
 
 const LEGAL = {
   version: '1',
-  privacyUrl: 'https://kombin.test/legal/privacy',
-  termsUrl: 'https://kombin.test/legal/terms',
-  deleteAccountUrl: 'https://kombin.test/legal/delete-account',
+  privacyUrl: 'http://api.test/legal/privacy',
+  termsUrl: 'http://api.test/legal/terms',
+  deleteAccountUrl: 'http://api.test/legal/delete-account',
 };
 
 beforeEach(async () => {

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Image, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { GestureDetector, usePanGesture } from 'react-native-gesture-handler';
 import Animated, {
   Extrapolation,
@@ -12,6 +12,7 @@ import Animated, {
 import { scheduleOnRN } from 'react-native-worklets';
 
 import type { StyleCard } from '@/api/models';
+import { AppImage } from '@/components/AppImage';
 import { Icon } from '@/components/Icon';
 import { tr } from '@/i18n/tr';
 import { theme } from '@/theme';
@@ -236,10 +237,10 @@ function CardFace({
           <Icon name="shirt" size={64} color={theme.colors.control} strokeWidth={1.2} />
         </View>
       ) : (
-        <Image
-          source={{ uri: card.imageUrl }}
+        <AppImage
+          uri={card.imageUrl}
           style={styles.image}
-          resizeMode="cover"
+          contentFit="cover"
           onError={() => setFailed(true)}
         />
       )}

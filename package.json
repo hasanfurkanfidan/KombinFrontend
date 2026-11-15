@@ -12,7 +12,9 @@
     "format:check": "prettier --check .",
     "typecheck": "tsc --noEmit",
     "test": "jest",
-    "api:types": "openapi-typescript docs/openapi.json -o src/api/types.gen.ts"
+    "api:types": "openapi-typescript docs/openapi.json -o src/api/types.gen.ts",
+    "size:check": "node scripts/size-check.js",
+    "audit:ci": "node scripts/audit-ci.js"
   },
   "dependencies": {
     "@expo-google-fonts/archivo": "^0.4.2",

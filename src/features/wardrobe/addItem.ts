@@ -13,6 +13,8 @@ import {
 } from '@/api/endpoints/wardrobe';
 import type { WardrobeItem, WardrobeItemSummary } from '@/api/models';
 import { queryKeys } from '@/api/queryKeys';
+import { userScopeEpoch } from '@/session/userScope';
+import { discardTempFile } from '@/utils/tempFiles';
 
 import { useAddStore, type AddSource, type PickedPhoto } from './addStore';
 import {
@@ -112,12 +114,24 @@ export async function watchItem(
   startedAt: number,
 ): Promise<AddOutcome> {
   const pollStart = Date.now();
+  const epoch = userScopeEpoch();
   for (;;) {
     await sleep(POLL_INTERVAL_MS);
+    if (userScopeEpoch() !== epoch) {
+      // The account signed out meanwhile: its cache is gone and nothing may be written for it any more.
+      return { id, status: 'Failed', durationMs: Date.now() - startedAt };
+    }
     try {
       const item = await getWardrobeItem(id);
+      if (userScopeEpoch() !== epoch) {
+        return { id, status: 'Failed', durationMs: Date.now() - startedAt };
+      }
       if (item.status !== 'Processing') {
         useAddStore.getState().setFailureReason(id, item.failureReason);
+        if (item.status === 'Ready' && item.thumbUrl) {
+          // The grid shows the server's thumbnail from now on; the photo picked on the phone is not needed again.
+          void discardTempFile(useAddStore.getState().localUris[id]);
+        }
         commit(queryClient, item);
         return finish(startedAt, id, item.status === 'Ready' ? 'Ready' : 'Failed');
       }
@@ -154,8 +168,10 @@ async function uploadOne(
   let id = `local-${++localCounter}`;
   store.setLocalUri(id, photo.uri);
   prependItem(queryClient, processingCard(id, 'Processing'));
+  let preparedUri: string | null = null;
   try {
     const prepared = await prepareImage(photo);
+    preparedUri = prepared.uri;
     const upload = await createUploadUrl({
       contentType: prepared.contentType,
       sizeBytes: prepared.sizeBytes,
@@ -172,6 +188,9 @@ async function uploadOne(
     useAddStore.getState().setFailureReason(id, error instanceof Error ? error.message : null);
     patchItem(queryClient, id, { status: 'Failed' });
     return { ok: false, outcome: finish(startedAt, id, 'Failed') };
+  } finally {
+    // The re-encoded copy only exists to be uploaded; a retry re-encodes the picked photo again.
+    void discardTempFile(preparedUri);
   }
 }
 

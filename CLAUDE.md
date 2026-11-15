@@ -27,7 +27,7 @@ Nothing else exists yet; do not scaffold screens for features the backend does n
 - Expo SDK (managed workflow, **no `expo prebuild`**, no custom native modules), TypeScript `strict`, **Expo Router**.
 - Server data: **TanStack Query**. Client state: **Zustand** (session, local prefs, the wardrobe add queue, toasts). No Redux, no MobX, no context-based global stores.
 - Styling: plain `StyleSheet` + the central theme. **No Tailwind/NativeWind, no UI kit** (Paper, Tamagui, …). Components are custom and live in `src/components`.
-- Fonts: Archivo. `@expo-google-fonts/archivo` gives the four normal-width weights (import each by its subpath: the package root pulls in all 18 faces); SemiCondensed Bold and Condensed Bold are static instances of Google Fonts' variable Archivo in `assets/fonts` (with the OFL), loaded by `useFonts` in `AppProviders` at runtime, so no native build. Task 15b-B removed Inter and Space Grotesk.
+- Fonts: Archivo. `@expo-google-fonts/archivo` gives the normal-width weights, of which 400, 500 and 600 are loaded (700 is not: no style uses it); import each by its subpath (the package root pulls in all 18 faces); SemiCondensed Bold and Condensed Bold are static instances of Google Fonts' variable Archivo in `assets/fonts` (with the OFL), loaded by `useFonts` in `AppProviders` at runtime, so no native build. Task 15b-B removed Inter and Space Grotesk.
 - HTTP: `fetch` wrapped in **one** typed client, `src/api/client.ts`. No axios. A multipart call passes `form` (a `FormData`) instead of `body`; the client then sets no `Content-Type`, so `fetch` adds the boundary. **A file part is an `expo-file-system` `File`** (`new File(uri)`: a Blob with its name and MIME type), never React Native's `{ uri, name, type }` object: the global `fetch` on SDK 58 is `expo/fetch`, whose FormData encoder throws on a `uri` part, so the request never leaves the phone (and Jest, with the endpoint mocked, does not notice).
 - Tokens: access token in memory (Zustand), refresh token in `expo-secure-store`. **Never `AsyncStorage` for tokens.**
 - Forms: `react-hook-form` + `zod` (`@hookform/resolvers` is the glue). Validation messages are Turkish.
@@ -53,9 +53,24 @@ Nothing else exists yet; do not scaffold screens for features the backend does n
   - `src/push` — permission, token, device registration, `PushLifecycle` (registration on cold start/sign-in, foreground banner, tap routing). `src/session/prefsStore.ts` — small Zustand store for local preferences.
   - `src/analytics` — event queue, allow-list guard, anonymous/session ids, `AnalyticsTracker` (see "Analytics" below).
   - `src/components` — shared, feature-agnostic UI (`Button`, `TextField`, `Chip`, `Screen`, …).
-  - `src/i18n/tr.ts`, `src/utils`.
+  - `src/i18n/tr.ts`, `src/utils`, `src/shims` (Metro stand-ins, see `metro.config.js`).
+- Outside `src/`: `plugins/` (Expo config plugins, no native code), `scripts/` (Node CI scripts: size budget, audit gate).
 - `@/` is an alias for `src/` (tsconfig paths + Jest `moduleNameMapper`).
 - Tests live in `__tests__/` and mirror `src/`.
+
+## Security and performance rules (Task S2, `docs/mobile-review.md`)
+
+- **User scope.** Anything that belongs to an account is forgotten when its session ends: `src/session/userScope.ts` clears every query and mutation, `prefsStore`, `addStore`, the pending-deletion store, the post photo URL map and the temp photo folders, and rotates the anonymous id. It runs from one store subscription (`installUserScopeReset`, in `AppProviders`). A new store or module-level cache with user data must be reset there; background work that writes into the cache checks `userScopeEpoch()`.
+- **API address.** `apiUrlProblem` (`api/client.ts`): release builds (`__DEV__` false) accept `https` only and refuse to start otherwise; development may use `http`. `app.config.js` + `plugins/withNetworkPolicy.js` set Android cleartext and iOS ATS per `EAS_BUILD_PROFILE` (cleartext only in development). Preview builds therefore need the tunnel's `https` address.
+- **Route params** are untrusted (any `kombin://` link): ids through `uuidParam`, handles through `handleParam`, `returnTo` through `inAppPath` (`utils/routeParams.ts`); a dynamic route with a bad param redirects home. No route may act (like, follow, delete, cancel) without a tap.
+- **Outgoing URLs.** Buy: `isGoPath` + the API origin only. Legal: `isAllowedLegalUrl` (API origin, or `https` on `LEGAL_HOSTS`). Creator link: `https` only, the card shows `creatorLinkHost`. Nothing else opens a browser.
+- **Photos on disk.** Picker and manipulator files live in `cache/ImagePicker` and `cache/ImageManipulator`; delete what a flow is done with via `discardTempFile` (`utils/tempFiles.ts`); both folders are emptied at cold start and sign-out. Every upload re-encodes with `manipulateAsync` to JPEG (that is what strips EXIF/GPS).
+- **Images.** Use `AppImage` (`components/AppImage.tsx`, `uri` + `style` + `contentFit`), never React Native's `Image` directly: it decodes at box size (`resizeMethod="resize"`) and is the one file to change for `expo-image` (needs a new native build). Lists use thumbnails where the API has them (`thumbUrl`, `previewUrl`).
+- **Lists.** Paged lists are `FlatList`/`SectionList` (`ProductGrid` for products); photo lists spread `IMAGE_LIST_TUNING` (`components/listTuning.ts`); rows are `memo` components with stable `renderItem`/`keyExtractor`/handlers (`ProductGrid` stabilises `onPressItem` itself). Pull-to-refresh of a long paged list uses `refetchFromFirstPage` (`api/infinite.ts`). `__tests__/performance/*` guard this.
+- **Logging.** Every `console.*` sits inside `if (__DEV__)` (`__tests__/security/guards.test.ts` fails otherwise).
+- **Bundle.** `metro.config.js` resolves `react-hook-form` to one copy and stubs zod's locales (`src/shims/zodLocales.js`); `npm run size:check` fails above `scripts/size-budget.json` (+5 %). Check the source map before adding a dependency over 100 KB.
+- **Dependencies.** `npm run audit:ci` fails on high/critical advisories and on anything not in `scripts/audit-allowlist.json` (build tooling only, each with a reason).
+- **Reduced motion.** Looping animations (`Shimmer`, `Skeleton`) stand still under `useReducedMotion`; animate `transform`/`opacity` only.
 
 ## Glossary and the clarity rules (Task 15b-A)
 
@@ -258,6 +273,8 @@ npm run lint         # eslint, zero warnings allowed
 npm run typecheck    # tsc --noEmit
 npm test             # jest
 npm run api:types    # regenerate src/api/types.gen.ts from docs/openapi.json
+npm run size:check   # export the Android bundle and compare it with scripts/size-budget.json
+npm run audit:ci     # npm audit --omit=dev against scripts/audit-allowlist.json
 npm run format       # prettier --write
 npx expo export --platform android   # proves the bundle builds without a device
 ```

@@ -1,14 +1,23 @@
 import { useEffect, useState } from 'react';
 import { Animated, Easing, StyleSheet, View } from 'react-native';
+import { useReducedMotion } from 'react-native-reanimated';
 
 import { theme } from '@/theme';
 
-/** A soft light band sweeping across its parent (which clips it): "something is being prepared here". */
+/**
+ * A soft light band sweeping across its parent (which clips it): "something is being prepared here". With reduced
+ * motion the band stands still in the middle (the "Hazırlanıyor" label next to it still says what is happening).
+ */
 export function Shimmer() {
   const [progress] = useState(() => new Animated.Value(0));
   const [width, setWidth] = useState(0);
+  const reduceMotion = useReducedMotion();
 
   useEffect(() => {
+    if (reduceMotion) {
+      progress.setValue(0.5);
+      return;
+    }
     const loop = Animated.loop(
       Animated.timing(progress, {
         toValue: 1,
@@ -19,7 +28,7 @@ export function Shimmer() {
     );
     loop.start();
     return () => loop.stop();
-  }, [progress]);
+  }, [progress, reduceMotion]);
 
   const band = width / 2;
   return (

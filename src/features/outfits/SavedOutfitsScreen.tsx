@@ -9,6 +9,7 @@ import { ErrorState } from '@/components/ErrorState';
 import { IconButton } from '@/components/IconButton';
 import { Screen } from '@/components/Screen';
 import { Skeleton } from '@/components/Skeleton';
+import { IMAGE_LIST_TUNING } from '@/components/listTuning';
 import { tr } from '@/i18n/tr';
 import { useSession } from '@/session/useSession';
 import { theme } from '@/theme';
@@ -76,6 +77,7 @@ export function SavedOutfitsScreen() {
         <Text style={styles.title}>{tr.outfitSavedTitle}</Text>
       </View>
       <FlatList
+        {...IMAGE_LIST_TUNING}
         data={placeholder ? [] : outfits}
         keyExtractor={(outfit) => outfit.id}
         numColumns={COLUMNS}

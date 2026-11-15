@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useQuery } from '@tanstack/react-query';
 
 import { listProducts } from '@/api/endpoints/catalog';
 import type { WardrobeItemSummary } from '@/api/models';
+import { AppImage } from '@/components/AppImage';
 import { BottomSheet } from '@/components/BottomSheet';
 import { Button } from '@/components/Button';
 import { Chip } from '@/components/Chip';
@@ -203,7 +204,7 @@ function PickRow({
     <Pressable accessibilityRole="button" onPress={onPress} style={styles.row} testID={testID}>
       <View style={[styles.thumb, { backgroundColor: tint }]}>
         {imageUrl ? (
-          <Image source={{ uri: imageUrl }} style={styles.thumbImage} resizeMode="contain" />
+          <AppImage uri={imageUrl} style={styles.thumbImage} contentFit="contain" />
         ) : (
           <Icon name="shirt" size={22} color={theme.colors.control} strokeWidth={1.4} />
         )}

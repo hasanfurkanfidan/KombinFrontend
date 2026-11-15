@@ -1,7 +1,8 @@
-import { useState } from 'react';
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { memo, useState } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 
 import type { WardrobeItemSummary } from '@/api/models';
+import { AppImage } from '@/components/AppImage';
 import { Icon } from '@/components/Icon';
 import { PressableScale } from '@/components/PressableScale';
 import { Shimmer } from '@/components/Shimmer';
@@ -35,7 +36,8 @@ interface ItemTileProps {
   onRetry: (id: string) => void;
 }
 
-export function ItemTile({ item, width, onPress, onRetry }: ItemTileProps) {
+/** Memoised like the product card: a tile re-renders when its item, width or (stable) handlers change. */
+export const ItemTile = memo(function ItemTile({ item, width, onPress, onRetry }: ItemTileProps) {
   const [imageFailed, setImageFailed] = useState(false);
   const localUri = useAddStore((state) => state.localUris[item.id]);
   const failureReason = useAddStore((state) => state.failureReasons[item.id]);
@@ -60,10 +62,10 @@ export function ItemTile({ item, width, onPress, onRetry }: ItemTileProps) {
         testID={`wardrobe-item-${item.id}`}
       >
         {uri && !imageFailed ? (
-          <Image
-            source={{ uri }}
+          <AppImage
+            uri={uri}
             style={[styles.image, isCutout && styles.cutout]}
-            resizeMode={isCutout ? 'contain' : 'cover'}
+            contentFit={isCutout ? 'contain' : 'cover'}
             onError={() => setImageFailed(true)}
           />
         ) : (
@@ -100,7 +102,7 @@ export function ItemTile({ item, width, onPress, onRetry }: ItemTileProps) {
       ) : null}
     </View>
   );
-}
+});
 
 /** The dashed "+" cell that closes the grid. */
 export function AddTile({ width, onPress }: { width: number; onPress: () => void }) {

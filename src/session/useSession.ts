@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 
+import { flushAnalytics } from '@/analytics';
 import { ensureFreshAccessToken, refreshSession } from '@/api/client';
 import { getMe, logout } from '@/api/endpoints/auth';
 import type { AuthTokens } from '@/api/models';
@@ -13,25 +14,56 @@ import { getRefreshToken, getSignInMethod, type SignInMethod } from './tokenStor
 
 let bootstrapPromise: Promise<void> | null = null;
 
+/** Sign-out waits at most this long for the analytics queue to go out. */
+const FLUSH_WAIT_MS = 1500;
+
+/**
+ * The splash waits at most this long for the stored session to be restored. A refresh that is still out after that
+ * (a phone on a bad network) no longer holds the first screen: the app opens signed out and switches to signed in the
+ * moment the refresh answers.
+ */
+export const BOOT_TIMEOUT_MS = 6000;
+
+/** Resolves when `work` settles or after `ms`, whichever comes first; never rejects. */
+function withinMs(work: Promise<unknown>, ms: number): Promise<void> {
+  return new Promise<void>((resolve) => {
+    const timer = setTimeout(resolve, ms);
+    work.then(
+      () => {
+        clearTimeout(timer);
+        resolve();
+      },
+      () => {
+        clearTimeout(timer);
+        resolve();
+      },
+    );
+  });
+}
+
 /**
  * Restores a previous session: stored refresh token -> refresh -> GET /me.
  * Always resolves with the store out of `booting`, so the splash can be dismissed.
  */
 export function bootstrapSession(): Promise<void> {
   bootstrapPromise ??= (async () => {
-    try {
+    const restore = (async () => {
       if (!(await getRefreshToken())) {
         return;
       }
       await refreshSession();
       useSessionStore.getState().setSignInMethod(await getSignInMethod());
-      await queryClient.fetchQuery({
+      // `/me` is not needed to draw the first screen: it is warmed in the background, not awaited behind the splash.
+      void queryClient.prefetchQuery({
         queryKey: queryKeys.me,
         queryFn: ({ signal }) => getMe(signal),
       });
-    } catch {
+    })().catch(() => {
       // A 4xx has already cleared the session. Anything else (offline, 5xx) keeps the stored token for
-      // the next launch; if only /me failed, the Profile screen refetches it.
+      // the next launch.
+    });
+    try {
+      await withinMs(restore, BOOT_TIMEOUT_MS);
     } finally {
       if (useSessionStore.getState().status === 'booting') {
         useSessionStore.getState().setSignedOut();
@@ -66,6 +98,8 @@ export async function completeSignIn(tokens: AuthTokens, method?: SignInMethod):
 
 /** Revokes the refresh token on the server (best effort), then always clears the local session. */
 export async function signOut(): Promise<void> {
+  // What this account did last goes out with its own token, before the session is gone (never longer than a moment).
+  await withinMs(flushAnalytics(), FLUSH_WAIT_MS);
   try {
     // Refresh first if needed: that rotates the refresh token, so it must be read afterwards.
     await ensureFreshAccessToken();

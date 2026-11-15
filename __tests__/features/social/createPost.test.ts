@@ -142,3 +142,32 @@ describe('watchPost', () => {
     await failure;
   });
 });
+
+describe('photos on the phone', () => {
+  it('deletes the picked photo and its re-encoded copy once the upload went through', async () => {
+    uploadUrlMock.mockResolvedValue({
+      postId: 'post-8',
+      uploadUrl: 'http://storage.test/put?sig=2',
+      headers: { 'Content-Type': 'image/jpeg' },
+      expiresAt: '2026-11-07T10:15:00Z',
+    });
+    putMock.mockResolvedValue(undefined);
+    processMock.mockResolvedValue({ postId: 'post-8', status: 'Processing' });
+    const picked = 'file:///cache/ImagePicker/post.jpg';
+
+    await uploadPostPhoto({ uri: picked, width: 1200, height: 1500 });
+
+    expect(FileSystem.deleteAsync).toHaveBeenCalledWith(`${picked}#resized`, { idempotent: true });
+    expect(FileSystem.deleteAsync).toHaveBeenCalledWith(picked, { idempotent: true });
+  });
+
+  it('keeps the picked photo (for a retry) but drops the re-encoded copy when the upload fails', async () => {
+    uploadUrlMock.mockRejectedValue(new Error('offline'));
+    const picked = 'file:///cache/ImagePicker/post-2.jpg';
+
+    await expect(uploadPostPhoto({ uri: picked, width: 1200, height: 1500 })).rejects.toThrow();
+
+    expect(FileSystem.deleteAsync).toHaveBeenCalledWith(`${picked}#resized`, { idempotent: true });
+    expect(FileSystem.deleteAsync).not.toHaveBeenCalledWith(picked, expect.anything());
+  });
+});

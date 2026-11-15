@@ -1,8 +1,9 @@
-import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 
 import { ApiError } from '@/api/client';
 import type { CreatorStats } from '@/api/models';
+import { AppImage } from '@/components/AppImage';
 import { Card } from '@/components/Card';
 import { ErrorState } from '@/components/ErrorState';
 import { Icon } from '@/components/Icon';
@@ -86,10 +87,10 @@ function StatsBody({ stats }: { stats: CreatorStats }) {
             >
               <View style={styles.thumb}>
                 {post.previewUrl ? (
-                  <Image
-                    source={{ uri: stableImageUrl(`${post.postId}:preview`, post.previewUrl) }}
+                  <AppImage
+                    uri={stableImageUrl(`${post.postId}:preview`, post.previewUrl)}
                     style={styles.thumbImage}
-                    resizeMode="cover"
+                    contentFit="cover"
                   />
                 ) : (
                   <Icon name="shirt" size={22} color={theme.colors.control} strokeWidth={1.4} />
