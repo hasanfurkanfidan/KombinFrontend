@@ -1,0 +1,33 @@
+# Manual only, and it documents rather than builds: CI never runs EAS and this repository holds no secrets for it.
+#
+# To make a preview build (an installable internal build of the current branch) run this on a machine that is signed
+# in to Expo:
+#
+#   npx eas-cli build --profile preview --platform android --non-interactive
+#
+# (--platform ios needs an Apple developer account.) A release build must reach the backend over https (see
+# CLAUDE.md, "API address"), so set EXPO_PUBLIC_API_URL to the tunnel's or staging's https address in the EAS
+# environment before building.
+#
+# To run it from this workflow instead, someone with admin rights has to add these repository secrets first:
+#   EXPO_TOKEN                a personal access token from https://expo.dev/settings/access-tokens
+#   (Google/Apple client ids are public .env values: EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID, EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
+#    EXPO_PUBLIC_API_URL; set them as EAS environment variables, not here.)
+name: EAS preview (manual, documentation only)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  explain:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: How to build a preview
+        run: |
+          echo "This workflow does not build anything."
+          echo "Run locally:  npx eas-cli build --profile preview --platform android --non-interactive"
+          echo "Needed for a CI build (not configured): the EXPO_TOKEN repository secret."

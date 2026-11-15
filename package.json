@@ -13,8 +13,10 @@
     "typecheck": "tsc --noEmit",
     "test": "jest",
     "api:types": "openapi-typescript docs/openapi.json -o src/api/types.gen.ts",
+    "api:check": "node scripts/api-check.js",
     "size:check": "node scripts/size-check.js",
-    "audit:ci": "node scripts/audit-ci.js"
+    "audit:ci": "node scripts/audit-ci.js",
+    "verify": "npm run lint && npm run typecheck && npm run api:check && npm test -- --ci && npm run size:check && npm run audit:ci"
   },
   "dependencies": {
     "@expo-google-fonts/archivo": "^0.4.2",

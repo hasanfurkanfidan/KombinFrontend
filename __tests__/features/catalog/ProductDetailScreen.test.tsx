@@ -6,7 +6,7 @@ import { getPriceHistory, getProduct } from '@/api/endpoints/catalog';
 import { ProductDetailScreen } from '@/features/catalog/ProductDetailScreen';
 
 import { history, product, trendyol } from '../../fixtures';
-import { renderWithQuery } from '../../testUtils';
+import { heldOpen, renderWithQuery } from '../../testUtils';
 
 jest.mock('@/api/endpoints/catalog');
 
@@ -41,7 +41,7 @@ describe('ProductDetailScreen', () => {
 
   it('renders the detail before the history has arrived', async () => {
     getProductMock.mockResolvedValue(product());
-    getPriceHistoryMock.mockReturnValue(new Promise(() => undefined));
+    getPriceHistoryMock.mockReturnValue(heldOpen());
 
     await renderWithQuery(<ProductDetailScreen id="p1" />);
 

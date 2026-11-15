@@ -1,5 +1,6 @@
 import { waitFor } from '@testing-library/react-native';
 
+import { trackQueryClient } from '../support/leakGuard';
 import { API, authHeader, problem, reply, tokens } from '../testUtils';
 
 const fetchMock = jest.fn<Promise<Response>, [string, RequestInit]>();
@@ -28,16 +29,10 @@ function load() {
       SecureStore: jest.requireMock<typeof import('expo-secure-store')>('expo-secure-store'),
     };
   });
-  clients.push(loaded.queryClient);
+  // Cleared (and checked for work left in flight) by the leak guard when the test ends.
+  trackQueryClient(loaded.queryClient);
   return loaded;
 }
-
-const clients: { clear: () => void }[] = [];
-
-afterEach(() => {
-  // Query-cache GC timers would otherwise keep the Jest worker alive.
-  clients.splice(0).forEach((client) => client.clear());
-});
 
 beforeEach(async () => {
   fetchMock.mockReset();

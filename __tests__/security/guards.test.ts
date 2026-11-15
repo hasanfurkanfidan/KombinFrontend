@@ -10,6 +10,8 @@ import { queryClient } from '@/api/queryClient';
 import { discardTempFile, isAppTempFile } from '@/utils/tempFiles';
 import { handleParam, inAppPath, uuidParam } from '@/utils/routeParams';
 
+import { trackQueryClient } from '../support/leakGuard';
+
 jest.mock('@/api/endpoints/legal');
 
 declare const __dirname: string;
@@ -24,6 +26,8 @@ const ID = '6f1c2a8e-1b2c-4d3e-8f90-123456789abc';
 beforeEach(() => {
   jest.clearAllMocks();
   queryClient.clear();
+  // The shared client keeps a 5-minute garbage-collection timer per query: the leak guard empties it after the test.
+  trackQueryClient(queryClient);
 });
 
 describe('the API address', () => {

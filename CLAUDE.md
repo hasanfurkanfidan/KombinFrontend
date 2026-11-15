@@ -244,6 +244,21 @@ Backend: README "Account deletion", "Rate limits and request sizes", `GET /legal
 - Bootstrap (`bootstrapSession`, run from `AppProviders`): stored refresh token → refresh → `GET /me` → ready. The native splash stays up until fonts and the session are ready, so a logged-in user never sees the login screen flash.
 - Logout: `POST /auth/logout` with the refresh token and the push token (best effort), then always clear local state.
 
+## CI (Task F3)
+
+`.github/workflows/ci.yml` runs on every push to `main` and every pull request (Node from `.nvmrc`, `npm ci --legacy-peer-deps` with the npm cache, the jest-expo preset peer restored when the install pruned it), stopping at the first failing step: `npm run lint`, `npm run typecheck`, `npm run api:check` (regenerates the types from `docs/openapi.json` into a temp file and diffs them with `src/api/types.gen.ts`), `npm test -- --ci`, `npx expo export --platform android`, `npm run size:check`, `npm run audit:ci`. A newer push to the same branch cancels the run in progress; a failed run uploads `jest-results.json` (every failure message) as an artifact. `eas-preview.yml` is manual and only documents the EAS preview command and the `EXPO_TOKEN` secret it would need; CI never runs EAS.
+
+Run the same checks locally with one command: `npm run verify` (lint, typecheck, api:check, tests with `--ci`, size budget, audit; `size:check` already exports the bundle).
+
+**The leak guard** (`__tests__/support/leakGuard.ts`, installed by `jest.setup.ts`) fails any test that ends with a real timer or interval still pending or a query/mutation still in flight, naming where the timer was set. Fix the cause rather than the guard:
+
+- a wait for a debounce or a poll uses fake timers (`jest.useFakeTimers()` in `beforeEach`, `jest.useRealTimers()` in `afterEach`, `advanceTimersByTimeAsync`), never a real `setTimeout` in the test;
+- a request that must stay open to show a loading state is `heldOpen()` (from `testUtils`), not `new Promise(() => {})`: it resolves when the test ends;
+- a query client you create yourself (or the app's shared `queryClient` in a test that does not render a screen) goes through `trackQueryClient(client)`: the guard checks it and empties it (a cache keeps a 5-minute garbage-collection timer per query, which used to keep Jest workers alive);
+- the guard's `afterEach` runs before the test file's own root-level `afterEach`, so cleanup that the guard depends on belongs in the test body, `useRealTimers` aside.
+
+Do not raise `findBy`/`waitFor` timeouts or the Jest timeout to make a test pass on a busy machine: find what the test is waiting for. A longer wait needs a comment saying why.
+
 ## How to add a screen
 
 1. **Route file** in `app/` (e.g. `app/(tabs)/wardrobe.tsx`) that only exports/wires the screen from `src/`.
@@ -273,6 +288,8 @@ npm run lint         # eslint, zero warnings allowed
 npm run typecheck    # tsc --noEmit
 npm test             # jest
 npm run api:types    # regenerate src/api/types.gen.ts from docs/openapi.json
+npm run api:check    # fail when types.gen.ts is not what api:types would generate
+npm run verify       # everything CI runs, in CI's order (see "CI")
 npm run size:check   # export the Android bundle and compare it with scripts/size-budget.json
 npm run audit:ci     # npm audit --omit=dev against scripts/audit-allowlist.json
 npm run format       # prettier --write

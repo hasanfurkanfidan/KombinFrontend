@@ -55,8 +55,7 @@ describe('Keşfet with a persona', () => {
 
     await renderWithQuery(<DiscoverScreen />);
 
-    // Waits for the personas and the products; a full parallel run can take longer than the default second.
-    const control = await screen.findByTestId('style-switcher', {}, { timeout: 4000 });
+    const control = await screen.findByTestId('style-switcher');
     expect(control).toHaveTextContent('Tarzım: Ofis');
     // No chip per style on the screen itself: they live in the sheet.
     expect(screen.queryByTestId('persona-chips')).toBeNull();

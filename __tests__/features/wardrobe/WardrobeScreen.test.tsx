@@ -80,7 +80,8 @@ beforeEach(async () => {
 });
 
 afterEach(() => {
-  // A retry starts a real 40 s poll; ending the "session" stops it, so it cannot open a sheet in a later test.
+  jest.useRealTimers();
+  // A retry starts a 40 s poll; ending the "session" stops it, so it cannot open a sheet in a later test.
   resetUserScopedState();
 });
 
@@ -143,6 +144,8 @@ describe('Dolap grid', () => {
   });
 
   it('opens a piece, and retries a failed one by asking for the analysis again', async () => {
+    // A retry starts the poll, which sleeps 1.5 s between asks: on the fake clock that sleep never outlives the test.
+    jest.useFakeTimers();
     processMock.mockResolvedValue({ itemId: 'w4', status: 'Processing' });
     await renderWithQuery(<WardrobeScreen />);
 
@@ -331,8 +334,7 @@ describe('Dolap grid', () => {
       useAddStore.getState().enqueueConfirm('w1');
     });
 
-    // The sheet loads the item first; under a full parallel run that can take longer than the default second.
-    expect(await screen.findByText('Bu parçayı onayla', {}, { timeout: 4000 })).toBeTruthy();
+    expect(await screen.findByText('Bu parçayı onayla')).toBeTruthy();
     expect(getItemMock).toHaveBeenCalledWith('w1', expect.anything());
   });
 });
