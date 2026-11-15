@@ -1,6 +1,7 @@
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import type { Post, PostTag } from '@/api/models';
+import { AppImage } from '@/components/AppImage';
 import { Icon } from '@/components/Icon';
 import { tr } from '@/i18n/tr';
 import { theme } from '@/theme';
@@ -84,7 +85,7 @@ export function PostPhoto({ post, onTagPress, onBandPress }: PostPhotoProps) {
               ]}
             >
               {tag.imageUrl ? (
-                <Image source={{ uri: tag.imageUrl }} style={styles.fill} resizeMode="contain" />
+                <AppImage uri={tag.imageUrl} style={styles.fill} contentFit="contain" />
               ) : (
                 <Icon name="shirt" size={28} color={theme.colors.control} strokeWidth={1.4} />
               )}
@@ -92,10 +93,10 @@ export function PostPhoto({ post, onTagPress, onBandPress }: PostPhotoProps) {
           ))}
         </View>
       ) : post.image ? (
-        <Image
-          source={{ uri: stableImageUrl(post.id, post.image.url) }}
+        <AppImage
+          uri={stableImageUrl(post.id, post.image.url)}
           style={styles.fill}
-          resizeMode="cover"
+          contentFit="cover"
           accessibilityIgnoresInvertColors
         />
       ) : null}

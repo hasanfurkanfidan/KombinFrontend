@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
-  Image,
   PanResponder,
   Pressable,
   StyleSheet,
@@ -10,6 +9,7 @@ import {
 } from 'react-native';
 
 import type { Post } from '@/api/models';
+import { AppImage } from '@/components/AppImage';
 import { Button } from '@/components/Button';
 import { Chip } from '@/components/Chip';
 import { Icon } from '@/components/Icon';
@@ -141,11 +141,7 @@ function DotPhoto({ postId, image, dots, selected, onSelect, onMove }: DotPhotoP
 
   return (
     <View style={[styles.photo, { aspectRatio: aspect }]} onLayout={onLayout} testID="tag-photo">
-      <Image
-        source={{ uri: stableImageUrl(postId, image.url) }}
-        style={styles.fill}
-        resizeMode="cover"
-      />
+      <AppImage uri={stableImageUrl(postId, image.url)} style={styles.fill} contentFit="cover" />
       {dots.map((dot, index) => (
         <DraggableDot
           key={dot.key}

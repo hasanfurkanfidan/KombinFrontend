@@ -333,7 +333,7 @@ describe('the visibility picker', () => {
     ).toBeTruthy();
     expect(
       within(screen.getByTestId('visibility-Followers')).getByText(
-        'Seni takip eden herkes görebilir; takip isteği yoktur.',
+        'Seni takip eden herkes görür. Takip etmek onay istemediği için bu gizli bir paylaşım değildir.',
       ),
     ).toBeTruthy();
     expect(within(screen.getByTestId('visibility-Public')).getByText(/herkes görür/)).toBeTruthy();

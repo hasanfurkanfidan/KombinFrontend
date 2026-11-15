@@ -1,11 +1,15 @@
 import { useMemo, type ReactElement } from 'react';
 import { ActivityIndicator, FlatList, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useQueryClient } from '@tanstack/react-query';
 
 import type { FeedMode } from '@/api/endpoints/social';
+import { refetchFromFirstPage } from '@/api/infinite';
+import { queryKeys } from '@/api/queryKeys';
 import { Button } from '@/components/Button';
 import { EmptyState } from '@/components/EmptyState';
 import { ErrorState } from '@/components/ErrorState';
+import { IMAGE_LIST_TUNING } from '@/components/listTuning';
 import { Skeleton } from '@/components/Skeleton';
 import { useActivePersona, usePersonas } from '@/features/personas/hooks';
 import { SegmentedControl } from '@/features/tracking/SegmentedControl';
@@ -14,7 +18,7 @@ import { useSession } from '@/session/useSession';
 import { theme } from '@/theme';
 
 import { useFeed } from './hooks';
-import { PostCard } from './PostCard';
+import { postKey, renderPost } from './PostCard';
 import { usePostViewTracking } from './postViews';
 
 const MODE_OPTIONS = [
@@ -41,6 +45,7 @@ export function FeedSection({ header, mode, onModeChange }: FeedSectionProps) {
   const personasReady = !isSignedIn || !personas.isPending;
   const needsSignIn = mode === 'following' && !isSignedIn;
   const feed = useFeed(mode, personaId, personasReady);
+  const queryClient = useQueryClient();
 
   const posts = useMemo(() => feed.data?.pages.flatMap((page) => page.items) ?? [], [feed.data]);
 
@@ -108,9 +113,10 @@ export function FeedSection({ header, mode, onModeChange }: FeedSectionProps) {
 
   return (
     <FlatList
+      {...IMAGE_LIST_TUNING}
       data={placeholder ? [] : posts}
-      keyExtractor={(post) => post.id}
-      renderItem={({ item }) => <PostCard post={item} />}
+      keyExtractor={postKey}
+      renderItem={renderPost}
       ListHeaderComponent={listHeader}
       ListEmptyComponent={placeholder ?? undefined}
       ListFooterComponent={footer}
@@ -121,7 +127,9 @@ export function FeedSection({ header, mode, onModeChange }: FeedSectionProps) {
       }}
       onEndReachedThreshold={0.6}
       refreshing={feed.isRefetching && !feed.isFetchingNextPage}
-      onRefresh={() => void feed.refetch()}
+      onRefresh={() =>
+        void refetchFromFirstPage(queryClient, queryKeys.feed(mode, personaId ?? null, isSignedIn))
+      }
       onViewableItemsChanged={viewTracking.onViewableItemsChanged}
       viewabilityConfig={viewTracking.viewabilityConfig}
       showsVerticalScrollIndicator={false}

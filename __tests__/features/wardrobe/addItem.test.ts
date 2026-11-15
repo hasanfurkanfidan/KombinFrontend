@@ -23,6 +23,7 @@ import {
   retryItem,
 } from '@/features/wardrobe/addItem';
 import { useAddStore } from '@/features/wardrobe/addStore';
+import { resetUserScopedState } from '@/session/userScope';
 
 import { wardrobeItem } from '../../fixtures';
 
@@ -383,5 +384,39 @@ describe('adding from the catalog', () => {
       status: 'Failed',
       durationMs: expect.any(Number),
     });
+  });
+});
+
+describe('photos on the phone and sign-out', () => {
+  const cached = { uri: 'file:///cache/ImagePicker/pick-1.jpg', width: 4000, height: 3000 };
+
+  it('deletes the re-encoded copy after the upload and the picked photo once the item is Ready', async () => {
+    getItemMock.mockResolvedValue(wardrobeItem({ id: 'w-new', status: 'Ready' }));
+
+    const done = addPhotos(queryClient, [cached], 'camera');
+    await jest.advanceTimersByTimeAsync(0);
+    expect(FileSystem.deleteAsync).toHaveBeenCalledWith(`${cached.uri}#resized`, {
+      idempotent: true,
+    });
+    expect(FileSystem.deleteAsync).not.toHaveBeenCalledWith(cached.uri, expect.anything());
+
+    await pollOnce();
+    await done;
+    expect(FileSystem.deleteAsync).toHaveBeenCalledWith(cached.uri, { idempotent: true });
+  });
+
+  it("stops polling when the account signs out and never writes the result into the next user's cache", async () => {
+    getItemMock.mockResolvedValue(wardrobeItem({ id: 'w-new', status: 'Ready' }));
+
+    const done = addPhotos(queryClient, [photo], 'library');
+    await jest.advanceTimersByTimeAsync(0);
+    resetUserScopedState();
+    await pollOnce();
+    const [outcome] = await done;
+
+    expect(outcome).toMatchObject({ id: 'w-new', status: 'Failed' });
+    expect(getItemMock).not.toHaveBeenCalled();
+    expect(cards()[0]?.status).toBe('Processing');
+    expect(useAddStore.getState().confirmQueue).toEqual([]);
   });
 });

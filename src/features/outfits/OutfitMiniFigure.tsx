@@ -1,6 +1,7 @@
-import { Image, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import type { OutfitPiece, OutfitSlot } from '@/api/models';
+import { AppImage } from '@/components/AppImage';
 import { Icon } from '@/components/Icon';
 import { theme } from '@/theme';
 
@@ -21,7 +22,7 @@ const FIGURE_HEIGHT: Partial<Record<OutfitSlot, number>> = {
 
 function Thumb({ piece }: { piece: OutfitPiece }) {
   return piece.imageUrl ? (
-    <Image source={{ uri: piece.imageUrl }} style={styles.image} resizeMode="contain" />
+    <AppImage uri={piece.imageUrl} style={styles.image} contentFit="contain" />
   ) : (
     <Icon name="shirt" size={20} color={theme.colors.control} strokeWidth={1.4} />
   );

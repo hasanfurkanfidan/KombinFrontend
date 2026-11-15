@@ -21,6 +21,7 @@ import { pickPhoto, takePhoto } from '@/features/wardrobe/picker';
 import { tr } from '@/i18n/tr';
 import { useSession } from '@/session/useSession';
 import { theme } from '@/theme';
+import { discardTempFile } from '@/utils/tempFiles';
 
 import { useLensSearch, type LensSource } from './hooks';
 import { lensErrorKind, regionTitle, similarityBucket } from './labels';
@@ -55,6 +56,22 @@ export function LensScreen({ entry }: LensScreenProps) {
   const [added, setAdded] = useState<ReadonlySet<number>>(new Set());
   const [adding, setAdding] = useState(false);
 
+  // Every photo this screen put in the cache (the pick and its re-encoded copy) is deleted when it is done with them.
+  const tempUris = useRef(new Set<string>());
+  useEffect(() => {
+    const uris = tempUris.current;
+    return () => {
+      uris.forEach((uri) => void discardTempFile(uri));
+      uris.clear();
+    };
+  }, []);
+  const sentUri = search.data?.photo.uri;
+  useEffect(() => {
+    if (sentUri) {
+      tempUris.current.add(sentUri);
+    }
+  }, [sentUri]);
+
   const opened = useRef(false);
   useEffect(() => {
     if (!opened.current) {
@@ -82,6 +99,7 @@ export function LensScreen({ entry }: LensScreenProps) {
       photo = await pickPhoto();
     }
     if (photo) {
+      tempUris.current.add(photo.uri);
       setPicked({ photo, source });
       run(photo, source, false);
     }
@@ -90,6 +108,8 @@ export function LensScreen({ entry }: LensScreenProps) {
   const startOver = () => {
     search.reset();
     setPicked(null);
+    tempUris.current.forEach((uri) => void discardTempFile(uri));
+    tempUris.current.clear();
   };
 
   const close = () => (router.canGoBack() ? router.back() : router.replace('/'));

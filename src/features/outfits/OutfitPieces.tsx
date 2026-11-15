@@ -1,6 +1,7 @@
-import { Image, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 
 import type { OutfitPiece } from '@/api/models';
+import { AppImage } from '@/components/AppImage';
 import { Icon } from '@/components/Icon';
 import { tr } from '@/i18n/tr';
 import { theme } from '@/theme';
@@ -67,10 +68,10 @@ export function PieceTile({
       testID={`piece-${piece.slot}`}
     >
       {piece.imageUrl ? (
-        <Image
-          source={{ uri: piece.imageUrl }}
+        <AppImage
+          uri={piece.imageUrl}
           style={[styles.image, gap && styles.ghostImage]}
-          resizeMode="contain"
+          contentFit="contain"
         />
       ) : (
         <Icon
@@ -134,10 +135,10 @@ function AccessoryTile({ piece, shopping }: PieceProps) {
     <View style={styles.accessory} testID="piece-accessory">
       <View style={[styles.accessoryWell, gap && styles.ghost]}>
         {piece.imageUrl ? (
-          <Image
-            source={{ uri: piece.imageUrl }}
+          <AppImage
+            uri={piece.imageUrl}
             style={[styles.image, gap && styles.ghostImage]}
-            resizeMode="contain"
+            contentFit="contain"
           />
         ) : (
           <Icon name="shirt" size={24} color={theme.colors.control} strokeWidth={1.4} />

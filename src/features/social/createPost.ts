@@ -4,6 +4,8 @@ import { createPostUploadUrl, getPost, processPost } from '@/api/endpoints/socia
 import type { Post } from '@/api/models';
 import { prepareImage } from '@/features/wardrobe/addItem';
 import type { PickedPhoto } from '@/features/wardrobe/addStore';
+import { userScopeEpoch } from '@/session/userScope';
+import { discardTempFile } from '@/utils/tempFiles';
 
 /** The check (strip, moderate, detect) takes a few seconds on the backend; two minutes is far past a normal run. */
 export const POLL_INTERVAL_MS = 2000;
@@ -26,13 +28,19 @@ const sleep = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve,
  */
 export async function uploadPostPhoto(photo: PickedPhoto): Promise<string> {
   const prepared = await prepareImage(photo);
-  const upload = await createPostUploadUrl({
-    contentType: prepared.contentType,
-    sizeBytes: prepared.sizeBytes,
-  });
-  await putPhoto(upload, prepared.uri);
-  await processPost(upload.postId);
-  return upload.postId;
+  try {
+    const upload = await createPostUploadUrl({
+      contentType: prepared.contentType,
+      sizeBytes: prepared.sizeBytes,
+    });
+    await putPhoto(upload, prepared.uri);
+    await processPost(upload.postId);
+    // Uploaded: neither the picked photo nor its re-encoded copy stays on the phone.
+    void discardTempFile(photo.uri);
+    return upload.postId;
+  } finally {
+    void discardTempFile(prepared.uri);
+  }
 }
 
 export type WatchOutcome = { kind: 'post'; post: Post } | { kind: 'timeout' } | { kind: 'stopped' };
@@ -46,9 +54,10 @@ export async function watchPost(
   shouldStop: () => boolean = () => false,
 ): Promise<WatchOutcome> {
   const startedAt = Date.now();
+  const epoch = userScopeEpoch();
   for (;;) {
     await sleep(POLL_INTERVAL_MS);
-    if (shouldStop()) {
+    if (shouldStop() || userScopeEpoch() !== epoch) {
       return { kind: 'stopped' };
     }
     try {

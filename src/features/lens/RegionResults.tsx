@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { FlatList, Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { FlatList, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import type { LensRegion, LensResult } from '@/api/models';
+import { AppImage } from '@/components/AppImage';
 import { Button } from '@/components/Button';
 import { Icon } from '@/components/Icon';
 import { tr } from '@/i18n/tr';
@@ -65,10 +66,10 @@ export function RegionResults({
                 testID={`lens-owned-${item.id}`}
               >
                 {item.thumbUrl ? (
-                  <Image
-                    source={{ uri: item.thumbUrl }}
+                  <AppImage
+                    uri={item.thumbUrl}
                     style={StyleSheet.absoluteFill}
-                    resizeMode="cover"
+                    contentFit="cover"
                   />
                 ) : (
                   <Icon name="shirt" size={24} color={theme.colors.control} />
@@ -123,10 +124,10 @@ function ResultCard({ result, onPress }: { result: LensResult; onPress: () => vo
     >
       <View style={styles.cardImage}>
         {image ? (
-          <Image
-            source={{ uri: image }}
+          <AppImage
+            uri={image}
             style={StyleSheet.absoluteFill}
-            resizeMode="cover"
+            contentFit="cover"
             onError={() => setImageFailed(true)}
           />
         ) : (

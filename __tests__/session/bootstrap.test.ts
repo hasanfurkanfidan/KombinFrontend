@@ -1,3 +1,5 @@
+import { waitFor } from '@testing-library/react-native';
+
 import { API, authHeader, problem, reply, tokens } from '../testUtils';
 
 const fetchMock = jest.fn<Promise<Response>, [string, RequestInit]>();
@@ -52,7 +54,7 @@ describe('bootstrapSession', () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
-  it('refreshes, loads /me and ends up signed in', async () => {
+  it('refreshes, ends up signed in, and warms /me without holding the splash for it', async () => {
     const env = load();
     await env.SecureStore.setItemAsync('kombin.refreshToken', 'refresh-stored');
     fetchMock
@@ -61,14 +63,36 @@ describe('bootstrapSession', () => {
 
     await env.bootstrapSession();
 
+    expect(env.useSessionStore.getState().status).toBe('signedIn');
+    await waitFor(() => expect(env.queryClient.getQueryData(['me'])).toEqual(me));
     expect(fetchMock.mock.calls.map((call) => call[0])).toEqual([
       `${API}/api/v1/auth/refresh`,
       `${API}/api/v1/me`,
     ]);
     expect(authHeader(fetchMock.mock.calls[1] as unknown[])).toBe('Bearer access-fresh');
-    expect(env.useSessionStore.getState().status).toBe('signedIn');
-    expect(env.queryClient.getQueryData(['me'])).toEqual(me);
     expect(await env.SecureStore.getItemAsync('kombin.refreshToken')).toBe('refresh-fresh');
+  });
+
+  it('opens signed out after the boot timeout when the refresh hangs, and signs in when it finally answers', async () => {
+    jest.useFakeTimers();
+    try {
+      const env = load();
+      await env.SecureStore.setItemAsync('kombin.refreshToken', 'refresh-stored');
+      let answer!: (response: Response) => void;
+      fetchMock.mockReturnValueOnce(new Promise<Response>((resolve) => (answer = resolve)));
+      fetchMock.mockResolvedValue(reply(200, me));
+
+      const boot = env.bootstrapSession();
+      await jest.advanceTimersByTimeAsync(6000);
+      await boot;
+      expect(env.useSessionStore.getState().status).toBe('signedOut');
+
+      answer(reply(200, tokens('late')));
+      await jest.advanceTimersByTimeAsync(0);
+      expect(env.useSessionStore.getState().status).toBe('signedIn');
+    } finally {
+      jest.useRealTimers();
+    }
   });
 
   it('clears a rejected refresh token quietly: signed out, no redirect to login', async () => {

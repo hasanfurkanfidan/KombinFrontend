@@ -799,7 +799,8 @@ export const tr = {
   postVisibilityFollowers: 'Takipçilerime',
   postVisibilityPublic: 'Herkese açık',
   postVisibilityPrivateHint: 'Yalnızca sen görürsün.',
-  postVisibilityFollowersHint: 'Seni takip eden herkes görebilir; takip isteği yoktur.',
+  postVisibilityFollowersHint:
+    'Seni takip eden herkes görür. Takip etmek onay istemediği için bu gizli bir paylaşım değildir.',
   postVisibilityPublicHint: 'Giriş yapmamış olanlar dahil herkes görür.',
 
   // Social: blocked people

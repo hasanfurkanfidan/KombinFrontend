@@ -1,8 +1,9 @@
 import { useRef, useState } from 'react';
-import { Image, Pressable, StyleSheet, Switch, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Switch, Text, View } from 'react-native';
 import Swipeable, { type SwipeableMethods } from 'react-native-gesture-handler/ReanimatedSwipeable';
 
 import type { Alert, AlertTrigger } from '@/api/models';
+import { AppImage } from '@/components/AppImage';
 import { BottomSheet } from '@/components/BottomSheet';
 import { Button } from '@/components/Button';
 import { Icon } from '@/components/Icon';
@@ -121,10 +122,10 @@ export function AlertRow({ alert, triggers, now, onOpen }: AlertRowProps) {
         >
           <View style={styles.thumb}>
             {showImage ? (
-              <Image
-                source={{ uri: alert.product.primaryImageUrl ?? undefined }}
+              <AppImage
+                uri={alert.product.primaryImageUrl ?? ''}
                 style={styles.thumbImage}
-                resizeMode="cover"
+                contentFit="cover"
                 onError={() => setImageFailed(true)}
               />
             ) : (

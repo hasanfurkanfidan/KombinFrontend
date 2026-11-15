@@ -1,6 +1,7 @@
 import type { useRouter } from 'expo-router';
 
 import { tr } from '@/i18n/tr';
+import { inAppPath } from '@/utils/routeParams';
 
 /**
  * How the persona steps were reached:
@@ -28,7 +29,8 @@ export function leaveOnboarding(router: Router, flow: OnboardingFlow, returnTo?:
   if (flow === 'first') {
     router.replace('/');
   } else {
-    router.dismissTo((returnTo as '/' | undefined) ?? '/');
+    // `returnTo` came in as a route param: only a path inside the app is followed, never a URL.
+    router.dismissTo((inAppPath(returnTo) as '/' | undefined) ?? '/');
   }
 }
 

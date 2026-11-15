@@ -43,6 +43,7 @@ jest.mock('expo-router', () => {
     router,
     useRouter: () => router,
     useLocalSearchParams: jest.fn(() => ({})),
+    Redirect: () => null,
     useSegments: jest.fn(() => []),
     usePathname: jest.fn(() => '/'),
     // Runs the effect once on mount, like a screen that is focused from the start.
@@ -65,6 +66,8 @@ jest.mock('expo-image-manipulator', () => ({
 // Native file access for the photo upload: tests give `getInfoAsync`/`uploadAsync` their own answers.
 jest.mock('expo-file-system/legacy', () => ({
   FileSystemUploadType: { BINARY_CONTENT: 0, MULTIPART: 1 },
+  cacheDirectory: 'file:///cache/',
+  deleteAsync: jest.fn(async () => undefined),
   getInfoAsync: jest.fn(async (uri: string) => ({
     exists: true,
     uri,
@@ -97,6 +100,7 @@ jest.mock('@/analytics', () => ({
   track: jest.fn(),
   flushAnalytics: jest.fn(async () => undefined),
   getAnonymousId: jest.fn(async () => 'anon-test'),
+  rotateAnonymousId: jest.fn(async () => undefined),
 }));
 
 jest.mock('expo-notifications', () => ({

@@ -208,9 +208,9 @@ describe('social sign-in buttons', () => {
   it('says the account is closed for a disabled Google account', async () => {
     jest.mocked(getLegal).mockResolvedValue({
       version: '1',
-      privacyUrl: 'https://kombin.test/legal/privacy',
-      termsUrl: 'https://kombin.test/legal/terms',
-      deleteAccountUrl: 'https://kombin.test/legal/delete-account',
+      privacyUrl: 'http://api.test/legal/privacy',
+      termsUrl: 'http://api.test/legal/terms',
+      deleteAccountUrl: 'http://api.test/legal/delete-account',
     });
     externalSignInMock.mockRejectedValue(
       new ApiError({ status: 403, errorCode: 'Identity.AccountDisabled', correlationId: 'c' }),

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import type {
   OutfitSlot,
@@ -9,6 +9,7 @@ import type {
   PairReason,
   WardrobeItemSummary,
 } from '@/api/models';
+import { AppImage } from '@/components/AppImage';
 import { Icon } from '@/components/Icon';
 import { tr } from '@/i18n/tr';
 import { theme } from '@/theme';
@@ -112,10 +113,10 @@ function CompanionTile({
         testID={`pairing-item-${item.id}`}
       >
         {item.thumbUrl && !imageFailed ? (
-          <Image
-            source={{ uri: item.thumbUrl }}
+          <AppImage
+            uri={item.thumbUrl}
             style={styles.image}
-            resizeMode="contain"
+            contentFit="contain"
             onError={() => setImageFailed(true)}
           />
         ) : (
@@ -147,7 +148,7 @@ export function UnlockCard({
       <View style={styles.unlockBody}>
         <View style={styles.unlockThumb}>
           {unlock.imageUrl ? (
-            <Image source={{ uri: unlock.imageUrl }} style={styles.image} resizeMode="cover" />
+            <AppImage uri={unlock.imageUrl} style={styles.image} contentFit="cover" />
           ) : null}
         </View>
         <View style={styles.unlockText}>

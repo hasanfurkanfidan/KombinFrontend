@@ -92,9 +92,9 @@ describe('RegisterScreen', () => {
   it('says what signing up means under the button, with both pages one tap away', async () => {
     jest.mocked(getLegal).mockResolvedValue({
       version: '1',
-      privacyUrl: 'https://kombin.test/legal/privacy',
-      termsUrl: 'https://kombin.test/legal/terms',
-      deleteAccountUrl: 'https://kombin.test/legal/delete-account',
+      privacyUrl: 'http://api.test/legal/privacy',
+      termsUrl: 'http://api.test/legal/terms',
+      deleteAccountUrl: 'http://api.test/legal/delete-account',
     });
     await renderWithQuery(<RegisterScreen />);
 
@@ -104,13 +104,11 @@ describe('RegisterScreen', () => {
 
     await fireEvent.press(screen.getByTestId('register-terms'));
     await waitFor(() =>
-      expect(WebBrowser.openBrowserAsync).toHaveBeenCalledWith('https://kombin.test/legal/terms'),
+      expect(WebBrowser.openBrowserAsync).toHaveBeenCalledWith('http://api.test/legal/terms'),
     );
     await fireEvent.press(screen.getByTestId('register-privacy'));
     await waitFor(() =>
-      expect(WebBrowser.openBrowserAsync).toHaveBeenCalledWith(
-        'https://kombin.test/legal/privacy',
-      ),
+      expect(WebBrowser.openBrowserAsync).toHaveBeenCalledWith('http://api.test/legal/privacy'),
     );
   });
 

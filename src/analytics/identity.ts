@@ -29,6 +29,24 @@ export function getAnonymousId(): Promise<string> {
   return anonymousId;
 }
 
+/**
+ * Starts a new anonymous id (sign-out, account deletion): events sent after it can no longer be linked to the account
+ * that left, and the next person who signs in on this phone does not inherit that history. Never rejects.
+ */
+export async function rotateAnonymousId(): Promise<void> {
+  // Whoever asks while the old one is being deleted waits for the new one instead of reading the old one back.
+  const next = (async () => {
+    try {
+      await SecureStore.deleteItemAsync(ANONYMOUS_ID_KEY);
+    } catch {
+      // The keystore is unavailable: loading below still makes a new id for this launch.
+    }
+    return loadAnonymousId();
+  })();
+  anonymousId = next;
+  await next;
+}
+
 let sessionId: string | null = null;
 
 /** One id per cold start, shared by every event of the launch. */

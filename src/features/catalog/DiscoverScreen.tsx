@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useQueryClient } from '@tanstack/react-query';
 
 import { track } from '@/analytics';
+import { refetchFromFirstPage } from '@/api/infinite';
 import { Button } from '@/components/Button';
 import { EmptyState } from '@/components/EmptyState';
 import { ErrorState } from '@/components/ErrorState';
@@ -27,7 +29,7 @@ import {
   type ProductFilters,
 } from './filters';
 import { buildGreeting } from './greeting';
-import { useProducts } from './hooks';
+import { productsKey, useProducts } from './hooks';
 import { ProductGrid, ProductGridSkeleton } from './ProductGrid';
 import { productHref } from './productLink';
 
@@ -77,6 +79,7 @@ function ProductsSection() {
   const personaId = useActivePersona()?.id;
   const personasReady = !isSignedIn || !personas.isPending;
   const products = useProducts(withPersona(filters, personaId), personasReady);
+  const queryClient = useQueryClient();
   const items = useMemo(
     () => products.data?.pages.flatMap((page) => page.items) ?? [],
     [products.data],
@@ -154,7 +157,7 @@ function ProductsSection() {
           }
         }}
         refreshing={products.isRefetching && !products.isFetchingNextPage}
-        onRefresh={() => void products.refetch()}
+        onRefresh={() => void refetchFromFirstPage(queryClient, productsKey(queryFilters))}
       />
     </Screen>
   );

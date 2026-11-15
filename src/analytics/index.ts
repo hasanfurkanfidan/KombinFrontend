@@ -8,7 +8,7 @@ import { getAnonymousId, getSessionId } from './identity';
 import { createEventQueue } from './queue';
 
 export type { EventName, EventProps } from './events';
-export { getAnonymousId } from './identity';
+export { getAnonymousId, rotateAnonymousId } from './identity';
 
 const queue = createEventQueue({
   send: async (events) => {

@@ -1,14 +1,14 @@
 import type { TextStyle } from 'react-native';
 
 /**
- * Archivo, one family. React Native has no variable axes, so each face is a static instance: the four normal-width
+ * Archivo, one family. React Native has no variable axes, so each face is a static instance: three normal-width
  * weights come from `@expo-google-fonts/archivo`, the two narrower bold cuts from `assets/fonts` (see AppProviders).
+ * Normal-width bold (700) is not loaded: no style uses it, and every face is a startup font load and ~120 KB.
  */
 export const fontFamilies = {
   regular: 'Archivo_400Regular',
   medium: 'Archivo_500Medium',
   semibold: 'Archivo_600SemiBold',
-  bold: 'Archivo_700Bold',
   /** SemiCondensed Bold: display and title. */
   display: 'ArchivoSemiCondensed_700Bold',
   /** Condensed Bold: prices and "Sana uygun %N". */

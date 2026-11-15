@@ -1,0 +1,6 @@
+{
+  "measuredOn": "2026-11-15",
+  "androidHbcBytes": 4695272,
+  "limitBytes": 4930036,
+  "note": "Hermes bytecode of `expo export --platform android --source-maps` (debug info goes to the .map). The limit is the measured size + 5 %. Raise it only on purpose, with the reason in the commit: npm run size:check -- --update."
+}

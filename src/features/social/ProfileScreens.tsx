@@ -9,6 +9,7 @@ import { Avatar } from '@/components/Avatar';
 import { Button } from '@/components/Button';
 import { EmptyState } from '@/components/EmptyState';
 import { ErrorState } from '@/components/ErrorState';
+import { IMAGE_LIST_TUNING } from '@/components/listTuning';
 import { Screen } from '@/components/Screen';
 import { Skeleton } from '@/components/Skeleton';
 import { useMe } from '@/features/profile/hooks';
@@ -17,13 +18,25 @@ import { theme } from '@/theme';
 import { toNumber } from '@/utils/money';
 
 import { useCreator, useFollowToggle, useUserPosts, useUserProfile } from './hooks';
-import { PostCard } from './PostCard';
+import { postKey, renderPost } from './PostCard';
 import { usePostViewTracking, type PostViewSource } from './postViews';
 import { SocialHeader } from './SocialHeader';
 
 /** A profile link is the creator's own page (an Instagram, a blog): only web links are opened, and never a seller. */
-export function isWebLink(link: string): boolean {
-  return /^https?:\/\//i.test(link);
+/**
+ * The host a creator's link points at, when it may be opened: `https` only, no credentials. The card shows this host,
+ * not the raw link, so a long address cannot hide where it really goes (`https://instagram.com.evil.example/…`).
+ */
+export function creatorLinkHost(link: string): string | null {
+  try {
+    const parsed = new URL(link);
+    if (parsed.protocol !== 'https:' || parsed.username || parsed.password || !parsed.hostname) {
+      return null;
+    }
+    return parsed.hostname.replace(/^www\./i, '');
+  } catch {
+    return null;
+  }
 }
 
 /** A person's profile: who they are, the counters, follow, and their posts the caller may see. */
@@ -109,9 +122,10 @@ function ProfilePosts({ header, posts, source, emptyTitle }: ProfilePostsProps) 
 
   return (
     <FlatList
+      {...IMAGE_LIST_TUNING}
       data={items}
-      keyExtractor={(post) => post.id}
-      renderItem={({ item }) => <PostCard post={item} />}
+      keyExtractor={postKey}
+      renderItem={renderPost}
       ListHeaderComponent={header}
       ListEmptyComponent={
         posts.isError ? (
@@ -138,6 +152,7 @@ function ProfileCard({ profile, disclosure }: { profile: UserProfile; disclosure
   const me = useMe();
   const isMe = me.data?.id === profile.id;
   const follow = useFollowToggle(profile.id, profile.isFollowing);
+  const linkHost = profile.link ? creatorLinkHost(profile.link) : null;
 
   return (
     <View style={styles.card} testID="profile-card">
@@ -153,16 +168,17 @@ function ProfileCard({ profile, disclosure }: { profile: UserProfile; disclosure
       </View>
 
       {profile.bio ? <Text style={styles.bio}>{profile.bio}</Text> : null}
-      {profile.link && isWebLink(profile.link) ? (
+      {profile.link && linkHost ? (
         <Pressable
           accessibilityRole="link"
+          accessibilityHint={profile.link}
           onPress={() =>
             void WebBrowser.openBrowserAsync(profile.link ?? '').catch(() => undefined)
           }
           testID="profile-link"
         >
           <Text style={styles.link} numberOfLines={1}>
-            {profile.link}
+            {linkHost}
           </Text>
         </Pressable>
       ) : null}

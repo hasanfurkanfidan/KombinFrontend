@@ -9,17 +9,23 @@ const NOW = new Date(2026, 10, 2, 14, 30);
 const at = (day: number, hour: number, minute = 0) =>
   new Date(2026, 10, day, hour, minute).toISOString();
 
+const PE2 = '2e2e2e2e-0000-4000-8000-000000000002';
+
 describe('parseDeepLink', () => {
   it('reads the three shapes the backend sends', () => {
     expect(parseDeepLink('kombin://product/6f1c2a8e-1b2c-4d3e-8f90-123456789abc')).toEqual({
       type: 'product',
       id: '6f1c2a8e-1b2c-4d3e-8f90-123456789abc',
     });
-    expect(parseDeepLink('kombin://matches/pe-1')).toEqual({ type: 'matches', personaId: 'pe-1' });
+    expect(parseDeepLink(`kombin://matches/${PE2}`)).toEqual({ type: 'matches', personaId: PE2 });
     expect(parseDeepLink('kombin://notifications')).toEqual({ type: 'notifications' });
   });
 
   it('ignores anything else', () => {
+    // Ids are uuids: a hostile link cannot smuggle another shape into a request or a route.
+    expect(parseDeepLink('kombin://matches/pe-1')).toBeNull();
+    expect(parseDeepLink('kombin://product/p1')).toBeNull();
+    expect(parseDeepLink(`kombin://product/${PE2}?x=1`)).toBeNull();
     expect(parseDeepLink(null)).toBeNull();
     expect(parseDeepLink('')).toBeNull();
     expect(parseDeepLink('https://example.com/product/p1')).toBeNull();

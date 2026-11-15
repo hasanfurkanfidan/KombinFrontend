@@ -8,6 +8,7 @@ import { EmptyState } from '@/components/EmptyState';
 import { ErrorState } from '@/components/ErrorState';
 import { Screen } from '@/components/Screen';
 import { Skeleton } from '@/components/Skeleton';
+import { IMAGE_LIST_TUNING } from '@/components/listTuning';
 import { tr } from '@/i18n/tr';
 import { useSession } from '@/session/useSession';
 import { theme } from '@/theme';
@@ -56,6 +57,8 @@ function SignedOutWardrobe() {
 function SignedInWardrobe() {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const openItem = useCallback((id: string) => router.push(`/wardrobe/${id}`), [router]);
+  const retry = useCallback((id: string) => void retryItem(queryClient, id), [queryClient]);
   const { width } = useWindowDimensions();
   const tileWidth = (width - theme.screenPaddingX * 2 - GAP * (COLUMNS - 1)) / COLUMNS;
   const [filters, setFilters] = useState<ItemFilters>({});
@@ -141,6 +144,7 @@ function SignedInWardrobe() {
   return (
     <>
       <FlatList
+        {...IMAGE_LIST_TUNING}
         data={placeholder || emptyWardrobe || emptyFilter ? [] : cells}
         keyExtractor={(cell) => (cell.kind === 'item' ? cell.item.id : 'add')}
         numColumns={COLUMNS}
@@ -166,12 +170,7 @@ function SignedInWardrobe() {
           cell.kind === 'add' ? (
             <AddTile width={tileWidth} onPress={() => setAddOpen(true)} />
           ) : (
-            <ItemTile
-              item={cell.item}
-              width={tileWidth}
-              onPress={(id) => router.push(`/wardrobe/${id}`)}
-              onRetry={(id) => void retryItem(queryClient, id)}
-            />
+            <ItemTile item={cell.item} width={tileWidth} onPress={openItem} onRetry={retry} />
           )
         }
         ListFooterComponent={

@@ -37,14 +37,20 @@ const todayStock = notification({
   kind: 'BackInStock',
   title: 'L bedeni tekrar stokta',
   body: 'Beklediğin deri loafer, bedeninde yeniden satışta.',
-  data: { productId: 'p2', deepLink: 'kombin://product/p2' },
+  data: {
+    productId: '2a2a2a2a-0000-4000-8000-000000000002',
+    deepLink: 'kombin://product/2a2a2a2a-0000-4000-8000-000000000002',
+  },
   createdAt: now.toISOString(),
 });
 const yesterdayMatches = notification({
   id: 103,
   kind: 'NewMatches',
   title: 'Tam sana göre 3 yeni parça',
-  data: { personaId: 'pe2', deepLink: 'kombin://matches/pe2' },
+  data: {
+    personaId: '2e2e2e2e-0000-4000-8000-000000000002',
+    deepLink: 'kombin://matches/2e2e2e2e-0000-4000-8000-000000000002',
+  },
   createdAt: atNoon(1),
   readAt: atNoon(1),
 });
@@ -152,7 +158,9 @@ describe('NotificationsScreen', () => {
 
     await fireEvent.press(await screen.findByTestId('notification-102'));
 
-    expect(router.push).toHaveBeenCalledWith('/product/p2?source=notification');
+    expect(router.push).toHaveBeenCalledWith(
+      '/product/2a2a2a2a-0000-4000-8000-000000000002?source=notification',
+    );
     await waitFor(() => expect(readMock).toHaveBeenCalledWith(102));
     expect(track).toHaveBeenCalledWith('notification_open', {
       notificationId: 102,
@@ -177,7 +185,9 @@ describe('NotificationsScreen', () => {
 
     await fireEvent.press(await screen.findByTestId('notification-103'));
 
-    await waitFor(() => expect(activatePersona).toHaveBeenCalledWith('pe2'));
+    await waitFor(() =>
+      expect(activatePersona).toHaveBeenCalledWith('2e2e2e2e-0000-4000-8000-000000000002'),
+    );
     await waitFor(() => expect(router.navigate).toHaveBeenCalledWith('/'));
   });
 

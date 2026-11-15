@@ -1,6 +1,7 @@
-import { Image, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 
 import type { LensRegion } from '@/api/models';
+import { AppImage } from '@/components/AppImage';
 import { Shimmer } from '@/components/Shimmer';
 import { tr } from '@/i18n/tr';
 import { theme } from '@/theme';
@@ -54,10 +55,10 @@ export function LensPhotoView({
   return (
     <View style={styles.frame}>
       <View style={{ width: displayWidth, height: displayHeight }}>
-        <Image
-          source={{ uri }}
+        <AppImage
+          uri={uri}
           style={StyleSheet.absoluteFill}
-          resizeMode="cover"
+          contentFit="cover"
           testID="lens-photo"
         />
         {drawn.map(({ region, position }) => {

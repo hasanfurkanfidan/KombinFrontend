@@ -1,13 +1,23 @@
-import { useLocalSearchParams } from 'expo-router';
+import { Redirect, useLocalSearchParams } from 'expo-router';
 
 import { parseFlow } from '@/features/onboarding/flow';
 import { SwipeScreen } from '@/features/onboarding/SwipeScreen';
+import { inAppPath, uuidParam } from '@/utils/routeParams';
 
 export default function SwipeRoute() {
-  const { personaId, flow, returnTo } = useLocalSearchParams<{
+  const params = useLocalSearchParams<{
     personaId: string;
     flow?: string;
     returnTo?: string;
   }>();
-  return <SwipeScreen personaId={personaId} flow={parseFlow(flow)} returnTo={returnTo} />;
+  const personaId = uuidParam(params.personaId);
+  return personaId ? (
+    <SwipeScreen
+      personaId={personaId}
+      flow={parseFlow(params.flow)}
+      returnTo={inAppPath(params.returnTo)}
+    />
+  ) : (
+    <Redirect href="/" />
+  );
 }

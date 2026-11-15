@@ -6,6 +6,7 @@ import { EmptyState } from '@/components/EmptyState';
 import { ErrorState } from '@/components/ErrorState';
 import { Screen } from '@/components/Screen';
 import { Skeleton } from '@/components/Skeleton';
+import { IMAGE_LIST_TUNING } from '@/components/listTuning';
 import { useAlerts, useTriggers } from '@/features/alerts/hooks';
 import { ProductGrid, ProductGridSkeleton } from '@/features/catalog/ProductGrid';
 import { productHref } from '@/features/catalog/productLink';
@@ -104,6 +105,7 @@ function AlertsSection({ segment, onChangeSegment }: SectionProps) {
 
   return (
     <FlatList
+      {...IMAGE_LIST_TUNING}
       data={alertItems ?? []}
       keyExtractor={(alert) => alert.id}
       renderItem={({ item }) => (

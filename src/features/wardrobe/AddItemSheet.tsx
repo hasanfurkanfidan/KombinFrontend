@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useQueryClient } from '@tanstack/react-query';
 
+import { AppImage } from '@/components/AppImage';
 import { BottomSheet } from '@/components/BottomSheet';
 import { Icon, type IconName } from '@/components/Icon';
 import { TextField } from '@/components/TextField';
@@ -153,10 +154,10 @@ function CatalogPickerSheet({ visible, onClose }: AddItemSheetProps) {
         >
           <View style={styles.thumb}>
             {product.primaryImageUrl ? (
-              <Image
-                source={{ uri: product.primaryImageUrl }}
+              <AppImage
+                uri={product.primaryImageUrl}
                 style={styles.thumbImage}
-                resizeMode="cover"
+                contentFit="cover"
               />
             ) : (
               <Icon name="shirt" size={24} color={theme.colors.control} />

@@ -1,13 +1,15 @@
 import { useMemo, type ReactElement } from 'react';
-import { Alert, FlatList, Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Alert, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 
 import type { Post } from '@/api/models';
+import { AppImage } from '@/components/AppImage';
 import { EmptyState } from '@/components/EmptyState';
 import { ErrorState } from '@/components/ErrorState';
 import { Icon } from '@/components/Icon';
 import { Screen } from '@/components/Screen';
 import { Skeleton } from '@/components/Skeleton';
+import { IMAGE_LIST_TUNING } from '@/components/listTuning';
 import { tr } from '@/i18n/tr';
 import { useSession } from '@/session/useSession';
 import { theme } from '@/theme';
@@ -75,6 +77,7 @@ export function MyPostsScreen() {
     <Screen padded={false}>
       <SocialHeader title={tr.myPostsTitle} fallback="/profile" />
       <FlatList
+        {...IMAGE_LIST_TUNING}
         data={placeholder ? [] : posts}
         keyExtractor={(post) => post.id}
         contentContainerStyle={styles.content}
@@ -125,10 +128,10 @@ function MyPostRow({
       <Pressable accessibilityRole="button" onPress={onOpen} style={styles.main}>
         <View style={styles.thumb}>
           {thumb ? (
-            <Image
-              source={{ uri: post.image ? stableImageUrl(`${post.id}:preview`, thumb) : thumb }}
+            <AppImage
+              uri={post.image ? stableImageUrl(`${post.id}:preview`, thumb) : thumb}
               style={styles.thumbImage}
-              resizeMode="cover"
+              contentFit="cover"
             />
           ) : (
             <Icon name="shirt" size={24} color={theme.colors.control} strokeWidth={1.4} />

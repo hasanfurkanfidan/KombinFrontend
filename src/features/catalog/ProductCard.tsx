@@ -1,7 +1,8 @@
-import { useState } from 'react';
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { memo, useState } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 
 import type { ProductListItem } from '@/api/models';
+import { AppImage } from '@/components/AppImage';
 import { Icon } from '@/components/Icon';
 import { PressableScale } from '@/components/PressableScale';
 import { tr } from '@/i18n/tr';
@@ -23,7 +24,15 @@ interface ProductCardProps {
   onPress: (id: string) => void;
 }
 
-export function ProductCard({ product, width, onPress }: ProductCardProps) {
+/**
+ * Memoised: a grid re-renders on every page fetch, refetch and (on the search screen) keystroke; a card re-renders only
+ * when its product, width or `onPress` changes. Callers pass a stable `onPress` (`ProductGrid` does it for them).
+ */
+export const ProductCard = memo(function ProductCard({
+  product,
+  width,
+  onPress,
+}: ProductCardProps) {
   const [imageFailed, setImageFailed] = useState(false);
   const price = toNumber(product.lowestPrice);
   const originalPrice =
@@ -44,10 +53,10 @@ export function ProductCard({ product, width, onPress }: ProductCardProps) {
     >
       <View style={styles.imageBox}>
         {showImage ? (
-          <Image
-            source={{ uri: product.primaryImageUrl ?? undefined }}
+          <AppImage
+            uri={product.primaryImageUrl ?? ''}
             style={styles.image}
-            resizeMode="cover"
+            contentFit="cover"
             onError={() => setImageFailed(true)}
           />
         ) : (
@@ -94,7 +103,7 @@ export function ProductCard({ product, width, onPress }: ProductCardProps) {
       </View>
     </PressableScale>
   );
-}
+});
 
 const styles = StyleSheet.create({
   card: {
