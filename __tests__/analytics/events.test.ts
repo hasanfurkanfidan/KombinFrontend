@@ -43,6 +43,14 @@ const BACKEND_TABLE: Record<string, { required: string[]; optional: string[] }> 
   lens_search: { required: ['regionCount', 'resultCount', 'durationMs', 'source'], optional: [] },
   lens_result_tap: { required: ['productId', 'position', 'similarity'], optional: [] },
   lens_add_to_wardrobe: { required: [], optional: ['family'] },
+  budget_outfit_view: { required: ['budgetBand', 'outfitCount', 'result'], optional: ['occasion'] },
+  budget_outfit_shuffle: { required: ['seed'], optional: [] },
+  trip_plan_create: {
+    required: ['days', 'pieceCount', 'coveragePercent', 'gapCount'],
+    optional: [],
+  },
+  trip_plan_view: { required: ['days', 'source'], optional: [] },
+  trip_gap_click: { required: ['slot'], optional: [] },
 };
 
 describe('event allow-list', () => {

@@ -54,6 +54,12 @@ export const queryKeys = {
     ['outfits', 'how-to-wear', query] as const,
   outfit: (id: string) => ['outfits', 'one', id] as const,
   savedOutfits: ['outfits', 'saved'] as const,
+  /** Budget outfits live outside `outfits`: their shape differs, and `patchOutfit` walks that prefix. */
+  budgetOutfits: (request: unknown) => ['budget-outfits', request] as const,
+
+  trips: ['trips', 'list'] as const,
+  trip: (id: string) => ['trips', 'one', id] as const,
+  tripsAll: ['trips'] as const,
 
   /** Prefix of everything social (feed, posts, profiles, creator pages, blocks). */
   socialAll: ['social'] as const,

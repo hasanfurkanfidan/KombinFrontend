@@ -8,6 +8,8 @@ import { PressableScale } from './PressableScale';
 
 interface ButtonProps {
   label: string;
+  /** Spoken name when the visible label needs its object ("Satın al: Siyah bot, Trendyol, 2.499 ₺"); starts with `label`. */
+  accessibilityLabel?: string;
   onPress: () => void;
   /**
    * `primary` is the screen's one filled green action; `secondary` is outlined (bg + control border, ink text);
@@ -33,6 +35,7 @@ const FOREGROUND = {
 
 export function Button({
   label,
+  accessibilityLabel,
   onPress,
   variant = 'primary',
   loading = false,
@@ -48,6 +51,7 @@ export function Button({
   return (
     <PressableScale
       accessibilityRole="button"
+      accessibilityLabel={accessibilityLabel}
       accessibilityState={{ disabled: inactive, busy: loading }}
       disabled={inactive}
       onPress={onPress}

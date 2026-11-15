@@ -7,6 +7,8 @@ import { Icon } from './Icon';
 
 interface ChipProps {
   label: string;
+  /** Spoken name when the visible label is short ("Cum 20" is read as "Cuma, 20 Kasım"). */
+  accessibilityLabel?: string;
   selected?: boolean;
   onPress?: () => void;
   disabled?: boolean;
@@ -23,6 +25,7 @@ interface ChipProps {
  */
 export function Chip({
   label,
+  accessibilityLabel,
   selected = false,
   onPress,
   disabled = false,
@@ -34,6 +37,7 @@ export function Chip({
   return (
     <Pressable
       accessibilityRole="button"
+      accessibilityLabel={accessibilityLabel}
       accessibilityState={{ selected, disabled }}
       disabled={disabled}
       onPress={onPress}

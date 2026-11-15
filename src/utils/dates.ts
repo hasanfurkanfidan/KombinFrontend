@@ -17,6 +17,11 @@ const MONTHS = [
 
 const WEEKDAYS = ['Pazar', 'Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi'];
 
+/** 0-based month index to its Turkish name ("Kasım" for 10). */
+export function monthName(index: number): string {
+  return MONTHS[index] ?? '';
+}
+
 /** "2026-11-01T10:00:00Z" -> "Kasım 2026". */
 export function formatMonthYear(iso: string): string {
   const date = new Date(iso);
@@ -36,6 +41,16 @@ export function formatShortDate(isoDate: string): string {
   const [, month, day] = isoDate.split('-');
   const name = MONTHS[Number(month) - 1];
   return name ? `${Number(day)} ${name.slice(0, 3)}` : isoDate;
+}
+
+/** Sunday first, like `Date.getDay()`. A fixed table: cutting the full names to three letters makes Cuma and Cumartesi both "Cum". */
+const SHORT_WEEKDAYS = ['Paz', 'Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt'];
+
+/** "2026-11-21" -> "Cmt" (chips that have no room for the full name). */
+export function formatShortWeekday(isoDate: string): string {
+  const [year, month, day] = isoDate.split('-').map(Number);
+  const weekday = new Date(Date.UTC(year ?? 1970, (month ?? 1) - 1, day ?? 1)).getUTCDay();
+  return SHORT_WEEKDAYS[weekday] ?? '';
 }
 
 /** "2026-11-02" -> "Pazartesi" (the day is read as a calendar date, not shifted by the time zone). */

@@ -3810,6 +3810,76 @@
         }
       }
     },
+    "/api/v1/me/outfits/budget": {
+      "post": {
+        "tags": [
+          "Recommendation"
+        ],
+        "operationId": "SuggestBudgetOutfits",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BudgetOutfitsRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BudgetOutfitsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/me/outfits/how-to-wear": {
       "get": {
         "tags": [
@@ -4277,6 +4347,398 @@
           },
           "409": {
             "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/me/trips/plan": {
+      "post": {
+        "tags": [
+          "Recommendation"
+        ],
+        "operationId": "PlanTrip",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TripPlanRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TripPlanResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/me/trips": {
+      "post": {
+        "tags": [
+          "Recommendation"
+        ],
+        "operationId": "SaveTrip",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveTripRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TripResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Recommendation"
+        ],
+        "operationId": "ListTrips",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TripListResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/me/trips/{id}": {
+      "get": {
+        "tags": [
+          "Recommendation"
+        ],
+        "operationId": "GetTrip",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TripResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Recommendation"
+        ],
+        "operationId": "DeleteTrip",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/me/trips/{id}/replan": {
+      "post": {
+        "tags": [
+          "Recommendation"
+        ],
+        "operationId": "ReplanTrip",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TripResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/outfits/budget": {
+      "post": {
+        "tags": [
+          "Recommendation"
+        ],
+        "operationId": "SuggestBudgetOutfitsAnonymous",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AnonymousBudgetOutfitsRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BudgetOutfitsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
             "content": {
               "application/problem+json": {
                 "schema": {
@@ -6043,6 +6505,71 @@
           }
         }
       },
+      "AnonymousBudgetOutfitsRequest": {
+        "required": [
+          "budget",
+          "audience",
+          "occasion",
+          "date",
+          "seed",
+          "count"
+        ],
+        "type": "object",
+        "properties": {
+          "budget": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": [
+              "null",
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "audience": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "occasion": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "date": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "seed": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "includeShoes": {
+            "type": [
+              "null",
+              "boolean"
+            ]
+          }
+        },
+        "description": "The acquisition variant: no wardrobe, no sizes, no persona, nothing stored. `Audience` (Women, Men or Unisex) is required; the rest, `IncludeShoes`\nincluded, is as in `POST /me/outfits/budget`."
+      },
       "Audience": {
         "enum": [
           "Women",
@@ -6154,6 +6681,406 @@
             "type": "string"
           }
         }
+      },
+      "BudgetOfferResponse": {
+        "required": [
+          "offerId",
+          "seller",
+          "price",
+          "originalPrice",
+          "goPath"
+        ],
+        "type": "object",
+        "properties": {
+          "offerId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "seller": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/SellerRef"
+              }
+            ]
+          },
+          "price": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "originalPrice": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": [
+              "null",
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "goPath": {
+            "type": "string"
+          }
+        }
+      },
+      "BudgetOutfitResponse": {
+        "required": [
+          "id",
+          "status",
+          "completeness",
+          "score",
+          "rule",
+          "pieces",
+          "totalPrice",
+          "remainingBudget",
+          "ownedCount",
+          "withoutShoes",
+          "savings",
+          "overBudgetBy",
+          "narration"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "status": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/OutfitStatus"
+              }
+            ]
+          },
+          "completeness": {
+            "$ref": "#/components/schemas/OutfitCompleteness"
+          },
+          "score": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "rule": {
+            "type": "string"
+          },
+          "pieces": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BudgetPieceResponse"
+            }
+          },
+          "totalPrice": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "remainingBudget": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "ownedCount": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "withoutShoes": {
+            "type": "boolean"
+          },
+          "savings": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": [
+              "null",
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "overBudgetBy": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": [
+              "null",
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "narration": {
+            "$ref": "#/components/schemas/OutfitNarrationResponse"
+          }
+        },
+        "description": "A budget outfit. `Id` and `Status` exist for a signed-in caller (the outfit is stored: save, worn, feedback and dismiss work on it).\n`Savings` appears only when a seller shows a real crossed-out price; `OverBudgetBy` only on the one over-budget answer."
+      },
+      "BudgetOutfitsRequest": {
+        "required": [
+          "budget",
+          "occasion",
+          "date",
+          "useWardrobe",
+          "seed",
+          "count",
+          "personaId"
+        ],
+        "type": "object",
+        "properties": {
+          "budget": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": [
+              "null",
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "occasion": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "date": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "useWardrobe": {
+            "type": [
+              "null",
+              "boolean"
+            ]
+          },
+          "seed": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "personaId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "includeShoes": {
+            "type": [
+              "null",
+              "boolean"
+            ]
+          }
+        },
+        "description": "`Budget` in TRY (100-100,000). `Occasion`: office, weekend, evening, sport or event. `Date`: today (default), tomorrow or\n`yyyy-MM-dd` up to a week ahead. `UseWardrobe` (default true): owned pieces cost nothing and come first. `Seed` (default 0): the next\nseed shows other outfits. `Count` 1-5 (default 3). `PersonaId` follows the catalog convention.\n`IncludeShoes` (default true): false (\"Ayakkabım var\") builds outfits without shoes."
+      },
+      "BudgetOutfitsResponse": {
+        "required": [
+          "budget",
+          "date",
+          "occasion",
+          "audience",
+          "useWardrobe",
+          "seed",
+          "weather",
+          "overBudget",
+          "withoutShoes",
+          "message",
+          "outfits"
+        ],
+        "type": "object",
+        "properties": {
+          "budget": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "occasion": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/Occasion"
+              }
+            ]
+          },
+          "audience": {
+            "$ref": "#/components/schemas/Audience"
+          },
+          "useWardrobe": {
+            "type": "boolean"
+          },
+          "seed": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "weather": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/OutfitWeatherResponse"
+              }
+            ]
+          },
+          "overBudget": {
+            "type": "boolean"
+          },
+          "withoutShoes": {
+            "type": "boolean"
+          },
+          "message": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "outfits": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BudgetOutfitResponse"
+            }
+          }
+        },
+        "description": "`Outfits` fit `Budget`. `WithoutShoes`: they have no shoes (the request said `includeShoes: false`, or no outfit with shoes fit and\n`Message` says so). When nothing fits at all, `OverBudget` is true and the single outfit is the closest one (`Message` says by how\nmuch), or the list is empty and `Message` says so. `Weather` is the forecast used, if any (signed-in callers with a city)."
+      },
+      "BudgetPieceResponse": {
+        "required": [
+          "slot",
+          "role",
+          "source",
+          "wardrobeItemId",
+          "productId",
+          "name",
+          "categorySlug",
+          "color",
+          "imageUrl",
+          "price",
+          "offer",
+          "size",
+          "sizeUnknown"
+        ],
+        "type": "object",
+        "properties": {
+          "slot": {
+            "$ref": "#/components/schemas/OutfitSlot"
+          },
+          "role": {
+            "$ref": "#/components/schemas/OutfitItemRole"
+          },
+          "source": {
+            "$ref": "#/components/schemas/PieceSource"
+          },
+          "wardrobeItemId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "productId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "categorySlug": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "color": {
+            "$ref": "#/components/schemas/ProductColor"
+          },
+          "imageUrl": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "price": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "offer": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/BudgetOfferResponse"
+              }
+            ]
+          },
+          "size": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "sizeUnknown": {
+            "type": [
+              "null",
+              "boolean"
+            ]
+          }
+        },
+        "description": "One piece. A wardrobe piece costs 0 and has `WardrobeItemId`; a catalog piece has `ProductId`, its `Offer` (the cheapest in the caller's\nsize, or the cheapest at all with `SizeUnknown`) and, when the size is known, `Size`."
       },
       "CancelDeletionRequest": {
         "type": "object",
@@ -7812,7 +8739,8 @@
         "enum": [
           "Daily",
           "HowToWear",
-          "Shopping"
+          "Shopping",
+          "Budget"
         ]
       },
       "OutfitNarrationResponse": {
@@ -10731,6 +11659,32 @@
           }
         }
       },
+      "SaveTripRequest": {
+        "required": [
+          "name",
+          "request"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "request": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/TripPlanRequest"
+              }
+            ]
+          }
+        },
+        "description": "`Name` (1-60 characters) and the plan request (`POST /me/trips/plan`'s body)."
+      },
       "SavedIdsResponse": {
         "required": [
           "productIds"
@@ -10842,6 +11796,9 @@
           }
         },
         "description": "The catalog's ProductListItem fields, flattened, plus `isActive` (saved products stay in the list after they\nare delisted) and `savedAt`. A product nobody sells has `offerCount` 0 and `lowestPrice` 0."
+      },
+      "Season": {
+        "type": "string"
       },
       "SellerKind": {
         "enum": [
@@ -11627,6 +12584,636 @@
           }
         },
         "description": "`AlertId` is null once the alert has been deleted."
+      },
+      "TripCoverage": {
+        "required": [
+          "covered",
+          "total",
+          "percent"
+        ],
+        "type": "object",
+        "properties": {
+          "covered": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "total": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "percent": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          }
+        }
+      },
+      "TripDayResponse": {
+        "required": [
+          "date",
+          "occasion",
+          "weather",
+          "outfit"
+        ],
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "occasion": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/Occasion"
+              }
+            ]
+          },
+          "weather": {
+            "$ref": "#/components/schemas/TripWeatherResponse"
+          },
+          "outfit": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/TripOutfitResponse"
+              }
+            ]
+          }
+        }
+      },
+      "TripGapReason": {
+        "enum": [
+          "Missing",
+          "Weather",
+          "Occasion",
+          "NoCombination",
+          "Repetition"
+        ],
+        "description": "Why a day of a trip has no outfit, as far as one slot is concerned."
+      },
+      "TripGapResponse": {
+        "required": [
+          "slot",
+          "reason",
+          "message",
+          "days",
+          "suggestion"
+        ],
+        "type": "object",
+        "properties": {
+          "slot": {
+            "$ref": "#/components/schemas/OutfitSlot"
+          },
+          "reason": {
+            "$ref": "#/components/schemas/TripGapReason"
+          },
+          "message": {
+            "type": "string"
+          },
+          "days": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          "suggestion": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/TripGapSuggestion"
+              }
+            ]
+          }
+        },
+        "description": "`Days` are the trip days the piece would dress. `Suggestion` is one catalog piece for it (a `goPath` with `src=trip`)."
+      },
+      "TripGapSuggestion": {
+        "required": [
+          "productId",
+          "name",
+          "categorySlug",
+          "color",
+          "imageUrl",
+          "offer"
+        ],
+        "type": "object",
+        "properties": {
+          "productId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "categorySlug": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "color": {
+            "$ref": "#/components/schemas/ProductColor"
+          },
+          "imageUrl": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "offer": {
+            "$ref": "#/components/schemas/OutfitOfferResponse"
+          }
+        }
+      },
+      "TripListResponse": {
+        "required": [
+          "items"
+        ],
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TripSummaryResponse"
+            }
+          }
+        }
+      },
+      "TripOccasionRequest": {
+        "required": [
+          "date",
+          "occasion"
+        ],
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date"
+          },
+          "occasion": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        },
+        "description": "A plan for one day of the trip: `Occasion` is office, weekend, evening, sport or event."
+      },
+      "TripOutfitPiece": {
+        "required": [
+          "slot",
+          "wardrobeItemId",
+          "name",
+          "categorySlug",
+          "color",
+          "imageUrl",
+          "missing"
+        ],
+        "type": "object",
+        "properties": {
+          "slot": {
+            "$ref": "#/components/schemas/OutfitSlot"
+          },
+          "wardrobeItemId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "categorySlug": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "color": {
+            "$ref": "#/components/schemas/ProductColor"
+          },
+          "imageUrl": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "missing": {
+            "type": "boolean"
+          }
+        }
+      },
+      "TripOutfitResponse": {
+        "required": [
+          "pieces",
+          "score",
+          "rule",
+          "narration"
+        ],
+        "type": "object",
+        "properties": {
+          "pieces": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TripOutfitPiece"
+            }
+          },
+          "score": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "rule": {
+            "type": "string"
+          },
+          "narration": {
+            "$ref": "#/components/schemas/OutfitNarrationResponse"
+          }
+        }
+      },
+      "TripPackGroup": {
+        "required": [
+          "slot",
+          "items"
+        ],
+        "type": "object",
+        "properties": {
+          "slot": {
+            "$ref": "#/components/schemas/OutfitSlot"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TripPackItem"
+            }
+          }
+        },
+        "description": "The packing list of one slot."
+      },
+      "TripPackItem": {
+        "required": [
+          "wardrobeItemId",
+          "name",
+          "categorySlug",
+          "color",
+          "imageUrl",
+          "days",
+          "missing"
+        ],
+        "type": "object",
+        "properties": {
+          "wardrobeItemId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "categorySlug": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "color": {
+            "$ref": "#/components/schemas/ProductColor"
+          },
+          "imageUrl": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "days": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "missing": {
+            "type": "boolean"
+          }
+        }
+      },
+      "TripPlanRequest": {
+        "required": [
+          "city",
+          "startDate",
+          "endDate",
+          "occasions",
+          "maxPieces",
+          "allowRepeatShoes",
+          "laundry",
+          "personaId"
+        ],
+        "type": "object",
+        "properties": {
+          "city": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "startDate": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date"
+          },
+          "endDate": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date"
+          },
+          "occasions": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/TripOccasionRequest"
+            }
+          },
+          "maxPieces": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "allowRepeatShoes": {
+            "type": [
+              "null",
+              "boolean"
+            ]
+          },
+          "laundry": {
+            "type": [
+              "null",
+              "boolean"
+            ]
+          },
+          "personaId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          }
+        },
+        "description": "\"Valiz hazırlama\": the destination `City`, `StartDate`..`EndDate` (1-14 days, from today up to a year ahead), optional plans per day,\nat most `MaxPieces` packed (3-60), shoes on consecutive days (`AllowRepeatShoes`, default true), laundry on the way (`Laundry`,\ndefault false). `PersonaId` follows the catalog convention."
+      },
+      "TripPlanResponse": {
+        "required": [
+          "city",
+          "startDate",
+          "endDate",
+          "pieceCount",
+          "pieces",
+          "days",
+          "coverage",
+          "gaps",
+          "message"
+        ],
+        "type": "object",
+        "properties": {
+          "city": {
+            "type": "string"
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "endDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "pieceCount": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "pieces": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TripPackGroup"
+            }
+          },
+          "days": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TripDayResponse"
+            }
+          },
+          "coverage": {
+            "$ref": "#/components/schemas/TripCoverage"
+          },
+          "gaps": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TripGapResponse"
+            }
+          },
+          "message": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        },
+        "description": "A packing plan. `Pieces` is the packing list grouped by slot, each piece with the number of days it is worn; `Days` one entry per day\nwith its weather and outfit (null when none could be made); `Coverage` the days with an outfit; `Gaps` what is missing and why.\nA piece removed from the wardrobe since the plan was made is `Missing`."
+      },
+      "TripResponse": {
+        "required": [
+          "id",
+          "name",
+          "request",
+          "plannedAt",
+          "createdAt",
+          "plan"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "request": {
+            "$ref": "#/components/schemas/TripPlanRequest"
+          },
+          "plannedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "plan": {
+            "$ref": "#/components/schemas/TripPlanResponse"
+          }
+        },
+        "description": "A saved trip: its name, what was asked, when it was last planned, and the plan."
+      },
+      "TripSummaryResponse": {
+        "required": [
+          "id",
+          "name",
+          "city",
+          "startDate",
+          "endDate",
+          "pieceCount",
+          "coverage",
+          "plannedAt",
+          "createdAt"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "endDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "pieceCount": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "coverage": {
+            "$ref": "#/components/schemas/TripCoverage"
+          },
+          "plannedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "TripWeatherResponse": {
+        "required": [
+          "source",
+          "tempMinC",
+          "tempMaxC",
+          "temperatureC",
+          "band",
+          "rain",
+          "precipitationProbability",
+          "season"
+        ],
+        "type": "object",
+        "properties": {
+          "source": {
+            "$ref": "#/components/schemas/WeatherSource"
+          },
+          "tempMinC": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "type": [
+              "null",
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "tempMaxC": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "type": [
+              "null",
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "temperatureC": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "band": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/TemperatureBand"
+              }
+            ]
+          },
+          "rain": {
+            "type": "boolean"
+          },
+          "precipitationProbability": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "season": {
+            "$ref": "#/components/schemas/Season"
+          }
+        },
+        "description": "The day's weather and where it came from: `Forecast` (Open-Meteo, within 16 days), `Normal` (the climate normals of that calendar day)\nor `Season` (neither; the temperatures are then null and `Season` decided)."
       },
       "TryGroup": {
         "required": [
@@ -13159,6 +14746,14 @@
           }
         },
         "description": "`WornOn` is the day just recorded, or null after an undo."
+      },
+      "WeatherSource": {
+        "enum": [
+          "Forecast",
+          "Normal",
+          "Season"
+        ],
+        "description": "Where a day's weather came from: the forecast, the climate normals of that calendar day, or nothing (the season decides)."
       },
       "WeeklyMetricItem": {
         "required": [

@@ -1,5 +1,14 @@
 import type {
   Alert,
+  BudgetOutfit,
+  BudgetOutfits,
+  BudgetPiece,
+  Trip,
+  TripDay,
+  TripGap,
+  TripPackItem,
+  TripPlan,
+  TripSummary,
   Consent,
   LensRegion,
   LensResult,
@@ -710,4 +719,246 @@ export function lensRegion(overrides: Partial<LensRegion> = {}): LensRegion {
 
 export function lensSearch(overrides: Partial<LensSearchResult> = {}): LensSearchResult {
   return { regions: [lensRegion()], audience: null, wholePhoto: false, ...overrides };
+}
+
+// Budget outfits
+
+/** A wardrobe piece of a budget outfit: costs nothing. */
+export function budgetPiece(overrides: Partial<BudgetPiece> = {}): BudgetPiece {
+  return {
+    slot: 'Top',
+    role: 'Wardrobe',
+    source: 'Wardrobe',
+    wardrobeItemId: 'w1',
+    productId: null,
+    name: 'Koyu yeşil blazer',
+    categorySlug: 'ust-giyim/blazer',
+    color: 'Green',
+    imageUrl: 'http://img.test/w1-thumb.webp',
+    price: 0,
+    offer: null,
+    size: null,
+    sizeUnknown: null,
+    ...overrides,
+  };
+}
+
+/** A catalog piece to buy, with its cheapest offer in the caller's size. */
+export function boughtPiece(overrides: Partial<BudgetPiece> = {}): BudgetPiece {
+  return budgetPiece({
+    slot: 'Bottom',
+    role: 'Gap',
+    source: 'Catalog',
+    wardrobeItemId: null,
+    productId: 'bp1',
+    name: 'Siyah kumaş pantolon',
+    categorySlug: 'alt-giyim/pantolon',
+    color: 'Black',
+    imageUrl: 'http://img.test/bp1.webp',
+    price: 899,
+    offer: {
+      offerId: 'o-bp1',
+      seller: { name: 'Trendyol', slug: 'trendyol' },
+      price: 899,
+      originalPrice: null,
+      goPath: '/api/v1/go/o-bp1?src=budget',
+    },
+    size: 'M',
+    ...overrides,
+  });
+}
+
+let budgetCounter = 0;
+
+export function budgetOutfit(overrides: Partial<BudgetOutfit> = {}): BudgetOutfit {
+  budgetCounter += 1;
+  return {
+    id: `bo${budgetCounter}`,
+    status: 'Suggested',
+    completeness: 'NeedsOne',
+    score: 78,
+    rule: 'office',
+    pieces: [
+      budgetPiece(),
+      boughtPiece(),
+      budgetPiece({
+        slot: 'Shoes',
+        wardrobeItemId: 'w3',
+        name: 'Kahverengi bot',
+        categorySlug: 'ayakkabi/bot',
+        color: 'Brown',
+      }),
+    ],
+    totalPrice: 899,
+    remainingBudget: 2101,
+    ownedCount: 2,
+    withoutShoes: false,
+    savings: null,
+    overBudgetBy: null,
+    narration: { text: 'Bordo ile koyu yeşil birbirini tamamlar.', provider: 'Template' },
+    ...overrides,
+  };
+}
+
+export function budgetOutfits(overrides: Partial<BudgetOutfits> = {}): BudgetOutfits {
+  return {
+    budget: 3000,
+    date: '2026-11-15',
+    occasion: null,
+    audience: 'Women',
+    useWardrobe: true,
+    seed: 0,
+    weather: null,
+    overBudget: false,
+    withoutShoes: false,
+    message: null,
+    outfits: [budgetOutfit(), budgetOutfit()],
+    ...overrides,
+  };
+}
+
+// Trips
+
+export function packItem(overrides: Partial<TripPackItem> = {}): TripPackItem {
+  return {
+    wardrobeItemId: 'w1',
+    name: 'Koyu yeşil blazer',
+    categorySlug: 'ust-giyim/blazer',
+    color: 'Green',
+    imageUrl: 'http://img.test/w1-thumb.webp',
+    days: 3,
+    missing: false,
+    ...overrides,
+  };
+}
+
+export function tripDay(date: string, overrides: Partial<TripDay> = {}): TripDay {
+  return {
+    date,
+    occasion: null,
+    weather: {
+      source: 'Forecast',
+      tempMinC: 8,
+      tempMaxC: 14,
+      temperatureC: 12,
+      band: 'Cool',
+      rain: true,
+      precipitationProbability: 70,
+      season: 'Autumn',
+    },
+    outfit: {
+      pieces: [
+        {
+          slot: 'Top',
+          wardrobeItemId: 'w1',
+          name: 'Koyu yeşil blazer',
+          categorySlug: 'ust-giyim/blazer',
+          color: 'Green',
+          imageUrl: 'http://img.test/w1-thumb.webp',
+          missing: false,
+        },
+        {
+          slot: 'Bottom',
+          wardrobeItemId: 'w2',
+          name: 'Siyah kumaş pantolon',
+          categorySlug: 'alt-giyim/pantolon',
+          color: 'Black',
+          imageUrl: 'http://img.test/w2-thumb.webp',
+          missing: false,
+        },
+      ],
+      score: 80,
+      rule: 'office',
+      narration: { text: 'Yağmurlu günde koyu tonlar rahat eder.', provider: 'Template' },
+    },
+    ...overrides,
+  };
+}
+
+export function tripGap(overrides: Partial<TripGap> = {}): TripGap {
+  return {
+    slot: 'Shoes',
+    reason: 'Missing',
+    message: 'Dolabında hiç ayakkabı yok.',
+    days: ['2026-11-21'],
+    suggestion: {
+      productId: 'tp1',
+      name: 'Siyah deri bot',
+      categorySlug: 'ayakkabi/bot',
+      color: 'Black',
+      imageUrl: 'http://img.test/tp1.webp',
+      offer: {
+        offerId: 'o-tp1',
+        seller: { name: 'Hepsiburada', slug: 'hepsiburada' },
+        price: 1899,
+        goPath: '/api/v1/go/o-tp1?src=trip',
+      },
+    },
+    ...overrides,
+  };
+}
+
+export function tripPlan(overrides: Partial<TripPlan> = {}): TripPlan {
+  return {
+    city: 'Roma',
+    startDate: '2026-11-20',
+    endDate: '2026-11-22',
+    pieceCount: 2,
+    pieces: [
+      { slot: 'Top', items: [packItem()] },
+      {
+        slot: 'Bottom',
+        items: [
+          packItem({
+            wardrobeItemId: 'w2',
+            name: 'Siyah kumaş pantolon',
+            categorySlug: 'alt-giyim/pantolon',
+            color: 'Black',
+            days: 2,
+          }),
+        ],
+      },
+    ],
+    days: [tripDay('2026-11-20'), tripDay('2026-11-21'), tripDay('2026-11-22', { outfit: null })],
+    coverage: { covered: 2, total: 3, percent: 67 },
+    gaps: [],
+    message: '3 günün 2 günü için dolabından kombin çıktı; eksik parçalar aşağıda.',
+    ...overrides,
+  };
+}
+
+export function trip(overrides: Partial<Trip> = {}): Trip {
+  return {
+    id: 'tr1',
+    name: 'Roma gezisi',
+    request: {
+      city: 'Roma',
+      startDate: '2026-11-20',
+      endDate: '2026-11-22',
+      occasions: null,
+      maxPieces: 20,
+      allowRepeatShoes: true,
+      laundry: false,
+      personaId: null,
+    },
+    plannedAt: '2026-11-15T09:00:00Z',
+    createdAt: '2026-11-15T09:00:00Z',
+    plan: tripPlan(),
+    ...overrides,
+  };
+}
+
+export function tripSummary(overrides: Partial<TripSummary> = {}): TripSummary {
+  return {
+    id: 'tr1',
+    name: 'Roma gezisi',
+    city: 'Roma',
+    startDate: '2026-11-20',
+    endDate: '2026-11-22',
+    pieceCount: 2,
+    coverage: { covered: 2, total: 3, percent: 67 },
+    plannedAt: '2026-11-15T09:00:00Z',
+    createdAt: '2026-11-15T09:00:00Z',
+    ...overrides,
+  };
 }

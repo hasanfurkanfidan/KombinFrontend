@@ -90,6 +90,8 @@ describe('Dolap logged out', () => {
     await renderWithQuery(<WardrobeScreen />);
 
     expect(screen.getByText('Dolabın için giriş yap')).toBeTruthy();
+    // The sign-in prompt is the whole screen: the trip entry waits for an account.
+    expect(screen.queryByTestId('trip-entry')).toBeNull();
     await fireEvent.press(screen.getByText('Giriş yap'));
     expect(router.push).toHaveBeenCalledWith('/login');
     expect(listItemsMock).not.toHaveBeenCalled();
@@ -99,6 +101,15 @@ describe('Dolap logged out', () => {
 describe('Dolap grid', () => {
   beforeEach(async () => {
     await signedInSession();
+  });
+
+  it('opens "Valiz hazırla" from a quiet link, so "Parça ekle" stays the one filled action', async () => {
+    await renderWithQuery(<WardrobeScreen />);
+
+    const entry = await screen.findByTestId('trip-entry');
+    expect(entry).toHaveTextContent('Valiz hazırla');
+    await fireEvent.press(entry);
+    expect(router.push).toHaveBeenLastCalledWith('/trips');
   });
 
   it('shows processing and failed pieces differently, a pairing caption under the rest, and a dashed "+" last', async () => {
