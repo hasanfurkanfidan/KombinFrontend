@@ -11,7 +11,7 @@ import { LensScreen } from '@/features/lens/LensScreen';
 import { addPhotos } from '@/features/wardrobe/addItem';
 
 import { lensRegion, lensResult, lensSearch, listItem, wardrobeSummary } from '../../fixtures';
-import { renderWithQuery, resetSession, signedInSession } from '../../testUtils';
+import { heldOpen, renderWithQuery, resetSession, signedInSession } from '../../testUtils';
 
 jest.mock('@/api/endpoints/lens');
 jest.mock('@/features/wardrobe/addItem', () => ({
@@ -98,7 +98,7 @@ describe('LensScreen', () => {
   });
 
   it('shows the photo under "Parçalar aranıyor…" while the downscaled photo is searched', async () => {
-    searchMock.mockReturnValueOnce(new Promise(() => {}));
+    searchMock.mockReturnValueOnce(heldOpen());
     camera.mockResolvedValueOnce(picked('file://camera.jpg'));
     await renderWithQuery(<LensScreen />);
 

@@ -18,3 +18,11 @@ npm-debug.*
 
 # local agent skills (installed per machine)
 .claude/
+
+# local-only: CI/Jest output, editor folders, scratch files, and native folders (the project never runs `expo prebuild`)
+jest-results.json
+.idea/
+.vscode/
+*.tmp
+/ios/
+/android/

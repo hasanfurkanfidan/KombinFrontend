@@ -1132,6 +1132,7 @@ export interface paths {
             cookie?: never;
         };
         get?: never;
+        /** @description Confirms the post's tags, caption and visibility. Visibility: Private (only the author), Followers or Public (everyone, signed out included). Followers is NOT a privacy boundary: following needs no approval, so any signed-in user can follow the author and then see the post; blocking someone removes their follow. Word the option accordingly in the app. */
         put: operations["PublishPost"];
         post?: never;
         delete?: never;
@@ -2316,7 +2317,8 @@ export interface components {
         PostTagKind: "Wardrobe" | "Product" | "Unknown";
         /**
          * @description A confirmed tag. `InWardrobe` is the viewer's: `exact` (they own that product, or it is their own piece), `similar` (they own a
-         *     ready piece of the same category and colour), null otherwise or when signed out.
+         *     ready piece of the same category and colour), null otherwise or when signed out. `ImageUrl` of a wardrobe tag is null for anyone but
+         *     the piece's owner until the safety filter allowed that photo.
          */
         PostTagResponse: {
             /** Format: uuid */
@@ -2488,7 +2490,10 @@ export interface components {
             /** Format: date-time */
             onboardingCompletedAt: null | string;
         };
-        /** @description `Visibility` is `Private`, `Followers` or `Public`. `Tags` replaces every tag and proposal of the post. */
+        /**
+         * @description `Visibility` is `Private`, `Followers` or `Public`. `Followers` is not private: anyone signed in can follow without
+         *     approval and then sees the post (security review M5). `Tags` replaces every tag and proposal of the post.
+         */
         PublishPostRequest: {
             caption: null | string;
             visibility: null | string;

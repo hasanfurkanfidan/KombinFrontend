@@ -37,18 +37,25 @@ const brandPage = (items: ReturnType<typeof brand>[]) => ({
 /** The last `GET /catalog/products` query. */
 const lastQuery = () => listProductsMock.mock.calls.at(-1)?.[0];
 
-/** Types a term and lets the debounce pass. */
+/** Types a term and lets the debounce pass (on the fake clock: no real 350 ms wait that a busy machine stretches). */
 async function search(term: string) {
   await fireEvent.changeText(screen.getByTestId('search-input'), term);
-  await act(() => new Promise((resolve) => setTimeout(resolve, SEARCH_DEBOUNCE_MS + 50)));
+  await act(async () => {
+    await jest.advanceTimersByTimeAsync(SEARCH_DEBOUNCE_MS + 50);
+  });
 }
 
 beforeEach(async () => {
+  jest.useFakeTimers();
   jest.clearAllMocks();
   await resetSession();
   usePrefsStore.getState().reset();
   listProductsMock.mockResolvedValue(page([listItem()]));
   searchBrandsMock.mockResolvedValue(brandPage([]));
+});
+
+afterEach(() => {
+  jest.useRealTimers();
 });
 
 describe('SearchScreen', () => {

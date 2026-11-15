@@ -6,6 +6,10 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { useSessionStore } from '@/session/sessionStore';
 
+import { trackQueryClient } from './support/leakGuard';
+
+export { heldOpen } from './support/leakGuard';
+
 export const API = 'http://api.test';
 
 /** Minimal `Response` double: enough for the client (ok, status, headers.get, json). */
@@ -69,6 +73,7 @@ export function renderWithQuery(ui: ReactElement) {
       mutations: { gcTime: Infinity },
     },
   });
+  trackQueryClient(client);
   // The app root provides the gesture root view; gesture components in a screen need it in tests too.
   return render(
     <GestureHandlerRootView>

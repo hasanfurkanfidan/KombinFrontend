@@ -1,0 +1,69 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+# A newer push to the same branch or pull request replaces the run in progress.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      # --legacy-peer-deps is how the lockfile was produced (CLAUDE.md, "Stack and hard constraints"). It skips peers,
+      # so jest-expo's own peer is restored below when the install left it out.
+      - name: Install
+        run: npm ci --legacy-peer-deps
+
+      - name: Restore the Jest preset peer
+        run: |
+          if [ ! -d node_modules/@react-native/jest-preset ]; then
+            npm install --no-save --legacy-peer-deps @react-native/jest-preset@0.88.1
+          fi
+
+      # Fail fast: each step stops the job, cheapest checks first.
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: API types match the contract
+        run: npm run api:check
+
+      - name: Test
+        run: npm test -- --ci --json --outputFile=jest-results.json
+
+      - name: Export the Android bundle
+        run: npx expo export --platform android --output-dir "$RUNNER_TEMP/export"
+
+      - name: Bundle size budget
+        run: npm run size:check
+
+      - name: Dependency audit
+        run: npm run audit:ci
+
+      # The Test step's own output is in the job log; the JSON keeps every failure message for download.
+      - name: Upload Jest failure output
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jest-results
+          path: jest-results.json
+          if-no-files-found: ignore
+          retention-days: 14

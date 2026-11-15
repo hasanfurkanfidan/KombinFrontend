@@ -1,6 +1,8 @@
 // Gesture handler's own mocks for its native module and components.
 import 'react-native-gesture-handler/jestSetup';
 
+import { installLeakGuard } from './__tests__/support/leakGuard';
+
 // In-memory stand-in for the OS keystore.
 jest.mock('expo-secure-store', () => {
   const store = new Map<string, string>();
@@ -138,3 +140,5 @@ jest.mock('react-native-gesture-handler/ReanimatedSwipeable', () => {
 });
 
 process.env.EXPO_PUBLIC_API_URL = 'http://api.test';
+
+installLeakGuard();
