@@ -96,7 +96,7 @@ describe('Keşfet with a persona', () => {
     expect(screen.queryByTestId('match-badge-p2')).toBeNull();
     expect(screen.queryByTestId('match-badge-p3')).toBeNull();
     // The discount badge keeps the photo; the match is small text in the card's text block, under the price.
-    expect(screen.getAllByText('−28%').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('%28 indirim').length).toBeGreaterThan(0);
     const badge = screen.getByTestId('match-badge-p1');
     expect(badge.type).toBe('Text');
     expect(badge.props.numberOfLines).toBe(1);

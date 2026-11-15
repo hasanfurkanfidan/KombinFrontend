@@ -156,10 +156,16 @@ function SizeCell({ entry }: { entry: SizeEntry | undefined }) {
     return <Text style={[styles.emptyCell, styles.sizeCol]}>{tr.measurementEmpty}</Text>;
   }
   const inferred = entry.source === 'Inferred';
+  // A guessed size is the value itself with a small muted "tahmini" under it; no question marks.
   return (
-    <Text style={[styles.sizeCell, styles.sizeCol, inferred && styles.sizeInferred]}>
-      {inferred ? `${entry.size}?` : entry.size}
-    </Text>
+    <View style={styles.sizeCol}>
+      <Text style={[styles.sizeCell, inferred && styles.sizeInferred]}>{entry.size}</Text>
+      {inferred ? (
+        <Text style={styles.inferredTag} testID="size-inferred-tag">
+          {tr.sizeInferredTag}
+        </Text>
+      ) : null}
+    </View>
   );
 }
 
@@ -300,6 +306,10 @@ const styles = StyleSheet.create({
     color: theme.colors.ink,
   },
   sizeInferred: {
+    color: theme.colors.muted,
+  },
+  inferredTag: {
+    ...theme.typography.caption,
     color: theme.colors.muted,
   },
   emptyCell: {

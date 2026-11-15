@@ -1,4 +1,4 @@
-import { fireEvent, screen, waitFor } from '@testing-library/react-native';
+import { fireEvent, screen, waitFor, within } from '@testing-library/react-native';
 
 import { track } from '@/analytics';
 import { ApiError } from '@/api/client';
@@ -323,6 +323,20 @@ describe('the visibility picker', () => {
     await fireEvent.press(screen.getByTestId('post-publish'));
     await waitFor(() => expect(publishMock).toHaveBeenCalled());
     expect(publishMock.mock.calls[0]?.[1].visibility).toBe('Private');
+  });
+
+  it('says under each choice who sees the post', async () => {
+    await renderWithQuery(<VisibilityPicker value="Private" onChange={jest.fn()} />);
+
+    expect(
+      within(screen.getByTestId('visibility-Private')).getByText('Yalnızca sen görürsün.'),
+    ).toBeTruthy();
+    expect(
+      within(screen.getByTestId('visibility-Followers')).getByText(
+        'Seni takip eden herkes görebilir; takip isteği yoktur.',
+      ),
+    ).toBeTruthy();
+    expect(within(screen.getByTestId('visibility-Public')).getByText(/herkes görür/)).toBeTruthy();
   });
 
   it('changes only when the author picks another', async () => {

@@ -32,7 +32,7 @@ describe('saved outfits', () => {
     expect(listSavedMock).not.toHaveBeenCalled();
   });
 
-  it('shows a grid of mini collages and opens one', async () => {
+  it('shows a grid of small standing figures and opens one', async () => {
     await signedInSession();
     const first = outfit({
       id: 's1',
@@ -61,9 +61,14 @@ describe('saved outfits', () => {
     expect(within(card).getByText('Pazartesi ofis')).toBeTruthy();
     const other = screen.getByTestId('saved-outfit-s2');
     expect(within(other).getByText('Cumartesi hafta sonu')).toBeTruthy();
-    // A 2×2 collage: at most four cells even when there are five pieces.
-    expect(within(other).getAllByTestId(/^collage-cell-/)).toHaveLength(4);
-    expect(within(card).getAllByTestId(/^collage-cell-/)).toHaveLength(3);
+    // The small standing figure, like the Keşfet card: three stacked thumbnails even with five pieces,
+    // and no 2×2 collage.
+    expect(within(other).getAllByTestId(/^figure-cell-/)).toHaveLength(3);
+    expect(within(card).getAllByTestId(/^figure-cell-/)).toHaveLength(3);
+    expect(within(other).getByTestId('figure-cell-Top')).toBeTruthy();
+    expect(within(other).getByTestId('figure-cell-Bottom')).toBeTruthy();
+    expect(within(other).getByTestId('figure-cell-Shoes')).toBeTruthy();
+    expect(within(other).queryAllByTestId(/^collage-cell-/)).toHaveLength(0);
 
     await fireEvent.press(card);
     expect(router.push).toHaveBeenCalledWith('/outfits/s1');

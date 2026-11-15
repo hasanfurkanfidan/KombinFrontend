@@ -92,6 +92,7 @@ export function SearchScreen() {
     }
   };
 
+  // A recent or a popular term: searched at once, like a keyboard submit.
   const pickRecent = (recent: string) => {
     Keyboard.dismiss();
     submit(recent);
@@ -259,6 +260,20 @@ export function SearchScreen() {
           ) : (
             <Text style={styles.hint}>{tr.searchHint}</Text>
           )}
+          {/* Recents come first; the static popular terms always follow. */}
+          <View style={styles.popular} testID="search-popular">
+            <Text style={styles.sectionLabel}>{tr.searchPopularTitle}</Text>
+            <View style={styles.popularChips}>
+              {tr.searchPopular.map((popular) => (
+                <Chip
+                  key={popular}
+                  label={popular}
+                  onPress={() => pickRecent(popular)}
+                  testID={`search-popular-${popular}`}
+                />
+              ))}
+            </View>
+          </View>
         </ScrollView>
       )}
 
@@ -350,6 +365,15 @@ const styles = StyleSheet.create({
     ...theme.typography.body,
     color: theme.colors.ink,
     flex: 1,
+  },
+  popular: {
+    gap: theme.spacing.sm,
+    paddingTop: theme.spacing.xl,
+  },
+  popularChips: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: theme.spacing.sm,
   },
   link: {
     ...theme.typography.label,

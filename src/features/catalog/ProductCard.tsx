@@ -55,7 +55,7 @@ export function ProductCard({ product, width, onPress }: ProductCardProps) {
         )}
         {discount > 0 ? (
           <View style={styles.discountPill}>
-            <Text style={styles.discountText}>{`−${discount}%`}</Text>
+            <Text style={styles.discountText}>{tr.discountBadge(discount)}</Text>
           </View>
         ) : null}
         {inactive ? (

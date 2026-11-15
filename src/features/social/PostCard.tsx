@@ -4,6 +4,7 @@ import { useRouter } from 'expo-router';
 
 import { track } from '@/analytics';
 import type { Post, PostTag } from '@/api/models';
+import { Avatar } from '@/components/Avatar';
 import { BottomSheet } from '@/components/BottomSheet';
 import { Icon } from '@/components/Icon';
 import { useMe } from '@/features/profile/hooks';
@@ -13,7 +14,7 @@ import { theme } from '@/theme';
 import { toNumber } from '@/utils/money';
 
 import { useBlockUser, useFollowToggle, useLikeToggle, usePostSave, useReportPost } from './hooks';
-import { initialOf, matchText, REPORT_REASONS } from './labels';
+import { matchText, REPORT_REASONS } from './labels';
 import { PostPhoto } from './PostPhoto';
 import { TagSheet } from './TagSheet';
 import { TrySheet } from './TrySheet';
@@ -67,9 +68,7 @@ export function PostCard({ post }: PostCardProps) {
             style={styles.author}
             testID="post-author"
           >
-            <View style={styles.avatar}>
-              <Text style={styles.avatarText}>{initialOf(post.author.displayName)}</Text>
-            </View>
+            <Avatar name={post.author.displayName} testID="post-avatar" />
             <Text style={styles.name} numberOfLines={2}>
               {post.author.displayName}
             </Text>
@@ -295,18 +294,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: theme.spacing.md,
-  },
-  avatar: {
-    width: theme.sizes.postAvatar,
-    height: theme.sizes.postAvatar,
-    borderRadius: theme.sizes.postAvatar / 2,
-    backgroundColor: theme.colors.surface,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  avatarText: {
-    ...theme.typography.label,
-    color: theme.colors.ink,
   },
   authorBlock: {
     gap: 2,

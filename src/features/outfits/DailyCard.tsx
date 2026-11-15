@@ -13,7 +13,7 @@ import { toNumber } from '@/utils/money';
 import { homeCardDay, homeCardState } from './homeCard';
 import { useDailyOutfit } from './hooks';
 import { weatherLabel } from './labels';
-import { OutfitCollage } from './OutfitCollage';
+import { OutfitMiniFigure } from './OutfitMiniFigure';
 
 /** The "Seed" the card and the daily screen share, so the screen opens on the very outfit the card shows. */
 const CARD_SEED = 0;
@@ -97,7 +97,7 @@ export function DailyCard() {
           </View>
         </View>
         {outfit ? (
-          <OutfitCollage pieces={outfit.pieces} layout="figure" testID="tomorrow-collage" />
+          <OutfitMiniFigure pieces={outfit.pieces} testID="tomorrow-figure" />
         ) : null}
       </View>
     </PressableScale>

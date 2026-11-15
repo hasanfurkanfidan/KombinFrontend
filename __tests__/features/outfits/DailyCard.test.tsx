@@ -53,7 +53,7 @@ describe('home card "Bugün için" / "Yarın için"', () => {
     expect(within(screen.getByTestId('tomorrow-weather')).getByText('9° · Yağmurlu')).toBeTruthy();
     // The three wardrobe pieces of the fixture outfit, side by side.
     expect(
-      within(screen.getByTestId('tomorrow-collage')).getAllByTestId(/^collage-cell-/),
+      within(screen.getByTestId('tomorrow-figure')).getAllByTestId(/^figure-cell-/),
     ).toHaveLength(3);
     expect(dailyMock.mock.calls[0]?.[0]).toEqual({
       date: 'tomorrow',
@@ -113,7 +113,7 @@ describe('home card "Bugün için" / "Yarın için"', () => {
     await renderWithQuery(<DailyCard />);
 
     expect(await screen.findByText('Kombin çıkmadı; birkaç parça daha ekle')).toBeTruthy();
-    expect(screen.queryByTestId('tomorrow-collage')).toBeNull();
+    expect(screen.queryByTestId('tomorrow-figure')).toBeNull();
     expect(screen.queryByTestId('tomorrow-weather')).toBeNull();
   });
 });

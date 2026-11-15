@@ -3,6 +3,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 
 import type { Persona } from '@/api/models';
+import { Avatar } from '@/components/Avatar';
 import { Button } from '@/components/Button';
 import { Card } from '@/components/Card';
 import { ErrorState } from '@/components/ErrorState';
@@ -77,11 +78,7 @@ export function ProfileScreen() {
       ) : (
         <>
           <View style={styles.identityRow}>
-            <View style={styles.avatar}>
-              <Text style={styles.avatarText}>
-                {me.data?.displayName.charAt(0).toLocaleUpperCase('tr-TR') ?? ''}
-              </Text>
-            </View>
+            <Avatar name={me.data?.displayName ?? ''} size="lg" testID="profile-avatar" />
             {me.data ? (
               <View style={styles.identity}>
                 <Text style={styles.name}>{me.data.displayName}</Text>
@@ -309,18 +306,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: theme.spacing.lg,
-  },
-  avatar: {
-    width: theme.sizes.avatar,
-    height: theme.sizes.avatar,
-    borderRadius: theme.sizes.avatar / 2,
-    backgroundColor: theme.colors.bg,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  avatarText: {
-    ...theme.typography.heading,
-    color: theme.colors.ink,
   },
   identity: {
     flex: 1,
