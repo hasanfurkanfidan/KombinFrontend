@@ -964,6 +964,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/me/outfits/budget": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["SuggestBudgetOutfits"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/me/outfits/how-to-wear": {
         parameters: {
             query?: never;
@@ -1054,6 +1070,86 @@ export interface paths {
         get?: never;
         put?: never;
         post: operations["RecordOutfitFeedback"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/trips/plan": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["PlanTrip"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/trips": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ListTrips"];
+        put?: never;
+        post: operations["SaveTrip"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/trips/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["GetTrip"];
+        put?: never;
+        post?: never;
+        delete: operations["DeleteTrip"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/trips/{id}/replan": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ReplanTrip"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/outfits/budget": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["SuggestBudgetOutfitsAnonymous"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1456,6 +1552,22 @@ export interface components {
             createdAt: string;
             product: components["schemas"]["ProductSummary"];
         };
+        /**
+         * @description The acquisition variant: no wardrobe, no sizes, no persona, nothing stored. `Audience` (Women, Men or Unisex) is required; the rest, `IncludeShoes`
+         *     included, is as in `POST /me/outfits/budget`.
+         */
+        AnonymousBudgetOutfitsRequest: {
+            /** Format: double */
+            budget: null | number | string;
+            audience: null | string;
+            occasion: null | string;
+            date: null | string;
+            /** Format: int32 */
+            seed: null | number | string;
+            /** Format: int32 */
+            count: null | number | string;
+            includeShoes?: null | boolean;
+        };
         /** @enum {unknown} */
         Audience: "Women" | "Men" | "Unisex" | "Kids";
         /**
@@ -1489,6 +1601,105 @@ export interface components {
             id: string;
             name: string;
             slug: string;
+        };
+        BudgetOfferResponse: {
+            /** Format: uuid */
+            offerId: string;
+            seller: null | components["schemas"]["SellerRef"];
+            /** Format: double */
+            price: number | string;
+            /** Format: double */
+            originalPrice: null | number | string;
+            goPath: string;
+        };
+        /**
+         * @description A budget outfit. `Id` and `Status` exist for a signed-in caller (the outfit is stored: save, worn, feedback and dismiss work on it).
+         *     `Savings` appears only when a seller shows a real crossed-out price; `OverBudgetBy` only on the one over-budget answer.
+         */
+        BudgetOutfitResponse: {
+            /** Format: uuid */
+            id: null | string;
+            status: null | components["schemas"]["OutfitStatus"];
+            completeness: components["schemas"]["OutfitCompleteness"];
+            /** Format: int32 */
+            score: number | string;
+            rule: string;
+            pieces: components["schemas"]["BudgetPieceResponse"][];
+            /** Format: double */
+            totalPrice: number | string;
+            /** Format: double */
+            remainingBudget: number | string;
+            /** Format: int32 */
+            ownedCount: number | string;
+            withoutShoes: boolean;
+            /** Format: double */
+            savings: null | number | string;
+            /** Format: double */
+            overBudgetBy: null | number | string;
+            narration: components["schemas"]["OutfitNarrationResponse"];
+        };
+        /**
+         * @description `Budget` in TRY (100-100,000). `Occasion`: office, weekend, evening, sport or event. `Date`: today (default), tomorrow or
+         *     `yyyy-MM-dd` up to a week ahead. `UseWardrobe` (default true): owned pieces cost nothing and come first. `Seed` (default 0): the next
+         *     seed shows other outfits. `Count` 1-5 (default 3). `PersonaId` follows the catalog convention.
+         *     `IncludeShoes` (default true): false ("Ayakkabım var") builds outfits without shoes.
+         */
+        BudgetOutfitsRequest: {
+            /** Format: double */
+            budget: null | number | string;
+            occasion: null | string;
+            date: null | string;
+            useWardrobe: null | boolean;
+            /** Format: int32 */
+            seed: null | number | string;
+            /** Format: int32 */
+            count: null | number | string;
+            /** Format: uuid */
+            personaId: null | string;
+            includeShoes?: null | boolean;
+        };
+        /**
+         * @description `Outfits` fit `Budget`. `WithoutShoes`: they have no shoes (the request said `includeShoes: false`, or no outfit with shoes fit and
+         *     `Message` says so). When nothing fits at all, `OverBudget` is true and the single outfit is the closest one (`Message` says by how
+         *     much), or the list is empty and `Message` says so. `Weather` is the forecast used, if any (signed-in callers with a city).
+         */
+        BudgetOutfitsResponse: {
+            /** Format: double */
+            budget: number | string;
+            /** Format: date */
+            date: string;
+            occasion: null | components["schemas"]["Occasion"];
+            audience: components["schemas"]["Audience"];
+            useWardrobe: boolean;
+            /** Format: int32 */
+            seed: number | string;
+            weather: null | components["schemas"]["OutfitWeatherResponse"];
+            overBudget: boolean;
+            withoutShoes: boolean;
+            message: null | string;
+            outfits: components["schemas"]["BudgetOutfitResponse"][];
+        };
+        /**
+         * @description One piece. A wardrobe piece costs 0 and has `WardrobeItemId`; a catalog piece has `ProductId`, its `Offer` (the cheapest in the caller's
+         *     size, or the cheapest at all with `SizeUnknown`) and, when the size is known, `Size`.
+         */
+        BudgetPieceResponse: {
+            slot: components["schemas"]["OutfitSlot"];
+            role: components["schemas"]["OutfitItemRole"];
+            source: components["schemas"]["PieceSource"];
+            /** Format: uuid */
+            wardrobeItemId: null | string;
+            /** Format: uuid */
+            productId: null | string;
+            name: string;
+            categorySlug: null | string;
+            color: components["schemas"]["ProductColor"];
+            imageUrl: null | string;
+            /** Format: double */
+            price: number | string;
+            offer: null | components["schemas"]["BudgetOfferResponse"];
+            size: null | string;
+            sizeUnknown: null | boolean;
         };
         /**
          * @description The same credentials as signing in: `Email` and `Password`, or `Provider` and `IdToken` (with `Nonce` when the app
@@ -1938,7 +2149,7 @@ export interface components {
         /** @enum {unknown} */
         OutfitItemRole: "Anchor" | "Wardrobe" | "Gap";
         /** @enum {unknown} */
-        OutfitKind: "Daily" | "HowToWear" | "Shopping";
+        OutfitKind: "Daily" | "HowToWear" | "Shopping" | "Budget";
         OutfitNarrationResponse: {
             text: string;
             provider: components["schemas"]["NarrationProvider"];
@@ -2665,6 +2876,11 @@ export interface components {
             remaining: number | string;
             aborted: boolean;
         };
+        /** @description `Name` (1-60 characters) and the plan request (`POST /me/trips/plan`'s body). */
+        SaveTripRequest: {
+            name: null | string;
+            request: null | components["schemas"]["TripPlanRequest"];
+        };
         SavedIdsResponse: {
             productIds: string[];
         };
@@ -2694,6 +2910,7 @@ export interface components {
             /** Format: date-time */
             savedAt: string;
         };
+        Season: string;
         /** @enum {unknown} */
         SellerKind: "Marketplace" | "BrandStore";
         SellerOfferItem: {
@@ -2892,6 +3109,170 @@ export interface components {
             triggeredAt: string;
             /** Format: date-time */
             consumedAt: null | string;
+        };
+        TripCoverage: {
+            /** Format: int32 */
+            covered: number | string;
+            /** Format: int32 */
+            total: number | string;
+            /** Format: int32 */
+            percent: number | string;
+        };
+        TripDayResponse: {
+            /** Format: date */
+            date: string;
+            occasion: null | components["schemas"]["Occasion"];
+            weather: components["schemas"]["TripWeatherResponse"];
+            outfit: null | components["schemas"]["TripOutfitResponse"];
+        };
+        /**
+         * @description Why a day of a trip has no outfit, as far as one slot is concerned.
+         * @enum {unknown}
+         */
+        TripGapReason: "Missing" | "Weather" | "Occasion" | "NoCombination" | "Repetition";
+        /** @description `Days` are the trip days the piece would dress. `Suggestion` is one catalog piece for it (a `goPath` with `src=trip`). */
+        TripGapResponse: {
+            slot: components["schemas"]["OutfitSlot"];
+            reason: components["schemas"]["TripGapReason"];
+            message: string;
+            days: string[];
+            suggestion: null | components["schemas"]["TripGapSuggestion"];
+        };
+        TripGapSuggestion: {
+            /** Format: uuid */
+            productId: string;
+            name: string;
+            categorySlug: null | string;
+            color: components["schemas"]["ProductColor"];
+            imageUrl: null | string;
+            offer: components["schemas"]["OutfitOfferResponse"];
+        };
+        TripListResponse: {
+            items: components["schemas"]["TripSummaryResponse"][];
+        };
+        /** @description A plan for one day of the trip: `Occasion` is office, weekend, evening, sport or event. */
+        TripOccasionRequest: {
+            /** Format: date */
+            date: null | string;
+            occasion: null | string;
+        };
+        TripOutfitPiece: {
+            slot: components["schemas"]["OutfitSlot"];
+            /** Format: uuid */
+            wardrobeItemId: string;
+            name: string;
+            categorySlug: null | string;
+            color: components["schemas"]["ProductColor"];
+            imageUrl: null | string;
+            missing: boolean;
+        };
+        TripOutfitResponse: {
+            pieces: components["schemas"]["TripOutfitPiece"][];
+            /** Format: int32 */
+            score: number | string;
+            rule: string;
+            narration: components["schemas"]["OutfitNarrationResponse"];
+        };
+        /** @description The packing list of one slot. */
+        TripPackGroup: {
+            slot: components["schemas"]["OutfitSlot"];
+            items: components["schemas"]["TripPackItem"][];
+        };
+        TripPackItem: {
+            /** Format: uuid */
+            wardrobeItemId: string;
+            name: string;
+            categorySlug: null | string;
+            color: components["schemas"]["ProductColor"];
+            imageUrl: null | string;
+            /** Format: int32 */
+            days: number | string;
+            missing: boolean;
+        };
+        /**
+         * @description "Valiz hazırlama": the destination `City`, `StartDate`..`EndDate` (1-14 days, from today up to a year ahead), optional plans per day,
+         *     at most `MaxPieces` packed (3-60), shoes on consecutive days (`AllowRepeatShoes`, default true), laundry on the way (`Laundry`,
+         *     default false). `PersonaId` follows the catalog convention.
+         */
+        TripPlanRequest: {
+            city: null | string;
+            /** Format: date */
+            startDate: null | string;
+            /** Format: date */
+            endDate: null | string;
+            occasions: null | components["schemas"]["TripOccasionRequest"][];
+            /** Format: int32 */
+            maxPieces: null | number | string;
+            allowRepeatShoes: null | boolean;
+            laundry: null | boolean;
+            /** Format: uuid */
+            personaId: null | string;
+        };
+        /**
+         * @description A packing plan. `Pieces` is the packing list grouped by slot, each piece with the number of days it is worn; `Days` one entry per day
+         *     with its weather and outfit (null when none could be made); `Coverage` the days with an outfit; `Gaps` what is missing and why.
+         *     A piece removed from the wardrobe since the plan was made is `Missing`.
+         */
+        TripPlanResponse: {
+            city: string;
+            /** Format: date */
+            startDate: string;
+            /** Format: date */
+            endDate: string;
+            /** Format: int32 */
+            pieceCount: number | string;
+            pieces: components["schemas"]["TripPackGroup"][];
+            days: components["schemas"]["TripDayResponse"][];
+            coverage: components["schemas"]["TripCoverage"];
+            gaps: components["schemas"]["TripGapResponse"][];
+            message: null | string;
+        };
+        /** @description A saved trip: its name, what was asked, when it was last planned, and the plan. */
+        TripResponse: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            request: components["schemas"]["TripPlanRequest"];
+            /** Format: date-time */
+            plannedAt: string;
+            /** Format: date-time */
+            createdAt: string;
+            plan: components["schemas"]["TripPlanResponse"];
+        };
+        TripSummaryResponse: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            city: string;
+            /** Format: date */
+            startDate: string;
+            /** Format: date */
+            endDate: string;
+            /** Format: int32 */
+            pieceCount: number | string;
+            coverage: components["schemas"]["TripCoverage"];
+            /** Format: date-time */
+            plannedAt: string;
+            /** Format: date-time */
+            createdAt: string;
+        };
+        /**
+         * @description The day's weather and where it came from: `Forecast` (Open-Meteo, within 16 days), `Normal` (the climate normals of that calendar day)
+         *     or `Season` (neither; the temperatures are then null and `Season` decided).
+         */
+        TripWeatherResponse: {
+            source: components["schemas"]["WeatherSource"];
+            /** Format: double */
+            tempMinC: null | number | string;
+            /** Format: double */
+            tempMaxC: null | number | string;
+            /** Format: int32 */
+            temperatureC: null | number | string;
+            band: null | components["schemas"]["TemperatureBand"];
+            rain: boolean;
+            /** Format: int32 */
+            precipitationProbability: null | number | string;
+            season: components["schemas"]["Season"];
         };
         /**
          * @description The outfits built around one tagged product. `Owned`: the caller already has it, so the anchor is their own piece. The anchor's offer
@@ -3263,6 +3644,11 @@ export interface components {
             /** Format: date */
             lastWornAt: null | string;
         };
+        /**
+         * @description Where a day's weather came from: the forecast, the climate normals of that calendar day, or nothing (the season decides).
+         * @enum {unknown}
+         */
+        WeatherSource: "Forecast" | "Normal" | "Season";
         WeeklyMetricItem: {
             /** Format: date */
             weekStart: string;
@@ -6192,6 +6578,66 @@ export interface operations {
             };
         };
     };
+    SuggestBudgetOutfits: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BudgetOutfitsRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BudgetOutfitsResponse"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
     GetHowToWear: {
         parameters: {
             query?: {
@@ -6518,6 +6964,342 @@ export interface operations {
             };
             /** @description Conflict */
             409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    PlanTrip: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TripPlanRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TripPlanResponse"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    ListTrips: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TripListResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    SaveTrip: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SaveTripRequest"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TripResponse"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    GetTrip: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TripResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    DeleteTrip: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    ReplanTrip: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TripResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    SuggestBudgetOutfitsAnonymous: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AnonymousBudgetOutfitsRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BudgetOutfitsResponse"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
                 headers: {
                     [name: string]: unknown;
                 };
