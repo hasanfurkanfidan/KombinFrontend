@@ -37,6 +37,17 @@ describe('DiscoverScreen', () => {
     expect(screen.queryByTestId('lens-tile')).toBeNull();
   });
 
+  it('has one clear way into "Bütçene göre kombin", for a visitor too, and no new tab', async () => {
+    listProductsMock.mockResolvedValue(page([listItem()]));
+    await renderWithQuery(<DiscoverScreen />);
+
+    const entry = await screen.findByTestId('budget-entry');
+    expect(entry).toHaveTextContent(/^Bütçene göre kombin/);
+    expect(screen.getAllByText('Bütçene göre kombin')).toHaveLength(1);
+    await fireEvent.press(entry);
+    expect(router.push).toHaveBeenLastCalledWith('/outfits/budget');
+  });
+
   it('renders the product grid with prices, discount and seller count', async () => {
     listProductsMock.mockResolvedValue(
       page([

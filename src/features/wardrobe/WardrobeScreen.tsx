@@ -9,6 +9,7 @@ import { ErrorState } from '@/components/ErrorState';
 import { Screen } from '@/components/Screen';
 import { Skeleton } from '@/components/Skeleton';
 import { IMAGE_LIST_TUNING } from '@/components/listTuning';
+import { TripEntry } from '@/features/trips/TripEntry';
 import { tr } from '@/i18n/tr';
 import { useSession } from '@/session/useSession';
 import { theme } from '@/theme';
@@ -113,6 +114,7 @@ function SignedInWardrobe() {
         onToggleUnmatched={() => setUnmatchedOnly((on) => !on)}
       />
       <GapHint gaps={gaps.data} />
+      <TripEntry />
       <FilterChips filters={filters} onChange={changeFilters} suspended={unmatchedOnly} />
       {uploading && uploading.total > 1 ? (
         <View style={styles.progress} testID="upload-progress">

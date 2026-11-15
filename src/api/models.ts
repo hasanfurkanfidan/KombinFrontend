@@ -164,3 +164,27 @@ export type LensResult = Schemas['LensResultResponse'];
 export type LensBox = Schemas['LensBox'];
 export type LensWardrobeMatch = Schemas['LensWardrobeMatchResponse'];
 export type CategoryFamily = NonNullable<Schemas['CategoryFamily']>;
+
+export type BudgetOutfitsRequest = Schemas['BudgetOutfitsRequest'];
+export type AnonymousBudgetOutfitsRequest = Schemas['AnonymousBudgetOutfitsRequest'];
+export type BudgetOutfits = Schemas['BudgetOutfitsResponse'];
+export type BudgetOutfit = Schemas['BudgetOutfitResponse'];
+export type BudgetPiece = Schemas['BudgetPieceResponse'];
+
+export type TripPlanRequest = Schemas['TripPlanRequest'];
+export type TripOccasionRequest = Schemas['TripOccasionRequest'];
+export type TripPlan = Schemas['TripPlanResponse'];
+export type TripPackGroup = Schemas['TripPackGroup'];
+export type TripPackItem = Schemas['TripPackItem'];
+export type TripDay = Schemas['TripDayResponse'];
+export type TripOutfit = Schemas['TripOutfitResponse'];
+export type TripOutfitPiece = Schemas['TripOutfitPiece'];
+export type TripWeather = Schemas['TripWeatherResponse'];
+export type TripGap = Schemas['TripGapResponse'];
+export type TripGapReason = Schemas['TripGapReason'];
+export type TripGapSuggestion = Schemas['TripGapSuggestion'];
+export type TripCoverage = Schemas['TripCoverage'];
+export type Trip = Schemas['TripResponse'];
+export type TripSummary = Schemas['TripSummaryResponse'];
+export type TripList = Schemas['TripListResponse'];
+export type SaveTripRequest = Schemas['SaveTripRequest'];

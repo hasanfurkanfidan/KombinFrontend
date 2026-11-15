@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 
 import type { OutfitPiece } from '@/api/models';
@@ -27,6 +28,11 @@ interface PieceProps {
   piece: OutfitPiece;
   /** An outfit of catalog ideas for an empty wardrobe: every piece is "from the store", none is missing. */
   shopping: boolean;
+  /**
+   * Replaces the label beside a well (budget outfits say "Dolabında var" or the price and a buy link per piece).
+   * A figure with its own labels draws no ghost: a piece to buy is a normal piece there.
+   */
+  detail?: (piece: OutfitPiece) => ReactNode;
 }
 
 function priceOf(piece: OutfitPiece): string | null {
@@ -41,6 +47,7 @@ function priceOf(piece: OutfitPiece): string | null {
 export function PieceTile({
   piece,
   shopping,
+  detail,
   width,
   height,
   layer,
@@ -50,7 +57,7 @@ export function PieceTile({
   /** In a layered torso: the top sits behind, the outerwear in front. */
   layer?: 'back' | 'front';
 }) {
-  const gap = piece.role === 'Gap' && !shopping;
+  const gap = piece.role === 'Gap' && !shopping && !detail;
   const anchor = piece.role === 'Anchor';
   return (
     <View
@@ -95,7 +102,15 @@ export function PieceTile({
  * ("Ana parça"), a store piece of a shopping outfit (its price) and a missing piece (its seller; the ghost carries
  * "Eksik · price"). Owned pieces say nothing more: the sheet's "Bu kombin dolabından hazır" says it once.
  */
-function Leader({ piece, shopping }: PieceProps) {
+function Leader({ piece, shopping, detail }: PieceProps) {
+  if (detail) {
+    return (
+      <View style={styles.leader}>
+        <View style={styles.leaderLine} />
+        <View style={styles.leaderText}>{detail(piece)}</View>
+      </View>
+    );
+  }
   const gap = piece.role === 'Gap' && !shopping;
   const status = shopping
     ? priceOf(piece)
@@ -128,8 +143,8 @@ function Leader({ piece, shopping }: PieceProps) {
 }
 
 /** A small accessory beside the figure: a thumbnail with its name and whether it is owned or missing. */
-function AccessoryTile({ piece, shopping }: PieceProps) {
-  const gap = piece.role === 'Gap' && !shopping;
+function AccessoryTile({ piece, shopping, detail }: PieceProps) {
+  const gap = piece.role === 'Gap' && !shopping && !detail;
   const price = priceOf(piece);
   return (
     <View style={styles.accessory} testID="piece-accessory">
@@ -145,10 +160,14 @@ function AccessoryTile({ piece, shopping }: PieceProps) {
         )}
       </View>
       <View style={styles.leaderText}>
-        <Text style={styles.name} numberOfLines={2}>
-          {piece.name}
-        </Text>
-        {shopping && price ? (
+        {detail ? (
+          detail(piece)
+        ) : (
+          <Text style={styles.name} numberOfLines={2}>
+            {piece.name}
+          </Text>
+        )}
+        {detail ? null : shopping && price ? (
           <Text style={styles.price}>{price}</Text>
         ) : gap && price ? (
           <Text style={styles.missingInline}>{tr.outfitMissing(price)}</Text>
@@ -166,10 +185,12 @@ function AccessoryTile({ piece, shopping }: PieceProps) {
 export function OutfitPieces({
   pieces,
   shopping = false,
+  detail,
   width,
 }: {
   pieces: readonly OutfitPiece[];
   shopping?: boolean;
+  detail?: (piece: OutfitPiece) => ReactNode;
   /** The area the panel may use; the screen width minus the padding when left out. */
   width?: number;
 }) {
@@ -189,12 +210,26 @@ export function OutfitPieces({
             <View key="torso" style={styles.band}>
               <View style={[styles.figureCell, { width: figure, height: h }]}>
                 {/* The top behind, peeking out on the right; the outerwear in front of it, as it is worn. */}
-                <PieceTile piece={top} shopping={shopping} width={w} height={h} layer="back" />
-                <PieceTile piece={outer} shopping={shopping} width={w} height={h} layer="front" />
+                <PieceTile
+                  piece={top}
+                  shopping={shopping}
+                  detail={detail}
+                  width={w}
+                  height={h}
+                  layer="back"
+                />
+                <PieceTile
+                  piece={outer}
+                  shopping={shopping}
+                  detail={detail}
+                  width={w}
+                  height={h}
+                  layer="front"
+                />
               </View>
               <View style={styles.labels}>
-                <Leader piece={outer} shopping={shopping} />
-                <Leader piece={top} shopping={shopping} />
+                <Leader piece={outer} shopping={shopping} detail={detail} />
+                <Leader piece={top} shopping={shopping} detail={detail} />
               </View>
             </View>
           );
@@ -208,12 +243,13 @@ export function OutfitPieces({
               <PieceTile
                 piece={piece}
                 shopping={shopping}
+                detail={detail}
                 width={Math.round(figure * size.width)}
                 height={h}
               />
             </View>
             <View style={styles.labels}>
-              <Leader piece={piece} shopping={shopping} />
+              <Leader piece={piece} shopping={shopping} detail={detail} />
             </View>
           </View>
         );
@@ -227,6 +263,7 @@ export function OutfitPieces({
                 key={`${piece.slot}-${piece.name}`}
                 piece={piece}
                 shopping={shopping}
+                detail={detail}
               />
             ))}
           </View>

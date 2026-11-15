@@ -17,6 +17,11 @@ const MONTHS = [
 
 const WEEKDAYS = ['Pazar', 'Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi'];
 
+/** 0-based month index to its Turkish name ("Kasım" for 10). */
+export function monthName(index: number): string {
+  return MONTHS[index] ?? '';
+}
+
 /** "2026-11-01T10:00:00Z" -> "Kasım 2026". */
 export function formatMonthYear(iso: string): string {
   const date = new Date(iso);

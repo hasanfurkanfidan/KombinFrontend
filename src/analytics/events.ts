@@ -4,6 +4,7 @@ import type {
   NotificationKind,
   OutfitCompleteness,
   OutfitKind,
+  OutfitSlot,
   PostKind,
   PostTagKind,
   PostVisibility,
@@ -75,6 +76,29 @@ export interface EventProps {
   lens_result_tap: { productId: string; position: number; similarity: 'close' | 'similar' };
   /** "Dolabıma ekle" on a region; `family` is absent for the whole photo. */
   lens_add_to_wardrobe: { family?: CategoryFamily };
+  /**
+   * A budget answer came on screen. The budget is a band, never the amount; `result` says whether outfits fit, fit only
+   * without shoes (the engine fell back), only the closest one over the budget came back, or nothing did.
+   */
+  budget_outfit_view: {
+    budgetBand: 'under500' | '500to1500' | '1500to5000' | 'over5000';
+    outfitCount: number;
+    result: 'fits' | 'withoutShoes' | 'overBudget' | 'none';
+    occasion?: string;
+  };
+  /** "Başka göster": the seed that was asked for (0-1000). */
+  budget_outfit_shuffle: { seed: number };
+  /** A trip was planned: numbers only, never the destination or the dates. */
+  trip_plan_create: {
+    days: number;
+    pieceCount: number;
+    coveragePercent: number;
+    gapCount: number;
+  };
+  /** A plan is on screen: just planned (`plan`) or a saved one opened (`saved`). */
+  trip_plan_view: { days: number; source: 'plan' | 'saved' };
+  /** "Satın al" on a gap's suggestion; the slot of the suggested piece. */
+  trip_gap_click: { slot: OutfitSlot };
 }
 
 export type EventName = keyof EventProps;
@@ -123,6 +147,17 @@ export const EVENT_KEYS: Record<EventName, KeySpec> = {
   },
   lens_result_tap: { required: ['productId', 'position', 'similarity'], optional: [] },
   lens_add_to_wardrobe: { required: [], optional: ['family'] },
+  budget_outfit_view: {
+    required: ['budgetBand', 'outfitCount', 'result'],
+    optional: ['occasion'],
+  },
+  budget_outfit_shuffle: { required: ['seed'], optional: [] },
+  trip_plan_create: {
+    required: ['days', 'pieceCount', 'coveragePercent', 'gapCount'],
+    optional: [],
+  },
+  trip_plan_view: { required: ['days', 'source'], optional: [] },
+  trip_gap_click: { required: ['slot'], optional: [] },
 };
 
 /** Property keys that name personal data; refused on every event. */

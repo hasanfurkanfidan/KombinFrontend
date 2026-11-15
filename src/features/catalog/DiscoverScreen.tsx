@@ -9,6 +9,7 @@ import { Button } from '@/components/Button';
 import { EmptyState } from '@/components/EmptyState';
 import { ErrorState } from '@/components/ErrorState';
 import { Screen } from '@/components/Screen';
+import { BudgetEntry } from '@/features/budget/BudgetEntry';
 import { tr } from '@/i18n/tr';
 import { useActivePersona, usePersonas } from '@/features/personas/hooks';
 import { StyleSwitcher } from '@/features/personas/StyleSwitcher';
@@ -197,6 +198,7 @@ function DiscoverHeader({ filters, onChangeFilters, personaId }: DiscoverHeaderP
 
       <StyleSwitcher />
       <DailyCard />
+      <BudgetEntry />
 
       <Text style={styles.sectionTitle}>{tr.discoverForYou}</Text>
       <View style={styles.filters}>

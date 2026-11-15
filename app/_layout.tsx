@@ -13,6 +13,7 @@ export default function RootLayout() {
         <Stack.Screen name="wardrobe/[id]" />
         <Stack.Screen name="outfits/daily" />
         <Stack.Screen name="outfits/how-to-wear" />
+        <Stack.Screen name="outfits/budget" />
         <Stack.Screen name="outfits/saved" />
         <Stack.Screen name="outfits/[id]" />
         <Stack.Screen name="posts/new" options={{ presentation: 'modal' }} />
@@ -23,6 +24,9 @@ export default function RootLayout() {
         <Stack.Screen name="profile/creator" />
         <Stack.Screen name="profile/blocks" />
         <Stack.Screen name="profile/delete-account" />
+        <Stack.Screen name="trips/index" />
+        <Stack.Screen name="trips/saved" />
+        <Stack.Screen name="trips/[id]" />
         <Stack.Screen name="lens" />
         <Stack.Screen name="search" options={{ animation: 'fade' }} />
         <Stack.Screen name="(auth)" options={{ presentation: 'modal' }} />

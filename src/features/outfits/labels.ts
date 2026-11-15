@@ -40,7 +40,7 @@ const BAND_LABELS: Record<OutfitWeather['band'], string> = {
 };
 
 /** "yağmurlu" when rain is expected, else how warm it is. */
-export function weatherLabel(weather: OutfitWeather): string {
+export function weatherLabel(weather: Pick<OutfitWeather, 'band' | 'rain'>): string {
   return weather.rain ? tr.weatherRain : BAND_LABELS[weather.band];
 }
 
