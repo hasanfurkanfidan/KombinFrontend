@@ -2524,6 +2524,117 @@
         }
       }
     },
+    "/api/v1/me/size-prompts": {
+      "get": {
+        "tags": [
+          "Sizes"
+        ],
+        "operationId": "ListSizePrompts",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SizePromptsResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/me/size-prompts/{id}": {
+      "post": {
+        "tags": [
+          "Sizes"
+        ],
+        "operationId": "AnswerSizePrompt",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AnswerSizePromptRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnswerSizePromptResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/me/devices": {
       "put": {
         "tags": [
@@ -3707,6 +3818,36 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/WardrobeGapsResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/me/wardrobe/summary": {
+      "get": {
+        "tags": [
+          "Wardrobe"
+        ],
+        "operationId": "GetWardrobeSummary",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WardrobeSummaryResponse"
                 }
               }
             }
@@ -6570,6 +6711,48 @@
         },
         "description": "The acquisition variant: no wardrobe, no sizes, no persona, nothing stored. `Audience` (Women, Men or Unisex) is required; the rest, `IncludeShoes`\nincluded, is as in `POST /me/outfits/budget`."
       },
+      "AnswerSizePromptRequest": {
+        "required": [
+          "answer",
+          "size"
+        ],
+        "type": "object",
+        "properties": {
+          "answer": {
+            "type": "string"
+          },
+          "size": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        },
+        "description": "`Size` is required for `BoughtFits`; for \"too small\" and \"too large\" it is the size that was bought, when the user says."
+      },
+      "AnswerSizePromptResponse": {
+        "required": [
+          "answer",
+          "sizeEntry"
+        ],
+        "type": "object",
+        "properties": {
+          "answer": {
+            "$ref": "#/components/schemas/SizePromptAnswer"
+          },
+          "sizeEntry": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/SizeEntryResponse"
+              }
+            ]
+          }
+        },
+        "description": "`SizeEntry` is the user's entry for the brand and group after the answer (null when there is none)."
+      },
       "Audience": {
         "enum": [
           "Women",
@@ -7208,6 +7391,65 @@
           }
         }
       },
+      "CategoryValue": {
+        "required": [
+          "slug",
+          "name",
+          "pieceCount",
+          "unpricedCount",
+          "total",
+          "estimatedTotal",
+          "isEstimate"
+        ],
+        "type": "object",
+        "properties": {
+          "slug": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "name": {
+            "type": "string"
+          },
+          "pieceCount": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "unpricedCount": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "total": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": [
+              "null",
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "estimatedTotal": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "isEstimate": {
+            "type": "boolean"
+          }
+        }
+      },
       "ClickResponse": {
         "required": [
           "id",
@@ -7332,6 +7574,49 @@
           }
         },
         "description": "The current posting consent and, when the caller accepted this version, when."
+      },
+      "CostPerWearItem": {
+        "required": [
+          "item",
+          "price",
+          "priceIsEstimate",
+          "wearCount",
+          "costPerWear"
+        ],
+        "type": "object",
+        "properties": {
+          "item": {
+            "$ref": "#/components/schemas/WardrobeItemSummary"
+          },
+          "price": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "priceIsEstimate": {
+            "type": "boolean"
+          },
+          "wearCount": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "costPerWear": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "double"
+          }
+        },
+        "description": "A most-worn piece with its price. `PriceIsEstimate` is true when the price is the catalog's (the app says \"tahmini\")."
       },
       "CreateAlertRequest": {
         "required": [
@@ -8099,6 +8384,31 @@
         "format": "binary"
       },
       "JsonElement": { },
+      "KnownSize": {
+        "required": [
+          "size",
+          "source",
+          "confidence"
+        ],
+        "type": "object",
+        "properties": {
+          "size": {
+            "type": "string"
+          },
+          "source": {
+            "$ref": "#/components/schemas/SizeSource"
+          },
+          "confidence": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "double"
+          }
+        },
+        "description": "The size map's entry for the product's brand and group, so the app can pre-fill the answer. Absent when the user has none."
+      },
       "LegalResponse": {
         "required": [
           "version",
@@ -10894,7 +11204,8 @@
           "activePersona",
           "personaCount",
           "onboardingCompleted",
-          "onboardingCompletedAt"
+          "onboardingCompletedAt",
+          "sizePromptsEnabled"
         ],
         "type": "object",
         "properties": {
@@ -10997,6 +11308,9 @@
               "string"
             ],
             "format": "date-time"
+          },
+          "sizePromptsEnabled": {
+            "type": "boolean"
           }
         }
       },
@@ -12047,6 +12361,110 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/SizeEntryResponse"
+            }
+          }
+        }
+      },
+      "SizePromptAnswer": {
+        "enum": [
+          "BoughtFits",
+          "BoughtTooSmall",
+          "BoughtTooLarge",
+          "NotBought",
+          "NeverAsk"
+        ],
+        "description": "How the user answered \"Aldın mı? Beden uydu mu?\"."
+      },
+      "SizePromptProduct": {
+        "required": [
+          "id",
+          "name",
+          "imageUrl"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "imageUrl": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "SizePromptResponse": {
+        "required": [
+          "id",
+          "product",
+          "brand",
+          "seller",
+          "group",
+          "knownSize",
+          "availableSizes",
+          "clickedAt",
+          "expiresAt"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "product": {
+            "$ref": "#/components/schemas/SizePromptProduct"
+          },
+          "brand": {
+            "$ref": "#/components/schemas/BrandRef"
+          },
+          "seller": {
+            "$ref": "#/components/schemas/SellerRef"
+          },
+          "group": {
+            "$ref": "#/components/schemas/SizeGroup"
+          },
+          "knownSize": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/KnownSize"
+              }
+            ]
+          },
+          "availableSizes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "clickedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "description": "One open question. `Group` is the size group the answer will be stored under; `AvailableSizes` are the sizes the clicked offer\nlisted (possibly none); `ExpiresAt` is when the question goes away by itself."
+      },
+      "SizePromptsResponse": {
+        "required": [
+          "prompts"
+        ],
+        "type": "object",
+        "properties": {
+          "prompts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SizePromptResponse"
             }
           }
         }
@@ -13319,6 +13737,94 @@
           }
         }
       },
+      "UnwornItem": {
+        "required": [
+          "item",
+          "daysInWardrobe",
+          "reason",
+          "reasonText",
+          "unlock"
+        ],
+        "type": "object",
+        "properties": {
+          "item": {
+            "$ref": "#/components/schemas/WardrobeItemSummary"
+          },
+          "daysInWardrobe": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "reason": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/UnwornReason"
+              }
+            ]
+          },
+          "reasonText": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "unlock": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/PairingUnlock"
+              }
+            ]
+          }
+        },
+        "description": "A piece of \"Giymediklerin\". `Reason` is the likely one (null when none); `Unlock` is the pairings route's catalog suggestion, present for the first few \"eşi yok\" pieces only."
+      },
+      "UnwornReason": {
+        "enum": [
+          "NoPartner",
+          "OutOfSeason",
+          null
+        ]
+      },
+      "UnwornSection": {
+        "required": [
+          "totalCount",
+          "items",
+          "message"
+        ],
+        "type": "object",
+        "properties": {
+          "totalCount": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UnwornItem"
+            }
+          },
+          "message": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        },
+        "description": "`TotalCount` counts every such piece, `Items` are the oldest int WardrobeSummaryRules.UnwornListLimit of them."
+      },
       "UpdateAlertRequest": {
         "required": [
           "targetPrice",
@@ -13655,6 +14161,12 @@
               "string"
             ]
           },
+          "sizePromptsEnabled": {
+            "type": [
+              "null",
+              "boolean"
+            ]
+          },
           "birthYear": {
             "pattern": "^-?(?:0|[1-9]\\d*)$",
             "type": [
@@ -13725,7 +14237,7 @@
             ]
           }
         },
-        "description": "The measurements and the city, the same way as the seller PUT: left out = unchanged, an explicit null = cleared. The `*Set` flags\nrecord which of them the body contained; the JSON reader only calls an init accessor for a property that is present. `Audience` is\nthe exception, a null keeps the current one too (a profile always has an audience). `City` (at most 80 characters; blank clears it)\nis where the outfit engine reads the weather."
+        "description": "The measurements and the city, the same way as the seller PUT: left out = unchanged, an explicit null = cleared. The `*Set` flags\nrecord which of them the body contained; the JSON reader only calls an init accessor for a property that is present. `Audience` is\nthe exception, a null keeps the current one too (a profile always has an audience), and so is `SizePromptsEnabled` (\"beden sorularını kapat\":\nfalse stops the \"did the size fit?\" questions, a flag is never cleared). `City` (at most 80 characters; blank clears it)\nis where the outfit engine reads the weather."
       },
       "UpsertItemError": {
         "required": [
@@ -14146,6 +14658,40 @@
           }
         },
         "description": "A user as others see them. `Handle`, `Bio` and `Link` exist for creators only. `PostCount` counts the posts the caller\nmay see. `IsFollowing`: the caller follows them; `FollowsYou`: they follow the caller."
+      },
+      "ValueCounts": {
+        "required": [
+          "priced",
+          "estimated",
+          "unpriced"
+        ],
+        "type": "object",
+        "properties": {
+          "priced": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "estimated": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "unpriced": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          }
+        }
       },
       "VisionCategory": {
         "required": [
@@ -14708,6 +15254,124 @@
           }
         },
         "description": "Over the wardrobe (not archived, not failed). An item counts as unworn for 180 days when its last wear, or its creation when it was\nnever worn, is more than 180 days ago. `PossibleOutfits` is the outfit engine's count of complete, wearable core outfits (top,\nbottom, shoes) the wardrobe makes, capped at 999 (see `OutfitCounter`); never null since Task 12. `UnmatchedCount` is how many\nwearable pieces pair with nothing else in the wardrobe (`companionCount` 0 on the grid): the pieces a purchase would unlock."
+      },
+      "WardrobeSummaryResponse": {
+        "required": [
+          "pieceCount",
+          "message",
+          "value",
+          "costPerWear",
+          "unworn"
+        ],
+        "type": "object",
+        "properties": {
+          "pieceCount": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "message": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "value": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/WardrobeValue"
+              }
+            ]
+          },
+          "costPerWear": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/CostPerWearItem"
+            }
+          },
+          "unworn": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/UnwornSection"
+              }
+            ]
+          }
+        },
+        "description": "The wardrobe summary. With too few pieces only `PieceCount` and `Message` are there: no totals, no zeros that look like data.\nOtherwise `Value`, `CostPerWear` and `Unworn` are (see WardrobeSummaryRules). Every price that is not the\nuser's own is marked: `Value.IsEstimate`, `CategoryValue.IsEstimate`, `CostPerWearItem.PriceIsEstimate`."
+      },
+      "WardrobeValue": {
+        "required": [
+          "currency",
+          "total",
+          "knownTotal",
+          "estimatedTotal",
+          "isEstimate",
+          "counts",
+          "byCategory",
+          "note"
+        ],
+        "type": "object",
+        "properties": {
+          "currency": {
+            "type": "string"
+          },
+          "total": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": [
+              "null",
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "knownTotal": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "estimatedTotal": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "isEstimate": {
+            "type": "boolean"
+          },
+          "counts": {
+            "$ref": "#/components/schemas/ValueCounts"
+          },
+          "byCategory": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CategoryValue"
+            }
+          },
+          "note": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        },
+        "description": "The wardrobe's value. `Total` is `KnownTotal` (own prices) plus `EstimatedTotal` (catalog prices of linked pieces), null when\nno piece has a price. `IsEstimate` says the total includes estimates: the app labels it \"tahmini\". `Counts` are disjoint and add\nup to the number of pieces."
       },
       "WearResponse": {
         "required": [

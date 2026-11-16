@@ -628,6 +628,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/me/size-prompts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ListSizePrompts"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/size-prompts/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AnswerSizePrompt"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/me/devices": {
         parameters: {
             query?: never;
@@ -940,6 +972,22 @@ export interface paths {
             cookie?: never;
         };
         get: operations["GetWardrobeGaps"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/wardrobe/summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["GetWardrobeSummary"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1568,6 +1616,16 @@ export interface components {
             count: null | number | string;
             includeShoes?: null | boolean;
         };
+        /** @description `Size` is required for `BoughtFits`; for "too small" and "too large" it is the size that was bought, when the user says. */
+        AnswerSizePromptRequest: {
+            answer: string;
+            size: null | string;
+        };
+        /** @description `SizeEntry` is the user's entry for the brand and group after the answer (null when there is none). */
+        AnswerSizePromptResponse: {
+            answer: components["schemas"]["SizePromptAnswer"];
+            sizeEntry: null | components["schemas"]["SizeEntryResponse"];
+        };
         /** @enum {unknown} */
         Audience: "Women" | "Men" | "Unisex" | "Kids";
         /**
@@ -1734,6 +1792,19 @@ export interface components {
             id: string;
             slug: string;
         };
+        CategoryValue: {
+            slug: null | string;
+            name: string;
+            /** Format: int32 */
+            pieceCount: number | string;
+            /** Format: int32 */
+            unpricedCount: number | string;
+            /** Format: double */
+            total: null | number | string;
+            /** Format: double */
+            estimatedTotal: number | string;
+            isEstimate: boolean;
+        };
         ClickResponse: {
             /** Format: int64 */
             id: number | string;
@@ -1768,6 +1839,17 @@ export interface components {
             text: string;
             /** Format: date-time */
             acceptedAt: null | string;
+        };
+        /** @description A most-worn piece with its price. `PriceIsEstimate` is true when the price is the catalog's (the app says "tahmini"). */
+        CostPerWearItem: {
+            item: components["schemas"]["WardrobeItemSummary"];
+            /** Format: double */
+            price: number | string;
+            priceIsEstimate: boolean;
+            /** Format: int32 */
+            wearCount: number | string;
+            /** Format: double */
+            costPerWear: number | string;
         };
         CreateAlertRequest: {
             /** Format: uuid */
@@ -1975,6 +2057,13 @@ export interface components {
         /** Format: binary */
         IFormFile: string;
         JsonElement: unknown;
+        /** @description The size map's entry for the product's brand and group, so the app can pre-fill the answer. Absent when the user has none. */
+        KnownSize: {
+            size: string;
+            source: components["schemas"]["SizeSource"];
+            /** Format: double */
+            confidence: number | string;
+        };
         /** @description What the app needs to link to the legal texts and to know when to ask users to read them again. */
         LegalResponse: {
             version: string;
@@ -2700,6 +2789,7 @@ export interface components {
             onboardingCompleted: boolean;
             /** Format: date-time */
             onboardingCompletedAt: null | string;
+            sizePromptsEnabled: boolean;
         };
         /**
          * @description `Visibility` is `Private`, `Followers` or `Public`. `Followers` is not private: anyone signed in can follow without
@@ -2973,6 +3063,38 @@ export interface components {
         };
         SizeListResponse: {
             items: components["schemas"]["SizeEntryResponse"][];
+        };
+        /**
+         * @description How the user answered "Aldın mı? Beden uydu mu?".
+         * @enum {unknown}
+         */
+        SizePromptAnswer: "BoughtFits" | "BoughtTooSmall" | "BoughtTooLarge" | "NotBought" | "NeverAsk";
+        SizePromptProduct: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            imageUrl: null | string;
+        };
+        /**
+         * @description One open question. `Group` is the size group the answer will be stored under; `AvailableSizes` are the sizes the clicked offer
+         *     listed (possibly none); `ExpiresAt` is when the question goes away by itself.
+         */
+        SizePromptResponse: {
+            /** Format: uuid */
+            id: string;
+            product: components["schemas"]["SizePromptProduct"];
+            brand: components["schemas"]["BrandRef"];
+            seller: components["schemas"]["SellerRef"];
+            group: components["schemas"]["SizeGroup"];
+            knownSize: null | components["schemas"]["KnownSize"];
+            availableSizes: string[];
+            /** Format: date-time */
+            clickedAt: string;
+            /** Format: date-time */
+            expiresAt: string;
+        };
+        SizePromptsResponse: {
+            prompts: components["schemas"]["SizePromptResponse"][];
         };
         /** @enum {unknown} */
         SizeSource: "UserEntered" | "Inferred" | "Confirmed" | null;
@@ -3304,6 +3426,24 @@ export interface components {
             /** Format: int32 */
             count: number | string;
         };
+        /** @description A piece of "Giymediklerin". `Reason` is the likely one (null when none); `Unlock` is the pairings route's catalog suggestion, present for the first few "eşi yok" pieces only. */
+        UnwornItem: {
+            item: components["schemas"]["WardrobeItemSummary"];
+            /** Format: int32 */
+            daysInWardrobe: number | string;
+            reason: null | components["schemas"]["UnwornReason"];
+            reasonText: null | string;
+            unlock: null | components["schemas"]["PairingUnlock"];
+        };
+        /** @enum {unknown} */
+        UnwornReason: "NoPartner" | "OutOfSeason" | null;
+        /** @description `TotalCount` counts every such piece, `Items` are the oldest int WardrobeSummaryRules.UnwornListLimit of them. */
+        UnwornSection: {
+            /** Format: int32 */
+            totalCount: number | string;
+            items: components["schemas"]["UnwornItem"][];
+            message: null | string;
+        };
         /** @description A partial update: a null field is left as it is. `Sizes: []` clears the size filter. */
         UpdateAlertRequest: {
             /** Format: double */
@@ -3374,11 +3514,13 @@ export interface components {
         /**
          * @description The measurements and the city, the same way as the seller PUT: left out = unchanged, an explicit null = cleared. The `*Set` flags
          *     record which of them the body contained; the JSON reader only calls an init accessor for a property that is present. `Audience` is
-         *     the exception, a null keeps the current one too (a profile always has an audience). `City` (at most 80 characters; blank clears it)
+         *     the exception, a null keeps the current one too (a profile always has an audience), and so is `SizePromptsEnabled` ("beden sorularını kapat":
+         *     false stops the "did the size fit?" questions, a flag is never cleared). `City` (at most 80 characters; blank clears it)
          *     is where the outfit engine reads the weather.
          */
         UpdateProfileRequest: {
             audience?: null | string;
+            sizePromptsEnabled?: null | boolean;
             /** Format: int32 */
             birthYear?: null | number | string;
             /** Format: int32 */
@@ -3489,6 +3631,14 @@ export interface components {
             postCount: number | string;
             isFollowing: boolean;
             followsYou: boolean;
+        };
+        ValueCounts: {
+            /** Format: int32 */
+            priced: number | string;
+            /** Format: int32 */
+            estimated: number | string;
+            /** Format: int32 */
+            unpriced: number | string;
         };
         VisionCategory: {
             slug: string;
@@ -3632,6 +3782,37 @@ export interface components {
             possibleOutfits: null | number | string;
             /** Format: int32 */
             unmatchedCount: number | string;
+        };
+        /**
+         * @description The wardrobe summary. With too few pieces only `PieceCount` and `Message` are there: no totals, no zeros that look like data.
+         *     Otherwise `Value`, `CostPerWear` and `Unworn` are (see WardrobeSummaryRules). Every price that is not the
+         *     user's own is marked: `Value.IsEstimate`, `CategoryValue.IsEstimate`, `CostPerWearItem.PriceIsEstimate`.
+         */
+        WardrobeSummaryResponse: {
+            /** Format: int32 */
+            pieceCount: number | string;
+            message: null | string;
+            value: null | components["schemas"]["WardrobeValue"];
+            costPerWear: null | components["schemas"]["CostPerWearItem"][];
+            unworn: null | components["schemas"]["UnwornSection"];
+        };
+        /**
+         * @description The wardrobe's value. `Total` is `KnownTotal` (own prices) plus `EstimatedTotal` (catalog prices of linked pieces), null when
+         *     no piece has a price. `IsEstimate` says the total includes estimates: the app labels it "tahmini". `Counts` are disjoint and add
+         *     up to the number of pieces.
+         */
+        WardrobeValue: {
+            currency: string;
+            /** Format: double */
+            total: null | number | string;
+            /** Format: double */
+            knownTotal: number | string;
+            /** Format: double */
+            estimatedTotal: number | string;
+            isEstimate: boolean;
+            counts: components["schemas"]["ValueCounts"];
+            byCategory: components["schemas"]["CategoryValue"][];
+            note: null | string;
         };
         /** @description `WornOn` is the day just recorded, or null after an undo. */
         WearResponse: {
@@ -5579,6 +5760,97 @@ export interface operations {
             };
         };
     };
+    ListSizePrompts: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SizePromptsResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    AnswerSizePrompt: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AnswerSizePromptRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AnswerSizePromptResponse"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
     RegisterDevice: {
         parameters: {
             query?: never;
@@ -6513,6 +6785,35 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["WardrobeGapsResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    GetWardrobeSummary: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WardrobeSummaryResponse"];
                 };
             };
             /** @description Unauthorized */
