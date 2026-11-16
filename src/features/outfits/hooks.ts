@@ -70,6 +70,7 @@ export function useOutfit(id: string) {
     queryKey: queryKeys.outfit(id),
     queryFn: ({ signal }) => getOutfit(id, signal),
     enabled: isSignedIn,
+    staleTime: OUTFIT_STALE_MS,
   });
 }
 
@@ -141,6 +142,8 @@ export function useWearOutfit() {
     mutationFn: (id: string) => wearOutfit(id),
     onSuccess: (outfit) => {
       patchOutfit(queryClient, outfit);
+      // The home card's settled state shows this outfit by its id; hand it over so it does not ask again.
+      queryClient.setQueryData(queryKeys.outfit(outfit.id), outfit);
       // The wardrobe pieces were worn: their counts and the stats change.
       void queryClient.invalidateQueries({ queryKey: queryKeys.wardrobeAll });
     },

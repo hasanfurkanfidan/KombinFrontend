@@ -1,14 +1,23 @@
 import { act, fireEvent, screen, waitFor, within } from '@testing-library/react-native';
 import { router } from 'expo-router';
+import { AppState } from 'react-native';
 
 import { track } from '@/analytics';
-import { getDailyOutfit, recordOutfitFeedback, wearOutfit } from '@/api/endpoints/outfits';
+import { ApiError } from '@/api/client';
+import {
+  getDailyOutfit,
+  getOutfit,
+  recordOutfitFeedback,
+  wearOutfit,
+} from '@/api/endpoints/outfits';
 import { getWardrobeStats } from '@/api/endpoints/wardrobe';
 import { useToastStore } from '@/components/toastStore';
 import { DailyCard } from '@/features/outfits/DailyCard';
+import { istanbulDay } from '@/features/outfits/homeCard';
 import { addPhotos } from '@/features/wardrobe/addItem';
 import { pickPhotos } from '@/features/wardrobe/picker';
 import { usePrefsStore } from '@/session/prefsStore';
+import { readStoredWornOutfit, writeStoredWornOutfit } from '@/session/wornOutfitStorage';
 
 import { dailyOutfit, needsOneOutfit, outfit, wardrobeStats } from '../../fixtures';
 import { heldOpen, renderWithQuery, resetSession, signedInSession } from '../../testUtils';
@@ -23,12 +32,16 @@ jest.mock('@/features/wardrobe/addItem', () => ({
 
 const dailyMock = jest.mocked(getDailyOutfit);
 const wearMock = jest.mocked(wearOutfit);
+const getOutfitMock = jest.mocked(getOutfit);
 const feedbackMock = jest.mocked(recordOutfitFeedback);
 const statsMock = jest.mocked(getWardrobeStats);
 const pickMock = jest.mocked(pickPhotos);
 const addMock = jest.mocked(addPhotos);
 
 const WORN_AT = '2026-11-02T09:00:00Z';
+
+/** Today in Istanbul: the day an outfit has to be about for wearing it to settle today's card. */
+const today = () => istanbulDay(new Date());
 
 /** The device clock's hour: 9 is the morning (today's card), 20 the evening (tomorrow's). */
 function setHour(hour: number) {
@@ -99,24 +112,7 @@ describe('which day the card is about', () => {
     });
   });
 
-  it('moves on to tomorrow when today was already marked worn', async () => {
-    setHour(9);
-    const today = new Date();
-    const month = String(today.getMonth() + 1).padStart(2, '0');
-    usePrefsStore
-      .getState()
-      .markHomeCardWorn(
-        `${today.getFullYear()}-${month}-${String(today.getDate()).padStart(2, '0')}`,
-      );
-    await signedInSession();
-    await renderWithQuery(<DailyCard />);
-
-    await screen.findByTestId('tomorrow-card');
-    expect(screen.getByText('Yarın için')).toBeTruthy();
-    expect(screen.queryByTestId('home-card-wear')).toBeNull();
-  });
-
-  it('moves on to tomorrow when the backend says today’s plain outfit is worn', async () => {
+  it('stays on today, settled, when the backend says today’s plain outfit is worn', async () => {
     setHour(9);
     dailyMock.mockImplementation(async (query) =>
       query.date === 'today' ? dailyOutfit({ outfit: outfit({ wornAt: WORN_AT }) }) : dailyOutfit(),
@@ -124,8 +120,196 @@ describe('which day the card is about', () => {
     await signedInSession();
     await renderWithQuery(<DailyCard />);
 
+    expect(await screen.findByText('Bugün giyiyorsun')).toBeTruthy();
+    expect(screen.queryByText('Yarın için')).toBeNull();
+    expect(screen.queryByTestId('home-card-wear')).toBeNull();
+  });
+
+  it('stays settled on today when the app comes back to the front later in the day', async () => {
+    setHour(9);
+    await signedInSession();
+    const listeners: ((state: string) => void)[] = [];
+    jest.spyOn(AppState, 'addEventListener').mockImplementation(((
+      _type: string,
+      listener: (state: string) => void,
+    ) => {
+      listeners.push(listener);
+      return { remove: jest.fn() };
+    }) as never);
+    const current = outfit({ id: 'wear-me', date: today() });
+    dailyMock.mockResolvedValue(dailyOutfit({ outfit: current, alternatives: [] }));
+    wearMock.mockResolvedValue({ ...current, wornAt: WORN_AT });
+
+    await renderWithQuery(<DailyCard />);
+    await fireEvent.press(await screen.findByTestId('home-card-wear'));
+    await waitFor(() => expect(usePrefsStore.getState().homeCardWorn).not.toBeNull());
+    dailyMock.mockClear();
+
+    setHour(13);
+    await act(async () => listeners.forEach((listener) => listener('active')));
+
+    expect(screen.getByText('Bugün giyiyorsun')).toBeTruthy();
+    expect(screen.queryByText('Yarın için')).toBeNull();
+    expect(screen.queryByTestId('home-card-wear')).toBeNull();
+    expect(dailyMock).not.toHaveBeenCalledWith(expect.objectContaining({ date: 'tomorrow' }));
+  });
+
+  it('turns to tomorrow at 18:00 even though today’s outfit was worn', async () => {
+    setHour(9);
+    await signedInSession();
+    const listeners: ((state: string) => void)[] = [];
+    jest.spyOn(AppState, 'addEventListener').mockImplementation(((
+      _type: string,
+      listener: (state: string) => void,
+    ) => {
+      listeners.push(listener);
+      return { remove: jest.fn() };
+    }) as never);
+    usePrefsStore.getState().markHomeCardWorn({ day: today(), outfitId: 'worn-1' });
+    getOutfitMock.mockResolvedValue(outfit({ id: 'worn-1', date: today(), wornAt: WORN_AT }));
+
+    await renderWithQuery(<DailyCard />);
+    expect(await screen.findByText('Bugün giyiyorsun')).toBeTruthy();
+
+    setHour(18);
+    await act(async () => listeners.forEach((listener) => listener('active')));
+
     expect(await screen.findByText('Yarın için')).toBeTruthy();
-    expect(screen.queryByText('Bugün için')).toBeNull();
+    expect(screen.queryByText('Bugün giyiyorsun')).toBeNull();
+    expect(dailyMock.mock.calls.at(-1)?.[0]).toMatchObject({ date: 'tomorrow', seed: 0 });
+  });
+});
+
+describe('the worn outfit survives a restart', () => {
+  /** A fresh launch: the store has not read its file yet, whatever the file holds. */
+  function coldStart() {
+    usePrefsStore.setState({ homeCardWorn: null, homeCardWornLoaded: false });
+  }
+
+  it('settles at once on the outfit that was worn (seed 2), loaded by its id, without the wear action', async () => {
+    setHour(9);
+    await signedInSession();
+    await writeStoredWornOutfit({ day: today(), outfitId: 'seed-two' });
+    coldStart();
+    getOutfitMock.mockResolvedValue(
+      outfit({
+        id: 'seed-two',
+        seed: 2,
+        date: today(),
+        wornAt: WORN_AT,
+        pieces: outfit().pieces.slice(0, 2),
+      }),
+    );
+
+    await renderWithQuery(<DailyCard />);
+
+    expect(await screen.findByText('Bugün giyiyorsun')).toBeTruthy();
+    await waitFor(() =>
+      expect(
+        within(screen.getByTestId('tomorrow-figure')).getAllByTestId(/^figure-cell-/),
+      ).toHaveLength(2),
+    );
+    expect(getOutfitMock.mock.calls[0]?.[0]).toBe('seed-two');
+    expect(screen.queryByTestId('home-card-wear')).toBeNull();
+    expect(screen.queryByTestId('home-card-shuffle')).toBeNull();
+    // The plain seed-0 outfit is never asked for.
+    expect(dailyMock).not.toHaveBeenCalled();
+
+    await fireEvent.press(screen.getByTestId('home-card-open'));
+    expect(router.push).toHaveBeenCalledWith({
+      pathname: '/outfits/[id]',
+      params: { id: 'seed-two' },
+    });
+  });
+
+  it('shows the settled frame, not the actions, while the outfit loads', async () => {
+    setHour(9);
+    await signedInSession();
+    await writeStoredWornOutfit({ day: today(), outfitId: 'seed-two' });
+    coldStart();
+    getOutfitMock.mockReturnValue(heldOpen());
+
+    await renderWithQuery(<DailyCard />);
+
+    expect(await screen.findByText('Bugün giyiyorsun')).toBeTruthy();
+    expect(screen.queryByTestId('home-card-wear')).toBeNull();
+    expect(screen.queryByTestId('home-card-shuffle')).toBeNull();
+    expect(screen.queryByTestId('home-card-occasion')).toBeNull();
+  });
+
+  it('keeps the settled frame when the load fails for another reason than "gone"', async () => {
+    setHour(9);
+    await signedInSession();
+    await writeStoredWornOutfit({ day: today(), outfitId: 'seed-two' });
+    coldStart();
+    getOutfitMock.mockRejectedValue(
+      new ApiError({ status: 503, correlationId: '00000000-0000-4000-8000-0000000000aa' }),
+    );
+
+    await renderWithQuery(<DailyCard />);
+
+    await waitFor(() => expect(getOutfitMock).toHaveBeenCalled());
+    expect(await screen.findByText('Bugün giyiyorsun')).toBeTruthy();
+    expect(screen.queryByTestId('home-card-wear')).toBeNull();
+    expect(usePrefsStore.getState().homeCardWorn).not.toBeNull();
+  });
+
+  it('ignores a value from yesterday, and clears it', async () => {
+    setHour(9);
+    await signedInSession();
+    await writeStoredWornOutfit({ day: '2020-01-01', outfitId: 'old' });
+    coldStart();
+
+    await renderWithQuery(<DailyCard />);
+
+    expect(await screen.findByTestId('home-card-wear')).toBeTruthy();
+    expect(screen.getByText('Bugün için')).toBeTruthy();
+    expect(getOutfitMock).not.toHaveBeenCalled();
+    expect(usePrefsStore.getState().homeCardWorn).toBeNull();
+    await waitFor(async () => expect(await readStoredWornOutfit()).toBeNull());
+  });
+
+  it('drops the value and shows the normal card when the stored outfit is gone (404)', async () => {
+    setHour(9);
+    await signedInSession();
+    await writeStoredWornOutfit({ day: today(), outfitId: 'deleted' });
+    coldStart();
+    getOutfitMock.mockRejectedValue(
+      new ApiError({ status: 404, correlationId: '00000000-0000-4000-8000-0000000000bb' }),
+    );
+
+    await renderWithQuery(<DailyCard />);
+
+    expect(await screen.findByTestId('home-card-wear')).toBeTruthy();
+    expect(screen.getByText('Bugün için')).toBeTruthy();
+    expect(usePrefsStore.getState().homeCardWorn).toBeNull();
+    await waitFor(async () => expect(await readStoredWornOutfit()).toBeNull());
+  });
+
+  it('does not use the stored outfit for tomorrow’s card', async () => {
+    await signedInSession();
+    await writeStoredWornOutfit({ day: today(), outfitId: 'seed-two' });
+    coldStart();
+
+    await renderWithQuery(<DailyCard />);
+
+    expect(await screen.findByText('Yarın için')).toBeTruthy();
+    expect(getOutfitMock).not.toHaveBeenCalled();
+  });
+
+  it('remembers the outfit it was worn from, for the next launch', async () => {
+    setHour(9);
+    await signedInSession();
+    const current = outfit({ id: 'wear-me', date: today() });
+    dailyMock.mockResolvedValue(dailyOutfit({ outfit: current, alternatives: [] }));
+    wearMock.mockResolvedValue({ ...current, wornAt: WORN_AT });
+
+    await renderWithQuery(<DailyCard />);
+    await fireEvent.press(await screen.findByTestId('home-card-wear'));
+
+    await waitFor(async () =>
+      expect(await readStoredWornOutfit()).toEqual({ day: today(), outfitId: 'wear-me' }),
+    );
   });
 });
 
@@ -133,7 +317,7 @@ describe('"Bunu giyiyorum": one tap', () => {
   it('marks the outfit worn once and settles the card without leaving Keşfet', async () => {
     setHour(9);
     await signedInSession();
-    const current = outfit({ id: 'wear-me' });
+    const current = outfit({ id: 'wear-me', date: today() });
     dailyMock.mockResolvedValue(dailyOutfit({ outfit: current, alternatives: [] }));
     wearMock.mockResolvedValue({ ...current, wornAt: WORN_AT });
 
@@ -152,13 +336,18 @@ describe('"Bunu giyiyorum": one tap', () => {
     expect(screen.queryByTestId('home-card-occasion')).toBeNull();
     expect(useToastStore.getState().message).toBeNull();
     // It stays settled after the request answers, and is remembered for the rest of the day.
-    await waitFor(() => expect(usePrefsStore.getState().homeCardWornDay).not.toBeNull());
+    await waitFor(() =>
+      expect(usePrefsStore.getState().homeCardWorn).toEqual({ day: today(), outfitId: 'wear-me' }),
+    );
     expect(screen.getByText('Bugün giyiyorsun')).toBeTruthy();
+    // The worn outfit came back with the answer, so the settled card did not ask for it again.
+    expect(screen.getByTestId('tomorrow-figure')).toBeTruthy();
+    expect(getOutfitMock).not.toHaveBeenCalled();
 
     await fireEvent.press(screen.getByTestId('home-card-open'));
     expect(router.push).toHaveBeenCalledWith({
-      pathname: '/outfits/daily',
-      params: { date: 'today', seed: '0' },
+      pathname: '/outfits/[id]',
+      params: { id: 'wear-me' },
     });
   });
 
@@ -171,7 +360,7 @@ describe('"Bunu giyiyorum": one tap', () => {
     await fireEvent.press(await screen.findByTestId('home-card-wear'));
 
     expect(await screen.findByText('Bugün giyiyorsun')).toBeTruthy();
-    expect(usePrefsStore.getState().homeCardWornDay).toBeNull();
+    expect(usePrefsStore.getState().homeCardWorn).toBeNull();
   });
 
   it('puts the actions back and shows the usual error when the call fails', async () => {
@@ -188,7 +377,7 @@ describe('"Bunu giyiyorum": one tap', () => {
     expect(screen.getByTestId('home-card-wear')).toBeTruthy();
     expect(screen.getByTestId('home-card-shuffle')).toBeTruthy();
     expect(screen.getByText('Bugün için')).toBeTruthy();
-    expect(usePrefsStore.getState().homeCardWornDay).toBeNull();
+    expect(usePrefsStore.getState().homeCardWorn).toBeNull();
   });
 
   it.each([

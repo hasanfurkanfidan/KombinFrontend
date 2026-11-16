@@ -27,23 +27,28 @@ export function homeCardState(input: {
 }
 
 /**
- * From this hour on (local time) the card is about tomorrow ("Yarın için"), whether or not today's outfit was worn.
- * It used to be noon, which left someone dressing at 12:30 without today's outfit.
+ * From this hour on (local time) the card is about tomorrow ("Yarın için"). Until then it is about today, worn or not:
+ * an outfit that was worn stays on the card as "Bugün giyiyorsun" (the settled state) and does not hand over to
+ * tomorrow's outfit when the app comes back to the front at lunchtime.
  */
 export const HOME_CARD_SWITCH_HOUR = 18;
 
 export type HomeCardDay = 'today' | 'tomorrow';
 
-/** Which day the card is about: today until today's outfit is marked worn or the switch hour, then tomorrow. */
-export function homeCardDay(now: Date, todayWorn = false): HomeCardDay {
-  return todayWorn || now.getHours() >= HOME_CARD_SWITCH_HOUR ? 'tomorrow' : 'today';
+/** Which day the card is about: today until `HOME_CARD_SWITCH_HOUR`, then tomorrow. Nothing else moves it. */
+export function homeCardDay(now: Date): HomeCardDay {
+  return now.getHours() >= HOME_CARD_SWITCH_HOUR ? 'tomorrow' : 'today';
 }
 
-/** The device's local calendar day as `yyyy-MM-dd`: what "marked worn today" is remembered against. */
-export function localDay(now: Date): string {
-  const month = String(now.getMonth() + 1).padStart(2, '0');
-  const day = String(now.getDate()).padStart(2, '0');
-  return `${now.getFullYear()}-${month}-${day}`;
+/** Turkey has no daylight saving time since 2016: Europe/Istanbul is always UTC+3. */
+const ISTANBUL_OFFSET_MS = 3 * 60 * 60 * 1000;
+
+/**
+ * The calendar day in Europe/Istanbul as `yyyy-MM-dd`, the day the backend's outfits (`outfit.date`) are about and
+ * what "worn today" is remembered against. Plain arithmetic, so it does not depend on `Intl` time-zone support.
+ */
+export function istanbulDay(now: Date): string {
+  return new Date(now.getTime() + ISTANBUL_OFFSET_MS).toISOString().slice(0, 10);
 }
 
 /**

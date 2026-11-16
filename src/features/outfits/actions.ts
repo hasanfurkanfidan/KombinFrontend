@@ -5,7 +5,9 @@ import { showToast } from '@/components/toastStore';
 import { openOffer } from '@/features/catalog/buy';
 import { useActivePersona } from '@/features/personas/hooks';
 import { tr } from '@/i18n/tr';
+import { usePrefsStore } from '@/session/prefsStore';
 
+import { istanbulDay } from './homeCard';
 import { useSaveOutfit, useWearOutfit } from './hooks';
 
 export interface WearOptions {
@@ -29,16 +31,22 @@ export function reportShuffle(outfit: Outfit | null | undefined): void {
 
 /**
  * "Bugün giydim" for any outfit: the one path the outfit sheet and the home card share (event, request, cache patch,
- * toasts). `wearing` is true while the request is out.
+ * toasts). `wearing` is true while the request is out. It is also the one place that remembers the worn outfit for
+ * Keşfet's card (`prefsStore.homeCardWorn`, persisted), so both paths settle the card, and it does so only for an
+ * outfit that is about today: wearing tomorrow's outfit must not settle today's card.
  */
 export function useWear() {
   const wear = useWearOutfit();
+  const markWorn = usePrefsStore((prefs) => prefs.markHomeCardWorn);
   return {
     wearing: wear.isPending,
     wear: (id: string, options: WearOptions = {}) => {
       track('outfit_feedback', { action: 'Worn' });
       wear.mutate(id, {
-        onSuccess: () => {
+        onSuccess: (worn) => {
+          if (worn.date === istanbulDay(new Date())) {
+            markWorn({ day: worn.date, outfitId: worn.id });
+          }
           if (!options.quiet) {
             showToast(tr.outfitWornToast);
           }

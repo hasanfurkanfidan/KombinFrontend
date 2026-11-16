@@ -16,6 +16,7 @@ import { resetImageUrls, stableImageUrl } from '@/features/social/imageUrl';
 import { useAddStore } from '@/features/wardrobe/addStore';
 import { WardrobeScreen } from '@/features/wardrobe/WardrobeScreen';
 import { usePrefsStore } from '@/session/prefsStore';
+import { readStoredWornOutfit } from '@/session/wornOutfitStorage';
 import { endSession } from '@/session/sessionStore';
 import { installUserScopeReset, userScopeEpoch } from '@/session/userScope';
 
@@ -125,6 +126,7 @@ describe('signing out forgets the account that left', () => {
     usePrefsStore.getState().addRecentSearch('siyah bot');
     usePrefsStore.getState().skipOnboarding();
     usePrefsStore.getState().setPushToken('ExponentPushToken[a]');
+    usePrefsStore.getState().markHomeCardWorn({ day: '2026-11-08', outfitId: 'worn-a' });
     useAddStore.getState().setLocalUri('local-1', 'file:///cache/ImagePicker/a.jpg');
     usePendingDeletionStore
       .getState()
@@ -139,7 +141,10 @@ describe('signing out forgets the account that left', () => {
       recentSearches: [],
       onboardingSkipped: false,
       pushToken: null,
+      homeCardWorn: null,
     });
+    // The remembered worn outfit is on disk too: the next person must not inherit it.
+    await waitFor(async () => expect(await readStoredWornOutfit()).toBeNull());
     expect(useAddStore.getState().localUris).toEqual({});
     expect(usePendingDeletionStore.getState().credentials).toBeNull();
     // The map forgot A's URL: the next post with that id starts from its own.

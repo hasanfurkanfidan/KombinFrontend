@@ -1,5 +1,10 @@
 import { theme } from '@/theme';
-import { homeCardDay, homeCardPrimary, homeCardState, localDay } from '@/features/outfits/homeCard';
+import {
+  homeCardDay,
+  homeCardPrimary,
+  homeCardState,
+  istanbulDay,
+} from '@/features/outfits/homeCard';
 
 describe('home card gating', () => {
   it('asks for the outfit only when signed in with at least one piece', () => {
@@ -29,27 +34,27 @@ describe('home card gating', () => {
 });
 
 describe('homeCardDay', () => {
-  it('is today before 18:00 while today’s outfit is not worn', () => {
-    expect(homeCardDay(new Date(2026, 10, 8, 8, 30))).toBe('today');
-    expect(homeCardDay(new Date(2026, 10, 8, 12, 30), false)).toBe('today');
-    expect(homeCardDay(new Date(2026, 10, 8, 17, 59), false)).toBe('today');
-  });
-
-  it('is tomorrow once today’s outfit is worn, whatever the time', () => {
-    expect(homeCardDay(new Date(2026, 10, 8, 7, 0), true)).toBe('tomorrow');
-    expect(homeCardDay(new Date(2026, 10, 8, 12, 30), true)).toBe('tomorrow');
+  it('is today until 18:00, and nothing but the clock moves it', () => {
+    expect(homeCardDay(new Date(2026, 10, 8, 0, 1))).toBe('today');
+    expect(homeCardDay(new Date(2026, 10, 8, 9, 0))).toBe('today');
+    expect(homeCardDay(new Date(2026, 10, 8, 13, 0))).toBe('today');
+    expect(homeCardDay(new Date(2026, 10, 8, 17, 59))).toBe('today');
   });
 
   it('is tomorrow from 18:00 on', () => {
     expect(homeCardDay(new Date(2026, 10, 8, 18, 0))).toBe('tomorrow');
-    expect(homeCardDay(new Date(2026, 10, 8, 22, 0), false)).toBe('tomorrow');
+    expect(homeCardDay(new Date(2026, 10, 8, 22, 0))).toBe('tomorrow');
   });
 });
 
-describe('localDay', () => {
-  it('is the device’s calendar day, zero padded', () => {
-    expect(localDay(new Date(2026, 0, 5, 23, 59))).toBe('2026-01-05');
-    expect(localDay(new Date(2026, 10, 8, 0, 1))).toBe('2026-11-08');
+describe('istanbulDay', () => {
+  it('is the Europe/Istanbul calendar day (UTC+3, no daylight saving), zero padded', () => {
+    expect(istanbulDay(new Date('2026-01-05T10:00:00Z'))).toBe('2026-01-05');
+    // 21:00 UTC is already past midnight in Istanbul; 20:59 UTC is not.
+    expect(istanbulDay(new Date('2026-11-08T21:00:00Z'))).toBe('2026-11-09');
+    expect(istanbulDay(new Date('2026-11-08T20:59:00Z'))).toBe('2026-11-08');
+    // Summer time elsewhere does not move it.
+    expect(istanbulDay(new Date('2026-07-01T21:30:00Z'))).toBe('2026-07-02');
   });
 });
 
