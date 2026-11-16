@@ -1,5 +1,12 @@
-import { useEffect, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { useEffect, useState, type ReactNode } from 'react';
+import {
+  StyleSheet,
+  Text,
+  View,
+  useWindowDimensions,
+  type StyleProp,
+  type ViewStyle,
+} from 'react-native';
 
 import { track } from '@/analytics';
 import { ApiError } from '@/api/client';
@@ -14,23 +21,71 @@ import { tr } from '@/i18n/tr';
 import { theme } from '@/theme';
 import { rateLimitedText } from '@/utils/rateLimit';
 
-import { isGone, useAnswerSizePrompt, useFirstSizePrompt } from './hooks';
+import { isGone, useAnswerSizePrompt, useFirstSizePrompt, useSizePromptsEnabled } from './hooks';
 import { initialSize } from './labels';
 
 const MAX_SIZE_LENGTH = 20;
 
+/** How long the confirming line replaces the row before the next question (or nothing) takes its place. */
+export const CONFIRMATION_MS = 2500;
+
+/** From this text scale on, the product name may wrap instead of being cut, so it is never lost to large text. */
+const LARGE_TEXT_SCALE = 1.5;
+
+type Answering = ReturnType<typeof useAnswerSizePrompt>;
+
 /**
- * Keşfet's "did the size fit?" card: the first open question about a product the user went to buy, above the daily
- * outfit. Quiet by design (a hairline card, no push, no modal) and absent, with no room reserved, when there is no
- * question, the user turned them off, or nobody is signed in.
+ * Keşfet's "did the size fit?" question about a product the user went to buy, above the daily outfit. It is one slim
+ * row ("<ürün> — aldın mı?" with "Aldım" and "Almadım") so the outfit stays the first thing on the screen; "Aldım"
+ * opens the next step in place. Absent, with no room reserved, when there is no question, the user turned them off,
+ * or nobody is signed in. After an answer one confirming line takes the row's place for a moment.
  */
 export function SizePromptCard() {
+  const enabled = useSizePromptsEnabled();
   const prompt = useFirstSizePrompt();
+  const [confirmation, setConfirmation] = useState<string | null>(null);
+  // Owned here, not by the question's card: the answered question leaves the list at once and its card with it.
+  const answer = useAnswerSizePrompt(setConfirmation);
+  const { reset } = answer;
+  const promptId = prompt?.id;
+
+  // A failure belongs to the question it happened on.
+  useEffect(() => {
+    reset();
+  }, [promptId, reset]);
+
+  useEffect(() => {
+    if (confirmation === null) {
+      return;
+    }
+    const timer = setTimeout(() => setConfirmation(null), CONFIRMATION_MS);
+    return () => clearTimeout(timer);
+  }, [confirmation]);
+
+  if (!enabled) {
+    return null;
+  }
+  if (confirmation !== null) {
+    return <ConfirmationRow text={confirmation} />;
+  }
   // Keyed by question: the next one starts on its first step with its own size.
-  return prompt ? <PromptCard key={prompt.id} prompt={prompt} /> : null;
+  return prompt ? <PromptCard key={prompt.id} prompt={prompt} answer={answer} /> : null;
 }
 
-type Step = 'ask' | 'size';
+function ConfirmationRow({ text }: { text: string }) {
+  return (
+    <View
+      style={[styles.card, styles.confirmation]}
+      accessibilityLiveRegion="polite"
+      testID="size-prompt-confirmation"
+    >
+      <Icon name="check" size={18} color={theme.colors.primary} />
+      <Text style={styles.confirmationText}>{text}</Text>
+    </View>
+  );
+}
+
+type Step = 'ask' | 'how' | 'size';
 
 /** The sentence under the card when saving failed (the existing error lines: rate limit, offline, generic). */
 function failureText(error: unknown): string {
@@ -40,11 +95,11 @@ function failureText(error: unknown): string {
   return rateLimitedText(error) ?? tr.errorBody;
 }
 
-function PromptCard({ prompt }: { prompt: SizePrompt }) {
+function PromptCard({ prompt, answer }: { prompt: SizePrompt; answer: Answering }) {
   const [step, setStep] = useState<Step>('ask');
   const [size, setSize] = useState(() => initialSize(prompt));
   const [sizeError, setSizeError] = useState<string | null>(null);
-  const answer = useAnswerSizePrompt();
+  const large = useWindowDimensions().fontScale >= LARGE_TEXT_SCALE;
 
   // Once per question shown (the card is keyed by the question).
   useEffect(() => {
@@ -53,7 +108,7 @@ function PromptCard({ prompt }: { prompt: SizePrompt }) {
 
   const busy = answer.isPending;
   const failed = answer.isError && !isGone(answer.error) ? failureText(answer.error) : null;
-  const brand = prompt.brand.name;
+  const name = prompt.product.name;
 
   const send = (kind: SizePromptAnswer, chosenSize: string | null) =>
     answer.mutate({ prompt, answer: kind, size: chosenSize });
@@ -68,73 +123,112 @@ function PromptCard({ prompt }: { prompt: SizePrompt }) {
     send('BoughtFits', chosen);
   };
 
+  const collapsed = step === 'ask';
+
   return (
     <View style={styles.card} testID="size-prompt-card">
-      <View style={styles.product}>
+      <View style={styles.top}>
         <View style={styles.thumb}>
           {prompt.product.imageUrl ? (
             <AppImage uri={prompt.product.imageUrl} style={styles.fill} contentFit="contain" />
           ) : (
-            <Icon name="shirt" size={24} color={theme.colors.control} strokeWidth={1.4} />
+            <Icon name="shirt" size={20} color={theme.colors.control} strokeWidth={1.4} />
           )}
         </View>
-        <View style={styles.productText}>
-          <Text style={styles.productName} numberOfLines={2} testID="size-prompt-product">
-            {prompt.product.name}
-          </Text>
-          <Text style={styles.caption} numberOfLines={1} testID="size-prompt-brand">
-            {tr.sizePromptBrandSeller(brand, prompt.seller.name)}
-          </Text>
+
+        <View style={styles.text}>
+          {collapsed ? (
+            <>
+              <View
+                style={[styles.titleRow, large && styles.titleRowWrap]}
+                accessible
+                accessibilityRole="header"
+                accessibilityLabel={`${name} ${tr.sizePromptAsk}`}
+                testID="size-prompt-title"
+              >
+                <Text
+                  style={styles.name}
+                  numberOfLines={large ? undefined : 1}
+                  testID="size-prompt-product"
+                >
+                  {name}
+                </Text>
+                <Text style={styles.ask}> {tr.sizePromptAsk}</Text>
+              </View>
+              <View style={styles.actions}>
+                <Choice
+                  label={tr.sizePromptBought}
+                  disabled={busy}
+                  onPress={() => setStep('how')}
+                  testID="size-prompt-bought"
+                />
+                <Choice
+                  label={tr.sizePromptNotBought}
+                  disabled={busy}
+                  onPress={() => send('NotBought', null)}
+                  testID="size-prompt-not-bought"
+                />
+              </View>
+            </>
+          ) : (
+            <>
+              <Text style={styles.caption} numberOfLines={large ? undefined : 1}>
+                {name}
+              </Text>
+              <Text
+                style={styles.question}
+                accessibilityRole="header"
+                testID="size-prompt-question"
+              >
+                {step === 'how'
+                  ? tr.sizePromptHowQuestion
+                  : tr.sizePromptSizeTitle(prompt.brand.name)}
+              </Text>
+            </>
+          )}
         </View>
+
+        <PressableScale
+          accessibilityRole="button"
+          accessibilityLabel={tr.sizePromptNever}
+          accessibilityState={{ disabled: busy }}
+          disabled={busy}
+          onPress={() => send('NeverAsk', null)}
+          style={styles.close}
+          testID="size-prompt-never"
+        >
+          <Icon name="close" size={18} color={theme.colors.muted} />
+        </PressableScale>
       </View>
 
-      {step === 'ask' ? (
-        <>
-          <Text style={styles.question} accessibilityRole="header">
-            {tr.sizePromptQuestion}
-          </Text>
-          <View style={styles.answers}>
-            <Choice
-              label={tr.sizePromptFits}
-              disabled={busy}
-              onPress={() => setStep('size')}
-              testID="size-prompt-fits"
-            />
-            <Choice
-              label={tr.sizePromptTooSmall}
-              disabled={busy}
-              onPress={() => send('BoughtTooSmall', null)}
-              testID="size-prompt-small"
-            />
-            <Choice
-              label={tr.sizePromptTooLarge}
-              disabled={busy}
-              onPress={() => send('BoughtTooLarge', null)}
-              testID="size-prompt-large"
-            />
-            <Choice
-              label={tr.sizePromptNotBought}
-              disabled={busy}
-              onPress={() => send('NotBought', null)}
-              testID="size-prompt-not-bought"
-            />
-          </View>
-          <PressableScale
-            accessibilityRole="button"
-            accessibilityState={{ disabled: busy }}
+      {step === 'how' ? (
+        <View style={styles.actions}>
+          <Choice
+            label={tr.sizePromptFits}
             disabled={busy}
-            onPress={() => send('NeverAsk', null)}
-            style={styles.never}
-            testID="size-prompt-never"
-          >
-            <Text style={styles.neverText}>{tr.sizePromptNever}</Text>
-          </PressableScale>
-        </>
-      ) : (
+            onPress={() => setStep('size')}
+            style={styles.grow}
+            testID="size-prompt-fits"
+          />
+          <Choice
+            label={tr.sizePromptTooSmall}
+            disabled={busy}
+            onPress={() => send('BoughtTooSmall', null)}
+            style={styles.grow}
+            testID="size-prompt-small"
+          />
+          <Choice
+            label={tr.sizePromptTooLarge}
+            disabled={busy}
+            onPress={() => send('BoughtTooLarge', null)}
+            style={styles.grow}
+            testID="size-prompt-large"
+          />
+        </View>
+      ) : null}
+
+      {step === 'size' ? (
         <>
-          <Text style={styles.question} accessibilityRole="header">
-            {tr.sizePromptSizeTitle(brand)}
-          </Text>
           {prompt.availableSizes.length > 0 ? (
             <View style={styles.sizes} testID="size-prompt-sizes">
               {prompt.availableSizes.map((option) => (
@@ -188,14 +282,14 @@ function PromptCard({ prompt }: { prompt: SizePrompt }) {
             variant="quiet"
             disabled={busy}
             onPress={() => {
-              setStep('ask');
+              setStep('how');
               setSizeError(null);
               answer.reset();
             }}
             testID="size-prompt-size-back"
           />
         </>
-      )}
+      ) : null}
 
       {failed ? (
         <View style={styles.failure} accessibilityLiveRegion="polite" testID="size-prompt-error">
@@ -212,20 +306,22 @@ function Choice({
   label,
   onPress,
   disabled,
+  style,
   testID,
 }: {
   label: string;
   onPress: () => void;
   disabled: boolean;
+  style?: StyleProp<ViewStyle>;
   testID: string;
-}) {
+}): ReactNode {
   return (
     <PressableScale
       accessibilityRole="button"
       accessibilityState={{ disabled }}
       disabled={disabled}
       onPress={onPress}
-      style={[styles.choice, disabled && styles.choiceDisabled]}
+      style={[styles.choice, style, disabled && styles.choiceDisabled]}
       testID={testID}
     >
       <Text style={styles.choiceText}>{label}</Text>
@@ -234,40 +330,55 @@ function Choice({
 }
 
 const styles = StyleSheet.create({
+  // Collapsed: 2 × 1 (border) + 2 × `sm` + 20 (title line) + `xs` + 44 (answers) = 86 at the default text size.
   card: {
     marginHorizontal: theme.screenPaddingX,
-    gap: theme.spacing.md,
-    padding: theme.spacing.lg,
+    gap: theme.spacing.sm,
+    padding: theme.spacing.sm,
     borderRadius: theme.radius.tile,
     borderWidth: 1,
     borderColor: theme.colors.line,
     backgroundColor: theme.colors.bg,
   },
-  product: {
+  top: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: theme.spacing.md,
   },
   thumb: {
-    width: theme.sizes.tagThumb,
-    height: theme.sizes.tagThumb,
+    width: theme.sizes.sizePromptThumb,
+    height: theme.sizes.sizePromptThumb,
     borderRadius: theme.radius.control,
     backgroundColor: theme.colors.surface,
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
+    alignSelf: 'flex-start',
   },
   fill: {
     width: '100%',
     height: '100%',
   },
-  productText: {
+  text: {
     flex: 1,
-    gap: 2,
+    gap: theme.spacing.xs,
   },
-  productName: {
-    ...theme.typography.bodyMedium,
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+  },
+  titleRowWrap: {
+    flexWrap: 'wrap',
+  },
+  name: {
+    ...theme.typography.label,
     color: theme.colors.ink,
+    flexShrink: 1,
+  },
+  ask: {
+    ...theme.typography.label,
+    color: theme.colors.ink,
+    flexShrink: 0,
   },
   caption: {
     ...theme.typography.caption,
@@ -277,24 +388,24 @@ const styles = StyleSheet.create({
     ...theme.typography.label,
     color: theme.colors.ink,
   },
-  answers: {
+  actions: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: theme.spacing.sm,
   },
-  // Two to a row at normal size; a longer label (or larger text) takes the whole row instead of being cut.
   choice: {
-    flexGrow: 1,
-    flexBasis: '45%',
     minHeight: theme.sizes.touch,
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: theme.spacing.md,
-    paddingVertical: theme.spacing.sm,
+    paddingVertical: theme.spacing.xs,
     borderRadius: theme.radius.control,
     borderWidth: 1,
     borderColor: theme.colors.control,
     backgroundColor: theme.colors.bg,
+  },
+  grow: {
+    flexGrow: 1,
   },
   choiceDisabled: {
     opacity: 0.4,
@@ -304,15 +415,15 @@ const styles = StyleSheet.create({
     color: theme.colors.ink,
     textAlign: 'center',
   },
-  never: {
-    minHeight: theme.sizes.touch,
+  // "Bu ürün için sorma": a small ✕ in the corner, a full 44 pt target.
+  close: {
+    width: theme.sizes.touch,
+    height: theme.sizes.touch,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  neverText: {
-    ...theme.typography.bodyMedium,
-    color: theme.colors.muted,
-    textAlign: 'center',
+    alignSelf: 'flex-start',
+    marginRight: -theme.spacing.sm,
+    marginTop: -theme.spacing.sm,
   },
   sizes: {
     flexDirection: 'row',
@@ -328,5 +439,17 @@ const styles = StyleSheet.create({
     ...theme.typography.caption,
     color: theme.colors.danger,
     flexShrink: 1,
+  },
+  confirmation: {
+    minHeight: theme.sizes.touch,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: theme.spacing.sm,
+    paddingHorizontal: theme.spacing.md,
+  },
+  confirmationText: {
+    ...theme.typography.bodyMedium,
+    color: theme.colors.ink,
+    flex: 1,
   },
 });

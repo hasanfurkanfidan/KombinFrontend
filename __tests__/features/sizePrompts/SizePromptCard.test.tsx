@@ -1,4 +1,5 @@
-import { fireEvent, screen, waitFor } from '@testing-library/react-native';
+import { act, fireEvent, screen, waitFor } from '@testing-library/react-native';
+import { Dimensions, StyleSheet } from 'react-native';
 
 import { track } from '@/analytics';
 import { ApiError } from '@/api/client';
@@ -9,7 +10,8 @@ import { answerSizePrompt, listSizePrompts } from '@/api/endpoints/sizePrompts';
 import { getCreatorStats } from '@/api/endpoints/social';
 import { useToastStore } from '@/components/toastStore';
 import { ProfileScreen } from '@/features/profile/ProfileScreen';
-import { SizePromptCard } from '@/features/sizePrompts/SizePromptCard';
+import { CONFIRMATION_MS, SizePromptCard } from '@/features/sizePrompts/SizePromptCard';
+import { theme } from '@/theme';
 
 import { persona, profile, sizePrompt } from '../../fixtures';
 import { heldOpen, renderWithQuery, resetSession, signedInSession } from '../../testUtils';
@@ -37,8 +39,18 @@ const second = sizePrompt({
 });
 
 const toast = () => useToastStore.getState().message;
+const confirmation = () => screen.queryByTestId('size-prompt-confirmation');
+
+/** The confirming line stays for a moment; this lets it go. */
+async function letConfirmationGo() {
+  await act(async () => {
+    await jest.advanceTimersByTimeAsync(CONFIRMATION_MS);
+  });
+}
 
 beforeEach(async () => {
+  // The confirming line is a timer: fake ones, so a test decides when it ends.
+  jest.useFakeTimers();
   jest.clearAllMocks();
   useToastStore.getState().hide();
   await resetSession();
@@ -48,21 +60,60 @@ beforeEach(async () => {
   answerMock.mockResolvedValue({ answer: 'BoughtFits', sizeEntry: null });
 });
 
-describe('what is shown', () => {
-  it('shows only the first question, with the product, the brand and the five choices', async () => {
+afterEach(() => {
+  jest.useRealTimers();
+});
+
+describe('the collapsed row', () => {
+  it('is one slim row: the product, "aldın mı?" and two answers, no brand or seller', async () => {
     await renderWithQuery(<SizePromptCard />);
 
     expect(await screen.findByTestId('size-prompt-card')).toBeTruthy();
     expect(screen.getByTestId('size-prompt-product')).toHaveTextContent('Slim fit gömlek');
-    expect(screen.getByTestId('size-prompt-brand')).toHaveTextContent('Mavi · Trendyol');
-    expect(screen.getByText('Bunu aldın mı?')).toBeTruthy();
-    expect(screen.getByText('Aldım, oldu')).toBeTruthy();
-    expect(screen.getByText('Aldım, küçük geldi')).toBeTruthy();
-    expect(screen.getByText('Aldım, büyük geldi')).toBeTruthy();
+    expect(screen.getByLabelText('Slim fit gömlek — aldın mı?')).toBeTruthy();
+    expect(screen.getByText('Aldım')).toBeTruthy();
     expect(screen.getByText('Almadım')).toBeTruthy();
-    expect(screen.getByText('Bu ürün için sorma')).toBeTruthy();
+    // The brand and the seller are left for the later steps; the second step does not exist yet.
+    expect(screen.queryByText(/Mavi/)).toBeNull();
+    expect(screen.queryByText(/Trendyol/)).toBeNull();
+    expect(screen.queryByText('Oldu mu?')).toBeNull();
     // The second question waits its turn.
     expect(screen.queryByText('Kargo pantolon')).toBeNull();
+  });
+
+  // Jest's window reports an enlarged font scale of its own, so each size is set explicitly.
+  it.each([
+    [1, 1],
+    [2, undefined],
+  ])('at font scale %s the product name has numberOfLines %s', async (fontScale, lines) => {
+    const before = Dimensions.get('window');
+    try {
+      Dimensions.set({ window: { ...before, fontScale } });
+      await renderWithQuery(<SizePromptCard />);
+      expect((await screen.findByTestId('size-prompt-product')).props.numberOfLines).toBe(lines);
+    } finally {
+      // The mounted card listens to the window: put it back inside act.
+      await act(async () => Dimensions.set({ window: before }));
+    }
+  });
+
+  it('gives every control a name and a 44 pt target', async () => {
+    await renderWithQuery(<SizePromptCard />);
+    await screen.findByTestId('size-prompt-card');
+
+    const close = screen.getByLabelText('Bu ürün için sorma');
+    expect(close.props.accessibilityRole).toBe('button');
+    const closeStyle = StyleSheet.flatten(close.props.style);
+    expect(closeStyle.width).toBeGreaterThanOrEqual(theme.sizes.touch);
+    expect(closeStyle.height).toBeGreaterThanOrEqual(theme.sizes.touch);
+
+    for (const id of ['size-prompt-bought', 'size-prompt-not-bought']) {
+      const button = screen.getByTestId(id);
+      expect(button.props.accessibilityRole).toBe('button');
+      expect(StyleSheet.flatten(button.props.style).minHeight).toBeGreaterThanOrEqual(
+        theme.sizes.touch,
+      );
+    }
   });
 
   it('reports each question once when it is shown', async () => {
@@ -72,16 +123,17 @@ describe('what is shown', () => {
     const views = trackMock.mock.calls.filter(([name]) => name === 'size_prompt_view');
     expect(views).toEqual([['size_prompt_view', { promptId: 'sp1' }]]);
   });
+});
 
+describe('nothing to show', () => {
   it('shows nothing, and keeps no room, when there is no question', async () => {
     listMock.mockResolvedValue({ prompts: [] });
-    const view = await renderWithQuery(<SizePromptCard />);
+    await renderWithQuery(<SizePromptCard />);
     await waitFor(() => expect(listMock).toHaveBeenCalled());
 
     expect(screen.queryByTestId('size-prompt-card')).toBeNull();
-    expect(screen.queryByText('Bunu aldın mı?')).toBeNull();
+    expect(screen.queryByText('Aldım')).toBeNull();
     expect(trackMock).not.toHaveBeenCalledWith('size_prompt_view', expect.anything());
-    view.unmount();
   });
 
   it('shows nothing to a visitor and asks for nothing', async () => {
@@ -103,55 +155,154 @@ describe('what is shown', () => {
   });
 });
 
-describe('"Aldım, oldu" asks for the size in the same card', () => {
-  it('offers the sizes of the clicked offer, with the known one selected', async () => {
+describe('"Almadım" and "kapat" answer at once', () => {
+  it('"Almadım" sends NotBought with no size, then the confirming line, then the next question', async () => {
     await renderWithQuery(<SizePromptCard />);
-    await fireEvent.press(await screen.findByTestId('size-prompt-fits'));
+    await fireEvent.press(await screen.findByTestId('size-prompt-not-bought'));
+
+    await waitFor(() =>
+      expect(answerMock).toHaveBeenCalledWith('sp1', { answer: 'NotBought', size: null }),
+    );
+    expect(await screen.findByTestId('size-prompt-confirmation')).toHaveTextContent(
+      'Tamam, teşekkürler',
+    );
+    expect(trackMock).toHaveBeenCalledWith('size_prompt_answer', {
+      promptId: 'sp1',
+      answer: 'NotBought',
+    });
+    // The line replaces the row: no card, no second question yet.
+    expect(screen.queryByTestId('size-prompt-card')).toBeNull();
+    expect(screen.queryByText('Kargo pantolon')).toBeNull();
+
+    await letConfirmationGo();
+    expect(confirmation()).toBeNull();
+    expect(await screen.findByText('Kargo pantolon')).toBeTruthy();
+    expect(screen.getByText('Aldım')).toBeTruthy();
+  });
+
+  it('leaves nothing behind when it was the last question', async () => {
+    listMock.mockResolvedValue({ prompts: [first] });
+    await renderWithQuery(<SizePromptCard />);
+    await fireEvent.press(await screen.findByTestId('size-prompt-not-bought'));
+    await screen.findByTestId('size-prompt-confirmation');
+
+    await letConfirmationGo();
+    expect(confirmation()).toBeNull();
+    expect(screen.queryByTestId('size-prompt-card')).toBeNull();
+  });
+
+  it('"kapat" is "Bu ürün için sorma": it sends NeverAsk at once', async () => {
+    listMock.mockResolvedValue({ prompts: [first] });
+    await renderWithQuery(<SizePromptCard />);
+    await fireEvent.press(await screen.findByLabelText('Bu ürün için sorma'));
+
+    await waitFor(() =>
+      expect(answerMock).toHaveBeenCalledWith('sp1', { answer: 'NeverAsk', size: null }),
+    );
+    expect(await screen.findByTestId('size-prompt-confirmation')).toHaveTextContent(
+      'Tamam, bu ürün için bir daha sormayacağız',
+    );
+    expect(trackMock).toHaveBeenCalledWith('size_prompt_answer', {
+      promptId: 'sp1',
+      answer: 'NeverAsk',
+    });
+    await letConfirmationGo();
+  });
+});
+
+describe('"Aldım" opens "Oldu mu?" in place', () => {
+  it('shows the three answers and sends nothing yet', async () => {
+    await renderWithQuery(<SizePromptCard />);
+    await fireEvent.press(await screen.findByTestId('size-prompt-bought'));
+
+    expect(screen.getByTestId('size-prompt-card')).toBeTruthy();
+    expect(screen.getByTestId('size-prompt-question')).toHaveTextContent('Oldu mu?');
+    expect(screen.getByText('Oldu')).toBeTruthy();
+    expect(screen.getByText('Küçük geldi')).toBeTruthy();
+    expect(screen.getByText('Büyük geldi')).toBeTruthy();
+    // The collapsed answers are gone; the corner control stays.
+    expect(screen.queryByText('Aldım')).toBeNull();
+    expect(screen.getByLabelText('Bu ürün için sorma')).toBeTruthy();
+    expect(answerMock).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ['size-prompt-small', 'BoughtTooSmall'],
+    ['size-prompt-large', 'BoughtTooLarge'],
+  ])('%s sends %s at once, with no size', async (testID, answer) => {
+    listMock.mockResolvedValue({ prompts: [first] });
+    await renderWithQuery(<SizePromptCard />);
+    await fireEvent.press(await screen.findByTestId('size-prompt-bought'));
+    await fireEvent.press(screen.getByTestId(testID));
+
+    await waitFor(() => expect(answerMock).toHaveBeenCalledWith('sp1', { answer, size: null }));
+    expect(await screen.findByTestId('size-prompt-confirmation')).toHaveTextContent(
+      'Teşekkürler, Mavi için not aldık',
+    );
+    expect(trackMock).toHaveBeenCalledWith('size_prompt_answer', { promptId: 'sp1', answer });
+    await letConfirmationGo();
+    expect(screen.queryByTestId('size-prompt-card')).toBeNull();
+  });
+});
+
+describe('"Oldu" asks for the size in the same card', () => {
+  async function openSizeStep() {
+    await renderWithQuery(<SizePromptCard />);
+    await fireEvent.press(await screen.findByTestId('size-prompt-bought'));
+    await fireEvent.press(screen.getByTestId('size-prompt-fits'));
+  }
+
+  it('offers the sizes of the clicked offer, with the known one selected', async () => {
+    await openSizeStep();
 
     expect(screen.getByText('Mavi için hangi bedeni aldın?')).toBeTruthy();
     expect(screen.getByTestId('size-prompt-size-M').props.accessibilityState.selected).toBe(true);
     expect(screen.getByTestId('size-prompt-size-S').props.accessibilityState.selected).toBe(false);
     expect(screen.getByTestId('size-prompt-size-L')).toBeTruthy();
-    // Nothing is sent until the size is saved.
+    expect(screen.getByLabelText('L beden')).toBeTruthy();
     expect(answerMock).not.toHaveBeenCalled();
   });
 
   it('saves the chosen size, confirms it with the brand, then shows the next question', async () => {
-    await renderWithQuery(<SizePromptCard />);
-    await fireEvent.press(await screen.findByTestId('size-prompt-fits'));
+    await openSizeStep();
     await fireEvent.press(screen.getByTestId('size-prompt-size-L'));
     await fireEvent.press(screen.getByTestId('size-prompt-size-save'));
 
     await waitFor(() =>
       expect(answerMock).toHaveBeenCalledWith('sp1', { answer: 'BoughtFits', size: 'L' }),
     );
-    await waitFor(() => expect(toast()).toBe('Mavi için bedenin L olarak kaydedildi'));
+    expect(await screen.findByTestId('size-prompt-confirmation')).toHaveTextContent(
+      'Mavi için bedenin L olarak kaydedildi',
+    );
     expect(trackMock).toHaveBeenCalledWith('size_prompt_answer', {
       promptId: 'sp1',
       answer: 'BoughtFits',
     });
+    expect(toast()).toBeNull();
+
+    await letConfirmationGo();
     // The next question takes the card's place, on its first step.
     expect(await screen.findByText('Kargo pantolon')).toBeTruthy();
-    expect(screen.getByText('Bunu aldın mı?')).toBeTruthy();
+    expect(screen.getByText('Aldım')).toBeTruthy();
     expect(screen.queryByText('Slim fit gömlek')).toBeNull();
   });
 
   it('sends the known size when it is left selected', async () => {
-    await renderWithQuery(<SizePromptCard />);
-    await fireEvent.press(await screen.findByTestId('size-prompt-fits'));
+    await openSizeStep();
     await fireEvent.press(screen.getByTestId('size-prompt-size-save'));
 
     await waitFor(() =>
       expect(answerMock).toHaveBeenCalledWith('sp1', { answer: 'BoughtFits', size: 'M' }),
     );
+    await screen.findByTestId('size-prompt-confirmation');
+    await letConfirmationGo();
   });
 
   it('starts with no size when the known one is not among the offered sizes', async () => {
     listMock.mockResolvedValue({
       prompts: [sizePrompt({ knownSize: { size: 'XXL', source: 'UserEntered', confidence: 1 } })],
     });
-    await renderWithQuery(<SizePromptCard />);
-    await fireEvent.press(await screen.findByTestId('size-prompt-fits'));
+    await openSizeStep();
 
     for (const size of ['S', 'M', 'L']) {
       expect(screen.getByTestId(`size-prompt-size-${size}`).props.accessibilityState.selected).toBe(
@@ -172,8 +323,7 @@ describe('"Aldım, oldu" asks for the size in the same card', () => {
         }),
       ],
     });
-    await renderWithQuery(<SizePromptCard />);
-    await fireEvent.press(await screen.findByTestId('size-prompt-fits'));
+    await openSizeStep();
 
     const field = screen.getByTestId('size-prompt-size-field');
     expect(field.props.value).toBe('M');
@@ -189,50 +339,44 @@ describe('"Aldım, oldu" asks for the size in the same card', () => {
     await waitFor(() =>
       expect(answerMock).toHaveBeenCalledWith('sp1', { answer: 'BoughtFits', size: '42' }),
     );
+    await screen.findByTestId('size-prompt-confirmation');
+    await letConfirmationGo();
   });
 
-  it('goes back to the answers without sending anything', async () => {
-    await renderWithQuery(<SizePromptCard />);
-    await fireEvent.press(await screen.findByTestId('size-prompt-fits'));
+  it('"Vazgeç" goes back to "Oldu mu?" without sending anything', async () => {
+    await openSizeStep();
     await fireEvent.press(screen.getByTestId('size-prompt-size-back'));
 
-    expect(screen.getByText('Bunu aldın mı?')).toBeTruthy();
+    expect(screen.getByTestId('size-prompt-question')).toHaveTextContent('Oldu mu?');
     expect(answerMock).not.toHaveBeenCalled();
   });
-});
 
-describe('the other answers send no size', () => {
-  it.each([
-    ['size-prompt-small', 'BoughtTooSmall', 'Teşekkürler, Mavi için not aldık'],
-    ['size-prompt-large', 'BoughtTooLarge', 'Teşekkürler, Mavi için not aldık'],
-    ['size-prompt-not-bought', 'NotBought', 'Tamam, teşekkürler'],
-    ['size-prompt-never', 'NeverAsk', 'Tamam, bu ürün için bir daha sormayacağız'],
-  ])('%s sends %s at once and confirms it', async (testID, answer, line) => {
+  it('"kapat" is still there on this step and never asks again', async () => {
     listMock.mockResolvedValue({ prompts: [first] });
-    answerMock.mockResolvedValue({ answer: answer as never, sizeEntry: null });
-    await renderWithQuery(<SizePromptCard />);
-    await fireEvent.press(await screen.findByTestId(testID));
+    await openSizeStep();
+    await fireEvent.press(screen.getByLabelText('Bu ürün için sorma'));
 
-    await waitFor(() => expect(answerMock).toHaveBeenCalledWith('sp1', { answer, size: null }));
-    await waitFor(() => expect(toast()).toBe(line));
-    expect(trackMock).toHaveBeenCalledWith('size_prompt_answer', { promptId: 'sp1', answer });
-    // Nothing else is open, so the card leaves.
-    await waitFor(() => expect(screen.queryByTestId('size-prompt-card')).toBeNull());
+    await waitFor(() =>
+      expect(answerMock).toHaveBeenCalledWith('sp1', { answer: 'NeverAsk', size: null }),
+    );
+    await screen.findByTestId('size-prompt-confirmation');
+    await letConfirmationGo();
   });
 });
 
 describe('when the answer does not go through', () => {
-  it('drops the card silently and asks again on a 409', async () => {
+  it.each([409, 404])('drops the card silently and asks again on a %i', async (status) => {
     listMock.mockResolvedValueOnce({ prompts: [first] }).mockResolvedValue({ prompts: [] });
     answerMock.mockRejectedValue(
-      new ApiError({ status: 409, errorCode: 'Profile.SizePromptAnswered', correlationId: 'c' }),
+      new ApiError({ status, errorCode: 'Profile.SizePromptAnswered', correlationId: 'c' }),
     );
     await renderWithQuery(<SizePromptCard />);
     await fireEvent.press(await screen.findByTestId('size-prompt-not-bought'));
 
     await waitFor(() => expect(screen.queryByTestId('size-prompt-card')).toBeNull());
     await waitFor(() => expect(listMock).toHaveBeenCalledTimes(2));
-    // No message of any kind.
+    // No confirming line and no message of any kind.
+    expect(confirmation()).toBeNull();
     expect(toast()).toBeNull();
     expect(screen.queryByTestId('size-prompt-error')).toBeNull();
     expect(trackMock).not.toHaveBeenCalledWith('size_prompt_answer', expect.anything());
@@ -241,18 +385,19 @@ describe('when the answer does not go through', () => {
   it('keeps the card and shows the error line on any other error, then lets the user try again', async () => {
     answerMock.mockRejectedValueOnce(new ApiError({ status: 500, correlationId: 'c' }));
     await renderWithQuery(<SizePromptCard />);
-    await fireEvent.press(await screen.findByTestId('size-prompt-small'));
+    await fireEvent.press(await screen.findByTestId('size-prompt-not-bought'));
 
     expect(await screen.findByTestId('size-prompt-error')).toHaveTextContent(
       'Lütfen biraz sonra tekrar dene.',
     );
     expect(screen.getByTestId('size-prompt-card')).toBeTruthy();
     expect(screen.getByText('Slim fit gömlek')).toBeTruthy();
-    expect(toast()).toBeNull();
+    expect(confirmation()).toBeNull();
 
-    await fireEvent.press(screen.getByTestId('size-prompt-small'));
-    await waitFor(() => expect(screen.queryByText('Slim fit gömlek')).toBeNull());
+    await fireEvent.press(screen.getByTestId('size-prompt-not-bought'));
+    expect(await screen.findByTestId('size-prompt-confirmation')).toBeTruthy();
     expect(answerMock).toHaveBeenCalledTimes(2);
+    await letConfirmationGo();
   });
 
   it('says so when the server cannot be reached', async () => {
@@ -304,8 +449,8 @@ describe('the Profil switch', () => {
 
     await fireEvent(toggle, 'valueChange', false);
 
-    // Before the server has answered.
-    expect(screen.queryByTestId('size-prompt-card')).toBeNull();
+    // Before the server has answered (it is held open): the card does not wait for it.
+    await waitFor(() => expect(screen.queryByTestId('size-prompt-card')).toBeNull());
     expect(screen.getByTestId('profile-size-prompts').props.value).toBe(false);
     expect(updateMock).toHaveBeenCalledWith(expect.objectContaining({ sizePromptsEnabled: false }));
   });
@@ -319,6 +464,17 @@ describe('the Profil switch', () => {
     await waitFor(() => expect(toast()).toBe('Ayar kaydedilemedi, tekrar dene'));
     expect(screen.getByTestId('profile-size-prompts').props.value).toBe(true);
     expect(await screen.findByTestId('size-prompt-card')).toBeTruthy();
+  });
+
+  it('hides a confirming line that is still showing when the switch is turned off', async () => {
+    updateMock.mockReturnValue(heldOpen());
+    await renderWithQuery(<Both />);
+    await fireEvent.press(await screen.findByTestId('size-prompt-not-bought'));
+    await screen.findByTestId('size-prompt-confirmation');
+
+    await fireEvent(screen.getByTestId('profile-size-prompts'), 'valueChange', false);
+
+    await waitFor(() => expect(confirmation()).toBeNull());
   });
 
   it('shows a visitor no switch', async () => {

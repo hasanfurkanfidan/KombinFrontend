@@ -58,10 +58,12 @@ interface AnswerInput {
 
 /**
  * Sends one answer. On success the question leaves the list (the next one, if any, takes its place), the size map and
- * the size hints are refreshed, and one confirming line is shown. A 409 drops the card silently and refetches; any
+ * the size hints are refreshed, and `onAnswered` gets the one confirming line. The mutation is owned by the card's
+ * parent, which outlives the question, so the line can replace the row for a moment after the answered question has
+ * left the list. A 409 drops the card silently and refetches; any
  * other error leaves the card where it is for the caller to show.
  */
-export function useAnswerSizePrompt() {
+export function useAnswerSizePrompt(onAnswered: (line: string) => void) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ prompt, answer, size }: AnswerInput) =>
@@ -69,7 +71,7 @@ export function useAnswerSizePrompt() {
     onSuccess: (_result, { prompt, answer, size }) => {
       dropPrompt(queryClient, prompt.id);
       track('size_prompt_answer', { promptId: prompt.id, answer });
-      showToast(confirmationLine(prompt, answer, size));
+      onAnswered(confirmationLine(prompt, answer, size));
       void queryClient.invalidateQueries({ queryKey: queryKeys.sizePrompts, refetchType: 'none' });
       // A confirmed fit changes the size map and the hint on every product.
       void queryClient.invalidateQueries({ queryKey: queryKeys.sizes });
