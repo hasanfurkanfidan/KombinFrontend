@@ -10,6 +10,7 @@ import type {
   UploadUrlRequest,
   WardrobeGaps,
   WardrobeItem,
+  WardrobeOverview,
   WardrobeItemPage,
   WardrobePairings,
   WardrobeStats,
@@ -146,6 +147,11 @@ export function getWardrobePairings(id: string, signal?: AbortSignal): Promise<W
 
 export function getWardrobeStats(signal?: AbortSignal): Promise<WardrobeStats> {
   return request<WardrobeStats>(`${BASE}/stats`, { auth: true, signal });
+}
+
+/** `GET /me/wardrobe/summary`: with too few pieces only `pieceCount` and `message` are there. */
+export function getWardrobeSummary(signal?: AbortSignal): Promise<WardrobeOverview> {
+  return request<WardrobeOverview>(`${BASE}/summary`, { auth: true, signal });
 }
 
 export function getWardrobeGaps(signal?: AbortSignal): Promise<WardrobeGaps> {

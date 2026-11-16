@@ -188,3 +188,16 @@ export type Trip = Schemas['TripResponse'];
 export type TripSummary = Schemas['TripSummaryResponse'];
 export type TripList = Schemas['TripListResponse'];
 export type SaveTripRequest = Schemas['SaveTripRequest'];
+
+export type WardrobeOverview = Schemas['WardrobeSummaryResponse'];
+export type WardrobeValue = Schemas['WardrobeValue'];
+export type CategoryValue = Schemas['CategoryValue'];
+export type CostPerWearItem = Schemas['CostPerWearItem'];
+export type UnwornItem = Schemas['UnwornItem'];
+export type UnwornSection = Schemas['UnwornSection'];
+
+export type SizePrompt = Schemas['SizePromptResponse'];
+export type SizePromptList = Schemas['SizePromptsResponse'];
+export type SizePromptAnswer = Schemas['SizePromptAnswer'];
+export type AnswerSizePromptRequest = Schemas['AnswerSizePromptRequest'];
+export type AnswerSizePromptResponse = Schemas['AnswerSizePromptResponse'];

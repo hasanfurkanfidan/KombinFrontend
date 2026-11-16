@@ -136,6 +136,8 @@ export const sizes = {
   postAvatar: 40,
   /** Thumbnail in the tag sheet and the tag picker rows. */
   tagThumb: 56,
+  /** Product picture in Keşfet's size question row; the collapsed card is this + 2 × `sm` + the 44 pt answers high. */
+  sizePromptThumb: 48,
   /** A wardrobe/product row thumbnail in the tag picker. */
   pickerThumb: 64,
   /** Minimum height of the caption box in the publish step. */

@@ -10,6 +10,11 @@ import type {
   TripPlan,
   TripSummary,
   Consent,
+  CostPerWearItem,
+  SizePrompt,
+  UnwornItem,
+  WardrobeOverview,
+  WardrobeValue,
   LensRegion,
   LensResult,
   LensSearchResult,
@@ -197,6 +202,7 @@ export function profile(overrides: Partial<Profile> = {}): Profile {
     personaCount: 1,
     onboardingCompleted: true,
     onboardingCompletedAt: '2026-11-01T10:00:00Z',
+    sizePromptsEnabled: true,
     ...overrides,
   };
 }
@@ -959,6 +965,102 @@ export function tripSummary(overrides: Partial<TripSummary> = {}): TripSummary {
     coverage: { covered: 2, total: 3, percent: 67 },
     plannedAt: '2026-11-15T09:00:00Z',
     createdAt: '2026-11-15T09:00:00Z',
+    ...overrides,
+  };
+}
+
+// Dolap özeti and the size questions
+
+/** The value block of a summary: 3 own prices, 2 estimates, 1 piece without a price. */
+export function wardrobeValue(overrides: Partial<WardrobeValue> = {}): WardrobeValue {
+  return {
+    currency: 'TRY',
+    total: 7400,
+    knownTotal: 6000,
+    estimatedTotal: 1400,
+    isEstimate: true,
+    counts: { priced: 3, estimated: 2, unpriced: 1 },
+    byCategory: [
+      {
+        slug: 'alt-giyim',
+        name: 'Alt giyim',
+        pieceCount: 2,
+        unpricedCount: 0,
+        total: 1400,
+        estimatedTotal: 1400,
+        isEstimate: true,
+      },
+      {
+        slug: 'ust-giyim',
+        name: 'Üst giyim',
+        pieceCount: 3,
+        unpricedCount: 1,
+        total: 6000,
+        estimatedTotal: 0,
+        isEstimate: false,
+      },
+    ],
+    note: null,
+    ...overrides,
+  };
+}
+
+export function costPerWearItem(overrides: Partial<CostPerWearItem> = {}): CostPerWearItem {
+  return {
+    item: wardrobeSummary({ id: 'cw1', name: 'Siyah bot' }),
+    price: 2400,
+    priceIsEstimate: false,
+    wearCount: 12,
+    costPerWear: 200,
+    ...overrides,
+  };
+}
+
+export function unwornItem(overrides: Partial<UnwornItem> = {}): UnwornItem {
+  return {
+    item: wardrobeSummary({ id: 'uw1', name: 'Kahverengi ceket', wearCount: 0 }),
+    daysInWardrobe: 45,
+    reason: null,
+    reasonText: null,
+    unlock: null,
+    ...overrides,
+  };
+}
+
+/** A full summary; `smallOverview()` is the small-wardrobe answer. */
+export function wardrobeOverview(overrides: Partial<WardrobeOverview> = {}): WardrobeOverview {
+  return {
+    pieceCount: 6,
+    message: null,
+    value: wardrobeValue(),
+    costPerWear: [costPerWearItem()],
+    unworn: { totalCount: 1, items: [unwornItem()], message: null },
+    ...overrides,
+  };
+}
+
+export function smallOverview(): WardrobeOverview {
+  return {
+    pieceCount: 2,
+    message:
+      'Dolabında 2 parça var. En az 5 parça olunca dolap değerini ve giymediklerini gösterebiliriz.',
+    value: null,
+    costPerWear: null,
+    unworn: null,
+  };
+}
+
+export function sizePrompt(overrides: Partial<SizePrompt> = {}): SizePrompt {
+  return {
+    id: 'sp1',
+    product: { id: 'p1', name: 'Slim fit gömlek', imageUrl: 'http://img.test/p1.webp' },
+    brand: { id: 'b1', name: 'Mavi', slug: 'mavi' },
+    seller: { name: 'Trendyol', slug: 'trendyol' },
+    group: 'Tops',
+    knownSize: { size: 'M', source: 'UserEntered', confidence: 0.8 },
+    availableSizes: ['S', 'M', 'L'],
+    clickedAt: '2026-11-10T10:00:00Z',
+    expiresAt: '2026-12-10T10:00:00Z',
     ...overrides,
   };
 }

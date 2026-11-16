@@ -28,6 +28,7 @@ import {
 } from './hooks';
 import { AddTile, ItemTile } from './ItemTile';
 import { AddButton, FilterChips, GapHint, StatsRow } from './WardrobeHeader';
+import { WardrobeSummaryEntry } from './WardrobeSummaryEntry';
 
 const COLUMNS = 3;
 const GAP = theme.spacing.md;
@@ -107,6 +108,7 @@ function SignedInWardrobe() {
         <Text style={styles.title}>{tr.wardrobeTitle}</Text>
         <AddButton onPress={() => setAddOpen(true)} />
       </View>
+      <WardrobeSummaryEntry />
       <StatsRow
         stats={stats.data}
         unmatched={unmatched.data?.length}

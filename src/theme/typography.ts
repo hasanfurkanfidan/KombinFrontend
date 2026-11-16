@@ -92,6 +92,13 @@ export const typography = {
     lineHeight: 29,
     fontVariant: tabular,
   },
+  /** The one big figure of a screen (the wardrobe's value on "Dolap özeti"). */
+  priceHero: {
+    fontFamily: fontFamilies.numeric,
+    fontSize: 40,
+    lineHeight: 44,
+    fontVariant: tabular,
+  },
   /** "Sana uygun %N". */
   match: {
     fontFamily: fontFamilies.numeric,

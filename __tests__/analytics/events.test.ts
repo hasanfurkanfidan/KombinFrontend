@@ -51,6 +51,9 @@ const BACKEND_TABLE: Record<string, { required: string[]; optional: string[] }> 
   },
   trip_plan_view: { required: ['days', 'source'], optional: [] },
   trip_gap_click: { required: ['slot'], optional: [] },
+  wardrobe_summary_view: { required: ['pieceCount', 'unwornCount', 'hasEstimate'], optional: [] },
+  size_prompt_view: { required: ['promptId'], optional: [] },
+  size_prompt_answer: { required: ['promptId', 'answer'], optional: [] },
 };
 
 describe('event allow-list', () => {

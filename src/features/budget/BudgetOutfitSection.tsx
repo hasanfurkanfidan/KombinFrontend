@@ -11,6 +11,7 @@ import { theme } from '@/theme';
 import { formatTry, toNumber } from '@/utils/money';
 
 import { toFigurePiece } from './pieces';
+import { shippingNote } from './shipping';
 
 interface BudgetOutfitSectionProps {
   outfit: BudgetOutfit;
@@ -67,6 +68,7 @@ export function BudgetOutfitSection({
     return source ? (
       <PieceLabel
         piece={source}
+        shippingNote={shippingNote(source)}
         signedIn={signedIn}
         onBuy={() => onBuy(source)}
         onAddSize={onAddSize}
@@ -135,13 +137,21 @@ export function BudgetOutfitSection({
 
 interface PieceLabelProps {
   piece: BudgetPiece;
+  /** "kargo dahil" under the price, when the contract says so (see `shipping.ts`); `null` draws nothing. */
+  shippingNote?: string | null;
   signedIn: boolean;
   onBuy: () => void;
   onAddSize: () => void;
 }
 
 /** The label beside a well: an owned piece says so; a piece to buy shows its price and seller and is the buy link. */
-function PieceLabel({ piece, signedIn, onBuy, onAddSize }: PieceLabelProps) {
+export function PieceLabel({
+  piece,
+  shippingNote: note,
+  signedIn,
+  onBuy,
+  onAddSize,
+}: PieceLabelProps) {
   if (piece.source === 'Wardrobe') {
     return (
       <>
@@ -169,6 +179,11 @@ function PieceLabel({ piece, signedIn, onBuy, onAddSize }: PieceLabelProps) {
             {piece.name}
           </Text>
           <Text style={styles.price}>{price}</Text>
+          {note ? (
+            <Text style={styles.sizeText} testID={`budget-shipping-${piece.slot}`}>
+              {note}
+            </Text>
+          ) : null}
           <Text style={styles.seller}>
             {seller ? `${seller} · ` : ''}
             <Text style={styles.buyWord}>{tr.budgetBuy}</Text>

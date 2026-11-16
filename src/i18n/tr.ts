@@ -1031,4 +1031,64 @@ export const tr = {
   tripNotFound: 'Bu valiz bulunamadı',
   tripLoadFailed: 'Valiz yüklenemedi',
   tripPlannedAt: (date: string) => `Son planlama: ${date}`,
+
+  // Dolap özeti (wardrobe summary)
+  wardrobeSummaryEntryTitle: 'Dolap özeti',
+  wardrobeSummaryEntryBody: 'Dolabının değeri, giyim başına maliyet, giymediklerin',
+  wardrobeSummaryTitle: 'Dolap özeti',
+  wardrobeSummaryLoadFailed: 'Dolap özeti yüklenemedi',
+  wardrobeSummaryAdd: 'Parça ekle',
+  wardrobeValueLabel: 'Dolabının değeri',
+  wardrobeEstimated: 'tahmini',
+  wardrobeValuePriced: (count: number) => `${count} parçanın fiyatı kayıtlı`,
+  wardrobeValueEstimated: (count: number) => `${count} parçanın fiyatı tahmini`,
+  wardrobeValueUnpriced: (count: number) => `${count} parçanın fiyatı yok`,
+  wardrobeValueAddPrices: 'Fiyat eklemek için dolabı aç',
+  wardrobeValueByCategory: 'Türe göre',
+  wardrobeCategoryPieces: (count: number) => `${count} parça`,
+  wardrobeCategoryNoPrice: 'fiyatı yok',
+  wardrobeCostPerWearTitle: 'Giyim başına maliyet',
+  wardrobeCostPerWearBody:
+    'Fiyatı giydiğin sayıya böldük. Bir parçayı ne kadar çok giyersen, her giyişin o kadar ucuza gelir.',
+  wardrobeCostPerWearEmpty:
+    'Bir parçayı giyip “Bugün giydim” dediğinde, giyim başına maliyetini burada görürsün.',
+  wardrobeCostPerWearCount: (count: number) => `${count} kez giyildi`,
+  wardrobeCostPerWearEstimated: 'tahmini fiyat',
+  wardrobeCostPerWearUnit: 'giyim başına',
+  wardrobeUnwornTitle: 'Giymediklerin',
+  wardrobeUnwornLead: (count: number) =>
+    `30 günden uzun süredir dolabında olup hiç giymediğin ${count} parça`,
+  wardrobeUnwornDays: (days: number) => `${days} gündür dolabında`,
+  wardrobeUnwornBuy: 'Satın al',
+  wardrobeUnwornBuyLabel: (name: string, seller: string, price: string) =>
+    `Satın al: ${name}, ${seller}, ${price}`,
+
+  // Beden hafızası (the "did the size fit?" question on Keşfet)
+  sizePromptAsk: '— aldın mı?',
+  sizePromptBought: 'Aldım',
+  sizePromptNotBought: 'Almadım',
+  sizePromptNever: 'Bu ürün için sorma',
+  sizePromptHowQuestion: 'Oldu mu?',
+  sizePromptFits: 'Oldu',
+  sizePromptTooSmall: 'Küçük geldi',
+  sizePromptTooLarge: 'Büyük geldi',
+  sizePromptSizeTitle: (brand: string) => `${brand} için hangi bedeni aldın?`,
+  sizePromptSizeOption: (size: string) => `${size} beden`,
+  sizePromptSizeField: 'Beden',
+  sizePromptSizePlaceholder: 'Örnek: M',
+  sizePromptSizeSave: 'Kaydet',
+  sizePromptSizeBack: 'Vazgeç',
+  sizePromptSizeRequired: 'Aldığın bedeni yaz',
+  sizePromptSavedFits: (brand: string, size: string) =>
+    `${brand} için bedenin ${size} olarak kaydedildi`,
+  sizePromptSavedNote: (brand: string) => `Teşekkürler, ${brand} için not aldık`,
+  sizePromptSavedNotBought: 'Tamam, teşekkürler',
+  sizePromptSavedNever: 'Tamam, bu ürün için bir daha sormayacağız',
+  sizePromptsToggle: 'Beden sorularını göster',
+  sizePromptsToggleCaption:
+    'Satın almaya gittiğin ürünün bedeni uydu mu diye birkaç gün sonra sorarız.',
+  sizePromptsToggleFailed: 'Ayar kaydedilemedi, tekrar dene',
+
+  // Budget: a line under a piece's price once the contract says shipping is in it
+  budgetShippingIncluded: 'kargo dahil',
 } as const;
