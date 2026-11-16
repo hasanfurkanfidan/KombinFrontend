@@ -45,8 +45,18 @@ describe('the "kargo dahil" line under a piece’s price', () => {
     expect(screen.queryByText('kargo dahil')).toBeNull();
   });
 
-  it('stays off until the contract has the field: the switch is false and no piece gets a note', async () => {
-    expect(SHIPPING_NOTE_ENABLED).toBe(false);
-    expect(shippingNote(boughtPiece())).toBeNull();
+  it('says "kargo dahil" for a free-shipping offer', () => {
+    expect(SHIPPING_NOTE_ENABLED).toBe(true);
+    expect(shippingNote(boughtPiece())).toBe('kargo dahil');
+  });
+
+  it('names the fee when the price already carries one', () => {
+    const piece = boughtPiece();
+    const withFee = { ...piece, offer: piece.offer && { ...piece.offer, shippingCost: 49.9 } };
+    expect(shippingNote(withFee)).toBe('49,90 ₺ kargo dahil');
+  });
+
+  it('has no note for an owned piece, which has no offer', () => {
+    expect(shippingNote(boughtPiece({ offer: null }))).toBeNull();
   });
 });

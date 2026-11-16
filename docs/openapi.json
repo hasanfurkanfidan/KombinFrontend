@@ -1201,6 +1201,16 @@
                 }
               }
             }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
           }
         }
       }
@@ -6871,7 +6881,8 @@
           "seller",
           "price",
           "originalPrice",
-          "goPath"
+          "goPath",
+          "shippingCost"
         ],
         "type": "object",
         "properties": {
@@ -6908,8 +6919,17 @@
           },
           "goPath": {
             "type": "string"
+          },
+          "shippingCost": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "double"
           }
-        }
+        },
+        "description": "The offer a bought piece comes from. `Price` includes shipping (`ShippingCost`, 0 when free: the app says \"kargo dahil\"); `OriginalPrice`\nis the seller's crossed-out price on the same basis (list price plus the same shipping), present only with a real saving."
       },
       "BudgetOutfitResponse": {
         "required": [

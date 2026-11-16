@@ -65,20 +65,37 @@ jest.mock('expo-image-manipulator', () => ({
   manipulateAsync: jest.fn(async (uri: string) => ({ uri: `${uri}#resized`, width: 1, height: 1 })),
 }));
 
-// Native file access for the photo upload: tests give `getInfoAsync`/`uploadAsync` their own answers.
-jest.mock('expo-file-system/legacy', () => ({
-  FileSystemUploadType: { BINARY_CONTENT: 0, MULTIPART: 1 },
-  cacheDirectory: 'file:///cache/',
-  deleteAsync: jest.fn(async () => undefined),
-  getInfoAsync: jest.fn(async (uri: string) => ({
-    exists: true,
-    uri,
-    size: 321_000,
-    isDirectory: false,
-    modificationTime: 0,
-  })),
-  uploadAsync: jest.fn(async () => ({ status: 200, headers: {}, mimeType: null, body: '' })),
-}));
+// Native file access for the photo upload: tests give `getInfoAsync`/`uploadAsync` their own answers. The document
+// folder is an in-memory map (the remembered worn outfit is the one thing the app writes there).
+jest.mock('expo-file-system/legacy', () => {
+  const files = new Map<string, string>();
+  return {
+    FileSystemUploadType: { BINARY_CONTENT: 0, MULTIPART: 1 },
+    cacheDirectory: 'file:///cache/',
+    documentDirectory: 'file:///documents/',
+    readAsStringAsync: jest.fn(async (uri: string) => {
+      const content = files.get(uri);
+      if (content === undefined) {
+        throw new Error(`File ${uri} could not be read`);
+      }
+      return content;
+    }),
+    writeAsStringAsync: jest.fn(async (uri: string, content: string) => {
+      files.set(uri, content);
+    }),
+    deleteAsync: jest.fn(async (uri: string) => {
+      files.delete(uri);
+    }),
+    getInfoAsync: jest.fn(async (uri: string) => ({
+      exists: true,
+      uri,
+      size: 321_000,
+      isDirectory: false,
+      modificationTime: 0,
+    })),
+    uploadAsync: jest.fn(async () => ({ status: 200, headers: {}, mimeType: null, body: '' })),
+  };
+});
 
 // The new file API: the Lens upload appends a `File` (a Blob that `expo/fetch` reads through `bytes()`) to its FormData.
 jest.mock('expo-file-system', () => ({

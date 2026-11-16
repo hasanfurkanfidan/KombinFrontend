@@ -13,6 +13,8 @@ import {
 import { listPersonas } from '@/api/endpoints/profile';
 import { useToastStore } from '@/components/toastStore';
 import { DailyOutfitScreen } from '@/features/outfits/DailyOutfitScreen';
+import { istanbulDay } from '@/features/outfits/homeCard';
+import { usePrefsStore } from '@/session/prefsStore';
 
 import { dailyOutfit, needsOneOutfit, outfit, outfitPiece, persona } from '../../fixtures';
 import { renderWithQuery, resetSession, signedInSession } from '../../testUtils';
@@ -32,6 +34,7 @@ beforeEach(async () => {
   jest.clearAllMocks();
   useToastStore.getState().hide();
   await resetSession();
+  usePrefsStore.getState().reset();
   jest.mocked(useLocalSearchParams).mockReturnValue({});
   jest.mocked(listPersonas).mockResolvedValue({
     items: [persona({ id: 'pe1', name: 'Ofis', isActive: true })],
@@ -108,6 +111,35 @@ describe('daily outfit with everything in the wardrobe (Complete)', () => {
     await waitFor(() =>
       expect(within(screen.getByTestId('outfit-wear')).getByText('Bugün giydin')).toBeTruthy(),
     );
+  });
+
+  it('"Bugün giydim" settles Keşfet’s card for today’s outfit, through the same stored value', async () => {
+    const today = istanbulDay(new Date());
+    const current = outfit({ id: 'worn-here', date: today, seed: 3 });
+    dailyMock.mockResolvedValue(dailyOutfit({ outfit: current, alternatives: [] }));
+    wearMock.mockResolvedValue({ ...current, wornAt: '2026-11-02T09:00:00Z' });
+    await renderWithQuery(<DailyOutfitScreen />);
+
+    await fireEvent.press(await screen.findByTestId('outfit-wear'));
+
+    await waitFor(() =>
+      expect(usePrefsStore.getState().homeCardWorn).toEqual({ day: today, outfitId: 'worn-here' }),
+    );
+  });
+
+  it('wearing tomorrow’s outfit does not settle today’s card', async () => {
+    const current = outfit({ id: 'worn-tomorrow', date: '2999-01-01' });
+    dailyMock.mockResolvedValue(dailyOutfit({ outfit: current, alternatives: [] }));
+    wearMock.mockResolvedValue({ ...current, wornAt: '2026-11-02T09:00:00Z' });
+    await renderWithQuery(<DailyOutfitScreen />);
+
+    await fireEvent.press(await screen.findByTestId('outfit-wear'));
+
+    await waitFor(() => expect(wearMock).toHaveBeenCalledTimes(1));
+    await waitFor(() =>
+      expect(within(screen.getByTestId('outfit-wear')).getByText('Bugün giydin')).toBeTruthy(),
+    );
+    expect(usePrefsStore.getState().homeCardWorn).toBeNull();
   });
 
   it('refetches with the chosen occasion, from seed 0', async () => {

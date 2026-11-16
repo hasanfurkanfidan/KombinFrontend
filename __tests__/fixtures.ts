@@ -768,6 +768,7 @@ export function boughtPiece(overrides: Partial<BudgetPiece> = {}): BudgetPiece {
       price: 899,
       originalPrice: null,
       goPath: '/api/v1/go/o-bp1?src=budget',
+      shippingCost: 0,
     },
     size: 'M',
     ...overrides,

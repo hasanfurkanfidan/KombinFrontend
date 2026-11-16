@@ -1660,6 +1660,10 @@ export interface components {
             name: string;
             slug: string;
         };
+        /**
+         * @description The offer a bought piece comes from. `Price` includes shipping (`ShippingCost`, 0 when free: the app says "kargo dahil"); `OriginalPrice`
+         *     is the seller's crossed-out price on the same basis (list price plus the same shipping), present only with a real saving.
+         */
         BudgetOfferResponse: {
             /** Format: uuid */
             offerId: string;
@@ -1669,6 +1673,8 @@ export interface components {
             /** Format: double */
             originalPrice: null | number | string;
             goPath: string;
+            /** Format: double */
+            shippingCost: number | string;
         };
         /**
          * @description A budget outfit. `Id` and `Status` exist for a signed-in caller (the outfit is stored: save, worn, feedback and dismiss work on it).
@@ -4704,6 +4710,15 @@ export interface operations {
             };
             /** @description Unauthorized */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Conflict */
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };
