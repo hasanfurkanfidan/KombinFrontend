@@ -14,6 +14,7 @@ import {
   getWardrobeItem,
   getWardrobePairings,
   getWardrobeStats,
+  getWardrobeSummary,
   listWardrobeItems,
   recordWear,
   undoWear,
@@ -60,6 +61,16 @@ export function useWardrobeStats() {
   return useQuery({
     queryKey: queryKeys.wardrobeStats,
     queryFn: ({ signal }) => getWardrobeStats(signal),
+    enabled: isSignedIn,
+  });
+}
+
+/** "Dolap özeti": value, cost per wear and the pieces never worn. Cached under `wardrobe`, so any change refetches it. */
+export function useWardrobeSummary() {
+  const { isSignedIn } = useSession();
+  return useQuery({
+    queryKey: queryKeys.wardrobeSummary,
+    queryFn: ({ signal }) => getWardrobeSummary(signal),
     enabled: isSignedIn,
   });
 }

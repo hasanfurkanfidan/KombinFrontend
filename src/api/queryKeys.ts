@@ -44,6 +44,11 @@ export const queryKeys = {
   /** Every ready item that pairs with nothing, across all pages (the third stat card and its filter). */
   wardrobeUnmatched: ['wardrobe', 'unmatched'] as const,
   wardrobeGaps: ['wardrobe', 'gaps'] as const,
+  /** Under `wardrobe`, so every wardrobe change (a price, a wear, a new piece) refetches the summary too. */
+  wardrobeSummary: ['wardrobe', 'summary'] as const,
+
+  /** The open "did the size fit?" questions. Own root: answering one must not refetch the wardrobe. */
+  sizePrompts: ['size-prompts'] as const,
 
   /** Prefix of everything about outfits (daily, how-to-wear, single, saved). */
   outfitsAll: ['outfits'] as const,

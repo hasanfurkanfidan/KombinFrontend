@@ -11,6 +11,7 @@ export default function RootLayout() {
         <Stack.Screen name="notifications" />
         <Stack.Screen name="profile/sizes" />
         <Stack.Screen name="wardrobe/[id]" />
+        <Stack.Screen name="wardrobe/summary" />
         <Stack.Screen name="outfits/daily" />
         <Stack.Screen name="outfits/how-to-wear" />
         <Stack.Screen name="outfits/budget" />

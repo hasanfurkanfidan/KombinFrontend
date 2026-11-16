@@ -112,6 +112,16 @@ describe('Dolap grid', () => {
     expect(router.push).toHaveBeenLastCalledWith('/trips');
   });
 
+  it('opens "Dolap özeti" from a bordered row at the top, above the grid', async () => {
+    await renderWithQuery(<WardrobeScreen />);
+
+    const entry = await screen.findByTestId('wardrobe-summary-entry');
+    expect(entry).toHaveTextContent(/^Dolap özeti/);
+    expect(entry.props.accessibilityRole).toBe('button');
+    await fireEvent.press(entry);
+    expect(router.push).toHaveBeenLastCalledWith('/wardrobe/summary');
+  });
+
   it('shows processing and failed pieces differently, a pairing caption under the rest, and a dashed "+" last', async () => {
     await renderWithQuery(<WardrobeScreen />);
 

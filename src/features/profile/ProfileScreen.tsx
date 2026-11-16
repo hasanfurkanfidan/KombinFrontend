@@ -10,6 +10,7 @@ import { ErrorState } from '@/components/ErrorState';
 import { Icon } from '@/components/Icon';
 import { Screen } from '@/components/Screen';
 import { Skeleton } from '@/components/Skeleton';
+import { ToggleRow } from '@/components/ToggleRow';
 import { MAX_PERSONAS, usePersonas } from '@/features/personas/hooks';
 import { personaCaption } from '@/features/personas/caption';
 import { openLegalPage } from '@/features/legal/legal';
@@ -18,6 +19,7 @@ import { swatchColor } from '@/features/personas/swatches';
 import { PreferencesSheet } from '@/features/notifications/PreferencesSheet';
 import { useSavedIds } from '@/features/saved/hooks';
 import { useCreatorStats } from '@/features/social/hooks';
+import { useSetSizePrompts } from '@/features/sizePrompts/hooks';
 import { useSizes } from '@/features/sizes/hooks';
 import { tr } from '@/i18n/tr';
 import { signOut, useSession } from '@/session/useSession';
@@ -35,6 +37,8 @@ export function ProfileScreen() {
   const me = useMe();
   const profile = useProfile();
   const personas = usePersonas();
+  const setSizePrompts = useSetSizePrompts();
+  const currentProfile = profile.data;
   const savedIds = useSavedIds();
   const sizes = useSizes();
   // Only a creator gets "Kazançlarım": the stats answer 403 for everyone else.
@@ -133,6 +137,19 @@ export function ProfileScreen() {
               onPress={() => router.push('/profile/sizes')}
               testID="profile-size-map"
             />
+            {currentProfile ? (
+              <View style={[styles.toggleRow, styles.settingsDivider]}>
+                <ToggleRow
+                  title={tr.sizePromptsToggle}
+                  caption={tr.sizePromptsToggleCaption}
+                  value={currentProfile.sizePromptsEnabled}
+                  onChange={(enabled) =>
+                    setSizePrompts.mutate({ profile: currentProfile, enabled })
+                  }
+                  testID="profile-size-prompts"
+                />
+              </View>
+            ) : null}
             <SettingsRow
               title={tr.profileSavedOutfits}
               caption={tr.profileSavedOutfitsCaption}
@@ -395,6 +412,10 @@ const styles = StyleSheet.create({
     gap: theme.spacing.md,
     paddingHorizontal: theme.spacing.lg,
     paddingVertical: theme.spacing.md,
+  },
+  toggleRow: {
+    paddingHorizontal: theme.spacing.lg,
+    paddingVertical: theme.spacing.xs,
   },
   deleteAccount: {
     minHeight: theme.sizes.touch,

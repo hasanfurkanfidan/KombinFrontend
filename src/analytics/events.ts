@@ -9,6 +9,7 @@ import type {
   PostTagKind,
   PostVisibility,
   ReportReason,
+  SizePromptAnswer,
 } from '@/api/models';
 
 /**
@@ -99,6 +100,12 @@ export interface EventProps {
   trip_plan_view: { days: number; source: 'plan' | 'saved' };
   /** "Satın al" on a gap's suggestion; the slot of the suggested piece. */
   trip_gap_click: { slot: OutfitSlot };
+  /** "Dolap özeti" is on screen. Counts and one flag, never an amount; the backend caps both counts at 2000. */
+  wardrobe_summary_view: { pieceCount: number; unwornCount: number; hasEstimate: boolean };
+  /** A "did the size fit?" question came on screen (once per question). */
+  size_prompt_view: { promptId: string };
+  /** The question was answered; `answer` is the enum name, never the size. */
+  size_prompt_answer: { promptId: string; answer: SizePromptAnswer };
 }
 
 export type EventName = keyof EventProps;
@@ -158,6 +165,12 @@ export const EVENT_KEYS: Record<EventName, KeySpec> = {
   },
   trip_plan_view: { required: ['days', 'source'], optional: [] },
   trip_gap_click: { required: ['slot'], optional: [] },
+  wardrobe_summary_view: {
+    required: ['pieceCount', 'unwornCount', 'hasEstimate'],
+    optional: [],
+  },
+  size_prompt_view: { required: ['promptId'], optional: [] },
+  size_prompt_answer: { required: ['promptId', 'answer'], optional: [] },
 };
 
 /** Property keys that name personal data; refused on every event. */

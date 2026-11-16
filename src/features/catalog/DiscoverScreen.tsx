@@ -17,6 +17,7 @@ import { NotificationBell } from '@/features/notifications/NotificationBell';
 import { DailyCard } from '@/features/outfits/DailyCard';
 import { useMe } from '@/features/profile/hooks';
 import { SearchEntry } from '@/features/search/SearchField';
+import { SizePromptCard } from '@/features/sizePrompts/SizePromptCard';
 import { useSession } from '@/session/useSession';
 import { theme } from '@/theme';
 import { formatLongDay } from '@/utils/dates';
@@ -197,6 +198,7 @@ function DiscoverHeader({ filters, onChangeFilters, personaId }: DiscoverHeaderP
       <SearchEntry />
 
       <StyleSwitcher />
+      <SizePromptCard />
       <DailyCard />
       <BudgetEntry />
 

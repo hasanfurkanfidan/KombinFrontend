@@ -6,7 +6,7 @@ import type { Offer } from '@/api/models';
 
 /** Where a buy click comes from; the backend records it with the click. */
 export type ClickSource =
-  'product_detail' | 'saved' | 'alert' | 'outfit' | 'feed' | 'budget' | 'trip';
+  'product_detail' | 'saved' | 'alert' | 'outfit' | 'feed' | 'budget' | 'trip' | 'wardrobe_summary';
 
 /**
  * The only way the app sends a user to a seller: the backend's `/go` redirect, built from the offer's `goPath`.
@@ -19,6 +19,14 @@ export type ClickSource =
  */
 export function isGoPath(goPath: string): boolean {
   return /^\/api\/v1\/go\/[A-Za-z0-9-]+(\?[^#\s]*)?$/.test(goPath);
+}
+
+/**
+ * The offer id inside a `goPath` (`/api/v1/go/{offerId}`), for the `buy_click` event of a link that comes without an
+ * offer object (the wardrobe's unlock suggestion). Reading an id from the API's own path builds no seller URL.
+ */
+export function offerIdFromGoPath(goPath: string): string | null {
+  return /^\/api\/v1\/go\/([A-Za-z0-9-]+)/.exec(goPath)?.[1] ?? null;
 }
 
 export function buildGoUrl(

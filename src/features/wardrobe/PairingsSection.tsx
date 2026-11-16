@@ -26,7 +26,7 @@ export const groupLabels: Record<OutfitSlot, string> = {
 };
 
 /** Lowercase, for the middle of a sentence ("Bir ayakkabı ekle"). */
-const slotWords: Record<OutfitSlot, string> = {
+export const slotWords: Record<OutfitSlot, string> = {
   Top: tr.pairingsSlotTop,
   Bottom: tr.pairingsSlotBottom,
   Outerwear: tr.pairingsSlotOuterwear,
