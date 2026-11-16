@@ -1,23 +1,23 @@
 import type { BudgetPiece } from '@/api/models';
 import { tr } from '@/i18n/tr';
+import { formatAmount, toNumber } from '@/utils/money';
 
 /**
- * THE SWITCH for the "kargo dahil" line under a bought piece's price on the budget screen.
- *
- * The backend is adding `shippingCost` to the budget offer; it is not in `docs/openapi.json` yet, so no type or
- * field is invented here. When the contract has it: regenerate the types (`npm run api:types`), read the field in
- * `shippingNote` below, and set this to `true`. Nothing else changes: `BudgetOutfitSection` already passes the note
- * to the piece row, which already draws it.
+ * THE SWITCH for the line under a bought piece's price on the budget screen. The contract's `BudgetOfferResponse`
+ * carries `shippingCost` and says `price` already includes it, so the line is always true for a bought piece.
  */
-export const SHIPPING_NOTE_ENABLED = false;
+export const SHIPPING_NOTE_ENABLED = true;
 
-/** The line to show under the price of one piece ("kargo dahil"), or `null` for none. */
+/**
+ * The line to show under the price of one piece, or `null` for none (an owned piece has no offer): "kargo dahil" when
+ * the seller ships free, "{x} ₺ kargo dahil" when the price already carries the shipping fee.
+ */
 export function shippingNote(piece: BudgetPiece): string | null {
-  if (!SHIPPING_NOTE_ENABLED) {
+  if (!SHIPPING_NOTE_ENABLED || !piece.offer) {
     return null;
   }
-  // TODO(contract): decide from the offer's `shippingCost` once it exists, e.g.
-  //   return piece.offer && piece.offer.shippingCost === 0 ? tr.budgetShippingIncluded : null;
-  void piece;
-  return tr.budgetShippingIncluded;
+  const shipping = toNumber(piece.offer.shippingCost);
+  return shipping > 0
+    ? tr.budgetShippingWithFee(formatAmount(shipping))
+    : tr.budgetShippingIncluded;
 }

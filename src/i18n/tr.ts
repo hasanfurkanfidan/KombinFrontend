@@ -1091,4 +1091,5 @@ export const tr = {
 
   // Budget: a line under a piece's price once the contract says shipping is in it
   budgetShippingIncluded: 'kargo dahil',
+  budgetShippingWithFee: (amount: string) => `${amount} ₺ kargo dahil`,
 } as const;
