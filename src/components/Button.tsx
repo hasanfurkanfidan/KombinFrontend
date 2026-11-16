@@ -22,6 +22,11 @@ interface ButtonProps {
   trailingIcon?: IconName;
   /** Drawn before the label (a brand mark); the caller owns its colour. */
   leading?: ReactNode;
+  /**
+   * Lets a long label wrap and the button grow past its fixed height (large text sizes); without it the label stays on
+   * one line at the fixed height. For buttons that sit in a row beside another one.
+   */
+  wrap?: boolean;
   style?: StyleProp<ViewStyle>;
   testID?: string;
 }
@@ -42,6 +47,7 @@ export function Button({
   disabled = false,
   trailingIcon,
   leading,
+  wrap = false,
   style,
   testID,
 }: ButtonProps) {
@@ -56,14 +62,23 @@ export function Button({
       disabled={inactive}
       onPress={onPress}
       testID={testID}
-      style={[styles.base, styles[variant], disabled && styles.disabled, style]}
+      style={[
+        styles.base,
+        styles[variant],
+        wrap && (variant === 'quiet' ? styles.wrapQuiet : styles.wrap),
+        disabled && styles.disabled,
+        style,
+      ]}
     >
       {loading ? (
         <ActivityIndicator color={foreground} />
       ) : (
         <>
           {leading}
-          <Text style={[styles.label, { color: foreground }]} numberOfLines={1}>
+          <Text
+            style={[styles.label, wrap && styles.wrapLabel, { color: foreground }]}
+            numberOfLines={wrap ? undefined : 1}
+          >
             {label}
           </Text>
           {trailingIcon ? <Icon name={trailingIcon} size={18} color={foreground} /> : null}
@@ -100,6 +115,21 @@ const styles = StyleSheet.create({
     height: theme.sizes.touch,
     paddingHorizontal: theme.spacing.sm,
     borderRadius: theme.radius.control,
+  },
+  wrap: {
+    height: undefined,
+    minHeight: theme.sizes.buttonHeight,
+    paddingVertical: theme.spacing.sm,
+    paddingHorizontal: theme.spacing.md,
+  },
+  wrapQuiet: {
+    height: undefined,
+    minHeight: theme.sizes.touch,
+    paddingVertical: theme.spacing.xs,
+  },
+  wrapLabel: {
+    flexShrink: 1,
+    textAlign: 'center',
   },
   disabled: {
     opacity: 0.4,

@@ -18,12 +18,18 @@ interface PrefsState {
    * which is enough for "what did I just look for" and keeps search terms off the disk.
    */
   recentSearches: string[];
+  /**
+   * The local day (`yyyy-MM-dd`) on which the user marked the outfit worn from Keşfet's card, so the card moves on to
+   * tomorrow for the rest of that day, even after the app comes back from the background. Memory only.
+   */
+  homeCardWornDay: string | null;
   skipOnboarding: () => void;
   setPushToken: (token: string | null) => void;
   markPushPromptShown: () => void;
   /** Moves `term` to the front (case-insensitive duplicates go) and keeps the newest eight. */
   addRecentSearch: (term: string) => void;
   clearRecentSearches: () => void;
+  markHomeCardWorn: (day: string) => void;
   reset: () => void;
 }
 
@@ -32,6 +38,7 @@ const initial = {
   pushToken: null,
   pushPromptShown: false,
   recentSearches: [] as string[],
+  homeCardWornDay: null as string | null,
 };
 
 export const usePrefsStore = create<PrefsState>((set) => ({
@@ -53,5 +60,6 @@ export const usePrefsStore = create<PrefsState>((set) => ({
     }));
   },
   clearRecentSearches: () => set({ recentSearches: [] }),
+  markHomeCardWorn: (homeCardWornDay) => set({ homeCardWornDay }),
   reset: () => set(initial),
 }));

@@ -1,4 +1,5 @@
 import { track } from '@/analytics';
+import { recordOutfitFeedback } from '@/api/endpoints/outfits';
 import type { Outfit, OutfitPiece } from '@/api/models';
 import { showToast } from '@/components/toastStore';
 import { openOffer } from '@/features/catalog/buy';
@@ -6,6 +7,48 @@ import { useActivePersona } from '@/features/personas/hooks';
 import { tr } from '@/i18n/tr';
 
 import { useSaveOutfit, useWearOutfit } from './hooks';
+
+export interface WearOptions {
+  /** Skip the "Bugün giydin" toast, for a screen that already shows the settled state. */
+  quiet?: boolean;
+  /** Called once the backend has the outfit as worn. */
+  onWorn?: () => void;
+}
+
+/** The "shuffle" report of the daily screen and the home card: the event, then the backend's feedback (best effort). */
+export function reportShuffle(outfit: Outfit | null | undefined): void {
+  track('outfit_shuffle', {});
+  if (outfit) {
+    track('outfit_feedback', { action: 'Shuffle' });
+    // The backend only records it; a failure changes nothing for the user.
+    void recordOutfitFeedback(outfit.id, { action: 'Shuffle', reason: null }).catch(
+      () => undefined,
+    );
+  }
+}
+
+/**
+ * "Bugün giydim" for any outfit: the one path the outfit sheet and the home card share (event, request, cache patch,
+ * toasts). `wearing` is true while the request is out.
+ */
+export function useWear() {
+  const wear = useWearOutfit();
+  return {
+    wearing: wear.isPending,
+    wear: (id: string, options: WearOptions = {}) => {
+      track('outfit_feedback', { action: 'Worn' });
+      wear.mutate(id, {
+        onSuccess: () => {
+          if (!options.quiet) {
+            showToast(tr.outfitWornToast);
+          }
+          options.onWorn?.();
+        },
+        onError: () => showToast(tr.outfitActionFailed),
+      });
+    },
+  };
+}
 
 export interface OutfitActions {
   saved: boolean;
@@ -21,14 +64,14 @@ export interface OutfitActions {
 /** Save, wear and buy for one outfit; each reports its `outfit_feedback` / `outfit_gap_click` event. */
 export function useOutfitActions(outfit: Outfit): OutfitActions {
   const save = useSaveOutfit();
-  const wear = useWearOutfit();
+  const wear = useWear();
   const personaId = useActivePersona()?.id;
 
   return {
     saved: outfit.savedAt !== null,
     worn: outfit.wornAt !== null,
     saving: save.isPending,
-    wearing: wear.isPending,
+    wearing: wear.wearing,
     save: () => {
       track('outfit_feedback', { action: 'Save' });
       save.mutate(outfit.id, {
@@ -36,13 +79,7 @@ export function useOutfitActions(outfit: Outfit): OutfitActions {
         onError: () => showToast(tr.outfitActionFailed),
       });
     },
-    wear: () => {
-      track('outfit_feedback', { action: 'Worn' });
-      wear.mutate(outfit.id, {
-        onSuccess: () => showToast(tr.outfitWornToast),
-        onError: () => showToast(tr.outfitActionFailed),
-      });
-    },
+    wear: () => wear.wear(outfit.id),
     buy: (piece) => {
       if (!piece.offer) {
         return;

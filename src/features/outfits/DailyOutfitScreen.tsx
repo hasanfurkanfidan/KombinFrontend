@@ -4,7 +4,6 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 
 import { track } from '@/analytics';
 import type { DailyOutfit, Outfit } from '@/api/models';
-import { recordOutfitFeedback } from '@/api/endpoints/outfits';
 import { Button } from '@/components/Button';
 import { Chip } from '@/components/Chip';
 import { EmptyState } from '@/components/EmptyState';
@@ -19,6 +18,7 @@ import { useSession } from '@/session/useSession';
 import { theme } from '@/theme';
 import { formatTry, toNumber } from '@/utils/money';
 
+import { reportShuffle } from './actions';
 import { useDailyOutfit, useDismissOutfit } from './hooks';
 import {
   OCCASIONS,
@@ -84,14 +84,7 @@ function SignedInDaily() {
   const close = () => (router.canGoBack() ? router.back() : router.replace('/'));
 
   const shuffle = () => {
-    track('outfit_shuffle', {});
-    if (outfit) {
-      track('outfit_feedback', { action: 'Shuffle' });
-      // The backend only records it; a failure changes nothing for the user.
-      void recordOutfitFeedback(outfit.id, { action: 'Shuffle', reason: null }).catch(
-        () => undefined,
-      );
-    }
+    reportShuffle(outfit);
     setSeeds(shuffleSeed);
     setDismissed([]);
   };
