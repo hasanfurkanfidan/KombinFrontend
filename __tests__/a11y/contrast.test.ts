@@ -61,15 +61,8 @@ const GRAPHICS: Pair[] = [
   ['primary', 'primarySoft'],
   ['muted', 'bg'],
   ['ink', 'bg'],
-];
-
-/**
- * Known and decided: a control border on a `surface` panel (2.79:1) is carried by the control's white fill, a decision
- * recorded in `docs/design/identity.md`. The floor keeps it from getting worse; the audit lists the darker value the
- * owner could choose (`#858C86`, 3.10:1).
- */
-const ACCEPTED_BELOW_3: { pair: Pair; floor: number }[] = [
-  { pair: ['control', 'surface'], floor: 2.75 },
+  // Owner's decision 16.11.2026: `control` darkened to `#858C86` so a border on a `surface` panel passes too.
+  ['control', 'surface'],
 ];
 
 describe('contrast of the theme tokens', () => {
@@ -81,17 +74,11 @@ describe('contrast of the theme tokens', () => {
     expect(contrast(c[foreground], c[background])).toBeGreaterThanOrEqual(3);
   });
 
-  it.each(ACCEPTED_BELOW_3)('keeps the accepted pair $pair above its floor', ({ pair, floor }) => {
-    const ratio = contrast(c[pair[0]], c[pair[1]]);
-    expect(ratio).toBeGreaterThanOrEqual(floor);
-    expect(ratio).toBeLessThan(3);
-  });
-
   it('computes the ratios the audit quotes', () => {
     expect(contrast('#000000', '#FFFFFF')).toBeCloseTo(21, 5);
     expect(contrast(c.muted, c.bg)).toBeCloseTo(5.95, 1);
-    expect(contrast(c.control, c.bg)).toBeCloseTo(3.11, 1);
-    expect(contrast(c.control, c.surface)).toBeCloseTo(2.79, 1);
+    expect(contrast(c.control, c.bg)).toBeCloseTo(3.45, 1);
+    expect(contrast(c.control, c.surface)).toBeCloseTo(3.1, 1);
     expect(contrast(c.chalkInk, c.chalk)).toBeCloseTo(7.55, 1);
   });
 });

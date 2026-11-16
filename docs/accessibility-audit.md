@@ -24,11 +24,11 @@ Severity: **blocks** = a core task cannot be done or its failure cannot be notic
 | --------- | ------ | ------ | ------------- |
 | blocks    | 2      | 2      | 0             |
 | hinders   | 35     | 33     | 2             |
-| polish    | 21     | 19     | 2             |
-| **total** | **58** | **54** | **4**         |
+| polish    | 21     | 20     | 1             |
+| **total** | **58** | **55** | **3**         |
 
-Not counted: rows marked "see SC2" (the same defect seen from another screen) and the `ok` rows (checks that passed). The four that are not
-fixed: **X1** (owner decision on a token, below), **K12** (the trip date grid needs a screen reader to judge), **K15** (focus trap and return
+Not counted: rows marked "see SC2" (the same defect seen from another screen) and the `ok` rows (checks that passed). The three that are not
+fixed: **K12** (the trip date grid needs a screen reader to judge), **K15** (focus trap and return
 of about 15 sheets: device) and **O6** (a changed outfit is not announced: device). Another `device` row, **W5**, is a check, not a defect.
 
 ## 1. Shared components (`src/components`)
@@ -54,14 +54,14 @@ of about 15 sheets: device) and **O6** (a changed outfit is not announced: devic
 
 ## 2. Cross-cutting
 
-| ID  | Topic         | Finding                                                                                                                                                                                                                                                              | Severity | Fix                                                                                                   | Status       |
-| --- | ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ----------------------------------------------------------------------------------------------------- | ------------ |
-| X1  | Contrast      | Every text pair passes 4.5:1 (section 4). One graphic pair fails: `control` borders on a `surface` panel are 2.79:1 (3:1 needed). `identity.md` records the owner's decision that the control's white fill carries the edge there, so the token was **not** changed. | polish   | owner decision: `control` `#8D948E` → `#858C86` gives 3.45 on white and 3.10 on `surface` (section 4) | open (owner) |
-| X2  | Text scaling  | 67 `numberOfLines` caps: names, seller, brand, subtitles are cut with an ellipsis at 1.3× and above, so a long product or seller name cannot be read (the answer to "what is this?").                                                                                | hinders  | `lines(n)` returns no cap from font scale 1.3 (one helper, applied at every site)                     | fixed        |
-| X3  | Touch targets | Scan of every pressable's resolved style: **4** below 44 without enough slop: colour swatch (34 + 4 → 42), tag dot (ok with slop), `Chip` width, toast action (36). Everything else is ≥ 44 high and wide.                                                           | polish   | swatch slop 5, chip min width, toast action                                                           | fixed        |
-| X4  | Reduce motion | `PressableScale`, `Shimmer`, `Skeleton` respect it. The onboarding deck still flies the card out (200 ms translate + rotate) and springs back.                                                                                                                       | polish   | exit becomes a plain fade under reduced motion                                                        | fixed        |
-| X5  | Timers        | The toast (2.8 s) and the size card's confirming line (2.5 s) leave on a timer; the size is also visible in Profil > Beden haritam, the toast text only in the toast.                                                                                                | hinders  | `readingTime()`: longer with a screen reader or large text; both announced                            | fixed        |
-| X6  | Colour alone  | Unread notification = filled vs outlined card (and `selected` misused for "unread"); inactive alert = dimmed row. Everything else pairs colour with a word or icon (price drop, sold out, match, error, selected chip).                                              | hinders  | spoken "Okunmamış" / "Alarm kapalı" and a visible "Alarm kapalı" tag                                  | fixed        |
+| ID  | Topic         | Finding                                                                                                                                                                                                                 | Severity | Fix                                                                                           | Status |
+| --- | ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | --------------------------------------------------------------------------------------------- | ------ |
+| X1  | Contrast      | Every text pair passes 4.5:1 (section 4). One graphic pair failed: `control` borders on a `surface` panel were 2.79:1 (3:1 needed).                                                                                     | polish   | owner decision 16.11.2026: `control` `#8D948E` → `#858C86` (3.45 on white, 3.10 on `surface`) | fixed  |
+| X2  | Text scaling  | 67 `numberOfLines` caps: names, seller, brand, subtitles are cut with an ellipsis at 1.3× and above, so a long product or seller name cannot be read (the answer to "what is this?").                                   | hinders  | `lines(n)` returns no cap from font scale 1.3 (one helper, applied at every site)             | fixed  |
+| X3  | Touch targets | Scan of every pressable's resolved style: **4** below 44 without enough slop: colour swatch (34 + 4 → 42), tag dot (ok with slop), `Chip` width, toast action (36). Everything else is ≥ 44 high and wide.              | polish   | swatch slop 5, chip min width, toast action                                                   | fixed  |
+| X4  | Reduce motion | `PressableScale`, `Shimmer`, `Skeleton` respect it. The onboarding deck still flies the card out (200 ms translate + rotate) and springs back.                                                                          | polish   | exit becomes a plain fade under reduced motion                                                | fixed  |
+| X5  | Timers        | The toast (2.8 s) and the size card's confirming line (2.5 s) leave on a timer; the size is also visible in Profil > Beden haritam, the toast text only in the toast.                                                   | hinders  | `readingTime()`: longer with a screen reader or large text; both announced                    | fixed  |
+| X6  | Colour alone  | Unread notification = filled vs outlined card (and `selected` misused for "unread"); inactive alert = dimmed row. Everything else pairs colour with a word or icon (price drop, sold out, match, error, selected chip). | hinders  | spoken "Okunmamış" / "Alarm kapalı" and a visible "Alarm kapalı" tag                          | fixed  |
 
 ## 3. Screens
 
@@ -167,29 +167,18 @@ WCAG 2.2 relative luminance; text needs **4.5**, large text (≥ 24 px, or ≥ 1
 | `chalkInk` (text on chalk, bell badge)     | 9.24    | 8.30         | 7.94             | **7.55**   |
 | `danger` (errors, sold out)                | 6.46    | 5.80         | 5.55             | 5.28       |
 | `chalkLine` (dashed edge, graphic)         | 3.98    | 3.57         | 3.42             | 3.25       |
-| `control` (borders, switch track, graphic) | 3.11    | **2.79**     | 2.67             | 2.54       |
+| `control` (borders, switch track, graphic) | 3.45    | 3.10         | 2.96             | 2.82       |
 
-On fills: `onPrimary` on `primary` 8.75 (pressed 11.25), `onDanger` on `danger` 6.46. Fails: only **`control` on `surface` (2.79 < 3)**: the
-border of a field, chip or switch track that sits on a `surface` panel. Muted text on chalk (4.87) passes narrowly; the test guards it.
+On fills: `onPrimary` on `primary` 8.75 (pressed 11.25), `onDanger` on `danger` 6.46. Fails: nothing. `control` on `surface` was 2.79 and is 3.10 since the owner's change below; on `primarySoft` and `chalk` it is not used for borders. Muted text on chalk (4.87) passes narrowly; the test guards it.
 
-**Token changes: none applied.** The one failing pair is a decision already taken: `docs/design/identity.md` ("Outlined controls on a `surface`
-panel") keeps the `control` border there and lets the control's white fill carry the edge. Changing it would change how every chip, field and
-secondary button looks on a panel, so it is listed for the owner instead:
+**Token change applied (owner's decision, 16.11.2026):** `control` `#8D948E` → `#858C86`.
 
-| Token     | Before                                 | After (proposal)                       |
+| Token     | Before                                 | After                                  |
 | --------- | -------------------------------------- | -------------------------------------- |
 | `control` | `#8D948E`: 3.11 on bg, 2.79 on surface | `#858C86`: 3.45 on bg, 3.10 on surface |
 
-The same neutral grey, 4 % darker; white, moss green `#075726`, chalk `#F7E9A7` and Archivo are untouched. The test
-(`contrast.test.ts`) pins the current pair at a floor of 2.75 and fails if it gets worse; after an owner decision, move the pair from its
-"accepted" list to the 3:1 list.
-
-**Not a token problem, fixed in the component:** the inactive alert row (`opacity: 0.55` over muted text: 2.33:1). Disabled controls
-(0.4 opacity) are exempt by WCAG.
-
-**Over photos** (`onImage` white on the scrim, Lens badges, tag dots): the discount pill is chalk with `chalkInk` text (7.55, passes); Lens
-outlines and badge numbers sit on a filled badge; tag dots have a white ring and an ink core. Judging legibility over an arbitrary photo needs a
-device (below).
+The same neutral grey, 4 % darker; white, moss green `#075726`, chalk `#F7E9A7` and Archivo are untouched, and the white fill of a control
+on a panel still carries its edge. `contrast.test.ts` now requires `control` on `surface` to pass 3:1. `docs/design/identity.md` records it.
 
 ## 5. Headings (SC16)
 
@@ -217,7 +206,7 @@ section, pairing unlock title, the shared `BottomSheet`, `EmptyState`. (Not head
 
 | File                      | What it keeps from regressing                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `contrast.test.ts`        | every text token pair in use ≥ 4.5:1, every graphic pair ≥ 3:1, the one accepted pair (`control` on `surface`) pinned at its floor; the ratios the audit quotes                                                                                                                                                                                                                                                                                                                                |
+| `contrast.test.ts`        | every text token pair in use ≥ 4.5:1, every graphic pair ≥ 3:1, the ratios the audit quotes                                                                                                                                                                                                                                                                                                                                                                                                    |
 | `sourceGuards.test.ts`    | every `Pressable`/`PressableScale` in `src/components` has a role and a name, every `Switch`/`TextInput` a label; the **resolved size of every pressable in `src` is ≥ 44 pt** (style + hit slop); no `allowFontScaling={false}`; `maxFontSizeMultiplier` below 2 only with a comment; no bare `numberOfLines={n}` (use `lines()`); every title-sized `Text` has a `header` role except a listed, reasoned set                                                                                 |
 | `components.test.tsx`     | `Button` keeps its name while loading and grows with large text; `Chip` is 44 wide and wraps; `TextField` error becomes the hint and is announced; `LiveText`, `announce` de-duplication and the iOS/Android split; `AppImage` decorative vs described; `ToastHost` duration (4 s, 8 s, ×2 at large text) and announcement; `ProductCard` name and the bookmark outside the card's button; the outfit figure and mini figure as one described image; `SwipeDeck` one card at a time, announced |
 | `screens.test.tsx`        | `OfferRow` name, hint and sold-out state; `ItemTile` processing/failed/ready names; `TagEditor` dot moves by screen-reader action                                                                                                                                                                                                                                                                                                                                                              |

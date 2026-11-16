@@ -10,7 +10,7 @@ export const colors = {
   /** Hairlines and dividers. */
   line: '#DCE1DC',
   /** Borders of unselected controls (chips, secondary buttons, fields). */
-  control: '#8D948E',
+  control: '#858C86',
   /** Primary text. */
   ink: '#131E15',
   /** Body text on panels, secondary emphasis. */
