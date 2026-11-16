@@ -330,9 +330,9 @@ describe('the plan', () => {
       expect.objectContaining({ gapCount: 1 }),
     );
 
-    // A 52-point button: well over the 44-point minimum.
+    // A button at least 52 points high (it grows with large text): well over the 44-point minimum.
     expect(
-      StyleSheet.flatten(screen.getByTestId('trip-gap-buy-Shoes').props.style).height,
+      StyleSheet.flatten(screen.getByTestId('trip-gap-buy-Shoes').props.style).minHeight,
     ).toBeGreaterThanOrEqual(44);
     await fireEvent.press(screen.getByTestId('trip-gap-buy-Shoes'));
     expect(trackMock).toHaveBeenCalledWith('trip_gap_click', { slot: 'Shoes' });

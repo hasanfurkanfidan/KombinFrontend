@@ -236,7 +236,9 @@ function EmptyWardrobe({ daily, outfit }: { daily: DailyOutfit; outfit: Outfit |
   const router = useRouter();
   return (
     <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
-      <Text style={styles.emptyTitle}>{tr.outfitEmptyWardrobeTitle}</Text>
+      <Text accessibilityRole="header" style={styles.emptyTitle}>
+        {tr.outfitEmptyWardrobeTitle}
+      </Text>
       <Text style={styles.emptyBody}>{daily.message ?? tr.outfitEmptyWardrobeBody}</Text>
       {outfit ? (
         <View style={styles.shopping} testID="shopping-outfit">

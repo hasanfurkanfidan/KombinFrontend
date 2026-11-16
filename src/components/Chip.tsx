@@ -42,7 +42,7 @@ export function Chip({
       disabled={disabled}
       onPress={onPress}
       testID={testID}
-      // The chip is 36 high; the hit slop brings the touch target up to 44.
+      // The chip is 36 high at the default text size; the hit slop brings the touch target up to 44.
       hitSlop={{ top: 4, bottom: 4, left: 2, right: 2 }}
       style={[
         styles.base,
@@ -51,22 +51,25 @@ export function Chip({
       ]}
     >
       {leading}
-      <Text style={[styles.label, { color: foreground }]} numberOfLines={1}>
-        {label}
-      </Text>
+      <Text style={[styles.label, { color: foreground }]}>{label}</Text>
       {dropdown ? <Icon name="chevronDown" size={14} color={foreground} /> : null}
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
+  // A minimum, not a height: at large text the label wraps and the chip grows with it. A one-letter size chip
+  // ("S", "M") is still 44 wide.
   base: {
-    height: theme.sizes.chipHeight,
+    minHeight: theme.sizes.chipHeight,
+    minWidth: theme.sizes.touch,
     borderRadius: theme.radius.control,
     borderWidth: 1,
     paddingHorizontal: theme.spacing.md,
+    paddingVertical: theme.spacing.xs,
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
     gap: theme.spacing.xs,
   },
   selected: {
@@ -82,5 +85,6 @@ const styles = StyleSheet.create({
   },
   label: {
     ...theme.typography.bodyMedium,
+    flexShrink: 1,
   },
 });

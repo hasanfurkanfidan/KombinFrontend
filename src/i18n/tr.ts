@@ -1109,4 +1109,32 @@ export const tr = {
   // Budget: a line under a piece's price once the contract says shipping is in it
   budgetShippingIncluded: 'kargo dahil',
   budgetShippingWithFee: (amount: string) => `${amount} ₺ kargo dahil`,
+
+  // Accessibility (Task A1): spoken names, hints and announcements. Words here follow the glossary like any other copy.
+  a11yLoading: 'Yükleniyor',
+  a11yUnread: 'Okunmamış',
+  a11yAlertOff: 'Alarm kapalı',
+  a11yAlertSettings: 'Alarm ayarları',
+  a11yBuyHint: 'Satıcının sitesi açılır',
+  a11ySearchHint: 'Arama ekranını açar',
+  a11yDeleteHint: 'Önce onay kelimesini yaz',
+  a11yWardrobeFailed: 'Eklenemedi',
+  a11yWardrobeRetryHint: 'Tekrar denemek için dokun',
+  a11yProductPhoto: (name: string, current: number, total: number) =>
+    `${name}, fotoğraf ${current} / ${total}`,
+  a11yPostPhoto: (author: string) => `${author} gönderisinin fotoğrafı`,
+  a11yLensPhoto: 'Seçtiğin fotoğraf',
+  a11yPriceChart: (highest: string, current: string) =>
+    `Son 90 günde en yüksek fiyat ${highest}, şimdi ${current}`,
+  a11yOutfitFigure: (pieces: string) => `Kombin: ${pieces}`,
+  a11yOutfitMissing: (price: string) => (price ? `Eksik parça, ${price}` : 'Eksik parça'),
+  a11ySwipeCard: (current: number, total: number, title: string, family: string) =>
+    `Kart ${current} / ${total}: ${title}, ${family}`,
+  a11yOnboardingStep: (step: number, total: number) => `Adım ${step} / ${total}`,
+  a11yFollow: (name: string) => `Takip et: ${name}`,
+  a11yFollowing: (name: string) => `Takip ediliyor: ${name}`,
+  a11yTagUp: 'Yukarı taşı',
+  a11yTagDown: 'Aşağı taşı',
+  a11yTagLeft: 'Sola taşı',
+  a11yTagRight: 'Sağa taşı',
 } as const;

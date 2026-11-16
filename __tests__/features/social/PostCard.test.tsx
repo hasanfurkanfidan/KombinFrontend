@@ -31,6 +31,7 @@ import {
   postTag,
   tryResult,
 } from '../../fixtures';
+import { HIDDEN, withFontScale } from '../../a11y/support';
 import { renderWithQuery, resetSession, signedInSession } from '../../testUtils';
 
 jest.mock('@/api/endpoints/social');
@@ -103,10 +104,10 @@ describe('author row, creator chip, match and disclosure', () => {
       <PostCard post={post({ author: postAuthor({ displayName: 'Elif Y.' }) })} />,
     );
 
-    const style = screen.getByTestId('post-avatar').props.style as object | object[];
+    const style = screen.getByTestId('post-avatar', HIDDEN).props.style as object | object[];
     const flat = Object.assign({}, ...(Array.isArray(style) ? style.flat(Infinity) : [style]));
     expect(flat.backgroundColor).toBe(theme.colors.surface);
-    expect(within(screen.getByTestId('post-avatar')).getByText('E')).toBeTruthy();
+    expect(within(screen.getByTestId('post-avatar', HIDDEN)).getByText('E', HIDDEN)).toBeTruthy();
   });
 
   it('shows the creator chip, the handle and the commission disclosure only for a creator', async () => {
@@ -136,10 +137,12 @@ describe('author row, creator chip, match and disclosure', () => {
       }),
       matchScore: 92,
     });
-    await renderWithQuery(<PostCard post={creator} />);
+    await withFontScale(1, async () => {
+      await renderWithQuery(<PostCard post={creator} />);
 
-    const name = within(screen.getByTestId('post-author')).getByText('Elif Yıldız Karaosmanoğlu');
-    expect(name.props.numberOfLines).toBe(2);
+      const name = within(screen.getByTestId('post-author')).getByText('Elif Yıldız Karaosmanoğlu');
+      expect(name.props.numberOfLines).toBe(2);
+    });
     expect(screen.getByTestId('post-author-sub').props.children).toBe('@elif.stil');
     expect(screen.getByTestId('post-author-sub')).not.toHaveTextContent(/Sana uygun/);
     expect(screen.getByTestId('post-match').props.numberOfLines).toBeUndefined();

@@ -21,6 +21,7 @@ import {
   type BudgetErrors,
   type BudgetForm,
 } from './form';
+import { LiveText } from '@/components/LiveText';
 
 interface BudgetSheetProps {
   visible: boolean;
@@ -120,13 +121,13 @@ export function BudgetSheet({
             ))}
           </View>
           {errors.audience ? (
-            <Text
+            <LiveText
               style={styles.error}
-              accessibilityLiveRegion="polite"
+
               testID="budget-audience-error"
             >
               {errors.audience}
-            </Text>
+            </LiveText>
           ) : null}
         </View>
       )}

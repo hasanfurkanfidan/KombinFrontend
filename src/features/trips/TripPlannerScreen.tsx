@@ -32,6 +32,7 @@ import { usePlanTrip, useReplanTrip, useSaveTrip } from './hooks';
 import { TripFormView } from './TripFormView';
 import { TripHeader } from './TripHeader';
 import { TripPlanView } from './TripPlanView';
+import { LiveText } from '@/components/LiveText';
 
 interface PlanResult {
   plan: TripPlan;
@@ -271,9 +272,9 @@ function Planner() {
         </ScrollView>
         <View style={styles.bar}>
           {plan.isError ? (
-            <Text style={styles.error} accessibilityLiveRegion="polite" testID="trip-plan-error">
+            <LiveText style={styles.error} testID="trip-plan-error">
               {tripErrorMessage(plan.error, tr.tripPlanFailed)}
-            </Text>
+            </LiveText>
           ) : null}
           <Button label={tr.tripSubmit} onPress={submit} testID="trip-submit" />
         </View>
@@ -301,9 +302,9 @@ function Planner() {
           testID="trip-name"
         />
         {saveError ? (
-          <Text style={styles.error} accessibilityLiveRegion="polite" testID="trip-save-error">
+          <LiveText style={styles.error} testID="trip-save-error">
             {saveError.text}
-          </Text>
+          </LiveText>
         ) : null}
         {saveError?.limit ? (
           <Button

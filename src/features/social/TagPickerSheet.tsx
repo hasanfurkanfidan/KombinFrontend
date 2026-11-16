@@ -19,6 +19,7 @@ import { formatTry, toNumber } from '@/utils/money';
 
 import { MAX_LABEL } from './labels';
 import type { DotChoice, DraftDot } from './tagDraft';
+import { lines } from '@/utils/a11y';
 
 export type PickKind = DotChoice['kind'];
 
@@ -210,10 +211,10 @@ function PickRow({
         )}
       </View>
       <View style={styles.rowText}>
-        <Text style={styles.rowTitle} numberOfLines={2}>
+        <Text style={styles.rowTitle} numberOfLines={lines(2)}>
           {title}
         </Text>
-        <Text style={styles.rowCaption} numberOfLines={1}>
+        <Text style={styles.rowCaption} numberOfLines={lines(1)}>
           {caption}
         </Text>
       </View>

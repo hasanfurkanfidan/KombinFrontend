@@ -11,6 +11,7 @@ import { theme } from '@/theme';
 import { formatTry, toNumber } from '@/utils/money';
 
 import { matchBadgeScore } from './matchBadge';
+import { lines } from '@/utils/a11y';
 
 /** What a card needs: a list item, or a saved product (no match score, but it may be off the market). */
 export type CardProduct = Omit<ProductListItem, 'matchScore'> & {
@@ -42,66 +43,89 @@ export const ProductCard = memo(function ProductCard({
   const showImage = Boolean(product.primaryImageUrl) && !imageFailed;
   const match = matchBadgeScore(product.matchScore);
   const inactive = product.isActive === false;
+  // The button's name replaces its contents for a screen reader, so it carries everything the card shows.
+  const spoken = [
+    product.brand.name,
+    product.name,
+    formatTry(price),
+    discount > 0 ? tr.discountBadge(discount) : null,
+    match !== null ? tr.productMatch(match) : null,
+    offerCount > 1
+      ? product.cheapestSeller
+        ? tr.productCardCheapestFrom(product.cheapestSeller.name, offerCount)
+        : tr.productCardCheapest(offerCount)
+      : null,
+    inactive ? tr.trackSavedInactive : null,
+  ]
+    .filter(Boolean)
+    .join(', ');
 
   return (
-    <PressableScale
-      accessibilityRole="button"
-      accessibilityLabel={`${product.brand.name}, ${product.name}, ${formatTry(price)}`}
-      onPress={() => onPress(product.id)}
-      style={[styles.card, { width }]}
-      testID={`product-card-${product.id}`}
-    >
-      <View style={styles.imageBox}>
-        {showImage ? (
-          <AppImage
-            uri={product.primaryImageUrl ?? ''}
-            style={styles.image}
-            contentFit="cover"
-            onError={() => setImageFailed(true)}
-          />
-        ) : (
-          <Icon name="shirt" size={48} color={theme.colors.control} strokeWidth={1.4} />
-        )}
-        {discount > 0 ? (
-          <View style={styles.discountPill}>
-            <Text style={styles.discountText}>{tr.discountBadge(discount)}</Text>
-          </View>
-        ) : null}
-        {inactive ? (
-          <View style={styles.inactiveOverlay} testID={`inactive-${product.id}`}>
-            <Text style={styles.inactiveText}>{tr.trackSavedInactive}</Text>
-          </View>
-        ) : null}
-        <SaveButton productId={product.id} variant="card" style={styles.save} />
-      </View>
-      <View style={styles.info}>
-        <Text style={styles.brand} numberOfLines={1}>
-          {product.brand.name}
-        </Text>
-        <Text style={styles.name} numberOfLines={2}>
-          {product.name}
-        </Text>
-        <View style={styles.priceRow}>
-          <Text style={styles.price}>{formatTry(price)}</Text>
-          {originalPrice !== null && originalPrice > price ? (
-            <Text style={styles.originalPrice}>{formatTry(originalPrice)}</Text>
+    // The bookmark is a sibling of the card's button, not inside it: an accessible parent hides its children on iOS.
+    <View style={{ width }}>
+      <PressableScale
+        accessibilityRole="button"
+        accessibilityLabel={spoken}
+        onPress={() => onPress(product.id)}
+        style={styles.card}
+        testID={`product-card-${product.id}`}
+      >
+        <View style={styles.imageBox}>
+          {showImage ? (
+            <AppImage
+              uri={product.primaryImageUrl ?? ''}
+              style={styles.image}
+              contentFit="cover"
+              onError={() => setImageFailed(true)}
+            />
+          ) : (
+            <Icon name="shirt" size={48} color={theme.colors.control} strokeWidth={1.4} />
+          )}
+          {discount > 0 ? (
+            <View style={styles.discountPill}>
+              <Text style={styles.discountText}>{tr.discountBadge(discount)}</Text>
+            </View>
+          ) : null}
+          {inactive ? (
+            <View style={styles.inactiveOverlay} testID={`inactive-${product.id}`}>
+              <Text style={styles.inactiveText}>{tr.trackSavedInactive}</Text>
+            </View>
           ) : null}
         </View>
-        {/* Under the price, not on the image: the discount badge owns the photo's corner. */}
-        {match !== null ? (
-          <Text style={styles.match} numberOfLines={1} testID={`match-badge-${product.id}`}>
-            {tr.productMatch(match)}
+        <View style={styles.info}>
+          <Text style={styles.brand} numberOfLines={lines(1)}>
+            {product.brand.name}
           </Text>
-        ) : null}
-        {offerCount > 1 ? (
-          <Text style={styles.footer} numberOfLines={1}>
-            {product.cheapestSeller
-              ? tr.productCardCheapestFrom(product.cheapestSeller.name, offerCount)
-              : tr.productCardCheapest(offerCount)}
+          <Text style={styles.name} numberOfLines={lines(2)}>
+            {product.name}
           </Text>
-        ) : null}
-      </View>
-    </PressableScale>
+          <View style={styles.priceRow}>
+            <Text style={styles.price}>{formatTry(price)}</Text>
+            {originalPrice !== null && originalPrice > price ? (
+              <Text style={styles.originalPrice}>{formatTry(originalPrice)}</Text>
+            ) : null}
+          </View>
+          {/* Under the price, not on the image: the discount badge owns the photo's corner. */}
+          {match !== null ? (
+            <Text
+              style={styles.match}
+              numberOfLines={lines(1)}
+              testID={`match-badge-${product.id}`}
+            >
+              {tr.productMatch(match)}
+            </Text>
+          ) : null}
+          {offerCount > 1 ? (
+            <Text style={styles.footer} numberOfLines={lines(1)}>
+              {product.cheapestSeller
+                ? tr.productCardCheapestFrom(product.cheapestSeller.name, offerCount)
+                : tr.productCardCheapest(offerCount)}
+            </Text>
+          ) : null}
+        </View>
+      </PressableScale>
+      <SaveButton productId={product.id} variant="card" style={styles.save} />
+    </View>
   );
 });
 
@@ -133,10 +157,11 @@ const styles = StyleSheet.create({
     ...theme.typography.match,
     color: theme.colors.chalkInk,
   },
+  // Drawn over the photo's bottom right corner, from the card's own corner.
   save: {
     position: 'absolute',
     right: theme.spacing.md,
-    bottom: theme.spacing.md,
+    top: theme.sizes.productImageHeight - theme.spacing.md - theme.sizes.bookmarkButton,
   },
   inactiveOverlay: {
     ...StyleSheet.absoluteFill,

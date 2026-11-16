@@ -9,6 +9,7 @@ import { queryClient } from '@/api/queryClient';
 import { LoginScreen } from '@/features/auth/LoginScreen';
 import { useSessionStore } from '@/session/sessionStore';
 
+import { HIDDEN } from '../../a11y/support';
 import { renderWithQuery, resetSession, tokens } from '../../testUtils';
 
 jest.mock('@/api/endpoints/auth');
@@ -40,8 +41,9 @@ describe('LoginScreen', () => {
     await renderWithQuery(<LoginScreen />);
 
     expect(screen.getByText('Tekrar hoş geldin')).toBeTruthy();
-    expect(screen.getByText('E-posta')).toBeTruthy();
-    expect(screen.getByText('Şifre')).toBeTruthy();
+    // The labels are drawn for the eye; the inputs carry them for a screen reader (read once, not twice).
+    expect(screen.getByText('E-posta', HIDDEN)).toBeTruthy();
+    expect(screen.getByText('Şifre', HIDDEN)).toBeTruthy();
     expect(screen.getByText('Hesap oluştur')).toBeTruthy();
   });
 

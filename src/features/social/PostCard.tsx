@@ -18,6 +18,7 @@ import { matchText, REPORT_REASONS } from './labels';
 import { PostPhoto } from './PostPhoto';
 import { TagSheet } from './TagSheet';
 import { TrySheet } from './TrySheet';
+import { lines } from '@/utils/a11y';
 
 interface PostCardProps {
   post: Post;
@@ -72,13 +73,18 @@ export const PostCard = memo(function PostCard({ post }: PostCardProps) {
             testID="post-author"
           >
             <Avatar name={post.author.displayName} testID="post-avatar" />
-            <Text style={styles.name} numberOfLines={2}>
+            <Text style={styles.name} numberOfLines={lines(2)}>
               {post.author.displayName}
             </Text>
           </Pressable>
           {!isMine ? (
             <Pressable
               accessibilityRole="button"
+              accessibilityLabel={
+                follow.following
+                  ? tr.a11yFollowing(post.author.displayName)
+                  : tr.a11yFollow(post.author.displayName)
+              }
               accessibilityState={{ busy: follow.pending }}
               onPress={follow.toggle}
               style={[styles.followButton, follow.following && styles.followButtonActive]}
@@ -109,7 +115,7 @@ export const PostCard = memo(function PostCard({ post }: PostCardProps) {
                   </View>
                 ) : null}
                 {post.author.handle ? (
-                  <Text style={styles.sub} numberOfLines={1} testID="post-author-sub">
+                  <Text style={styles.sub} numberOfLines={lines(1)} testID="post-author-sub">
                     {`@${post.author.handle}`}
                   </Text>
                 ) : null}

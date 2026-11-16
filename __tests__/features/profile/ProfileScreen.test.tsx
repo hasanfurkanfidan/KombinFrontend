@@ -19,6 +19,7 @@ import { useSessionStore } from '@/session/sessionStore';
 import { theme } from '@/theme';
 
 import { persona, profile, sizeEntry } from '../../fixtures';
+import { HIDDEN } from '../../a11y/support';
 import { renderWithQuery, resetSession, signedInSession } from '../../testUtils';
 
 jest.mock('@/api/endpoints/auth');
@@ -94,9 +95,9 @@ describe('ProfileScreen', () => {
     await renderWithQuery(<ProfileScreen />);
 
     expect(await screen.findByText('Ayşe Yılmaz')).toBeTruthy();
-    expect(screen.getByText('A')).toBeTruthy();
+    expect(screen.getByText('A', HIDDEN)).toBeTruthy();
     // The initial sits on the `surface` circle (it used to be `bg`, i.e. no circle at all).
-    const avatar = screen.getByTestId('profile-avatar').props.style as object | object[];
+    const avatar = screen.getByTestId('profile-avatar', HIDDEN).props.style as object | object[];
     const avatarStyle = Object.assign(
       {},
       ...(Array.isArray(avatar) ? avatar.flat(Infinity) : [avatar]),

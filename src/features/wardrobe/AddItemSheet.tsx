@@ -14,6 +14,7 @@ import { formatTry, toNumber } from '@/utils/money';
 import { addFromCatalog, addPhotos } from './addItem';
 import { useCatalogSearch } from './hooks';
 import { pickPhotos, takePhoto } from './picker';
+import { lines } from '@/utils/a11y';
 
 /** The system camera/picker cannot be presented while this modal is still sliding away. */
 const MODAL_DISMISS_MS = 350;
@@ -164,10 +165,10 @@ function CatalogPickerSheet({ visible, onClose }: AddItemSheetProps) {
             )}
           </View>
           <View style={styles.productText}>
-            <Text style={styles.brand} numberOfLines={1}>
+            <Text style={styles.brand} numberOfLines={lines(1)}>
               {product.brand.name}
             </Text>
-            <Text style={styles.productName} numberOfLines={2}>
+            <Text style={styles.productName} numberOfLines={lines(2)}>
               {product.name}
             </Text>
             <Text style={styles.price}>{formatTry(toNumber(product.lowestPrice))}</Text>

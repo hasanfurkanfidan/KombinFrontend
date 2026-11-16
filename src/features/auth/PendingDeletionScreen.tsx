@@ -21,6 +21,7 @@ import {
   usePendingDeletionStore,
   type PendingCredentials,
 } from './pendingDeletion';
+import { LiveText } from '@/components/LiveText';
 
 function cancelBody(credentials: PendingCredentials): CancelDeletionRequest {
   return credentials.kind === 'password'
@@ -97,15 +98,15 @@ export function PendingDeletionScreen() {
   return (
     <Screen scroll contentStyle={styles.content}>
       <View style={styles.header}>
-        <Text style={styles.title} testID="pending-title">
+        <Text accessibilityRole="header" style={styles.title} testID="pending-title">
           {date ? tr.pendingTitle(date) : tr.pendingTitleNoDate}
         </Text>
         <Text style={styles.body}>{tr.pendingBody}</Text>
       </View>
       {error ? (
-        <Text style={styles.error} accessibilityLiveRegion="polite" testID="pending-error">
+        <LiveText style={styles.error} testID="pending-error">
           {error}
-        </Text>
+        </LiveText>
       ) : null}
       <View style={styles.actions}>
         <Button

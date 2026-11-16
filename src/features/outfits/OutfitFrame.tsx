@@ -6,6 +6,7 @@ import { tr } from '@/i18n/tr';
 import { theme } from '@/theme';
 
 import { IconButton } from '@/components/IconButton';
+import { lines } from '@/utils/a11y';
 
 interface OutfitFrameProps {
   title: string;
@@ -36,11 +37,16 @@ export function OutfitFrame({
         <IconButton icon="close" label={tr.outfitClose} onPress={onClose} testID="outfit-close" />
         <View style={styles.titles}>
           {/* Two lines when the header's right side is full (previous + "Başka öneri"): never cut. */}
-          <Text style={styles.title} numberOfLines={2} testID="outfit-title">
+          <Text
+            accessibilityRole="header"
+            style={styles.title}
+            numberOfLines={lines(2)}
+            testID="outfit-title"
+          >
             {title}
           </Text>
           {subtitle ? (
-            <Text style={styles.subtitle} numberOfLines={1} testID="outfit-subtitle">
+            <Text style={styles.subtitle} numberOfLines={lines(1)} testID="outfit-subtitle">
               {subtitle}
             </Text>
           ) : null}

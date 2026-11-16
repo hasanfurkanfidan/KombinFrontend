@@ -4,6 +4,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { IconButton } from '@/components/IconButton';
 import { tr } from '@/i18n/tr';
 import { theme } from '@/theme';
+import { lines } from '@/utils/a11y';
 
 interface TripHeaderProps {
   title: string;
@@ -25,11 +26,16 @@ export function TripHeader({ title, subtitle, onBack, backLabel, right }: TripHe
         testID="trip-back"
       />
       <View style={styles.titles}>
-        <Text style={styles.title} numberOfLines={2} accessibilityRole="header" testID="trip-title">
+        <Text
+          style={styles.title}
+          numberOfLines={lines(2)}
+          accessibilityRole="header"
+          testID="trip-title"
+        >
           {title}
         </Text>
         {subtitle ? (
-          <Text style={styles.subtitle} numberOfLines={1} testID="trip-subtitle">
+          <Text style={styles.subtitle} numberOfLines={lines(1)} testID="trip-subtitle">
             {subtitle}
           </Text>
         ) : null}

@@ -43,10 +43,19 @@ export const NotificationRow = memo(function NotificationRow({
   // A price drop is Kombin's signal (chalk); everything else is ink, filled or not by read state.
   const iconColor = priceDrop && unread ? theme.colors.chalkInk : theme.colors.ink;
 
+  const meta = `${KIND_LABEL[notification.kind]} · ${formatTimeAgo(notification.createdAt, now)}`;
+
   return (
     <Pressable
       accessibilityRole="button"
-      accessibilityState={{ selected: unread }}
+      accessibilityLabel={[
+        unread ? tr.a11yUnread : null,
+        notification.title,
+        notification.body,
+        meta,
+      ]
+        .filter(Boolean)
+        .join('. ')}
       onPress={() => onPress(notification)}
       style={[
         styles.card,

@@ -17,6 +17,7 @@ import { theme } from '@/theme';
 import { useSavedOutfits } from './hooks';
 import { outfitTitle } from './labels';
 import { OutfitMiniFigure } from './OutfitMiniFigure';
+import { lines } from '@/utils/a11y';
 
 const COLUMNS = 2;
 
@@ -74,7 +75,9 @@ export function SavedOutfitsScreen() {
           onPress={() => (router.canGoBack() ? router.back() : router.replace('/profile'))}
           testID="saved-back"
         />
-        <Text style={styles.title}>{tr.outfitSavedTitle}</Text>
+        <Text accessibilityRole="header" style={styles.title}>
+          {tr.outfitSavedTitle}
+        </Text>
       </View>
       <FlatList
         {...IMAGE_LIST_TUNING}
@@ -135,7 +138,7 @@ function SavedCard({
       <View style={styles.figurePanel}>
         <OutfitMiniFigure pieces={outfit.pieces} testID={`saved-figure-${outfit.id}`} />
       </View>
-      <Text style={styles.cardTitle} numberOfLines={1}>
+      <Text style={styles.cardTitle} numberOfLines={lines(1)}>
         {outfitTitle(outfit, outfit.date)}
       </Text>
     </Pressable>

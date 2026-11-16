@@ -20,6 +20,7 @@ import { stableImageUrl } from './imageUrl';
 import { statusLabel, statusMessage, visibilityLabel } from './labels';
 import { usePostViewTracking } from './postViews';
 import { SocialHeader } from './SocialHeader';
+import { lines } from '@/utils/a11y';
 
 /** A post that has not been published yet can still be picked back up. */
 const RESUMABLE = new Set<Post['status']>(['Draft', 'Processing']);
@@ -150,11 +151,11 @@ function MyPostRow({
             <Text style={styles.meta}>{visibilityLabel(post.visibility)}</Text>
           </View>
           {message ? (
-            <Text style={styles.message} numberOfLines={3} testID="my-post-message">
+            <Text style={styles.message} numberOfLines={lines(3)} testID="my-post-message">
               {message}
             </Text>
           ) : post.caption ? (
-            <Text style={styles.message} numberOfLines={2}>
+            <Text style={styles.message} numberOfLines={lines(2)}>
               {post.caption}
             </Text>
           ) : null}

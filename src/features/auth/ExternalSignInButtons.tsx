@@ -16,6 +16,7 @@ import {
   type ExternalProvider,
   type ExternalSignInResult,
 } from './externalSignIn';
+import { LiveText } from '@/components/LiveText';
 
 interface ExternalSignInButtonsProps {
   /** Called after the tokens are stored. `result.isNewUser` is informational: onboarding is `OnboardingGate`'s job. */
@@ -109,9 +110,9 @@ export function ExternalSignInButtons({
         ) : null}
       </View>
       {error ? (
-        <Text style={styles.error} accessibilityLiveRegion="polite" testID="external-error">
+        <LiveText style={styles.error} testID="external-error">
           {error}
-        </Text>
+        </LiveText>
       ) : null}
       <View style={styles.divider}>
         <View style={styles.rule} />

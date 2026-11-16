@@ -19,6 +19,7 @@ import { theme } from '@/theme';
 import { useSizes } from './hooks';
 import { MeasurementsSheet } from './MeasurementsSheet';
 import { SizeSheet } from './SizeSheet';
+import { lines } from '@/utils/a11y';
 
 interface BrandRow {
   brandId: string;
@@ -67,7 +68,9 @@ export function SizeMapScreen() {
     <Screen scroll contentStyle={styles.content}>
       <View style={styles.titleRow}>
         <IconButton icon="arrowLeft" label={tr.back} onPress={goBack} testID="sizes-back" />
-        <Text style={styles.title}>{tr.sizeMapTitle}</Text>
+        <Text accessibilityRole="header" style={styles.title}>
+          {tr.sizeMapTitle}
+        </Text>
       </View>
 
       {!isSignedIn ? (
@@ -85,7 +88,9 @@ export function SizeMapScreen() {
           />
 
           <View style={styles.headingBlock}>
-            <Text style={styles.heading}>{tr.sizeMapHeading}</Text>
+            <Text accessibilityRole="header" style={styles.heading}>
+              {tr.sizeMapHeading}
+            </Text>
             <Text style={styles.subtitle}>{tr.sizeMapSubtitle}</Text>
           </View>
 
@@ -113,7 +118,7 @@ export function SizeMapScreen() {
                   style={[styles.tableRow, styles.tableBody]}
                   testID={`size-row-${row.brandId}`}
                 >
-                  <Text style={[styles.brandCell, styles.brandCol]} numberOfLines={1}>
+                  <Text style={[styles.brandCell, styles.brandCol]} numberOfLines={lines(1)}>
                     {row.brand}
                   </Text>
                   <SizeCell entry={row.tops} />

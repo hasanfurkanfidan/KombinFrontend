@@ -20,6 +20,7 @@ export function ToggleRow({ title, caption, value, onChange, testID }: ToggleRow
       </View>
       <Switch
         accessibilityLabel={title}
+        accessibilityHint={caption}
         value={value}
         onValueChange={onChange}
         trackColor={{ false: theme.colors.control, true: theme.colors.primary }}

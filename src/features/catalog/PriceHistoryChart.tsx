@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { StyleSheet, View, type LayoutChangeEvent } from 'react-native';
 import Svg, { Circle, Line, Path, Text as SvgText } from 'react-native-svg';
 
+import { tr } from '@/i18n/tr';
 import { theme } from '@/theme';
 import { formatShortDate } from '@/utils/dates';
 import { formatTry } from '@/utils/money';
@@ -61,7 +62,17 @@ export function PriceHistoryChart({ points, variant = 'mini', lowPrice }: PriceH
   const lastPoint = points[points.length - 1];
 
   return (
-    <View onLayout={onLayout} style={styles.full} testID="price-chart-full">
+    <View
+      onLayout={onLayout}
+      style={styles.full}
+      accessible
+      accessibilityRole="image"
+      accessibilityLabel={tr.a11yPriceChart(
+        formatTry(Math.max(...points.map((point) => point.minPrice))),
+        formatTry(lastPoint?.minPrice ?? 0),
+      )}
+      testID="price-chart-full"
+    >
       {geometry && firstPoint && lastPoint ? (
         <Svg width={fullWidth} height={height} viewBox={`0 0 ${fullWidth} ${height}`}>
           {geometry.lowY !== null ? (

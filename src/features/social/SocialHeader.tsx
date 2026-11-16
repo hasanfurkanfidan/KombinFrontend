@@ -4,6 +4,7 @@ import { useRouter } from 'expo-router';
 import { IconButton } from '@/components/IconButton';
 import { tr } from '@/i18n/tr';
 import { theme } from '@/theme';
+import { lines } from '@/utils/a11y';
 
 interface SocialHeaderProps {
   title: string;
@@ -23,7 +24,7 @@ export function SocialHeader({ title, fallback = '/', testID }: SocialHeaderProp
         onPress={() => (router.canGoBack() ? router.back() : router.replace(fallback))}
         testID={testID ?? 'social-back'}
       />
-      <Text style={styles.title} numberOfLines={1}>
+      <Text accessibilityRole="header" style={styles.title} numberOfLines={lines(1)}>
         {title}
       </Text>
     </View>

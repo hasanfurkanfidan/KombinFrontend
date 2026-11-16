@@ -25,6 +25,7 @@ export const TAB_ITEMS: Record<string, { label: string; icon: IconName }> = {
 export function TabBar({ state, emitter, navigateToTab, insets }: TabBarProps) {
   return (
     <View
+      accessibilityRole="tablist"
       style={[
         styles.bar,
         {
@@ -62,7 +63,11 @@ export function TabBar({ state, emitter, navigateToTab, insets }: TabBarProps) {
             testID={`tab-${route.name}`}
           >
             <Icon name={item.icon} size={24} color={color} />
-            <Text style={[styles.label, { color }, focused && styles.labelFocused]}>
+            {/* Five labels share one row: from 1.3x they stop growing (the icon and the spoken name stay). */}
+            <Text
+              style={[styles.label, { color }, focused && styles.labelFocused]}
+              maxFontSizeMultiplier={1.3}
+            >
               {item.label}
             </Text>
           </Pressable>

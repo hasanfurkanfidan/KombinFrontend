@@ -14,6 +14,7 @@ import { theme } from '@/theme';
 import { daysOf, formatDay, formatRangeWithDays, isComplete } from './calendar';
 import { MAX_CITY_LENGTH, MAX_PIECES, MIN_PIECES, type TripErrors, type TripForm } from './form';
 import { TripDatesSheet } from './TripDatesSheet';
+import { LiveText } from '@/components/LiveText';
 
 const ANY = 'any';
 const OCCASION_OPTIONS: Option<string>[] = [
@@ -73,9 +74,9 @@ export function TripFormView({ form, errors, onChange }: TripFormViewProps) {
           <Icon name="chevronDown" size={18} color={theme.colors.muted} />
         </Pressable>
         {errors.dates ? (
-          <Text style={styles.error} accessibilityLiveRegion="polite" testID="trip-dates-error">
+          <LiveText style={styles.error} testID="trip-dates-error">
             {errors.dates}
-          </Text>
+          </LiveText>
         ) : null}
       </View>
 

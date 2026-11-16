@@ -15,6 +15,7 @@ import { rateLimitedText } from '@/utils/rateLimit';
 
 import { applyFieldErrors } from './formErrors';
 import { registerSchema, type RegisterValues } from './schemas';
+import { LiveText } from '@/components/LiveText';
 
 interface RegisterFormProps {
   onSuccess: () => void;
@@ -113,9 +114,7 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
         )}
       />
       {errors.root?.message ? (
-        <Text style={styles.formError} accessibilityLiveRegion="polite">
-          {errors.root.message}
-        </Text>
+        <LiveText style={styles.formError}>{errors.root.message}</LiveText>
       ) : null}
       <Button
         label={tr.authRegisterSubmit}

@@ -18,7 +18,9 @@ interface ConsentStepProps {
 export function ConsentStep({ consent, accepting, onAccept }: ConsentStepProps) {
   return (
     <View style={styles.root} testID="consent-step">
-      <Text style={styles.title}>{tr.consentTitle}</Text>
+      <Text accessibilityRole="header" style={styles.title}>
+        {tr.consentTitle}
+      </Text>
       <Text style={styles.text} testID="consent-text">
         {consent.text}
       </Text>

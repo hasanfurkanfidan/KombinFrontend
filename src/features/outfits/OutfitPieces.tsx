@@ -9,6 +9,7 @@ import { theme } from '@/theme';
 import { formatTry, toNumber } from '@/utils/money';
 
 import { figureBands } from './labels';
+import { lines } from '@/utils/a11y';
 
 const PANEL_PADDING = theme.spacing.lg;
 const BAND_GAP = theme.spacing.sm;
@@ -37,6 +38,21 @@ interface PieceProps {
 
 function priceOf(piece: OutfitPiece): string | null {
   return piece.offer ? formatTry(toNumber(piece.offer.price)) : null;
+}
+
+/** One piece as a screen reader says it: the name, then what the picture and the label would have told. */
+export function spokenPiece(piece: OutfitPiece, shopping: boolean): string {
+  const price = priceOf(piece);
+  const parts: (string | null)[] = [piece.name];
+  if (piece.role === 'Anchor') {
+    parts.push(tr.outfitAnchor);
+  } else if (shopping) {
+    parts.push(price);
+  } else if (piece.role === 'Gap') {
+    parts.push(tr.a11yOutfitMissing(price ?? ''));
+    parts.push(piece.offer?.seller ? tr.outfitCheapestAt(piece.offer.seller.name) : null);
+  }
+  return parts.filter(Boolean).join(', ');
 }
 
 /**
@@ -123,7 +139,7 @@ function Leader({ piece, shopping, detail }: PieceProps) {
     <View style={styles.leader}>
       <View style={[styles.leaderLine, gap && styles.leaderLineGap]} />
       <View style={styles.leaderText}>
-        <Text style={styles.name} numberOfLines={2}>
+        <Text style={styles.name} numberOfLines={lines(2)}>
           {piece.name}
         </Text>
         {status ? (
@@ -133,7 +149,7 @@ function Leader({ piece, shopping, detail }: PieceProps) {
         ) : null}
         {/* The ghost already says "Eksik · price"; the label adds where it is cheapest. */}
         {gap && piece.offer?.seller ? (
-          <Text style={styles.seller} numberOfLines={1}>
+          <Text style={styles.seller} numberOfLines={lines(1)}>
             {tr.outfitCheapestAt(piece.offer.seller.name)}
           </Text>
         ) : null}
@@ -163,7 +179,7 @@ function AccessoryTile({ piece, shopping, detail }: PieceProps) {
         {detail ? (
           detail(piece)
         ) : (
-          <Text style={styles.name} numberOfLines={2}>
+          <Text style={styles.name} numberOfLines={lines(2)}>
             {piece.name}
           </Text>
         )}
@@ -198,9 +214,24 @@ export function OutfitPieces({
   const area = width ?? window.width - theme.screenPaddingX * 2;
   const figure = Math.round((area - PANEL_PADDING * 2) * theme.sizes.outfitFigureRatio);
   const { bands, accessories } = figureBands(pieces);
+  // Head to toe, then the accessories: the order the eye takes. With a per-piece `detail` (the budget outfits' buy
+  // links) the panel stays a group of controls instead of one picture.
+  const spoken = detail
+    ? undefined
+    : tr.a11yOutfitFigure(
+        [...bands.flatMap((band) => band.pieces), ...accessories]
+          .map((piece) => spokenPiece(piece, shopping))
+          .join('; '),
+      );
 
   return (
-    <View style={styles.panel} testID="outfit-figure">
+    <View
+      style={styles.panel}
+      accessible={spoken !== undefined}
+      accessibilityRole={spoken === undefined ? undefined : 'image'}
+      accessibilityLabel={spoken}
+      testID="outfit-figure"
+    >
       {bands.map((band) => {
         if (band.kind === 'torso' && band.pieces.length === 2) {
           const [outer, top] = band.pieces as [OutfitPiece, OutfitPiece];

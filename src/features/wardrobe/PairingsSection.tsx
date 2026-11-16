@@ -15,6 +15,7 @@ import { tr } from '@/i18n/tr';
 import { theme } from '@/theme';
 import { colorTint } from '@/theme/colorNames';
 import { formatTry, toNumber } from '@/utils/money';
+import { lines } from '@/utils/a11y';
 
 /** The group headings under "Bununla giyilir", plural where Turkish says it so ("Üstler", "Altlar"). */
 export const groupLabels: Record<OutfitSlot, string> = {
@@ -65,7 +66,9 @@ export function CompanionRows({
     <View style={styles.rows} testID="pairing-rows">
       {slots.map((slot) => (
         <View key={slot.slot} style={styles.row} testID={`pairing-row-${slot.slot}`}>
-          <Text style={styles.rowTitle}>{groupLabels[slot.slot]}</Text>
+          <Text style={styles.rowTitle} accessibilityRole="header">
+            {groupLabels[slot.slot]}
+          </Text>
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
@@ -142,7 +145,7 @@ export function UnlockCard({
 }) {
   return (
     <View style={styles.unlock} testID="pairing-unlock">
-      <Text style={styles.unlockTitle}>
+      <Text accessibilityRole="header" style={styles.unlockTitle}>
         {tr.pairingsUnlockTitle(slotWords[unlock.slot], toNumber(unlock.unlocksEstimate))}
       </Text>
       <View style={styles.unlockBody}>
@@ -152,10 +155,10 @@ export function UnlockCard({
           ) : null}
         </View>
         <View style={styles.unlockText}>
-          <Text style={styles.unlockName} numberOfLines={2}>
+          <Text style={styles.unlockName} numberOfLines={lines(2)}>
             {unlock.name}
           </Text>
-          <Text style={styles.unlockMeta} numberOfLines={1}>
+          <Text style={styles.unlockMeta} numberOfLines={lines(1)}>
             {formatTry(unlock.lowestPrice)} · {unlock.cheapestSeller.name}
           </Text>
         </View>

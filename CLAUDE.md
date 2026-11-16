@@ -74,6 +74,18 @@ Nothing else exists yet; do not scaffold screens for features the backend does n
 - **Dependencies.** `npm run audit:ci` fails on high/critical advisories and on anything not in `scripts/audit-allowlist.json` (build tooling only, each with a reason).
 - **Reduced motion.** Looping animations (`Shimmer`, `Skeleton`) stand still under `useReducedMotion`; animate `transform`/`opacity` only.
 
+## Accessibility (Task A1, `docs/accessibility-audit.md`)
+
+Every new screen keeps these; `__tests__/a11y/*` fails when one is broken.
+
+- **Names and roles.** A pressable has a role and a name (its text child, or an `accessibilityLabel`). A pressable that holds other controls does not wrap them: an accessible parent hides its children on iOS (`ProductCard`'s bookmark is a sibling of the card's button). A card's label carries everything the card shows. `Button` falls back to its label while loading. Every title-sized `Text` is `accessibilityRole="header"`; a title that is a button's label is the exception, and the list of exceptions is in `sourceGuards.test.ts`.
+- **Images** are decorative unless `AppImage` gets an `accessibilityLabel`. The standing outfit figure (`OutfitPieces`, `OutfitMiniFigure`) is one `image` element listing its pieces; with per-piece controls (budget) it stays a group.
+- **Text scaling.** No `allowFontScaling={false}`, no `maxFontSizeMultiplier` below 2 without a comment saying why (the tab labels, 1.3). No fixed height on anything that holds text: `Button` and `Chip` have `minHeight` and wrap. `numberOfLines={lines(n)}`, never a bare number: the cap lifts from text scale 1.3 (Jest's window reports 2, so a test about the default layout wraps in `withFontScale(1, …)`).
+- **Touch targets** are at least 44 × 44 pt including `hitSlop`; the scan in `sourceGuards.test.ts` resolves each pressable's style and slop.
+- **Messages that appear by themselves** (errors, results, toasts) use `LiveText` / `announce()`: `accessibilityLiveRegion` is Android only, iOS needs the announcement. Anything that leaves on a timer uses `useReadingTime` (longer at large text, much longer with a screen reader). A swipe or a drag always has an `accessibilityActions` or a button twin (alert rows, the tag dots, the deck's buttons, the outfit sheet's ✕).
+- **Colour** never tells a state alone (unread, alarm off, sold out, selected): a word or an icon goes with it, and the spoken name says it. Every text token pair must stay ≥ 4.5:1 (`contrast.test.ts`); the one decided exception is `control` on `surface` (see the audit).
+- Queries in tests skip what a screen reader skips: use `HIDDEN` (`__tests__/a11y/support.ts`) for avatars' initials, the bell's badge and visible form labels.
+
 ## Glossary and the clarity rules (Task 15b-A)
 
 Every user-facing string follows `docs/design/glossary.md`; `__tests__/i18n/glossary.test.ts` scans `tr.ts` and fails on a banned word. The short version:

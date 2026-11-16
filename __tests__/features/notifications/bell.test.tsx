@@ -4,6 +4,7 @@ import { router } from 'expo-router';
 import { getUnreadCount } from '@/api/endpoints/notifications';
 import { NotificationBell } from '@/features/notifications/NotificationBell';
 
+import { HIDDEN } from '../../a11y/support';
 import { renderWithQuery, resetSession, signedInSession } from '../../testUtils';
 
 jest.mock('@/api/endpoints/notifications');
@@ -22,8 +23,9 @@ describe('NotificationBell', () => {
 
     await renderWithQuery(<NotificationBell />);
 
-    expect(await screen.findByTestId('notification-badge')).toBeTruthy();
-    expect(await screen.findByText('3')).toBeTruthy();
+    // The badge is drawn for the eye only: the bell's own name carries the count.
+    expect(await screen.findByTestId('notification-badge', HIDDEN)).toBeTruthy();
+    expect(await screen.findByText('3', HIDDEN)).toBeTruthy();
     expect(screen.getByLabelText('Bildirimler, 3 okunmamış')).toBeTruthy();
   });
 
@@ -33,7 +35,7 @@ describe('NotificationBell', () => {
 
     await renderWithQuery(<NotificationBell />);
 
-    expect(await screen.findByText('99+')).toBeTruthy();
+    expect(await screen.findByText('99+', HIDDEN)).toBeTruthy();
   });
 
   it('shows no badge when everything is read', async () => {
@@ -52,7 +54,7 @@ describe('NotificationBell', () => {
     unreadMock.mockResolvedValue(1);
 
     await renderWithQuery(<NotificationBell />);
-    await screen.findByText('1');
+    await screen.findByText('1', HIDDEN);
 
     // The focus effect ran at mount: one request, not two.
     expect(unreadMock).toHaveBeenCalledTimes(1);

@@ -5,6 +5,7 @@ import { Icon } from '@/components/Icon';
 import { tr } from '@/i18n/tr';
 import { theme } from '@/theme';
 import { formatAmount, formatTry, toNumber } from '@/utils/money';
+import { lines } from '@/utils/a11y';
 
 export function isSellable(offer: Pick<Offer, 'stockStatus'>): boolean {
   return offer.stockStatus === 'InStock' || offer.stockStatus === 'LowStock';
@@ -42,7 +43,16 @@ export function OfferRow({ offer, highlighted, onPress }: OfferRowProps) {
   return (
     <Pressable
       accessibilityRole="link"
-      accessibilityLabel={`${offer.seller.name}, ${formatTry(offer.currentPrice)}`}
+      accessibilityLabel={[
+        offer.seller.name,
+        formatTry(offer.currentPrice),
+        caption?.text,
+        highlighted && sellable ? tr.productLowestPrice : null,
+      ]
+        .filter(Boolean)
+        .join(', ')}
+      accessibilityHint={sellable ? tr.a11yBuyHint : undefined}
+      accessibilityState={{ disabled: !sellable }}
       disabled={!sellable}
       onPress={() => onPress(offer)}
       style={[styles.row, highlighted && styles.highlighted]}
@@ -54,11 +64,11 @@ export function OfferRow({ offer, highlighted, onPress }: OfferRowProps) {
         </Text>
       </View>
       <View style={styles.middle}>
-        <Text style={styles.seller} numberOfLines={1}>
+        <Text style={styles.seller} numberOfLines={lines(1)}>
           {offer.seller.name}
         </Text>
         {caption ? (
-          <Text style={[styles.caption, styles[caption.tone]]} numberOfLines={1}>
+          <Text style={[styles.caption, styles[caption.tone]]} numberOfLines={lines(1)}>
             {caption.text}
           </Text>
         ) : null}

@@ -21,7 +21,14 @@ export function NotificationBell() {
         testID="notification-bell"
       />
       {unread > 0 ? (
-        <View style={styles.badge} pointerEvents="none" testID="notification-badge">
+        <View
+          style={styles.badge}
+          pointerEvents="none"
+          // The bell's name already says how many are unread.
+          accessibilityElementsHidden
+          importantForAccessibility="no-hide-descendants"
+          testID="notification-badge"
+        >
           <Text style={styles.badgeText}>{unread > 99 ? '99+' : String(unread)}</Text>
         </View>
       ) : null}

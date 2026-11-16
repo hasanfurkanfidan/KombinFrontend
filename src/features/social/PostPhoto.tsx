@@ -9,6 +9,7 @@ import { toNumber } from '@/utils/money';
 
 import { stableImageUrl } from './imageUrl';
 import { dotCenter, isOutfitPost, pct, postBand } from './labels';
+import { lines } from '@/utils/a11y';
 
 /** A photo post is shown at its own aspect ratio; a collage is square. */
 const COLLAGE_ASPECT = 1;
@@ -97,6 +98,7 @@ export function PostPhoto({ post, onTagPress, onBandPress }: PostPhotoProps) {
           uri={stableImageUrl(post.id, post.image.url)}
           style={styles.fill}
           contentFit="cover"
+          accessibilityLabel={tr.a11yPostPhoto(post.author.displayName)}
           accessibilityIgnoresInvertColors
         />
       ) : null}
@@ -112,7 +114,7 @@ export function PostPhoto({ post, onTagPress, onBandPress }: PostPhotoProps) {
           style={styles.band}
           testID="post-band"
         >
-          <Text style={styles.bandText} numberOfLines={2}>
+          <Text style={styles.bandText} numberOfLines={lines(2)}>
             {postBand(post.summary)}
           </Text>
           <Icon name="arrowRight" size={18} color={theme.colors.ink} />

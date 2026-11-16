@@ -24,7 +24,9 @@ export function LoginScreen() {
           onPress={() => (router.canGoBack() ? router.back() : router.replace('/'))}
         />
         <View style={styles.header}>
-          <Text style={styles.title}>{tr.authLoginTitle}</Text>
+          <Text accessibilityRole="header" style={styles.title}>
+            {tr.authLoginTitle}
+          </Text>
           <Text style={styles.subtitle}>{tr.authLoginSubtitle}</Text>
         </View>
         {/* A new account is sent to onboarding by `OnboardingGate`, exactly like a registration. */}

@@ -16,6 +16,7 @@ import { formatDayMonthYear } from '@/utils/dates';
 import { rateLimitedText } from '@/utils/rateLimit';
 
 import { DELETE_CONFIRM_WORD, matchesDeleteWord } from './deleteAccount';
+import { LiveText } from '@/components/LiveText';
 
 const PASSWORD_CODES = new Set([
   'Identity.InvalidCredentials',
@@ -82,7 +83,13 @@ export function DeleteAccountScreen() {
           <Text style={styles.intro}>{tr.deleteIntro}</Text>
           {[tr.deleteStepEverything, tr.deleteStepPosts, tr.deleteStepCancel].map((step) => (
             <View key={step} style={styles.step}>
-              <Text style={styles.bullet}>•</Text>
+              <Text
+                style={styles.bullet}
+                accessibilityElementsHidden
+                importantForAccessibility="no"
+              >
+                •
+              </Text>
               <Text style={styles.stepText}>{step}</Text>
             </View>
           ))}
@@ -113,14 +120,15 @@ export function DeleteAccountScreen() {
           />
         ) : null}
         {error ? (
-          <Text style={styles.error} accessibilityLiveRegion="polite" testID="delete-error">
+          <LiveText style={styles.error} testID="delete-error">
             {error}
-          </Text>
+          </LiveText>
         ) : null}
         <Button
           label={tr.deleteSubmit}
           variant="danger"
           onPress={() => void submit()}
+          accessibilityHint={canSubmit ? undefined : tr.a11yDeleteHint}
           disabled={!canSubmit}
           loading={busy}
           testID="delete-submit"

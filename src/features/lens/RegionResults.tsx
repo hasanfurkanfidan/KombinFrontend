@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FlatList, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import type { LensRegion, LensResult } from '@/api/models';
@@ -10,6 +10,7 @@ import { theme } from '@/theme';
 import { formatTry, toNumber } from '@/utils/money';
 
 import { levelLabel } from './labels';
+import { announce, lines } from '@/utils/a11y';
 
 interface RegionResultsProps {
   region: LensRegion;
@@ -34,6 +35,13 @@ export function RegionResults({
   const owned = region.wardrobeMatches ?? [];
   const count = region.results.length;
 
+  // The rail appears under the photo, away from where the finger is: say what it holds.
+  useEffect(() => {
+    if (count > 0) {
+      announce(`${title}. ${tr.lensResultCount(count)}`);
+    }
+  }, [title, count]);
+
   return (
     <View style={styles.root} testID="lens-region-results">
       <View style={styles.heading}>
@@ -41,7 +49,7 @@ export function RegionResults({
           <Text style={styles.numberText}>{number}</Text>
         </View>
         <View style={styles.headingText}>
-          <Text style={styles.title} numberOfLines={1}>
+          <Text accessibilityRole="header" style={styles.title} numberOfLines={lines(1)}>
             {title}
           </Text>
           {count > 0 ? <Text style={styles.subtitle}>{tr.lensResultCount(count)}</Text> : null}
@@ -139,14 +147,14 @@ function ResultCard({ result, onPress }: { result: LensResult; onPress: () => vo
           </Text>
         </View>
       </View>
-      <Text style={styles.cardBrand} numberOfLines={1}>
+      <Text style={styles.cardBrand} numberOfLines={lines(1)}>
         {product.brand.name}
       </Text>
-      <Text style={styles.cardName} numberOfLines={2}>
+      <Text style={styles.cardName} numberOfLines={lines(2)}>
         {product.name}
       </Text>
       <Text style={styles.cardPrice}>{formatTry(price)}</Text>
-      <Text style={styles.cardSeller} numberOfLines={1}>
+      <Text style={styles.cardSeller} numberOfLines={lines(1)}>
         {offer === null ? tr.lensNotForSale : seller ? tr.lensCheapestAt(seller) : ''}
       </Text>
     </Pressable>

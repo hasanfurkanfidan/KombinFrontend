@@ -3,10 +3,13 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { theme } from '@/theme';
+import { announce, useReadingTime } from '@/utils/a11y';
 
 import { useToastStore } from './toastStore';
 
-const VISIBLE_MS = 2800;
+/** How long a toast stays; one with a button ("Geri al") stays longer. Longer again with a screen reader or large text. */
+const VISIBLE_MS = 4000;
+const VISIBLE_WITH_ACTION_MS = 8000;
 
 /** Renders the current toast above the tab bar; mounted once in `AppProviders`. */
 export function ToastHost() {
@@ -15,14 +18,22 @@ export function ToastHost() {
   const id = useToastStore((state) => state.id);
   const hide = useToastStore((state) => state.hide);
   const insets = useSafeAreaInsets();
+  const visibleMs = useReadingTime(action ? VISIBLE_WITH_ACTION_MS : VISIBLE_MS);
 
   useEffect(() => {
     if (!message) {
       return;
     }
-    const timer = setTimeout(hide, VISIBLE_MS);
+    const timer = setTimeout(hide, visibleMs);
     return () => clearTimeout(timer);
-  }, [message, id, hide]);
+  }, [message, id, hide, visibleMs]);
+
+  // Android speaks the live region below; iOS has none.
+  useEffect(() => {
+    if (message) {
+      announce(action ? `${message}. ${action.label}` : message, 'ios');
+    }
+  }, [message, id, action]);
 
   if (!message) {
     return null;
@@ -37,7 +48,9 @@ export function ToastHost() {
         {action ? (
           <Pressable
             accessibilityRole="button"
-            hitSlop={theme.spacing.sm}
+            accessibilityLabel={action.label}
+            // The text is 20 high: the slop makes the target 44.
+            hitSlop={theme.spacing.md}
             onPress={() => {
               hide();
               action.onPress();

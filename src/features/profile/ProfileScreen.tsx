@@ -28,6 +28,7 @@ import { formatMonthYear } from '@/utils/dates';
 import { toNumber } from '@/utils/money';
 
 import { useMe, useProfile } from './hooks';
+import { lines } from '@/utils/a11y';
 
 const SWATCHES_PER_PERSONA = 4;
 
@@ -61,11 +62,15 @@ export function ProfileScreen() {
 
   return (
     <Screen scroll contentStyle={styles.content}>
-      <Text style={styles.title}>{tr.profileTitle}</Text>
+      <Text accessibilityRole="header" style={styles.title}>
+        {tr.profileTitle}
+      </Text>
 
       {!isSignedIn ? (
         <Card>
-          <Text style={styles.cardTitle}>{tr.profileLoggedOutTitle}</Text>
+          <Text accessibilityRole="header" style={styles.cardTitle}>
+            {tr.profileLoggedOutTitle}
+          </Text>
           <Text style={styles.body}>{tr.profileLoggedOutBody}</Text>
           <Button
             label={tr.profileSignIn}
@@ -104,7 +109,9 @@ export function ProfileScreen() {
           </View>
 
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>{tr.profilePersonas}</Text>
+            <Text accessibilityRole="header" style={styles.sectionTitle}>
+              {tr.profilePersonas}
+            </Text>
             {(personas.data ?? []).map((persona) => (
               <PersonaRow
                 key={persona.id}
@@ -194,7 +201,9 @@ export function ProfileScreen() {
 
       {/* The legal pages are public: they show signed out too. Logout and deletion need an account. */}
       <View style={styles.section} testID="profile-account">
-        <Text style={styles.sectionTitle}>{tr.profileAccount}</Text>
+        <Text accessibilityRole="header" style={styles.sectionTitle}>
+          {tr.profileAccount}
+        </Text>
         <View style={styles.rows}>
           <SettingsRow
             title={tr.legalPrivacy}
@@ -260,7 +269,7 @@ function PersonaRow({ persona, onPress }: { persona: Persona; onPress: () => voi
       </View>
       <View style={styles.personaText}>
         <Text style={styles.personaName}>{persona.name}</Text>
-        <Text style={styles.caption} numberOfLines={2}>
+        <Text style={styles.caption} numberOfLines={lines(2)}>
           {personaCaption(persona)}
         </Text>
       </View>

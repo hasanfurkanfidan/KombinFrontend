@@ -21,6 +21,8 @@ import {
   slotGroupLabel,
   tripWeatherText,
 } from './labels';
+import { lines } from '@/utils/a11y';
+import { LiveText } from '@/components/LiveText';
 
 type View_ = 'pack' | 'days';
 const VIEWS: readonly { value: View_; label: string }[] = [
@@ -91,9 +93,9 @@ export function TripPlanView({
             </Text>
           )}
           {replanError ? (
-            <Text style={styles.error} accessibilityLiveRegion="polite" testID="trip-replan-error">
+            <LiveText style={styles.error} testID="trip-replan-error">
               {replanError}
-            </Text>
+            </LiveText>
           ) : null}
         </View>
       ) : null}
@@ -176,7 +178,7 @@ function PieceRow({
     >
       <Thumb uri={imageUrl} missing={missing} size={theme.sizes.tagThumb} />
       <View style={styles.rowText}>
-        <Text style={styles.name} numberOfLines={2}>
+        <Text style={styles.name} numberOfLines={lines(2)}>
           {name}
         </Text>
         {missing ? (
@@ -230,7 +232,7 @@ function DayRow({ day }: { day: TripDay }) {
               />
             ))}
           </View>
-          <Text style={styles.narration} numberOfLines={3}>
+          <Text style={styles.narration} numberOfLines={lines(3)}>
             {day.outfit.narration.text}
           </Text>
         </>
@@ -255,7 +257,7 @@ function GapRow({ gap }: { gap: TripGap }) {
         <View style={styles.row}>
           <Thumb uri={suggestion.imageUrl} missing={false} size={theme.sizes.tagThumb} />
           <View style={styles.rowText}>
-            <Text style={styles.name} numberOfLines={2}>
+            <Text style={styles.name} numberOfLines={lines(2)}>
               {suggestion.name}
             </Text>
             <Text style={styles.muted}>{seller ? tr.outfitPieceLine(seller, price) : price}</Text>
