@@ -240,7 +240,10 @@ describe('the picture and what goes with it', () => {
     expect(image.props.accessibilityLabel).toBe(
       `Manken üzerinde yaklaşık görünüm: ${Object.values(NAMES).join('; ')}`,
     );
-    expect(image.props.source).toEqual({ uri: IMAGE_URL });
+    // The link is private and changes with every answer: the cache is keyed by its address without the signature.
+    expect(image.props.source).toEqual([
+      { uri: IMAGE_URL, cacheKey: 'https://img.test/private/render.webp' },
+    ]);
     expect(screen.getByTestId('tryon-caption')).toHaveTextContent(
       'Manken üzerinde yaklaşık görünüm',
     );

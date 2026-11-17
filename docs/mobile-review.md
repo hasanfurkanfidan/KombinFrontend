@@ -274,7 +274,7 @@ siblings. Dead code: none found in `src` (every module is reached from a route).
 | P5  | Medium | The splash waits for refresh **and** `/me`, with no time limit                              | `useSession.ts:48`                                                  | Fixed                                |
 | P6  | Medium | Pull-to-refresh refetches every loaded page in sequence                                     | `DiscoverScreen.tsx`, `FeedSection.tsx:131`                         | Fixed (Keşfet, Akış); Planned (rest) |
 | P7  | Medium | Infinite queries keep every page (`maxPages` unset)                                         | `catalog/hooks.ts:36`, `social/hooks.ts:51`, `wardrobe/hooks.ts:43` | Planned                              |
-| P8  | Medium | React Native `Image` has no disk cache across launches and no recycling                     | `src/components/AppImage.tsx`                                       | Planned (needs a new build)          |
+| P8  | Medium | React Native `Image` has no disk cache across launches and no recycling                     | `src/components/AppImage.tsx`                                       | Fixed (Task F9, new build needed)    |
 | P9  | Medium | Product cards get the original catalog image: the API has no thumbnail                      | `ProductCard.tsx`                                                   | Planned (backend)                    |
 | P10 | Medium | Shimmer and skeleton loops ignore reduced motion                                            | `Shimmer.tsx`, `Skeleton.tsx`                                       | Fixed                                |
 | P11 | Low    | React Compiler is off                                                                       | `app.json` (`experiments.reactCompiler`)                            | Planned                              |
@@ -357,7 +357,7 @@ are already freed: TanStack's default `gcTime` (5 minutes) removes a list once i
 _Plan:_ measure the JS heap after Akış 50 posts and Keşfet 200 products (last section); if it grows by more than ~30 MB beyond the
 image memory, add `maxPages: 10` with backward paging and test it on a device.
 
-#### P8 · `expo-image` (Medium, Planned; needs a new development build)
+#### P8 · `expo-image` (Medium, Fixed in Task F9; needs a new development build)
 
 RN's `Image` caches decoded images in memory only (and on Android through Fresco's small disk cache), so every cold start downloads Keşfet's
 and Akış's photos again, and list cells are not recycled. `expo-image` brings a memory and disk cache across launches, decode-time

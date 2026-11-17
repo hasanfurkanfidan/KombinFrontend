@@ -18,10 +18,16 @@ const reportMock = jest.mocked(reportPair);
 
 const NOW = '2026-11-02T10:00:00Z';
 
+/** What `expo-image` hands its `onLoad` / `onError` (a fresh object each time: it defines a property on it). */
+const imageLoaded = () => ({
+  nativeEvent: { cacheType: 'none', source: { url: 'x', width: 1, height: 1 } },
+});
+const imageFailed = () => ({ nativeEvent: { error: 'failed' } });
+
 /** Both figures on screen: every picture has loaded. */
 async function settleImages() {
   for (const image of screen.getAllByTestId(/^piece-image-/)) {
-    await fireEvent(image, 'load');
+    await fireEvent(image, 'load', imageLoaded());
   }
 }
 
@@ -126,13 +132,13 @@ describe('voting', () => {
 
     const images = screen.getAllByTestId(/^piece-image-/);
     for (const image of images.slice(0, -1)) {
-      await fireEvent(image, 'load');
+      await fireEvent(image, 'load', imageLoaded());
     }
     await fireEvent.press(screen.getByTestId('vote-left'));
     expect(voteMock).not.toHaveBeenCalled();
 
     // A picture that fails counts too: the vote must not wait for ever.
-    await fireEvent(images.at(-1)!, 'error');
+    await fireEvent(images.at(-1)!, 'error', imageFailed());
     await fireEvent.press(screen.getByTestId('vote-left'));
     await waitFor(() => expect(voteMock).toHaveBeenCalledTimes(1));
   });
