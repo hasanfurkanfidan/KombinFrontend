@@ -75,11 +75,14 @@ export function renderWithQuery(ui: ReactElement) {
   });
   trackQueryClient(client);
   // The app root provides the gesture root view; gesture components in a screen need it in tests too.
-  return render(
+  const result = render(
     <GestureHandlerRootView>
       <QueryClientProvider client={client}>{ui}</QueryClientProvider>
     </GestureHandlerRootView>,
   );
+  // `render` is async in this version of the library: hand the client over once it has rendered, for tests that
+  // write into the cache themselves.
+  return Promise.resolve(result).then((rendered) => Object.assign(rendered, { client }));
 }
 
 export function authHeader(call: unknown[]): string | undefined {

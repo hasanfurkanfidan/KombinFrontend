@@ -1,5 +1,7 @@
 import { create } from 'zustand';
 
+import { istanbulDay } from '@/utils/istanbulTime';
+
 import {
   readStoredWornOutfit,
   writeStoredWornOutfit,
@@ -9,7 +11,7 @@ import {
 /** How many recent searches the search screen keeps. */
 export const MAX_RECENT_SEARCHES = 8;
 
-/** The outfit marked worn, and the Istanbul day (`yyyy-MM-dd`) it was for. */
+/** The outfit marked worn, the account that did it and the Istanbul day (`yyyy-MM-dd`) it was for. */
 export type HomeCardWorn = StoredWornOutfit;
 
 interface PrefsState {
@@ -31,8 +33,8 @@ interface PrefsState {
    * The outfit the user marked worn today (`outfit.date` is today in Istanbul), so Keşfet's card stays on it as
    * "Bugün giyiyorsun" across restarts: the backend's daily endpoint does not return it, and the outfit worn may not be
    * the plain seed-0 one. **The one value of this store that is persisted** (a small file, see `wornOutfitStorage`;
-   * not a secret); written only by `useWear` and cleared when its day is over, when the outfit is gone (404) and when
-   * the session ends.
+   * not a secret); written only by `useWear` (its mutation's own `onSuccess`) and cleared when its day is over, when
+   * the outfit is gone (404), when another account is signed in and when the session ends.
    */
   homeCardWorn: HomeCardWorn | null;
   /** The stored value has been read (or replaced) this launch; the card waits for it. */
@@ -48,10 +50,17 @@ interface PrefsState {
   /** Forgets it, in memory and on disk. */
   clearHomeCardWorn: () => void;
   /**
-   * Reads the stored value once per launch. A value from another day is dropped (and its file deleted); a value set
-   * while the read was out, or a session that ended meanwhile, wins over the read.
+   * Reads the stored value once per launch, for the signed-in account (`userId`; `null` while it is unknown: nothing is
+   * used and the file is left alone). A value of another account, a file from before the account was stored and a value
+   * from a day before today (read from the clock now) are dropped and their file deleted; a value set while the read was
+   * out, or a session that ended meanwhile, wins over the read.
    */
-  hydrateHomeCardWorn: (today: string) => Promise<void>;
+  hydrateHomeCardWorn: (userId: string | null) => Promise<void>;
+  /**
+   * Is the value's day over? Only a day **before** the real Istanbul day counts, read from the clock at this moment:
+   * a value written just after midnight, while the card still holds the evening's `now`, is the new day's, not stale.
+   */
+  isHomeCardWornStale: (worn: HomeCardWorn) => boolean;
   reset: () => void;
 }
 
@@ -91,7 +100,8 @@ export const usePrefsStore = create<PrefsState>((set, get) => ({
     set({ homeCardWorn: null, homeCardWornLoaded: true });
     void writeStoredWornOutfit(null);
   },
-  hydrateHomeCardWorn: async (today) => {
+  isHomeCardWornStale: (worn) => worn.day < istanbulDay(new Date()),
+  hydrateHomeCardWorn: async (userId) => {
     if (get().homeCardWornLoaded) {
       return;
     }
@@ -100,8 +110,16 @@ export const usePrefsStore = create<PrefsState>((set, get) => ({
     if (get().homeCardWornLoaded) {
       return;
     }
-    if (stored && stored.day === today) {
-      set({ homeCardWorn: stored, homeCardWornLoaded: true });
+    if (userId === null) {
+      // Who is signed in is not known (yet): use nothing, and keep the file for the next launch.
+      set({ homeCardWorn: null, homeCardWornLoaded: true });
+      return;
+    }
+    if (stored && stored.userId === userId && !get().isHomeCardWornStale({ ...stored, userId })) {
+      set({
+        homeCardWorn: { userId, day: stored.day, outfitId: stored.outfitId },
+        homeCardWornLoaded: true,
+      });
       return;
     }
     if (stored) {

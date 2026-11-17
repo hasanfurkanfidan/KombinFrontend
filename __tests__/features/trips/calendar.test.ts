@@ -21,8 +21,9 @@ describe('calendar days', () => {
     expect(daysOf('2026-11-29', '2026-12-01')).toEqual(['2026-11-29', '2026-11-30', '2026-12-01']);
   });
 
-  it('reads today on the phone', () => {
-    expect(todayIso(new Date(2026, 0, 5, 23, 59))).toBe('2026-01-05');
+  it('reads today in Istanbul, the backend’s calendar (the zone cases are in __tests__/clock)', () => {
+    expect(todayIso(new Date('2026-01-05T20:59:00Z'))).toBe('2026-01-05');
+    expect(todayIso(new Date('2026-01-05T21:00:00Z'))).toBe('2026-01-06');
   });
 
   it('writes a range the short way', () => {

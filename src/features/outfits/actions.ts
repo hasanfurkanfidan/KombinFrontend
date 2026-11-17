@@ -5,16 +5,17 @@ import { showToast } from '@/components/toastStore';
 import { openOffer } from '@/features/catalog/buy';
 import { useActivePersona } from '@/features/personas/hooks';
 import { tr } from '@/i18n/tr';
-import { usePrefsStore } from '@/session/prefsStore';
 
-import { istanbulDay } from './homeCard';
+import { canWearOutfit } from './homeCard';
 import { useSaveOutfit, useWearOutfit } from './hooks';
 
 export interface WearOptions {
   /** Skip the "Bugün giydin" toast, for a screen that already shows the settled state. */
   quiet?: boolean;
-  /** Called once the backend has the outfit as worn. */
+  /** Called once the backend has the outfit as worn (not when the caller has unmounted meanwhile). */
   onWorn?: () => void;
+  /** Called when the request failed (the usual toast is shown too). */
+  onError?: () => void;
 }
 
 /** The "shuffle" report of the daily screen and the home card: the event, then the backend's feedback (best effort). */
@@ -31,28 +32,26 @@ export function reportShuffle(outfit: Outfit | null | undefined): void {
 
 /**
  * "Bugün giydim" for any outfit: the one path the outfit sheet and the home card share (event, request, cache patch,
- * toasts). `wearing` is true while the request is out. It is also the one place that remembers the worn outfit for
- * Keşfet's card (`prefsStore.homeCardWorn`, persisted), so both paths settle the card, and it does so only for an
- * outfit that is about today: wearing tomorrow's outfit must not settle today's card.
+ * toasts). `wearing` is true while the request is out. Remembering the worn outfit for Keşfet's card is the mutation's
+ * own job (`useWearOutfit`), so it happens even when the screen that tapped is gone by the time the answer comes.
  */
 export function useWear() {
   const wear = useWearOutfit();
-  const markWorn = usePrefsStore((prefs) => prefs.markHomeCardWorn);
   return {
     wearing: wear.isPending,
     wear: (id: string, options: WearOptions = {}) => {
       track('outfit_feedback', { action: 'Worn' });
       wear.mutate(id, {
-        onSuccess: (worn) => {
-          if (worn.date === istanbulDay(new Date())) {
-            markWorn({ day: worn.date, outfitId: worn.id });
-          }
+        onSuccess: () => {
           if (!options.quiet) {
             showToast(tr.outfitWornToast);
           }
           options.onWorn?.();
         },
-        onError: () => showToast(tr.outfitActionFailed),
+        onError: () => {
+          showToast(tr.outfitActionFailed);
+          options.onError?.();
+        },
       });
     },
   };
@@ -61,6 +60,8 @@ export function useWear() {
 export interface OutfitActions {
   saved: boolean;
   worn: boolean;
+  /** "Bugün giydim" exists only for an outfit that is about today (the backend records the wear for today). */
+  canWear: boolean;
   saving: boolean;
   wearing: boolean;
   save: () => void;
@@ -78,6 +79,7 @@ export function useOutfitActions(outfit: Outfit): OutfitActions {
   return {
     saved: outfit.savedAt !== null,
     worn: outfit.wornAt !== null,
+    canWear: canWearOutfit(outfit),
     saving: save.isPending,
     wearing: wear.wearing,
     save: () => {

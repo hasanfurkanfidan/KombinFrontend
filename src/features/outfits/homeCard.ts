@@ -1,4 +1,7 @@
 import type { Outfit } from '@/api/models';
+import { istanbulDay, istanbulHour } from '@/utils/istanbulTime';
+
+export { istanbulDay, istanbulHour };
 
 /**
  * What the outfit card on Keşfet shows. The outfit is only asked for when the user is signed in and has at least one
@@ -27,7 +30,7 @@ export function homeCardState(input: {
 }
 
 /**
- * From this hour on (local time) the card is about tomorrow ("Yarın için"). Until then it is about today, worn or not:
+ * From this hour on (Europe/Istanbul time, whatever the phone's zone) the card is about tomorrow ("Yarın için"). Until then it is about today, worn or not:
  * an outfit that was worn stays on the card as "Bugün giyiyorsun" (the settled state) and does not hand over to
  * tomorrow's outfit when the app comes back to the front at lunchtime.
  */
@@ -37,18 +40,7 @@ export type HomeCardDay = 'today' | 'tomorrow';
 
 /** Which day the card is about: today until `HOME_CARD_SWITCH_HOUR`, then tomorrow. Nothing else moves it. */
 export function homeCardDay(now: Date): HomeCardDay {
-  return now.getHours() >= HOME_CARD_SWITCH_HOUR ? 'tomorrow' : 'today';
-}
-
-/** Turkey has no daylight saving time since 2016: Europe/Istanbul is always UTC+3. */
-const ISTANBUL_OFFSET_MS = 3 * 60 * 60 * 1000;
-
-/**
- * The calendar day in Europe/Istanbul as `yyyy-MM-dd`, the day the backend's outfits (`outfit.date`) are about and
- * what "worn today" is remembered against. Plain arithmetic, so it does not depend on `Intl` time-zone support.
- */
-export function istanbulDay(now: Date): string {
-  return new Date(now.getTime() + ISTANBUL_OFFSET_MS).toISOString().slice(0, 10);
+  return istanbulHour(now) >= HOME_CARD_SWITCH_HOUR ? 'tomorrow' : 'today';
 }
 
 /**
@@ -56,8 +48,34 @@ export function istanbulDay(now: Date): string {
  * today; everything else (a missing piece, a tomorrow card, nothing to show) opens the outfit.
  */
 export function homeCardPrimary(
-  outfit: Pick<Outfit, 'completeness'> | null,
+  outfit: Pick<Outfit, 'completeness' | 'date'> | null,
   day: HomeCardDay,
+  now: Date = new Date(),
 ): 'wear' | 'open' {
-  return day === 'today' && outfit?.completeness === 'Complete' ? 'wear' : 'open';
+  return day === 'today' && outfit?.completeness === 'Complete' && canWearOutfit(outfit, now)
+    ? 'wear'
+    : 'open';
+}
+
+/**
+ * The backend records "worn" (`POST /worn`) for **today**, whatever the outfit's own day, and has no undo. So wearing is
+ * offered only for an outfit that is about today in Istanbul; for any other day the action is not shown.
+ */
+export function canWearOutfit(outfit: Pick<Outfit, 'date'>, now: Date = new Date()): boolean {
+  return outfit.date === istanbulDay(now);
+}
+
+/**
+ * Is this outfit worn today? Both must be today in Istanbul: the outfit's day and the moment it was worn. A wear mark
+ * from yesterday evening on today's outfit, or a mark made today on another day's outfit, does not count.
+ */
+export function wornToday(
+  outfit: Pick<Outfit, 'date' | 'wornAt'>,
+  now: Date = new Date(),
+): boolean {
+  return (
+    canWearOutfit(outfit, now) &&
+    outfit.wornAt !== null &&
+    istanbulDay(new Date(outfit.wornAt)) === istanbulDay(now)
+  );
 }

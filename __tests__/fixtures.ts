@@ -1,5 +1,6 @@
 import type {
   Alert,
+  Me,
   BudgetOutfit,
   BudgetOutfits,
   BudgetPiece,
@@ -1062,6 +1063,17 @@ export function sizePrompt(overrides: Partial<SizePrompt> = {}): SizePrompt {
     availableSizes: ['S', 'M', 'L'],
     clickedAt: '2026-11-10T10:00:00Z',
     expiresAt: '2026-12-10T10:00:00Z',
+    ...overrides,
+  };
+}
+
+/** The signed-in account (`GET /me`): the remembered worn outfit is kept per user id. */
+export function me(overrides: Partial<Me> = {}): Me {
+  return {
+    id: '00000000-0000-4000-8000-0000000000a1',
+    email: 'ayse@example.com',
+    displayName: 'Ayşe',
+    createdAt: '2026-01-01T09:00:00Z',
     ...overrides,
   };
 }

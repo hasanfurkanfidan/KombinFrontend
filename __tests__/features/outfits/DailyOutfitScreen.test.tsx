@@ -3,6 +3,7 @@ import * as WebBrowser from 'expo-web-browser';
 import { router, useLocalSearchParams } from 'expo-router';
 
 import { track } from '@/analytics';
+import { getMe } from '@/api/endpoints/auth';
 import {
   dismissOutfit,
   getDailyOutfit,
@@ -13,12 +14,14 @@ import {
 import { listPersonas } from '@/api/endpoints/profile';
 import { useToastStore } from '@/components/toastStore';
 import { DailyOutfitScreen } from '@/features/outfits/DailyOutfitScreen';
-import { istanbulDay } from '@/features/outfits/homeCard';
 import { usePrefsStore } from '@/session/prefsStore';
+import { readStoredWornOutfit } from '@/session/wornOutfitStorage';
 
-import { dailyOutfit, needsOneOutfit, outfit, outfitPiece, persona } from '../../fixtures';
+import { dailyOutfit, me, needsOneOutfit, outfit, outfitPiece, persona } from '../../fixtures';
+import { freezeClockAt, MORNING, TODAY, unfreezeClock } from '../../support/fakeClock';
 import { renderWithQuery, resetSession, signedInSession } from '../../testUtils';
 
+jest.mock('@/api/endpoints/auth');
 jest.mock('@/api/endpoints/outfits');
 jest.mock('@/api/endpoints/profile');
 
@@ -41,6 +44,13 @@ beforeEach(async () => {
   });
   dailyMock.mockResolvedValue(dailyOutfit());
   feedbackMock.mockResolvedValue(outfit());
+  jest.mocked(getMe).mockResolvedValue(me());
+  // Monday 2 November 2026, 09:00 in Istanbul: the day the outfit fixtures are for.
+  freezeClockAt(MORNING);
+});
+
+afterEach(() => {
+  unfreezeClock();
 });
 
 /** The header is there from the first render; the narration only once the outfit has loaded. */
@@ -114,8 +124,7 @@ describe('daily outfit with everything in the wardrobe (Complete)', () => {
   });
 
   it('"Bugün giydim" settles Keşfet’s card for today’s outfit, through the same stored value', async () => {
-    const today = istanbulDay(new Date());
-    const current = outfit({ id: 'worn-here', date: today, seed: 3 });
+    const current = outfit({ id: 'worn-here', date: TODAY, seed: 3 });
     dailyMock.mockResolvedValue(dailyOutfit({ outfit: current, alternatives: [] }));
     wearMock.mockResolvedValue({ ...current, wornAt: '2026-11-02T09:00:00Z' });
     await renderWithQuery(<DailyOutfitScreen />);
@@ -123,23 +132,48 @@ describe('daily outfit with everything in the wardrobe (Complete)', () => {
     await fireEvent.press(await screen.findByTestId('outfit-wear'));
 
     await waitFor(() =>
-      expect(usePrefsStore.getState().homeCardWorn).toEqual({ day: today, outfitId: 'worn-here' }),
+      expect(usePrefsStore.getState().homeCardWorn).toEqual({
+        userId: me().id,
+        day: TODAY,
+        outfitId: 'worn-here',
+      }),
     );
   });
 
-  it('wearing tomorrow’s outfit does not settle today’s card', async () => {
-    const current = outfit({ id: 'worn-tomorrow', date: '2999-01-01' });
+  it('still remembers the outfit when the screen is closed before the answer comes', async () => {
+    const current = outfit({ id: 'closed-early', date: TODAY });
     dailyMock.mockResolvedValue(dailyOutfit({ outfit: current, alternatives: [] }));
-    wearMock.mockResolvedValue({ ...current, wornAt: '2026-11-02T09:00:00Z' });
+    let answer: (worn: typeof current) => void = () => undefined;
+    wearMock.mockReturnValue(new Promise((resolve) => (answer = resolve)));
     await renderWithQuery(<DailyOutfitScreen />);
 
     await fireEvent.press(await screen.findByTestId('outfit-wear'));
-
     await waitFor(() => expect(wearMock).toHaveBeenCalledTimes(1));
+    // The user leaves the daily screen at once: the per-call callbacks of the tap die with it.
+    await screen.unmount();
+    answer({ ...current, wornAt: '2026-11-02T09:00:00Z' });
+
     await waitFor(() =>
-      expect(within(screen.getByTestId('outfit-wear')).getByText('Bugün giydin')).toBeTruthy(),
+      expect(usePrefsStore.getState().homeCardWorn).toEqual({
+        userId: me().id,
+        day: TODAY,
+        outfitId: 'closed-early',
+      }),
     );
-    expect(usePrefsStore.getState().homeCardWorn).toBeNull();
+    await waitFor(async () =>
+      expect(await readStoredWornOutfit()).toMatchObject({ outfitId: 'closed-early' }),
+    );
+  });
+
+  it('offers no wear action for an outfit of another day: the backend would record it for today', async () => {
+    const current = outfit({ id: 'for-tomorrow', date: '2026-11-03' });
+    dailyMock.mockResolvedValue(dailyOutfit({ outfit: current, alternatives: [] }));
+    await renderWithQuery(<DailyOutfitScreen />);
+
+    await screen.findByTestId('outfit-save');
+
+    expect(screen.queryByTestId('outfit-wear')).toBeNull();
+    expect(wearMock).not.toHaveBeenCalled();
   });
 
   it('refetches with the chosen occasion, from seed 0', async () => {

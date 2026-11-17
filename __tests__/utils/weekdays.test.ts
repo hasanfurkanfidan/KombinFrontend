@@ -17,7 +17,7 @@ describe('short weekdays', () => {
 
   it('give the budget date chips distinct labels and full spoken names', () => {
     // Sunday 15 November: the chips run from Tuesday 17th to Sunday 22nd.
-    const options = dateOptions(new Date(2026, 10, 15)).slice(2);
+    const options = dateOptions(new Date('2026-11-15T09:00:00Z')).slice(2);
     expect(options.map((option) => option.label)).toEqual([
       'Sal 17',
       'Çar 18',
@@ -29,7 +29,7 @@ describe('short weekdays', () => {
     expect(options[4]?.spoken).toBe('Cumartesi, 21 Kasım');
     // Every day of a week, whichever day it starts on.
     for (let start = 1; start <= 7; start += 1) {
-      const labels = dateOptions(new Date(2026, 10, start))
+      const labels = dateOptions(new Date(Date.UTC(2026, 10, start, 9)))
         .slice(2)
         .map((o) => o.label.split(' ')[0]);
       expect(new Set(labels).size).toBe(labels.length);

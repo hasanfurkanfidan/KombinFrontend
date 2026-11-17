@@ -125,7 +125,7 @@ describe('small helpers', () => {
   });
 
   it('offers today, tomorrow and each day up to a week ahead', () => {
-    const options = dateOptions(new Date(2026, 10, 15));
+    const options = dateOptions(new Date('2026-11-15T09:00:00Z'));
     expect(options.map((option) => option.value)).toEqual([
       'today',
       'tomorrow',

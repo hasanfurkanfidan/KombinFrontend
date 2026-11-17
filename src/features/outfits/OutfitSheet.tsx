@@ -75,14 +75,16 @@ export function OutfitSheet({ outfit, actions, onSwipeDown }: OutfitSheetProps) 
           <Text style={styles.caption}>{tr.outfitReady}</Text>
           <View style={styles.buttons}>
             {saveButton}
-            <Button
-              label={actions.worn ? tr.outfitWornToday : tr.outfitWearToday}
-              onPress={actions.wear}
-              loading={actions.wearing}
-              disabled={actions.worn}
-              style={styles.half}
-              testID="outfit-wear"
-            />
+            {actions.canWear ? (
+              <Button
+                label={actions.worn ? tr.outfitWornToday : tr.outfitWearToday}
+                onPress={actions.wear}
+                loading={actions.wearing}
+                disabled={actions.worn}
+                style={styles.half}
+                testID="outfit-wear"
+              />
+            ) : null}
           </View>
         </>
       ) : (
