@@ -210,8 +210,8 @@ writes `detail` for users; network errors show our own Turkish line. Accepted.
 Measured: `npm audit --omit=dev` reports 9 moderate, 0 high, 0 critical, all in Expo's build tooling (`@expo/cli`, `@expo/config`,
 `@expo/config-plugins`, `@expo/fingerprint`, `@expo/metro-config`, `glob`, `minimatch`, `node-forge`). None is in the bundle (checked
 against the export's source map; only `@expo/cli`'s Metro module runtime is, not the vulnerable code). **Accepted** with a gate:
-`npm run audit:ci` fails on any high/critical advisory and on any advisory outside `scripts/audit-allowlist.json` (each entry with its
-reason). `npx expo-doctor`: 18/20 checks pass; 15 packages are a patch behind SDK 58 and `react-native-safe-area-context` a minor
+`npm run audit:ci` fails on any advisory outside `scripts/audit-allowlist.json` (each entry an advisory at its root package, with its
+reason and review date; dependants of a listed root pass without being listed; since 17.11.2026, see CLAUDE.md "Dependencies"). `npx expo-doctor`: 18/20 checks pass; 15 packages are a patch behind SDK 58 and `react-native-safe-area-context` a minor
 (the other failure is the React Native Directory server being unreachable). **Planned:** `npx expo install --check` in its own branch; several
 of those packages are native, so it needs a new development build and a device check.
 

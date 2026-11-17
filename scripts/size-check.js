@@ -54,3 +54,26 @@ if (size > budget.limitBytes) {
   );
   process.exit(1);
 }
+
+// An advisory may be allow-listed (scripts/audit-allowlist.json) only because its package never reaches the app: fail
+// when the export's source map says otherwise.
+const mapDir = path.join(outDir, '_expo', 'static', 'js', 'android');
+const mapFile = fs.readdirSync(mapDir).find((name) => name.endsWith('.map'));
+const bundled = new Set(
+  JSON.parse(fs.readFileSync(path.join(mapDir, mapFile), 'utf8')).sources.flatMap((source) => {
+    const parts = source.replace(/\\/g, '/').split('node_modules/');
+    if (parts.length < 2) return [];
+    const [first, second] = parts[parts.length - 1].split('/');
+    return [first.startsWith('@') ? `${first}/${second}` : first];
+  }),
+);
+const allowListed = JSON.parse(fs.readFileSync(path.join(__dirname, 'audit-allowlist.json'), 'utf8'));
+const shipped = allowListed.advisories.filter((entry) => bundled.has(entry.package));
+if (shipped.length > 0) {
+  console.error(
+    `size:check: allow-listed in audit-allowlist.json but found in the Android bundle: ${shipped
+      .map((entry) => `${entry.package} (${entry.id})`)
+      .join(', ')}. Update the package instead of allow-listing it.`,
+  );
+  process.exit(1);
+}

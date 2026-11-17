@@ -1,16 +1,62 @@
 {
-  "reviewedOn": "2026-11-15",
-  "reason": "Build-time tooling only: these come in through the Expo CLI and config tooling (`expo` -> `@expo/cli`, `@expo/config`, `@expo/fingerprint`, `@expo/metro-config`) and run on the developer's machine or EAS, never in the app. None of them is in the Android bundle (checked against the export's source map, docs/mobile-review.md). Re-check when Expo ships a patch release.",
-  "maxSeverity": "moderate",
-  "packages": [
-    "@expo/cli",
-    "@expo/config",
-    "@expo/config-plugins",
-    "@expo/fingerprint",
-    "@expo/metro-config",
-    "expo",
-    "glob",
-    "minimatch",
-    "node-forge"
+  "comment": "One entry per advisory at its ROOT package. A package that is vulnerable only because it depends (through any chain) on an allow-listed root is covered by that entry and is never listed itself, so react-native, expo, reanimated and the rest are not allow-listed. scripts/size-check.js fails when a root package is found in the Android bundle's source map, and scripts/audit-ci.js fails on any advisory that is not listed here. Re-check each entry on its review date and whenever a patched release appears.",
+  "advisories": [
+    {
+      "id": "GHSA-fc5q-39xc-vjpf",
+      "package": "picomatch",
+      "severity": "high",
+      "affected": "<=4.0.7",
+      "patched": null,
+      "reviewedOn": "2026-11-17",
+      "reason": "ReDoS (CVE-2026-112366): a crafted extglob such as +(*) makes picomatch backtrack exponentially. No patched release exists (latest 4.0.7 is affected; the upstream fix is an unmerged pull request). picomatch is used only by build and test tooling, Metro and Expo CLI (micromatch, @expo/cli, @expo/metro-config), React Native's codegen (tinyglobby, fdir) and Jest (jest-util), where the glob patterns come from the project's own config, not from a user or the network. It is not in the Android bundle (checked against the export's source map by size:check)."
+    },
+    {
+      "id": "GHSA-3g3m-2fjr-6pw4",
+      "package": "glob",
+      "severity": "moderate",
+      "affected": ">=9.0.0 <=14.0.1",
+      "reviewedOn": "2026-11-15",
+      "reason": "Glob: AbortSignal cancellation bypass allows post-timeout filesystem traversal. Reached only through Expo's build tooling (the Expo CLI and config packages), which runs on the developer's machine or EAS and never in the app; not in the Android bundle (size:check checks the source map)."
+    },
+    {
+      "id": "GHSA-g3hv-75wg-m249",
+      "package": "minimatch",
+      "severity": "moderate",
+      "affected": ">=7.0.0 <11.0.1",
+      "reviewedOn": "2026-11-15",
+      "reason": "minimatch: potential denial of service via globparts amplification. Reached only through Expo's build tooling (the Expo CLI and config packages), which runs on the developer's machine or EAS and never in the app; not in the Android bundle (size:check checks the source map)."
+    },
+    {
+      "id": "GHSA-6889-vf6x-f3g5",
+      "package": "node-forge",
+      "severity": "moderate",
+      "affected": "<=1.4.2",
+      "reviewedOn": "2026-11-15",
+      "reason": "Forge: Ed25519 signature verification accepts small-order public keys. Reached only through Expo's build tooling (the Expo CLI and config packages), which runs on the developer's machine or EAS and never in the app; not in the Android bundle (size:check checks the source map)."
+    },
+    {
+      "id": "GHSA-w4xr-hqv8-ch44",
+      "package": "node-forge",
+      "severity": "moderate",
+      "affected": "<=1.4.2",
+      "reviewedOn": "2026-11-15",
+      "reason": "Forge: TLS client crash on an unsupported ServerHello compression method. Reached only through Expo's build tooling (the Expo CLI and config packages), which runs on the developer's machine or EAS and never in the app; not in the Android bundle (size:check checks the source map)."
+    },
+    {
+      "id": "GHSA-6cv4-p8m7-4r25",
+      "package": "node-forge",
+      "severity": "moderate",
+      "affected": ">=0.1.2 <=1.4.2",
+      "reviewedOn": "2026-11-15",
+      "reason": "Forge: ReDoS in forge.http response header and cookie trimming. Reached only through Expo's build tooling (the Expo CLI and config packages), which runs on the developer's machine or EAS and never in the app; not in the Android bundle (size:check checks the source map)."
+    },
+    {
+      "id": "GHSA-j8rw-jp99-435v",
+      "package": "node-forge",
+      "severity": "moderate",
+      "affected": "<=1.4.2",
+      "reviewedOn": "2026-11-15",
+      "reason": "Forge: TLS client crash on a handshake record received without a session. Reached only through Expo's build tooling (the Expo CLI and config packages), which runs on the developer's machine or EAS and never in the app; not in the Android bundle (size:check checks the source map)."
+    }
   ]
 }
