@@ -13,7 +13,7 @@ import { isTryOnOff, noteTryOnDisabled, noteTryOnRateLimited, tryOnBlockedUntil 
 /**
  * The rules of asking (a request can make the server draw a new image, and a user gets 30 an hour):
  *
- * - only a screen that shows an outfit sheet (or a product the user is looking at) asks, never a list, a card or a
+ * - only a screen that shows an outfit sheet asks, never a list, a card or a
  *   prefetch, and one subject at a time;
  * - a subject that changes (a shuffle, a swipe to the next outfit) is asked about only after it stood still for
  *   `delayMs`;
@@ -24,8 +24,6 @@ import { isTryOnOff, noteTryOnDisabled, noteTryOnRateLimited, tryOnBlockedUntil 
  * - `Preparing` is asked again every `TRYON_POLL_MS`, at most `TRYON_MAX_POLLS` times, and then hides too.
  */
 export const TRYON_ASK_DELAY_MS = 600;
-/** Product detail is browsed quickly: a product is asked about only after the user stayed on it this long. */
-export const TRYON_PRODUCT_DWELL_MS = 2000;
 export const TRYON_POLL_MS = 3000;
 export const TRYON_MAX_POLLS = 10;
 /** A picture's link lives an hour; the server answers a repeated ask from its own cache for free, with a new link. */
@@ -104,7 +102,7 @@ const NOTHING: TryOnState = { phase: 'hidden', answer: null };
 
 /**
  * Whether to show "Manken üstünde gör" for this outfit or product, and what it shows. Pass `null` while there is nothing to
- * ask about. The caller is the screen that has the sheet (or the product) open; see the rules above.
+ * ask about. The caller is the screen that has the sheet open; see the rules above.
  */
 export function useTryOn(subject: TryOnSubject | null, delayMs = TRYON_ASK_DELAY_MS): TryOnState {
   const { isSignedIn } = useSession();

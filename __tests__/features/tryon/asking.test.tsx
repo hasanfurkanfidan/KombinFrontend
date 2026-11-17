@@ -4,8 +4,6 @@ import { fireEvent, screen } from '@testing-library/react-native';
 import { useLocalSearchParams } from 'expo-router';
 
 import { getMe } from '@/api/endpoints/auth';
-import { getPriceHistory, getProduct } from '@/api/endpoints/catalog';
-import { listAlerts, listSavedIds } from '@/api/endpoints/engagement';
 import {
   getDailyOutfit,
   getHowToWear,
@@ -15,24 +13,21 @@ import {
 import { listPersonas } from '@/api/endpoints/profile';
 import { tryPost } from '@/api/endpoints/social';
 import { getTryOn } from '@/api/endpoints/tryon';
-import { ProductDetailScreen } from '@/features/catalog/ProductDetailScreen';
 import { DailyOutfitScreen } from '@/features/outfits/DailyOutfitScreen';
 import { HowToWearScreen } from '@/features/outfits/HowToWearScreen';
 import { SavedOutfitsScreen } from '@/features/outfits/SavedOutfitsScreen';
 import { resetTryOnGate } from '@/features/tryon/gate';
-import { TRYON_ASK_DELAY_MS, TRYON_PRODUCT_DWELL_MS } from '@/features/tryon/hooks';
+import { TRYON_ASK_DELAY_MS } from '@/features/tryon/hooks';
 import { PostCard } from '@/features/social/PostCard';
 
 import {
   dailyOutfit,
-  history,
   howToWear,
   me,
   outfit,
   outfitPiece,
   persona,
   post,
-  product,
   tryResult,
 } from '../../fixtures';
 import { renderWithQuery, resetSession, signedInSession } from '../../testUtils';
@@ -144,51 +139,6 @@ describe('the outfit sheet', () => {
     await flush(TRYON_ASK_DELAY_MS * 5);
 
     expect(asked()).toEqual([{ kind: 'outfit', id: 'h1' }]);
-  });
-});
-
-describe('product detail', () => {
-  beforeEach(() => {
-    jest.mocked(getProduct).mockResolvedValue(product());
-    jest.mocked(getPriceHistory).mockResolvedValue(history);
-    jest.mocked(listSavedIds).mockResolvedValue({ productIds: [] });
-    jest.mocked(listAlerts).mockResolvedValue({ items: [] });
-  });
-
-  it('asks only after the user stayed on the product, and shows the outlined action for Ready', async () => {
-    getTryOnMock.mockResolvedValue(tryOn({ garments: [{ id: 'p1', fitLevel: 'TrueToSize' }] }));
-
-    await renderWithQuery(<ProductDetailScreen id="p1" />);
-    // The wait starts when the product is on screen, not when the screen opens (the personas load first).
-    await flush(100);
-    expect(screen.getByTestId('how-to-wear')).toBeTruthy();
-    await flush(TRYON_PRODUCT_DWELL_MS - 300);
-    expect(getTryOnMock).not.toHaveBeenCalled();
-    expect(screen.queryByTestId('detail-tryon')).toBeNull();
-
-    await flush(400);
-    expect(asked()).toEqual([{ kind: 'product', id: 'p1' }]);
-    expect(screen.getByTestId('detail-tryon')).toHaveTextContent('Manken üstünde gör');
-  });
-
-  it('a product the backend cannot draw shows nothing in its place', async () => {
-    await renderWithQuery(<ProductDetailScreen id="p1" />);
-    await flush(TRYON_PRODUCT_DWELL_MS + 100);
-
-    expect(getTryOnMock).toHaveBeenCalledTimes(1);
-    expect(screen.queryByTestId('detail-tryon')).toBeNull();
-    expect(screen.getByTestId('how-to-wear')).toBeTruthy();
-  });
-
-  it('a visitor never asks', async () => {
-    await resetSession();
-    getTryOnMock.mockResolvedValue(tryOn());
-
-    await renderWithQuery(<ProductDetailScreen id="p1" />);
-    await flush(TRYON_PRODUCT_DWELL_MS * 3);
-
-    expect(getTryOnMock).not.toHaveBeenCalled();
-    expect(screen.queryByTestId('detail-tryon')).toBeNull();
   });
 });
 

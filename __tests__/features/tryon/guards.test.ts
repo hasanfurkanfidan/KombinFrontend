@@ -38,7 +38,6 @@ describe('who may ask', () => {
     'features/tryon/hooks.ts',
     'features/tryon/TryOnAction.tsx',
     'features/outfits/OutfitSheet.tsx',
-    'features/catalog/ProductDetailScreen.tsx',
     'features/social/TrySheet.tsx',
   ];
 
@@ -54,7 +53,7 @@ describe('who may ask', () => {
     expect(callers).toEqual(['features/tryon/hooks.ts']);
   });
 
-  it('only an outfit sheet, the product detail and "Dolabımla dene" use the hook or the action', () => {
+  it('only an outfit sheet and "Dolabımla dene" use the hook or the action', () => {
     const files = sources
       .filter(({ source }) => /\b(useTryOn|TryOnAction)\b/.test(code(source)))
       .map(({ name }) => name)

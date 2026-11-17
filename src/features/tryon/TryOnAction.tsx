@@ -15,7 +15,7 @@ interface TryOnActionProps {
   subject: TryOnSubject;
   names: PieceNames;
   productName?: string;
-  /** `text`: the quiet action in an outfit sheet's header. `outlined`: the secondary action on product detail. */
+  /** `text`: the quiet action in an outfit sheet's header. `outlined`: a secondary action (unused since the product detail one was removed, until a no-draw availability check exists). */
   variant: 'text' | 'outlined';
   /** How long the subject must stand still before it is asked about (see `useTryOn`). */
   delayMs?: number;
