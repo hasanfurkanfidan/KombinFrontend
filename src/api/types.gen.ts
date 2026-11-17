@@ -1765,6 +1765,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/me/tryon": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description "Manken üstünde gör": the outfit drawn on a mannequin proportioned from the caller's measurements. Ready carries a presigned image URL (one hour); Preparing means a garment is still being prepared (ask again); Unavailable means the action must be hidden. A render reveals body proportions: the image is private to the caller. */
+        get: operations["GetTryOn"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/tryon/reports": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description "Yanlış görünüyor": a mannequin drawing looks wrong. Stored for review (a garment shown from the back, most often); the same report twice is stored once. */
+        post: operations["ReportTryOn"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -3398,6 +3432,18 @@ export interface components {
         ReportPostResponse: {
             reported: boolean;
         };
+        /**
+         * @description "Yanlış görünüyor": exactly one of `OutfitId` and `ProductId` (what `GET /me/tryon` was asked with), the `GarmentIds` of
+         *     its answer (the pieces' IDs) and the `Renderer` that drew it.
+         */
+        ReportTryOnRequest: {
+            /** Format: uuid */
+            outfitId: null | string;
+            /** Format: uuid */
+            productId: null | string;
+            garmentIds: null | string[];
+            renderer: null | string;
+        };
         /** @description `Decision`: `Restore` (clear the reports, show a held-back result) or `Remove` (take the outfit out for good), any casing. */
         ReviewEntryRequest: {
             decision: null | string;
@@ -3905,6 +3951,35 @@ export interface components {
             outfits: components["schemas"]["OutfitResponse"][];
             message: null | string;
         };
+        /** @enum {unknown} */
+        TryOnFitLevel: "Tight" | "TrueToSize" | "Loose" | null;
+        /** @description One piece of a drawing: `Id` is the piece's ID as the outfit carries it (wardrobe item or product). */
+        TryOnGarmentResponse: {
+            /** Format: uuid */
+            id: string;
+            fitLevel: null | components["schemas"]["TryOnFitLevel"];
+        };
+        /**
+         * @description "Manken üstünde gör". `Status`: `Ready` (show `ImageUrl`, a presigned GET valid for an hour, with "Manken üzerinde yaklaşık
+         *     görünüm"), `Preparing` (show "Hazırlanıyor" and ask again), `Unavailable` (hide the action entirely, never a disabled button).
+         *     `Garments` (Ready only): each drawn piece by the ID the outfit gives it (wardrobe item or product) with its fit label, null when nothing
+         *     was comparable. `DefaultedMeasurements` (Ready only): the measurements the mannequin guessed; not empty → "Ölçülerini ekle, manken sana
+         *     benzesin". `Reason` (Unavailable only): why, for the app team and support.
+         */
+        TryOnResponse: {
+            status: components["schemas"]["TryOnStatus"];
+            imageUrl: null | string;
+            garments: components["schemas"]["TryOnGarmentResponse"][];
+            defaultedMeasurements: string[];
+            reason: null | components["schemas"]["TryOnUnavailableReason"];
+        };
+        /**
+         * @description What the app does: show the image, show "Hazırlanıyor", or hide the action entirely.
+         * @enum {unknown}
+         */
+        TryOnStatus: "Ready" | "Preparing" | "Unavailable";
+        /** @enum {unknown} */
+        TryOnUnavailableReason: "BodyOutOfRange" | "UnknownCategory" | "NoTop" | "NoBottom" | "PersonInPhoto" | "PieceNotReady" | "FoldedSleeves" | "RendererRefused" | null;
         /** @description All optional: `Seed` re-ranks near-equal outfits, `Occasion` and `PersonaId` as on how-to-wear. */
         TryWithWardrobeRequest: {
             /** Format: int32 */
@@ -10041,6 +10116,124 @@ export interface operations {
             };
             /** @description Conflict */
             409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    GetTryOn: {
+        parameters: {
+            query?: {
+                OutfitId?: string;
+                ProductId?: string;
+                WithWardrobe?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TryOnResponse"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    ReportTryOn: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReportTryOnRequest"];
+            };
+        };
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };

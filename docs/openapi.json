@@ -7275,6 +7275,156 @@
           }
         }
       }
+    },
+    "/api/v1/me/tryon": {
+      "get": {
+        "tags": [
+          "TryOn"
+        ],
+        "description": "\"Manken üstünde gör\": the outfit drawn on a mannequin proportioned from the caller's measurements. Ready carries a presigned image URL (one hour); Preparing means a garment is still being prepared (ask again); Unavailable means the action must be hidden. A render reveals body proportions: the image is private to the caller.",
+        "operationId": "GetTryOn",
+        "parameters": [
+          {
+            "name": "OutfitId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "ProductId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "WithWardrobe",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TryOnResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/me/tryon/reports": {
+      "post": {
+        "tags": [
+          "TryOn"
+        ],
+        "description": "\"Yanlış görünüyor\": a mannequin drawing looks wrong. Stored for review (a garment shown from the back, most often); the same report twice is stored once.",
+        "operationId": "ReportTryOn",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReportTryOnRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -13460,6 +13610,48 @@
           }
         }
       },
+      "ReportTryOnRequest": {
+        "required": [
+          "outfitId",
+          "productId",
+          "garmentIds",
+          "renderer"
+        ],
+        "type": "object",
+        "properties": {
+          "outfitId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "productId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "garmentIds": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "renderer": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        },
+        "description": "\"Yanlış görünüyor\": exactly one of `OutfitId` and `ProductId` (what `GET /me/tryon` was asked with), the `GarmentIds` of\nits answer (the pieces' IDs) and the `Renderer` that drew it."
+      },
       "ReviewEntryRequest": {
         "required": [
           "decision"
@@ -15395,6 +15587,103 @@
           }
         },
         "description": "The outfits built around one tagged product. `Owned`: the caller already has it, so the anchor is their own piece. The anchor's offer\nkeeps the post attribution (`goPath` with `post=`); gap pieces carry their own cheapest offer."
+      },
+      "TryOnFitLevel": {
+        "enum": [
+          "Tight",
+          "TrueToSize",
+          "Loose",
+          null
+        ]
+      },
+      "TryOnGarmentResponse": {
+        "required": [
+          "id",
+          "fitLevel"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "fitLevel": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/TryOnFitLevel"
+              }
+            ]
+          }
+        },
+        "description": "One piece of a drawing: `Id` is the piece's ID as the outfit carries it (wardrobe item or product)."
+      },
+      "TryOnResponse": {
+        "required": [
+          "status",
+          "imageUrl",
+          "garments",
+          "defaultedMeasurements",
+          "reason"
+        ],
+        "type": "object",
+        "properties": {
+          "status": {
+            "$ref": "#/components/schemas/TryOnStatus"
+          },
+          "imageUrl": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "garments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TryOnGarmentResponse"
+            }
+          },
+          "defaultedMeasurements": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "reason": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/TryOnUnavailableReason"
+              }
+            ]
+          }
+        },
+        "description": "\"Manken üstünde gör\". `Status`: `Ready` (show `ImageUrl`, a presigned GET valid for an hour, with \"Manken üzerinde yaklaşık\ngörünüm\"), `Preparing` (show \"Hazırlanıyor\" and ask again), `Unavailable` (hide the action entirely, never a disabled button).\n`Garments` (Ready only): each drawn piece by the ID the outfit gives it (wardrobe item or product) with its fit label, null when nothing\nwas comparable. `DefaultedMeasurements` (Ready only): the measurements the mannequin guessed; not empty → \"Ölçülerini ekle, manken sana\nbenzesin\". `Reason` (Unavailable only): why, for the app team and support."
+      },
+      "TryOnStatus": {
+        "enum": [
+          "Ready",
+          "Preparing",
+          "Unavailable"
+        ],
+        "description": "What the app does: show the image, show \"Hazırlanıyor\", or hide the action entirely."
+      },
+      "TryOnUnavailableReason": {
+        "enum": [
+          "BodyOutOfRange",
+          "UnknownCategory",
+          "NoTop",
+          "NoBottom",
+          "PersonInPhoto",
+          "PieceNotReady",
+          "FoldedSleeves",
+          "RendererRefused",
+          null
+        ]
       },
       "TryWithWardrobeRequest": {
         "required": [
@@ -17384,6 +17673,9 @@
     },
     {
       "name": "League (internal)"
+    },
+    {
+      "name": "TryOn"
     }
   ]
 }
