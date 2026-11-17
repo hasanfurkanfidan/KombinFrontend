@@ -2,6 +2,7 @@ import type { InfiniteData, QueryClient } from '@tanstack/react-query';
 
 import type { WardrobeItem, WardrobeItemPage, WardrobeItemSummary } from '@/api/models';
 import { queryKeys } from '@/api/queryKeys';
+import { invalidateTryOn } from '@/features/tryon/hooks';
 import { toNumber } from '@/utils/money';
 
 type ItemsData = InfiniteData<WardrobeItemPage, number>;
@@ -114,5 +115,6 @@ export function invalidateWardrobe(queryClient: QueryClient): Promise<void> {
   return Promise.all([
     queryClient.invalidateQueries({ queryKey: queryKeys.wardrobeAll }),
     queryClient.invalidateQueries({ queryKey: queryKeys.outfitsAll }),
+    invalidateTryOn(queryClient),
   ]).then(() => undefined);
 }

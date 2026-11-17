@@ -1,13 +1,17 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 
 import { ApiError } from '@/api/client';
 import type { Outfit, TryGroup } from '@/api/models';
 import { BottomSheet } from '@/components/BottomSheet';
 import { Button } from '@/components/Button';
+import { Chip } from '@/components/Chip';
 import { openOffer } from '@/features/catalog/buy';
 import { gapPieces } from '@/features/outfits/labels';
 import { OutfitMiniFigure } from '@/features/outfits/OutfitMiniFigure';
+import { useTryOn } from '@/features/tryon/hooks';
+import { outfitPieceNames } from '@/features/tryon/labels';
+import { TryOnPanel } from '@/features/tryon/TryOnPanel';
 import { tr } from '@/i18n/tr';
 import { theme } from '@/theme';
 import { formatTry } from '@/utils/money';
@@ -63,7 +67,9 @@ export function TrySheet({ postId, visible, onClose }: TrySheetProps) {
   } else if (outfitCount === 0) {
     body = <Text style={styles.message}>{tr.tryNothing}</Text>;
   } else {
-    body = groups.map((group) => <Group key={group.tagId} group={group} />);
+    body = groups.map((group, index) => (
+      <Group key={group.tagId} group={group} first={index === 0} onClose={onClose} />
+    ));
   }
 
   return (
@@ -75,14 +81,69 @@ export function TrySheet({ postId, visible, onClose }: TrySheetProps) {
   );
 }
 
-function Group({ group }: { group: TryGroup }) {
+function Group({
+  group,
+  first,
+  onClose,
+}: {
+  group: TryGroup;
+  first: boolean;
+  onClose: () => void;
+}) {
   return (
     <View style={styles.group} testID={`try-group-${group.tagId}`}>
       {group.message ? <Text style={styles.groupMessage}>{group.message}</Text> : null}
       {group.owned ? <Text style={styles.owned}>{tr.tryOwned}</Text> : null}
-      {group.outfits.map((outfit) => (
-        <TryOutfit key={outfit.id} outfit={outfit} />
-      ))}
+      {group.outfits.map((outfit, index) =>
+        // Only the outfit at the top is asked about: the mannequin is never requested for a list of cards.
+        first && index === 0 ? (
+          <FirstTryOutfit key={outfit.id} outfit={outfit} onClose={onClose} />
+        ) : (
+          <TryOutfit key={outfit.id} outfit={outfit} />
+        ),
+      )}
+    </View>
+  );
+}
+
+/**
+ * The first outfit of the sheet, with the switch between the figure and the mannequin ("Manken üstünde gör") when the
+ * backend can draw it; without that answer there is no switch and nothing else changes.
+ */
+function FirstTryOutfit({ outfit, onClose }: { outfit: Outfit; onClose: () => void }) {
+  const subject = { kind: 'outfit', id: outfit.id } as const;
+  const state = useTryOn(subject);
+  const [view, setView] = useState<'figure' | 'mannequin'>('figure');
+  const available = state.phase !== 'hidden';
+
+  return (
+    <View style={styles.firstOutfit} testID="try-first-outfit">
+      {available ? (
+        <View style={styles.switch} accessibilityLabel={tr.tryOnSwitch} testID="try-switch">
+          <Chip
+            label={tr.tryOnSwitchFigure}
+            selected={view === 'figure'}
+            onPress={() => setView('figure')}
+            testID="try-switch-figure"
+          />
+          <Chip
+            label={tr.tryOnSwitchMannequin}
+            selected={view === 'mannequin'}
+            onPress={() => setView('mannequin')}
+            testID="try-switch-mannequin"
+          />
+        </View>
+      ) : null}
+      {available && view === 'mannequin' ? (
+        <TryOnPanel
+          subject={subject}
+          state={state}
+          names={outfitPieceNames(outfit.pieces)}
+          onLeave={onClose}
+        />
+      ) : (
+        <TryOutfit outfit={outfit} />
+      )}
     </View>
   );
 }
@@ -153,6 +214,13 @@ const styles = StyleSheet.create({
   },
   group: {
     gap: theme.spacing.md,
+  },
+  firstOutfit: {
+    gap: theme.spacing.md,
+  },
+  switch: {
+    flexDirection: 'row',
+    gap: theme.spacing.sm,
   },
   groupMessage: {
     ...theme.typography.label,

@@ -142,6 +142,10 @@ export const sizes = {
   homeFigureShoes: 34,
   /** Loading placeholder of the outfit figure. */
   outfitFigureSkeleton: 380,
+  /** The mannequin picture's panel: height over width (a standing figure; the image is contained, never cropped). */
+  tryOnRatio: 1.5,
+  /** ...and it never takes more than this share of the window height, so the labels under it stay near. */
+  tryOnMaxHeightRatio: 0.5,
   /** The pairing screen's cutout takes this share of the window height. */
   itemCutoutRatio: 0.4,
   /** A companion tile in the "Bununla gidenler" rows. */

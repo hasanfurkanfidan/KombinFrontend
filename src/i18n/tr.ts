@@ -1317,4 +1317,23 @@ export const tr = {
   notifKindLeague: 'Kombin Ligi',
   prefsLeague: 'Kombin Ligi sonuçları',
   prefsLeagueCaption: 'Akşam sonuçların hazır olunca',
+
+  // Manken üstünde gör (a drawing on a mannequin, never the user's own body)
+  tryOnAction: 'Manken üstünde gör',
+  tryOnTitle: 'Manken üstünde gör',
+  tryOnPreparing: 'Hazırlanıyor',
+  tryOnCaption: 'Manken üzerinde yaklaşık görünüm',
+  tryOnImage: (pieces: string) => `Manken üzerinde yaklaşık görünüm: ${pieces}`,
+  tryOnImageProduct: (name: string) =>
+    `Manken üzerinde yaklaşık görünüm: ${name} ve dolabından parçalar`,
+  tryOnMeasurements: 'Ölçülerini ekle, manken sana benzesin',
+  tryOnMeasurementsAction: 'Ölçüleri güncelle',
+  tryOnFitTight: 'Dar gelebilir',
+  tryOnFitTrue: 'Tam bedenin',
+  tryOnFitLoose: 'Bol gelebilir',
+  tryOnReport: 'Yanlış görünüyor',
+  tryOnReportThanks: 'Teşekkürler',
+  tryOnSwitch: 'Görünüm',
+  tryOnSwitchFigure: 'Kombin',
+  tryOnSwitchMannequin: 'Manken',
 } as const;

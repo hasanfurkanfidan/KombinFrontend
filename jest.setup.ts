@@ -22,6 +22,19 @@ jest.mock('expo-crypto', () => {
   return { randomUUID: () => `00000000-0000-4000-8000-${String(++counter).padStart(12, '0')}` };
 });
 
+// "Manken üstünde gör" asks the backend once an outfit sheet has stood still; unless a test gives it an answer, the backend
+// says `Unavailable` and the action stays hidden (the tryon tests set their own answers).
+jest.mock('@/api/endpoints/tryon', () => ({
+  getTryOn: jest.fn(async () => ({
+    status: 'Unavailable',
+    imageUrl: null,
+    garments: [],
+    defaultedMeasurements: [],
+    reason: 'RendererRefused',
+  })),
+  reportTryOn: jest.fn(async () => undefined),
+}));
+
 jest.mock('expo-web-browser', () => ({
   openBrowserAsync: jest.fn(async () => ({ type: 'opened' })),
 }));

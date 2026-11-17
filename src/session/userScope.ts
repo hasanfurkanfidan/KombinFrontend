@@ -2,6 +2,7 @@ import { rotateAnonymousId } from '@/analytics';
 import { queryClient } from '@/api/queryClient';
 import { usePendingDeletionStore } from '@/features/auth/pendingDeletion';
 import { resetImageUrls } from '@/features/social/imageUrl';
+import { resetTryOnGate } from '@/features/tryon/gate';
 import { useAddStore } from '@/features/wardrobe/addStore';
 import { purgeTempPhotos } from '@/utils/tempFiles';
 
@@ -34,6 +35,7 @@ export function resetUserScopedState(): void {
   useAddStore.getState().reset();
   usePendingDeletionStore.getState().clear();
   resetImageUrls();
+  resetTryOnGate();
   void purgeTempPhotos();
   void rotateAnonymousId();
 }

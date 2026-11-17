@@ -11,6 +11,8 @@ import { formatTry, toNumber } from '@/utils/money';
 import { useOutfitActions, type OutfitActions } from './actions';
 import { gapPieces } from './labels';
 import { lines } from '@/utils/a11y';
+import { TryOnAction } from '@/features/tryon/TryOnAction';
+import { outfitPieceNames } from '@/features/tryon/labels';
 
 /** Pulling the sheet down this far counts as dismissing the outfit. */
 const SWIPE_DOWN_PX = 80;
@@ -64,6 +66,18 @@ export function OutfitSheet({ outfit, actions, onSwipeDown }: OutfitSheetProps) 
     />
   );
 
+  // The header line: what the outfit needs, and, only when the backend can draw it, the quiet "Manken üstünde gör".
+  const header = (caption: string) => (
+    <View style={styles.header}>
+      <Text style={[styles.caption, styles.headerCaption]}>{caption}</Text>
+      <TryOnAction
+        subject={{ kind: 'outfit', id: outfit.id }}
+        names={outfitPieceNames(outfit.pieces)}
+        variant="text"
+      />
+    </View>
+  );
+
   return (
     <View style={styles.sheet} testID="outfit-sheet">
       <View {...handlers} style={styles.grabArea}>
@@ -72,7 +86,7 @@ export function OutfitSheet({ outfit, actions, onSwipeDown }: OutfitSheetProps) 
 
       {gaps.length === 0 ? (
         <>
-          <Text style={styles.caption}>{tr.outfitReady}</Text>
+          {header(tr.outfitReady)}
           <View style={styles.buttons}>
             {saveButton}
             {actions.canWear ? (
@@ -89,13 +103,13 @@ export function OutfitSheet({ outfit, actions, onSwipeDown }: OutfitSheetProps) 
         </>
       ) : (
         <>
-          <Text style={styles.caption}>
-            {shopping
+          {header(
+            shopping
               ? tr.outfitFromStore
               : gaps.length === 1
                 ? tr.outfitCompleteOne
-                : tr.outfitCompleteMany(gaps.length)}
-          </Text>
+                : tr.outfitCompleteMany(gaps.length),
+          )}
           {cost !== null ? (
             <Text style={styles.price} testID="outfit-price">
               {formatTry(toNumber(cost))}
@@ -214,6 +228,15 @@ const styles = StyleSheet.create({
     height: theme.sizes.grabberHeight,
     borderRadius: theme.sizes.grabberHeight / 2,
     backgroundColor: theme.colors.control,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: theme.spacing.md,
+  },
+  headerCaption: {
+    flex: 1,
   },
   caption: {
     ...theme.typography.body,

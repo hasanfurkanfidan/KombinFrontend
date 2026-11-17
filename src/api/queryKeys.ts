@@ -74,6 +74,13 @@ export const queryKeys = {
   leagueResults: (day: string | null) => ['league', 'results', day ?? 'latest'] as const,
   leagueTable: ['league', 'table'] as const,
 
+  /**
+   * "Manken üstünde gör", one entry per outfit or product, under its own root (not `outfits`: `patchOutfit` walks that
+   * prefix). A change of measurements, sizes or wardrobe invalidates the prefix: the server draws another image then.
+   */
+  tryOnAll: ['tryon'] as const,
+  tryOn: (kind: 'outfit' | 'product', id: string) => ['tryon', kind, id] as const,
+
   trips: ['trips', 'list'] as const,
   trip: (id: string) => ['trips', 'one', id] as const,
   tripsAll: ['trips'] as const,
