@@ -4,6 +4,7 @@ import { getMe } from '@/api/endpoints/auth';
 import { getProfile, updateProfile } from '@/api/endpoints/profile';
 import type { Profile, UpdateProfileRequest } from '@/api/models';
 import { queryKeys } from '@/api/queryKeys';
+import { invalidateTryOn } from '@/features/tryon/hooks';
 import { useSession } from '@/session/useSession';
 
 /** The signed-in user's profile; disabled (and empty) while logged out. */
@@ -61,6 +62,8 @@ export function useUpdateProfile() {
       await queryClient.invalidateQueries({ queryKey: ['catalog', 'product'] });
       // The city decides the weather an outfit is made for.
       await queryClient.invalidateQueries({ queryKey: queryKeys.outfitsAll });
+      // The mannequin is drawn from the measurements.
+      await invalidateTryOn(queryClient);
     },
   });
 }

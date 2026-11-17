@@ -4,6 +4,7 @@ import { searchBrands } from '@/api/endpoints/catalog';
 import { listSizes, upsertSize } from '@/api/endpoints/profile';
 import type { UpsertSizeRequest } from '@/api/models';
 import { queryKeys } from '@/api/queryKeys';
+import { invalidateTryOn } from '@/features/tryon/hooks';
 import { useSession } from '@/session/useSession';
 
 export function useSizes() {
@@ -25,6 +26,8 @@ export function useUpsertSize() {
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: queryKeys.sizes }),
         queryClient.invalidateQueries({ queryKey: ['catalog', 'product'] }),
+        // The mannequin wears the sizes the user keeps.
+        invalidateTryOn(queryClient),
       ]);
     },
   });

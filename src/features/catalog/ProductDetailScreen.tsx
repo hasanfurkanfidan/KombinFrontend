@@ -27,6 +27,8 @@ import { useActivePersona, usePersonas } from '@/features/personas/hooks';
 import { SaveButton } from '@/features/saved/SaveButton';
 import { sizePill } from '@/features/sizes/sizeHint';
 import { SizeSheet } from '@/features/sizes/SizeSheet';
+import { TRYON_PRODUCT_DWELL_MS } from '@/features/tryon/hooks';
+import { TryOnAction } from '@/features/tryon/TryOnAction';
 import { tr } from '@/i18n/tr';
 import { useSession } from '@/session/useSession';
 import { theme } from '@/theme';
@@ -141,6 +143,16 @@ export function ProductDetailScreen({ id, source = 'direct' }: ProductDetailScre
               </View>
               <Icon name="chevronRight" size={20} color={theme.colors.muted} />
             </Pressable>
+            {isSignedIn ? (
+              <TryOnAction
+                subject={{ kind: 'product', id: product.data.id }}
+                names={{ [product.data.id]: product.data.name }}
+                productName={`${product.data.brand.name} ${product.data.name}`}
+                variant="outlined"
+                delayMs={TRYON_PRODUCT_DWELL_MS}
+                testID="detail-tryon"
+              />
+            ) : null}
             <View style={styles.offers}>
               <Text accessibilityRole="header" style={styles.offersTitle}>
                 {tr.productSellersFound(product.data.offers.length)}
