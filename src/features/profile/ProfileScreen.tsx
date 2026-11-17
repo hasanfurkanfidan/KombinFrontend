@@ -16,6 +16,8 @@ import { personaCaption } from '@/features/personas/caption';
 import { openLegalPage } from '@/features/legal/legal';
 import { PersonaSheet } from '@/features/personas/PersonaSheet';
 import { swatchColor } from '@/features/personas/swatches';
+import { useLeagueState } from '@/features/league/hooks';
+import { isActivePlayer, tierName } from '@/features/league/labels';
 import { PreferencesSheet } from '@/features/notifications/PreferencesSheet';
 import { useSavedIds } from '@/features/saved/hooks';
 import { useCreatorStats } from '@/features/social/hooks';
@@ -47,6 +49,8 @@ export function ProfileScreen() {
   const [signingOut, setSigningOut] = useState(false);
   const [sheetPersona, setSheetPersona] = useState<Persona | null>(null);
   const [preferencesOpen, setPreferencesOpen] = useState(false);
+  // Only when the league exists: the server answers 404 while it is switched off, and then the row is not there.
+  const league = useLeagueState();
 
   const handleSignOut = async () => {
     setSigningOut(true);
@@ -164,6 +168,22 @@ export function ProfileScreen() {
               divider
               testID="profile-saved-outfits"
             />
+            {league ? (
+              <SettingsRow
+                title={tr.leagueTitle}
+                caption={
+                  isActivePlayer(league)
+                    ? tr.leagueProfileCaption(
+                        tierName(league.tier),
+                        league.week ? toNumber(league.week.groupRank) : null,
+                      )
+                    : tr.leagueEntryJoinBody
+                }
+                onPress={() => router.push(isActivePlayer(league) ? '/league' : '/league/join')}
+                divider
+                testID="profile-league"
+              />
+            ) : null}
             <SettingsRow
               title={tr.myPostsRow}
               caption={tr.myPostsRowCaption}

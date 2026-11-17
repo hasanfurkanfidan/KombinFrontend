@@ -13,6 +13,7 @@ const KIND_ICON: Record<NotificationKind, IconName> = {
   AnyChange: 'tag',
   NewMatches: 'star',
   System: 'bell',
+  LeagueResult: 'trophy',
 };
 
 const KIND_LABEL: Record<NotificationKind, string> = {
@@ -21,6 +22,7 @@ const KIND_LABEL: Record<NotificationKind, string> = {
   AnyChange: tr.notifKindAnyChange,
   NewMatches: tr.notifKindMatches,
   System: tr.notifKindSystem,
+  LeagueResult: tr.notifKindLeague,
 };
 
 interface NotificationRowProps {

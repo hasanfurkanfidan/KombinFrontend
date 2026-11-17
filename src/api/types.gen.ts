@@ -1557,6 +1557,214 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/league/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["GetLeagueMe"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/league/join": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["JoinLeague"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/league/leave": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["LeaveLeague"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/league/me/entry": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["WithdrawLeagueEntry"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/league/results": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["GetLeagueResults"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/league/results/latest": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["GetLatestLeagueResults"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/league/table": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["GetLeagueTable"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/league/pairs/next": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["GetNextLeaguePair"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/league/pairs/{pairId}/vote": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["VoteOnLeaguePair"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/league/pairs/{pairId}/report": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ReportLeagueOutfit"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/internal/league/days/{date}/close": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["CloseLeagueDay"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/internal/league/review-queue": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["GetLeagueReviewQueue"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/internal/league/entries/{entryId}/review": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ReviewLeagueEntry"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1828,6 +2036,29 @@ export interface components {
             name: string;
             slug: string;
         };
+        /**
+         * @description `ClosedNow`: this call closed the day (false: it was closed before and nothing changed). The rest is the day's row: when it closed, the
+         *     ranked human outfits (the N of the percentile), the engine outfits, the counted votes in the fit, the Bradley–Terry iterations and whether
+         *     they converged, and how long the close took.
+         */
+        CloseDayResponse: {
+            /** Format: date */
+            day: string;
+            closedNow: boolean;
+            /** Format: date-time */
+            closedAt: string;
+            /** Format: int32 */
+            rankedCount: number | string;
+            /** Format: int32 */
+            engineCount: number | string;
+            /** Format: int32 */
+            pairCount: number | string;
+            /** Format: int32 */
+            btIterations: number | string;
+            btConverged: boolean;
+            /** Format: int32 */
+            closeMs: number | string;
+        };
         ColorCount: {
             color: components["schemas"]["ProductColor"];
             /** Format: int32 */
@@ -2062,6 +2293,10 @@ export interface components {
         };
         /** Format: binary */
         IFormFile: string;
+        /** @description The consent version the player saw on the join screen; only the current one is accepted. */
+        JoinLeagueRequest: {
+            consentVersion: null | string;
+        };
         JsonElement: unknown;
         /** @description The size map's entry for the product's brand and group, so the app can pre-fill the answer. Absent when the user has none. */
         KnownSize: {
@@ -2069,6 +2304,222 @@ export interface components {
             source: components["schemas"]["SizeSource"];
             /** Format: double */
             confidence: number | string;
+        };
+        /** @description The consent text the join screen shows, and its version (sent back by `POST /league/join`). */
+        LeagueConsentResponse: {
+            version: string;
+            text: string;
+        };
+        /** @enum {unknown} */
+        LeagueEntryReason: "RecentlyCompeted" | "UnsafePiece" | "IncompleteOutfit" | "PieceUnavailable" | "AgeRestricted" | "NotWorn" | null;
+        /** @enum {unknown} */
+        LeagueEntryStatus: "Pending" | "Competing" | "NotCompeting" | "Withdrawn" | "Removed";
+        /**
+         * @description The caller's league state. `Joined`: in the league now. `ConsentRequired`: the join screen must be shown (never joined, left, or
+         *     joined under an older consent version). `Tier` is null for someone who never joined; a player who left keeps theirs. `Today`: the
+         *     day's entry and votes. `Week`: the caller's group this week (null when not in one).
+         */
+        LeagueMeResponse: {
+            joined: boolean;
+            consentRequired: boolean;
+            consent: components["schemas"]["LeagueConsentResponse"];
+            tier: null | components["schemas"]["LeagueTier"];
+            /** Format: date-time */
+            joinedAt: null | string;
+            today: components["schemas"]["LeagueTodayResponse"];
+            week: null | components["schemas"]["LeagueWeekResponse"];
+        };
+        /** @enum {unknown} */
+        LeagueNoPairReason: "DailyLimit" | "NoPairs" | null;
+        /**
+         * @description `Id`: random per serve, the only identifier the voter sees. `Sequence`: 1 to the day's limit (a number is never reused,
+         *         even when the pair it named was deleted with an account).
+         */
+        LeaguePairResponse: {
+            /** Format: uuid */
+            id: string;
+            left: components["schemas"]["LeagueSideResponse"];
+            right: components["schemas"]["LeagueSideResponse"];
+            /** Format: int32 */
+            sequence: number | string;
+        };
+        /**
+         * @description One piece of an outfit as the league shows it: the slot and an image, nothing else. To a voter the image is always the league's own copy
+         *     (random key) or a catalog image, so nothing in it links to a person or to the same piece on another day. `ImageUrl` is null only in the
+         *     owner's own view of an entry whose piece has no image any more.
+         */
+        LeaguePieceResponse: {
+            slot: components["schemas"]["OutfitSlot"];
+            imageUrl: null | string;
+        };
+        /**
+         * @description The day's points: from the votes (0-70), voting on ten pairs (0/15), the worn outfit (0/10), a piece added (0/5), and the total shown.
+         *     While the outfit is under review `Votes` is null and `Total` is the usage points only.
+         */
+        LeaguePointsResponse: {
+            /** Format: int32 */
+            votes: null | number | string;
+            /** Format: int32 */
+            voting: number | string;
+            /** Format: int32 */
+            worn: number | string;
+            /** Format: int32 */
+            pieces: number | string;
+            /** Format: int32 */
+            total: number | string;
+        };
+        /** @description The caller's own outfit of that day, as the owner sees it. */
+        LeagueResultEntryResponse: {
+            pieces: components["schemas"]["LeaguePieceResponse"][];
+        };
+        /**
+         * @description `Final`: the result as the close decided it. `UnderReview`: the outfit was reported and waits for a review; the rank and the vote
+         *     points are held back (they are stored and already count in the week). `Removed`: a review took the outfit out after the close; it has
+         *     no rank and no vote points.
+         * @enum {unknown}
+         */
+        LeagueResultStatus: "Final" | "UnderReview" | "Removed";
+        /**
+         * @description The caller's result of one closed day (screen 04, "Akşamki sonuç"). `Status` and `Message`: LeagueResultStatus;
+         *     the message is "Kombinin inceleniyor. Sonuç inceleme bitince görünecek." while under review, null otherwise. `Entry`: their own outfit
+         *     (null when they had none, or it is older than the entries are kept). `Competed`: it was in the pool at the close. `Ranked`: it
+         *     reached the comparisons to be ranked (null while under review); when false the app says "yeterli oy toplanamadı". `Rank` (1 = best) of `RankedCount` ranked outfits; `Comparisons`: the counted
+         *     votes on it. `PiecePointsAvailable`: a piece added now would still earn its points this week ("Eklersen 5 puan"). Nothing about any
+         *     other player.
+         */
+        LeagueResultsResponse: {
+            /** Format: date */
+            day: string;
+            status: components["schemas"]["LeagueResultStatus"];
+            message: null | string;
+            entry: null | components["schemas"]["LeagueResultEntryResponse"];
+            competed: boolean;
+            ranked: null | boolean;
+            /** Format: int32 */
+            rank: null | number | string;
+            /** Format: int32 */
+            rankedCount: number | string;
+            /** Format: int32 */
+            comparisons: number | string;
+            points: components["schemas"]["LeaguePointsResponse"];
+            piecePointsAvailable: boolean;
+            week: null | components["schemas"]["LeagueResultsWeekResponse"];
+        };
+        /** @description The caller's week of that day (their tier, place in the group, points to the promotion line, when it ends); null when they were in no group. */
+        LeagueResultsWeekResponse: {
+            tier: components["schemas"]["LeagueTier"];
+            /** Format: int32 */
+            groupRank: number | string;
+            /** Format: int32 */
+            pointsToPromotion: null | number | string;
+            /** Format: date-time */
+            endsAt: string;
+        };
+        /**
+         * @description One reported outfit waiting for a review: its entry ID (operators only; never shown to players), its day and status, the reports that count
+         *     toward the hide and every report since the last review, whether a closed day's result is held back for it (`UnderReview`), and the pieces
+         *     as voters see them.
+         */
+        LeagueReviewItem: {
+            /** Format: uuid */
+            entryId: string;
+            /** Format: date */
+            day: string;
+            status: components["schemas"]["LeagueEntryStatus"];
+            /** Format: int32 */
+            countingReports: number | string;
+            /** Format: int32 */
+            reports: number | string;
+            underReview: boolean;
+            pieces: components["schemas"]["LeaguePieceResponse"][];
+        };
+        /** @description One side of a pair: the outfit's pieces as slot and image, nothing else (no entry ID, no owner, no occasion or audience label). */
+        LeagueSideResponse: {
+            pieces: components["schemas"]["LeaguePieceResponse"][];
+        };
+        /**
+         * @description The caller's group table this week (screen 05, "Haftalık lig"). `Tier`: the caller's own league this week; `TierUp` /
+         *     `TierDown`: the leagues above and below it (null at Diamond / Bronze). `TodayPoints`: today's total once today is closed
+         *     (`TodayIsFinal`), else the usage points earned so far today. `PromoteCount` / `RelegateCount`: the bands as they stand
+         *     (`min(5, floor(competed / 3))`). `Rows`: `{ rank, points, isMe, alias }` in table order, nothing else; the app shows "Sen" for
+         *     `isMe`. Between Sunday's close and Monday 00:00 it is last week's final table.
+         */
+        LeagueTableResponse: {
+            /** Format: date */
+            weekStart: string;
+            /** Format: date-time */
+            endsAt: string;
+            tier: components["schemas"]["LeagueTier"];
+            /** Format: int32 */
+            todayPoints: number | string;
+            todayIsFinal: boolean;
+            /** Format: int32 */
+            promoteCount: number | string;
+            /** Format: int32 */
+            relegateCount: number | string;
+            tierUp: null | components["schemas"]["LeagueTier"];
+            tierDown: null | components["schemas"]["LeagueTier"];
+            /** Format: int32 */
+            size: number | string;
+            rows: components["schemas"]["LeagueTableRow"][];
+        };
+        /** @description One row of a group table as everyone in the group sees it: the place, the week points, whether it is the caller, the week's alias. */
+        LeagueTableRow: {
+            /** Format: int32 */
+            rank: number | string;
+            /** Format: int32 */
+            points: number | string;
+            isMe: boolean;
+            alias: string;
+        };
+        /** @enum {unknown} */
+        LeagueTier: "Bronze" | "Silver" | "Gold" | "Platinum" | "Diamond" | null;
+        /**
+         * @description The caller's outfit in today's league. `Status`: Pending (waiting for the image safety check), Competing, NotCompeting (with a
+         *     `Reason`), Withdrawn, Removed. `Message` is the rules' line for `RecentlyCompeted` ("Bu kombin yakın zamanda yarıştı, bugün
+         *     yarışmıyor."), null otherwise. The pieces are the owner's own view.
+         */
+        LeagueTodayEntryResponse: {
+            status: components["schemas"]["LeagueEntryStatus"];
+            reason: null | components["schemas"]["LeagueEntryReason"];
+            message: null | string;
+            pieces: components["schemas"]["LeaguePieceResponse"][];
+        };
+        /**
+         * @description Today in the league (an Istanbul day). `ClosesAt`: votes stop and the results come (21:00 Istanbul). `Entry`: the caller's outfit,
+         *     null when no worn outfit entered. `ServedPairs` / `CountedVotes`: the caller's pairs today and the votes that counted; `Target`
+         *     counted votes earn the voting points, `Limit` pairs is the day's cap.
+         */
+        LeagueTodayResponse: {
+            /** Format: date */
+            day: string;
+            /** Format: date-time */
+            closesAt: string;
+            entry: null | components["schemas"]["LeagueTodayEntryResponse"];
+            /** Format: int32 */
+            servedPairs: number | string;
+            /** Format: int32 */
+            countedVotes: number | string;
+            /** Format: int32 */
+            target: number | string;
+            /** Format: int32 */
+            limit: number | string;
+        };
+        /**
+         * @description The caller's week in their group: place, group size, week points so far (the best five closed days), points to the promotion line ("5. sıraya
+         *     17 puan"; null inside the band or without one) and when the week ends. Null for a player in no group this week.
+         */
+        LeagueWeekResponse: {
+            /** Format: int32 */
+            groupRank: number | string;
+            /** Format: int32 */
+            groupSize: number | string;
+            /** Format: int32 */
+            points: number | string;
+            /** Format: int32 */
+            pointsToPromotion: null | number | string;
+            /** Format: date-time */
+            endsAt: string;
         };
         /** @description What the app needs to link to the legal texts and to know when to ask users to read them again. */
         LegalResponse: {
@@ -2177,8 +2628,27 @@ export interface components {
         };
         /** @enum {unknown} */
         NarrationProvider: "Template" | "Anthropic";
+        /**
+         * @description The next pair to vote on, or none with a reason. `CountedToday` / `ServedToday`: the caller's counted votes and served pairs today
+         *     (served = the last sequence, so it agrees with the limit);
+         *     `Target`: counted votes for the voting points; `Limit`: pairs a day; `ClosesAt`: when votes stop.
+         */
+        NextPairResponse: {
+            pair: null | components["schemas"]["LeaguePairResponse"];
+            reason: null | components["schemas"]["LeagueNoPairReason"];
+            /** Format: int32 */
+            countedToday: number | string;
+            /** Format: int32 */
+            servedToday: number | string;
+            /** Format: int32 */
+            target: number | string;
+            /** Format: int32 */
+            limit: number | string;
+            /** Format: date-time */
+            closesAt: string;
+        };
         /** @enum {unknown} */
-        NotificationKind: "PriceDrop" | "BackInStock" | "AnyChange" | "NewMatches" | "System";
+        NotificationKind: "PriceDrop" | "BackInStock" | "AnyChange" | "NewMatches" | "System" | "LeagueResult";
         /** @description `Status` tells the app whether the push went out; the feed shows `Pending`, `Sent` and `Suppressed` alike. */
         NotificationResponse: {
             /** Format: int64 */
@@ -2666,6 +3136,7 @@ export interface components {
             recommendations: boolean;
             /** Format: int32 */
             maxRecommendationsPerWeek: number | string;
+            leagueResults: boolean;
             quietHoursStart: null | string;
             quietHoursEnd: null | string;
             timeZone: string;
@@ -2912,12 +3383,31 @@ export interface components {
             index: number | string;
             reason: string;
         };
+        /** @description `Side`: `left` or `right`, the outfit of the pair being reported. `Reason`: Inappropriate, NotClothing or Other (optional). */
+        ReportEntryRequest: {
+            side: null | string;
+            reason: null | string;
+        };
+        ReportEntryResponse: {
+            reported: boolean;
+        };
         /** @description `Reason`: Nudity, Violence, Hate, Harassment, Spam, Scam or Other. */
         ReportPostRequest: {
             reason: null | string;
         };
         ReportPostResponse: {
             reported: boolean;
+        };
+        /** @description `Decision`: `Restore` (clear the reports, show a held-back result) or `Remove` (take the outfit out for good), any casing. */
+        ReviewEntryRequest: {
+            decision: null | string;
+        };
+        /** @description The entry's status after the review, and whether a closed day's result changed with it. */
+        ReviewEntryResponse: {
+            /** Format: uuid */
+            entryId: string;
+            status: components["schemas"]["LeagueEntryStatus"];
+            resultChanged: boolean;
         };
         /** @description A post waiting for a human: why (moderation labels or reports), and a 1-hour link to its preview. */
         ReviewItem: {
@@ -3516,6 +4006,7 @@ export interface components {
             quietHoursStart: null | string;
             quietHoursEnd: null | string;
             clearQuietHours: null | boolean;
+            leagueResults?: null | boolean;
         };
         /**
          * @description The measurements and the city, the same way as the seller PUT: left out = unchanged, an explicit null = cleared. The `*Set` flags
@@ -3668,6 +4159,32 @@ export interface components {
             /** Format: double */
             confidence: number | string;
             warnings: string[];
+        };
+        /** @description `Choice`: `left`, `right` or `skip` ("Karar veremedim"), any casing. `DecisionMs`: what the app measured from display to tap. */
+        VoteRequest: {
+            choice: null | string;
+            /** Format: int32 */
+            decisionMs: null | number | string;
+        };
+        /**
+         * @description `Counted`: the vote counts (not a skip, not too fast). `ChosenWinRate` (0-100) and `ChosenGames`: the chosen outfit's real record
+         *     today, this vote included; the rate is null below `League:MinGamesForWinRate` games ("İlk oylardan biri seninki"), both are null for a
+         *     skip. The rest is the voter's progress: counted votes and served pairs today, the target for the voting points and the day's limit.
+         */
+        VoteResponse: {
+            counted: boolean;
+            /** Format: int32 */
+            chosenWinRate: null | number | string;
+            /** Format: int32 */
+            chosenGames: null | number | string;
+            /** Format: int32 */
+            countedToday: number | string;
+            /** Format: int32 */
+            servedToday: number | string;
+            /** Format: int32 */
+            target: number | string;
+            /** Format: int32 */
+            limit: number | string;
         };
         WardrobeCategoryRef: {
             /** Format: uuid */
@@ -8855,6 +9372,675 @@ export interface operations {
             };
             /** @description Service Unavailable */
             503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    GetLeagueMe: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LeagueMeResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    JoinLeague: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["JoinLeagueRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LeagueMeResponse"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    LeaveLeague: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    WithdrawLeagueEntry: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    GetLeagueResults: {
+        parameters: {
+            query?: {
+                day?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LeagueResultsResponse"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    GetLatestLeagueResults: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LeagueResultsResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    GetLeagueTable: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LeagueTableResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    GetNextLeaguePair: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NextPairResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    VoteOnLeaguePair: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                pairId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VoteRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VoteResponse"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    ReportLeagueOutfit: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                pairId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReportEntryRequest"];
+            };
+        };
+        responses: {
+            /** @description Accepted */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReportEntryResponse"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    CloseLeagueDay: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                date: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CloseDayResponse"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    GetLeagueReviewQueue: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LeagueReviewItem"][];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    ReviewLeagueEntry: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                entryId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReviewEntryRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReviewEntryResponse"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Conflict */
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };

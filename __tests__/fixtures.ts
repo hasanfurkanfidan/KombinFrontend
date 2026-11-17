@@ -308,6 +308,7 @@ export const preferences: NotificationPreferences = {
   stockAlerts: true,
   recommendations: true,
   maxRecommendationsPerWeek: 3,
+  leagueResults: true,
   quietHoursStart: null,
   quietHoursEnd: null,
   timeZone: 'Europe/Istanbul',

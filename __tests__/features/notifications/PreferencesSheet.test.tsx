@@ -69,6 +69,7 @@ describe('PreferencesSheet', () => {
       priceAlerts: true,
       stockAlerts: false,
       recommendations: true,
+      leagueResults: true,
       maxRecommendationsPerWeek: 4,
       quietHoursStart: '23:15',
       quietHoursEnd: '08:00',

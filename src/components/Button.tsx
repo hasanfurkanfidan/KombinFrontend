@@ -16,9 +16,10 @@ interface ButtonProps {
   /**
    * `primary` is the screen's one filled green action; `secondary` is outlined (bg + control border, ink text);
    * `quiet` is text only, in the link colour; `danger` is the filled red action that cannot be undone
-   * (deleting the account), the only filled action on its screen.
+   * (deleting the account), the only filled action on its screen. The league's dark zone has its own pair: `chalk` is
+   * its one filled action (chalk fill, `chalkInk` label) and `onArena` is text only, in the soft arena colour.
    */
-  variant?: 'primary' | 'secondary' | 'quiet' | 'danger';
+  variant?: 'primary' | 'secondary' | 'quiet' | 'danger' | 'chalk' | 'onArena';
   loading?: boolean;
   disabled?: boolean;
   trailingIcon?: IconName;
@@ -38,6 +39,8 @@ const FOREGROUND = {
   secondary: theme.colors.ink,
   quiet: theme.colors.primary,
   danger: theme.colors.onDanger,
+  chalk: theme.colors.chalkInk,
+  onArena: theme.arena.textSoft,
 } as const;
 
 export function Button({
@@ -109,6 +112,16 @@ const styles = StyleSheet.create({
   danger: {
     backgroundColor: theme.colors.danger,
     borderRadius: theme.radius.cta,
+  },
+  chalk: {
+    backgroundColor: theme.colors.chalk,
+    borderRadius: theme.radius.cta,
+  },
+  onArena: {
+    minHeight: theme.sizes.touch,
+    paddingVertical: theme.spacing.xs,
+    paddingHorizontal: theme.spacing.sm,
+    borderRadius: theme.radius.control,
   },
   secondary: {
     backgroundColor: theme.colors.bg,

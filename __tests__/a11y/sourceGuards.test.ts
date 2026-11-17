@@ -104,6 +104,8 @@ describe('headings', () => {
     // A person's name in a row of facts; the screen's header is the title.
     'src/features/profile/ProfileScreen.tsx:name',
     'src/features/social/ProfileScreens.tsx:name',
+    // The line under the big rank: part of the rank's header group (one accessible element with its own name).
+    'src/features/league/ResultsScreen.tsx:among',
     // A money figure, not a title.
     'src/features/social/CreatorStatsScreen.tsx:heroAmount',
     // An empty-state word inside a card that already has its own title.

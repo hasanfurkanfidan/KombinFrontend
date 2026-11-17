@@ -422,14 +422,14 @@ experimental tree shaking is the other route.
 
 ## CI guards added
 
-| Command / test                                | Fails when                                                                                                                                |
-| --------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| `npm run size:check`                          | the Android Hermes bundle exceeds `scripts/size-budget.json` (4,695,272 B measured, limit +5 % = 4,930,036 B); `-- --update` re-measures  |
-| `npm run audit:ci`                            | `npm audit --omit=dev` reports a high/critical advisory, or any advisory outside `scripts/audit-allowlist.json`                           |
-| `__tests__/performance/renderCounts.test.tsx` | a Keşfet grid card or a feed card re-renders when its props did not change                                                                |
-| `__tests__/performance/lists.test.ts`         | a paged screen renders without a virtualised list, or a photo list drops `IMAGE_LIST_TUNING`                                              |
-| `__tests__/session/userScope.test.tsx`        | anything of the previous user can render, or stay in a store, after sign-out                                                              |
-| `__tests__/security/guards.test.ts`           | an ungated `console.*` appears; a validator (API URL, route params, `goPath`, legal URL, temp files, screen names) lets something through |
+| Command / test                                | Fails when                                                                                                                                     |
+| --------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `npm run size:check`                          | the Android Hermes bundle exceeds `scripts/size-budget.json` (fixed limit 10,240,000 B = 10000 KB since 17.11.2026); `-- --update` re-measures |
+| `npm run audit:ci`                            | `npm audit --omit=dev` reports a high/critical advisory, or any advisory outside `scripts/audit-allowlist.json`                                |
+| `__tests__/performance/renderCounts.test.tsx` | a Keşfet grid card or a feed card re-renders when its props did not change                                                                     |
+| `__tests__/performance/lists.test.ts`         | a paged screen renders without a virtualised list, or a photo list drops `IMAGE_LIST_TUNING`                                                   |
+| `__tests__/session/userScope.test.tsx`        | anything of the previous user can render, or stay in a store, after sign-out                                                                   |
+| `__tests__/security/guards.test.ts`           | an ungated `console.*` appears; a validator (API URL, route params, `goPath`, legal URL, temp files, screen names) lets something through      |
 
 ---
 

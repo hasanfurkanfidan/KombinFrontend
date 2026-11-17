@@ -1,5 +1,13 @@
 import type { ReactNode } from 'react';
-import { StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  useWindowDimensions,
+  type DimensionValue,
+  type StyleProp,
+  type ViewStyle,
+} from 'react-native';
 
 import type { OutfitPiece } from '@/api/models';
 import { AppImage } from '@/components/AppImage';
@@ -25,23 +33,29 @@ const WELL = {
   shoes: { width: 0.6, height: 0.4 },
 } as const;
 
-interface PieceProps {
-  piece: OutfitPiece;
+/**
+ * What a figure needs of a piece. The outfit screens pass their `OutfitPiece`s; the league passes pieces that carry only
+ * a slot and a picture (with the slot's name as `name`).
+ */
+export type FigurePiece = Pick<OutfitPiece, 'slot' | 'role' | 'name' | 'imageUrl' | 'offer'>;
+
+interface PieceProps<P extends FigurePiece = OutfitPiece> {
+  piece: P;
   /** An outfit of catalog ideas for an empty wardrobe: every piece is "from the store", none is missing. */
   shopping: boolean;
   /**
    * Replaces the label beside a well (budget outfits say "Dolabında var" or the price and a buy link per piece).
    * A figure with its own labels draws no ghost: a piece to buy is a normal piece there.
    */
-  detail?: (piece: OutfitPiece) => ReactNode;
+  detail?: (piece: P) => ReactNode;
 }
 
-function priceOf(piece: OutfitPiece): string | null {
+function priceOf(piece: FigurePiece): string | null {
   return piece.offer ? formatTry(toNumber(piece.offer.price)) : null;
 }
 
 /** One piece as a screen reader says it: the name, then what the picture and the label would have told. */
-export function spokenPiece(piece: OutfitPiece, shopping: boolean): string {
+export function spokenPiece(piece: FigurePiece, shopping: boolean): string {
   const price = priceOf(piece);
   const parts: (string | null)[] = [piece.name];
   if (piece.role === 'Anchor') {
@@ -60,18 +74,24 @@ export function spokenPiece(piece: OutfitPiece, shopping: boolean): string {
  * product photos read the same there); the anchor gets the green edge (it is the piece the user chose); a gap piece
  * (to buy) is a chalk-dashed ghost of itself carrying "Eksik · price".
  */
-export function PieceTile({
+export function PieceTile<P extends FigurePiece = OutfitPiece>({
   piece,
   shopping,
   detail,
   width,
   height,
   layer,
-}: PieceProps & {
-  width: number;
-  height: number;
+  onImageSettled,
+  wellStyle,
+}: PieceProps<P> & {
+  width: DimensionValue;
+  height: DimensionValue;
   /** In a layered torso: the top sits behind, the outerwear in front. */
   layer?: 'back' | 'front';
+  /** The picture loaded or failed to: the league times a vote from the moment every picture has settled. */
+  onImageSettled?: () => void;
+  /** Replaces the well's white (the league sits its figure on a white card, so its wells are `surface`). */
+  wellStyle?: StyleProp<ViewStyle>;
 }) {
   const gap = piece.role === 'Gap' && !shopping && !detail;
   const anchor = piece.role === 'Anchor';
@@ -87,6 +107,7 @@ export function PieceTile({
         gap && styles.ghost,
         gap && layer === 'front' && styles.ghostFront,
         anchor && styles.anchor,
+        wellStyle,
       ]}
       testID={`piece-${piece.slot}`}
     >
@@ -95,11 +116,14 @@ export function PieceTile({
           uri={piece.imageUrl}
           style={[styles.image, gap && styles.ghostImage]}
           contentFit="contain"
+          onLoad={onImageSettled}
+          onError={onImageSettled}
+          testID={`piece-image-${piece.slot}`}
         />
       ) : (
         <Icon
           name="shirt"
-          size={Math.min(48, height / 2)}
+          size={typeof height === 'number' ? Math.min(48, height / 2) : 32}
           color={theme.colors.control}
           strokeWidth={1.4}
         />

@@ -1,13 +1,13 @@
 #!/usr/bin/env node
-// Bundle-size budget: exports the Android bundle and fails when its Hermes bytecode grows past the limit in
-// scripts/size-budget.json (the size measured when the budget was set + 5 %). `--update` re-measures and resets it.
+// Bundle-size guard: exports the Android bundle and fails when its Hermes bytecode is past the fixed limit in
+// scripts/size-budget.json (10000 KB, the owner's decision 17.11.2026: it must not block features, it only catches an
+// accidental large dependency). `--update` re-measures the baseline that the printed difference is taken from.
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const { spawnSync } = require('child_process');
 
 const BUDGET_FILE = path.join(__dirname, 'size-budget.json');
-const HEADROOM = 1.05;
 
 function exportBundle(outDir) {
   fs.rmSync(outDir, { recursive: true, force: true });
@@ -38,9 +38,8 @@ const budget = JSON.parse(fs.readFileSync(BUDGET_FILE, 'utf8'));
 if (process.argv.includes('--update')) {
   budget.measuredOn = new Date().toISOString().slice(0, 10);
   budget.androidHbcBytes = size;
-  budget.limitBytes = Math.round(size * HEADROOM);
   fs.writeFileSync(BUDGET_FILE, `${JSON.stringify(budget, null, 2)}\n`);
-  console.log(`size:check: budget reset to ${kb(budget.limitBytes)} (measured ${kb(size)})`);
+  console.log(`size:check: baseline set to ${kb(size)} (limit stays ${kb(budget.limitBytes)})`);
   process.exit(0);
 }
 
@@ -51,7 +50,7 @@ console.log(
 );
 if (size > budget.limitBytes) {
   console.error(
-    'size:check: over budget. Find what grew (docs/mobile-review.md, "Bundle") before raising it.',
+    'size:check: over the limit. Something large came in: find it in the source map (docs/mobile-review.md, "Bundle").',
   );
   process.exit(1);
 }

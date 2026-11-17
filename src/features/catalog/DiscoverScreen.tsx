@@ -10,6 +10,7 @@ import { EmptyState } from '@/components/EmptyState';
 import { ErrorState } from '@/components/ErrorState';
 import { Screen } from '@/components/Screen';
 import { BudgetEntry } from '@/features/budget/BudgetEntry';
+import { LeagueEntry } from '@/features/league/LeagueEntry';
 import { tr } from '@/i18n/tr';
 import { useActivePersona, usePersonas } from '@/features/personas/hooks';
 import { StyleSwitcher } from '@/features/personas/StyleSwitcher';
@@ -203,6 +204,7 @@ function DiscoverHeader({ filters, onChangeFilters, personaId }: DiscoverHeaderP
       <StyleSwitcher />
       <SizePromptCard />
       <DailyCard />
+      <LeagueEntry />
       <BudgetEntry />
 
       <Text accessibilityRole="header" style={styles.sectionTitle}>

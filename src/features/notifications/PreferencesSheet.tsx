@@ -8,6 +8,7 @@ import { ErrorState } from '@/components/ErrorState';
 import { Skeleton } from '@/components/Skeleton';
 import { Stepper } from '@/components/Stepper';
 import { showToast } from '@/components/toastStore';
+import { useLeagueState } from '@/features/league/hooks';
 import { tr } from '@/i18n/tr';
 import {
   getPushPermission,
@@ -30,6 +31,8 @@ interface Draft {
   priceAlerts: boolean;
   stockAlerts: boolean;
   recommendations: boolean;
+  /** The evening league result; the switch shows only when there is a league. */
+  leagueResults: boolean;
   weeklyMax: number;
   quiet: boolean;
   quietStart: string;
@@ -45,6 +48,8 @@ export function toDraft(prefs: NotificationPreferences): Draft {
     priceAlerts: prefs.priceAlerts,
     stockAlerts: prefs.stockAlerts,
     recommendations: prefs.recommendations,
+    // A backend from before the league has no such field: the default is "tell me".
+    leagueResults: prefs.leagueResults ?? true,
     weeklyMax: Math.min(
       MAX_WEEKLY,
       Math.max(MIN_WEEKLY, toNumber(prefs.maxRecommendationsPerWeek)),
@@ -61,6 +66,7 @@ export function toRequest(draft: Draft) {
     priceAlerts: draft.priceAlerts,
     stockAlerts: draft.stockAlerts,
     recommendations: draft.recommendations,
+    leagueResults: draft.leagueResults,
     maxRecommendationsPerWeek: draft.weeklyMax,
     ...(draft.quiet
       ? { quietHoursStart: draft.quietStart, quietHoursEnd: draft.quietEnd, clearQuietHours: false }
@@ -102,6 +108,7 @@ function PreferencesForm({
   onSaved: () => void;
 }) {
   const update = useUpdateNotificationPreferences();
+  const league = useLeagueState();
   const [draft, setDraft] = useState(() => toDraft(initial));
   const change = (patch: Partial<Draft>) => setDraft((current) => ({ ...current, ...patch }));
 
@@ -138,6 +145,15 @@ function PreferencesForm({
         onChange={(recommendations) => change({ recommendations })}
         testID="prefs-recommendations"
       />
+      {league ? (
+        <ToggleRow
+          title={tr.prefsLeague}
+          caption={tr.prefsLeagueCaption}
+          value={draft.leagueResults}
+          onChange={(leagueResults) => change({ leagueResults })}
+          testID="prefs-league"
+        />
+      ) : null}
 
       <View style={styles.row}>
         <View style={styles.rowText}>

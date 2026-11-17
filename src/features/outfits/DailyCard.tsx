@@ -17,6 +17,7 @@ import { Button } from '@/components/Button';
 import { Icon } from '@/components/Icon';
 import { PressableScale } from '@/components/PressableScale';
 import { Skeleton } from '@/components/Skeleton';
+import { LeagueEntryLine } from '@/features/league/LeagueEntryLine';
 import { useMe } from '@/features/profile/hooks';
 import { addPhotos } from '@/features/wardrobe/addItem';
 import { useWardrobeStats } from '@/features/wardrobe/hooks';
@@ -227,6 +228,7 @@ function SettledCard({ outfit, onOpen }: SettledCardProps) {
           >
             {tr.homeCardSettledLabel}
           </Text>
+          <LeagueEntryLine />
           <Pressable accessibilityRole="button" onPress={onOpen} testID="home-card-title">
             <Text style={styles.title}>{outfit ? titleFor(outfit) : tr.homeCardTitleComplete}</Text>
           </Pressable>

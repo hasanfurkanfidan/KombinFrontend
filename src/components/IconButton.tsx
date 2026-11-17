@@ -10,8 +10,11 @@ interface IconButtonProps {
   /** Spoken label; icon-only controls need one. */
   label: string;
   onPress?: () => void;
-  /** `surface` sits on the page (the default); `onImage` is white, for a button drawn over a photo. */
-  tone?: 'surface' | 'onImage';
+  /**
+   * `surface` sits on the page (the default); `onImage` is white, for a button drawn over a photo; `arena` is the
+   * raised green of the league's dark zone with a white icon.
+   */
+  tone?: 'surface' | 'onImage' | 'arena';
   /** Fills the icon (e.g. a bell that already has an alert). */
   filled?: boolean;
   testID?: string;
@@ -31,9 +34,14 @@ export function IconButton({
       accessibilityLabel={label}
       onPress={onPress}
       testID={testID}
-      style={[styles.base, tone === 'surface' ? styles.surface : styles.onImage]}
+      style={[styles.base, styles[tone]]}
     >
-      <Icon name={icon} size={22} filled={filled} />
+      <Icon
+        name={icon}
+        size={22}
+        filled={filled}
+        color={tone === 'arena' ? theme.arena.text : undefined}
+      />
     </PressableScale>
   );
 }
@@ -51,5 +59,8 @@ const styles = StyleSheet.create({
   },
   onImage: {
     backgroundColor: theme.colors.bg,
+  },
+  arena: {
+    backgroundColor: theme.arena.raised,
   },
 });
