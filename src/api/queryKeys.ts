@@ -62,6 +62,18 @@ export const queryKeys = {
   /** Budget outfits live outside `outfits`: their shape differs, and `patchOutfit` walks that prefix. */
   budgetOutfits: (request: unknown) => ['budget-outfits', request] as const,
 
+  /**
+   * Everything about the league, under one root so a sign-out (which clears the whole cache) and a leave (which
+   * invalidates this prefix) reach all of it. `leagueMe` doubles as "is there a league at all": a 404 is stored as `null`.
+   */
+  leagueAll: ['league'] as const,
+  leagueMe: ['league', 'me'] as const,
+  /** The serial is the voter's position in this visit: every "Sıradaki çift" asks for a new, answered-pair-free query. */
+  leaguePair: (serial: number) => ['league', 'pair', serial] as const,
+  /** `null` is the latest closed day. */
+  leagueResults: (day: string | null) => ['league', 'results', day ?? 'latest'] as const,
+  leagueTable: ['league', 'table'] as const,
+
   trips: ['trips', 'list'] as const,
   trip: (id: string) => ['trips', 'one', id] as const,
   tripsAll: ['trips'] as const,

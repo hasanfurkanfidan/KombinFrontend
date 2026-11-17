@@ -10,21 +10,24 @@ interface ButtonProps {
   label: string;
   /** Spoken name when the visible label needs its object ("Satın al: Siyah bot, Trendyol, 2.499 ₺"); starts with `label`. */
   accessibilityLabel?: string;
+  /** What happens beyond the tap ("Satıcının sitesi açılır"), or why the button is off. */
+  accessibilityHint?: string;
   onPress: () => void;
   /**
    * `primary` is the screen's one filled green action; `secondary` is outlined (bg + control border, ink text);
    * `quiet` is text only, in the link colour; `danger` is the filled red action that cannot be undone
-   * (deleting the account), the only filled action on its screen.
+   * (deleting the account), the only filled action on its screen. The league's dark zone has its own pair: `chalk` is
+   * its one filled action (chalk fill, `chalkInk` label) and `onArena` is text only, in the soft arena colour.
    */
-  variant?: 'primary' | 'secondary' | 'quiet' | 'danger';
+  variant?: 'primary' | 'secondary' | 'quiet' | 'danger' | 'chalk' | 'onArena';
   loading?: boolean;
   disabled?: boolean;
   trailingIcon?: IconName;
   /** Drawn before the label (a brand mark); the caller owns its colour. */
   leading?: ReactNode;
   /**
-   * Lets a long label wrap and the button grow past its fixed height (large text sizes); without it the label stays on
-   * one line at the fixed height. For buttons that sit in a row beside another one.
+   * Every button grows past its minimum height and wraps its label: large text must never cut one (the buy button
+   * carries the price). `wrap` only trades side padding for room, for buttons that share a row.
    */
   wrap?: boolean;
   style?: StyleProp<ViewStyle>;
@@ -36,11 +39,14 @@ const FOREGROUND = {
   secondary: theme.colors.ink,
   quiet: theme.colors.primary,
   danger: theme.colors.onDanger,
+  chalk: theme.colors.chalkInk,
+  onArena: theme.arena.textSoft,
 } as const;
 
 export function Button({
   label,
   accessibilityLabel,
+  accessibilityHint,
   onPress,
   variant = 'primary',
   loading = false,
@@ -57,7 +63,9 @@ export function Button({
   return (
     <PressableScale
       accessibilityRole="button"
-      accessibilityLabel={accessibilityLabel}
+      // The spinner replaces the label while loading: the name must not go with it.
+      accessibilityLabel={accessibilityLabel ?? label}
+      accessibilityHint={accessibilityHint}
       accessibilityState={{ disabled: inactive, busy: loading }}
       disabled={inactive}
       onPress={onPress}
@@ -65,22 +73,21 @@ export function Button({
       style={[
         styles.base,
         styles[variant],
-        wrap && (variant === 'quiet' ? styles.wrapQuiet : styles.wrap),
+        wrap && styles.wrap,
         disabled && styles.disabled,
         style,
       ]}
     >
       {loading ? (
-        <ActivityIndicator color={foreground} />
+        <ActivityIndicator
+          color={foreground}
+          accessibilityElementsHidden
+          importantForAccessibility="no-hide-descendants"
+        />
       ) : (
         <>
           {leading}
-          <Text
-            style={[styles.label, wrap && styles.wrapLabel, { color: foreground }]}
-            numberOfLines={wrap ? undefined : 1}
-          >
-            {label}
-          </Text>
+          <Text style={[styles.label, { color: foreground }]}>{label}</Text>
           {trailingIcon ? <Icon name={trailingIcon} size={18} color={foreground} /> : null}
         </>
       )}
@@ -90,7 +97,8 @@ export function Button({
 
 const styles = StyleSheet.create({
   base: {
-    height: theme.sizes.buttonHeight,
+    minHeight: theme.sizes.buttonHeight,
+    paddingVertical: theme.spacing.sm,
     paddingHorizontal: theme.spacing.xl,
     flexDirection: 'row',
     alignItems: 'center',
@@ -105,6 +113,16 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.danger,
     borderRadius: theme.radius.cta,
   },
+  chalk: {
+    backgroundColor: theme.colors.chalk,
+    borderRadius: theme.radius.cta,
+  },
+  onArena: {
+    minHeight: theme.sizes.touch,
+    paddingVertical: theme.spacing.xs,
+    paddingHorizontal: theme.spacing.sm,
+    borderRadius: theme.radius.control,
+  },
   secondary: {
     backgroundColor: theme.colors.bg,
     borderRadius: theme.radius.control,
@@ -112,29 +130,20 @@ const styles = StyleSheet.create({
     borderColor: theme.colors.control,
   },
   quiet: {
-    height: theme.sizes.touch,
+    minHeight: theme.sizes.touch,
+    paddingVertical: theme.spacing.xs,
     paddingHorizontal: theme.spacing.sm,
     borderRadius: theme.radius.control,
   },
   wrap: {
-    height: undefined,
-    minHeight: theme.sizes.buttonHeight,
-    paddingVertical: theme.spacing.sm,
     paddingHorizontal: theme.spacing.md,
-  },
-  wrapQuiet: {
-    height: undefined,
-    minHeight: theme.sizes.touch,
-    paddingVertical: theme.spacing.xs,
-  },
-  wrapLabel: {
-    flexShrink: 1,
-    textAlign: 'center',
   },
   disabled: {
     opacity: 0.4,
   },
   label: {
     ...theme.typography.label,
+    flexShrink: 1,
+    textAlign: 'center',
   },
 });

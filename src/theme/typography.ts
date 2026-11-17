@@ -99,6 +99,22 @@ export const typography = {
     lineHeight: 44,
     fontVariant: tabular,
   },
+  /** The league's big rank on the results screen ("12."). */
+  arenaHero: {
+    fontFamily: fontFamilies.numeric,
+    fontSize: 96,
+    lineHeight: 96,
+    letterSpacing: -2,
+    fontVariant: tabular,
+  },
+  /** The win rate after a vote ("%72") and today's points on the league table. */
+  arenaFigure: {
+    fontFamily: fontFamilies.numeric,
+    fontSize: 56,
+    lineHeight: 58,
+    letterSpacing: -1,
+    fontVariant: tabular,
+  },
   /** "Sana uygun %N". */
   match: {
     fontFamily: fontFamilies.numeric,

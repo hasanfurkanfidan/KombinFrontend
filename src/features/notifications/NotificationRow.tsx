@@ -13,6 +13,7 @@ const KIND_ICON: Record<NotificationKind, IconName> = {
   AnyChange: 'tag',
   NewMatches: 'star',
   System: 'bell',
+  LeagueResult: 'trophy',
 };
 
 const KIND_LABEL: Record<NotificationKind, string> = {
@@ -21,6 +22,7 @@ const KIND_LABEL: Record<NotificationKind, string> = {
   AnyChange: tr.notifKindAnyChange,
   NewMatches: tr.notifKindMatches,
   System: tr.notifKindSystem,
+  LeagueResult: tr.notifKindLeague,
 };
 
 interface NotificationRowProps {
@@ -43,10 +45,19 @@ export const NotificationRow = memo(function NotificationRow({
   // A price drop is Kombin's signal (chalk); everything else is ink, filled or not by read state.
   const iconColor = priceDrop && unread ? theme.colors.chalkInk : theme.colors.ink;
 
+  const meta = `${KIND_LABEL[notification.kind]} · ${formatTimeAgo(notification.createdAt, now)}`;
+
   return (
     <Pressable
       accessibilityRole="button"
-      accessibilityState={{ selected: unread }}
+      accessibilityLabel={[
+        unread ? tr.a11yUnread : null,
+        notification.title,
+        notification.body,
+        meta,
+      ]
+        .filter(Boolean)
+        .join('. ')}
       onPress={() => onPress(notification)}
       style={[
         styles.card,

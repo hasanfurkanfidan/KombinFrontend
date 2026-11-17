@@ -16,6 +16,7 @@ import { useActivePersona } from '@/features/personas/hooks';
 import { tr } from '@/i18n/tr';
 import { useSession } from '@/session/useSession';
 import { theme } from '@/theme';
+import { istanbulDay } from '@/utils/istanbulTime';
 import { formatTry, toNumber } from '@/utils/money';
 
 import { reportShuffle } from './actions';
@@ -32,13 +33,6 @@ import { OutfitPieces } from './OutfitPieces';
 import { DismissSheet, OutfitPanel, type DismissReason } from './OutfitSheet';
 import { initialSeedState, parseSeed, previousSeed, shuffleSeed } from './seeds';
 import { useTrackOutfitView } from './tracking';
-
-function todayIso(): string {
-  const now = new Date();
-  const month = String(now.getMonth() + 1).padStart(2, '0');
-  const day = String(now.getDate()).padStart(2, '0');
-  return `${now.getFullYear()}-${month}-${day}`;
-}
 
 export function DailyOutfitScreen() {
   const { isSignedIn } = useSession();
@@ -154,7 +148,7 @@ function SignedInDaily() {
     </>
   );
 
-  const title = outfitTitle(outfit, daily.data?.outfit?.date ?? todayIso());
+  const title = outfitTitle(outfit, daily.data?.outfit?.date ?? istanbulDay(new Date()));
   const subtitle = outfitSubtitle(daily.data?.weather ?? null, persona?.name);
 
   let content: ReactElement;
@@ -236,7 +230,9 @@ function EmptyWardrobe({ daily, outfit }: { daily: DailyOutfit; outfit: Outfit |
   const router = useRouter();
   return (
     <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
-      <Text style={styles.emptyTitle}>{tr.outfitEmptyWardrobeTitle}</Text>
+      <Text accessibilityRole="header" style={styles.emptyTitle}>
+        {tr.outfitEmptyWardrobeTitle}
+      </Text>
       <Text style={styles.emptyBody}>{daily.message ?? tr.outfitEmptyWardrobeBody}</Text>
       {outfit ? (
         <View style={styles.shopping} testID="shopping-outfit">

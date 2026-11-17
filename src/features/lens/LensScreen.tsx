@@ -28,6 +28,7 @@ import { lensErrorKind, regionTitle, similarityBucket } from './labels';
 import { LensPhotoView } from './LensPhotoView';
 import { cropRegion } from './photo';
 import { RegionResults } from './RegionResults';
+import { lines } from '@/utils/a11y';
 
 export type LensEntry = 'explore' | 'home' | 'other';
 
@@ -252,7 +253,7 @@ export function LensScreen({ entry }: LensScreenProps) {
     <View style={[styles.root, { paddingTop: insets.top }]}>
       <View style={styles.header}>
         <IconButton icon="close" label={tr.close} onPress={close} testID="lens-close" />
-        <Text style={styles.title} numberOfLines={1}>
+        <Text accessibilityRole="header" style={styles.title} numberOfLines={lines(1)}>
           {tr.lensTitle}
         </Text>
         {showResults ? (

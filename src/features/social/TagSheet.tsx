@@ -12,6 +12,7 @@ import { colorTint } from '@/theme/colorNames';
 import { formatTry } from '@/utils/money';
 
 import { tagOffer } from './labels';
+import { lines } from '@/utils/a11y';
 
 interface TagSheetProps {
   post: Pick<Post, 'id'>;
@@ -47,7 +48,7 @@ function TagRow({ tag, single }: { tag: PostTag; single: boolean }) {
         )}
       </View>
       <View style={styles.text}>
-        <Text style={styles.name} numberOfLines={2}>
+        <Text style={styles.name} numberOfLines={lines(2)}>
           {tag.name}
         </Text>
         {tag.inWardrobe ? (

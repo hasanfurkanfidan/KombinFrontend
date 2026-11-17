@@ -1,10 +1,11 @@
 import { colorNames } from './colorNames';
-import { colors, motion, radius, sizes } from './tokens';
+import { arena, colors, motion, radius, sizes } from './tokens';
 import { gridGap, screenPaddingX, spacing } from './spacing';
 import { fontFamilies, typography } from './typography';
 
 export const theme = {
   colors,
+  arena,
   colorNames,
   radius,
   sizes,

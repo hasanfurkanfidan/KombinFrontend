@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { getAnonymousId } from '@/analytics';
 import { ApiError } from '@/api/client';
@@ -16,6 +16,7 @@ import { accountDisabledMessage } from './accountMessages';
 import { applyFieldErrors } from './formErrors';
 import { isAccountDisabled, isPendingDeletion, usePendingDeletionStore } from './pendingDeletion';
 import { loginSchema, type LoginValues } from './schemas';
+import { LiveText } from '@/components/LiveText';
 
 interface LoginFormProps {
   onSuccess: () => void;
@@ -106,9 +107,7 @@ export function LoginForm({ onSuccess, onPendingDeletion }: LoginFormProps) {
         )}
       />
       {errors.root?.message ? (
-        <Text style={styles.formError} accessibilityLiveRegion="polite">
-          {errors.root.message}
-        </Text>
+        <LiveText style={styles.formError}>{errors.root.message}</LiveText>
       ) : null}
       <Button
         label={tr.authLoginSubmit}

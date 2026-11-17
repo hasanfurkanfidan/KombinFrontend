@@ -76,7 +76,9 @@ function StatsBody({ stats }: { stats: CreatorStats }) {
 
       {stats.topPosts.length > 0 ? (
         <>
-          <Text style={styles.section}>{tr.creatorTopPosts}</Text>
+          <Text accessibilityRole="header" style={styles.section}>
+            {tr.creatorTopPosts}
+          </Text>
           {stats.topPosts.map((post) => (
             <Pressable
               key={post.postId}

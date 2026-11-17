@@ -105,7 +105,7 @@ describe('step 1 of 2: audience', () => {
 
     await renderWithQuery(<AudienceScreen />);
 
-    expect(await screen.findByLabelText('1 / 2')).toBeTruthy();
+    expect(await screen.findByLabelText('Adım 1 / 2')).toBeTruthy();
   });
 
   it('saves the audience with the measurements kept, creates "Tarzım" silently and opens the cards', async () => {
@@ -304,7 +304,7 @@ describe('step 2 of 2: swipe (buttons only)', () => {
     expect(await screen.findByTestId('swipe-card-c1')).toBeTruthy();
     expect(getStyleCardsMock.mock.calls[0]?.[0]).toBe('pe1');
     expect(getStyleCardsMock.mock.calls[0]?.[1]).toBe(8);
-    expect(screen.getByLabelText('2 / 2')).toBeTruthy();
+    expect(screen.getByLabelText('Adım 2 / 2')).toBeTruthy();
     expect(screen.getByText('1 / 7')).toBeTruthy();
   });
 

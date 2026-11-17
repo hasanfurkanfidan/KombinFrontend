@@ -3,6 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import type { OutfitPiece, OutfitSlot } from '@/api/models';
 import { AppImage } from '@/components/AppImage';
 import { Icon } from '@/components/Icon';
+import { tr } from '@/i18n/tr';
 import { theme } from '@/theme';
 
 import { miniFigurePieces } from './labels';
@@ -33,9 +34,16 @@ function Thumb({ piece }: { piece: OutfitPiece }) {
  * outfit looks the same on the Keşfet card, in "Kaydedilen kombinler", in the post flow's picker and in "Dolabımla dene".
  */
 export function OutfitMiniFigure({ pieces, testID }: OutfitMiniFigureProps) {
+  const shown = miniFigurePieces(pieces);
   return (
-    <View style={styles.figure} testID={testID}>
-      {miniFigurePieces(pieces).map((piece) => (
+    <View
+      style={styles.figure}
+      accessible
+      accessibilityRole="image"
+      accessibilityLabel={tr.a11yOutfitFigure(shown.map((piece) => piece.name).join(', '))}
+      testID={testID}
+    >
+      {shown.map((piece) => (
         <View
           key={`${piece.slot}-${piece.name}`}
           style={[

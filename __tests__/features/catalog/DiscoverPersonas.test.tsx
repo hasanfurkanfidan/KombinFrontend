@@ -6,6 +6,7 @@ import { listCategories, listProducts } from '@/api/endpoints/catalog';
 import { listSavedIds, saveProduct, unsaveProduct } from '@/api/endpoints/engagement';
 import { activatePersona, listPersonas } from '@/api/endpoints/profile';
 import { DiscoverScreen } from '@/features/catalog/DiscoverScreen';
+import { lines } from '@/utils/a11y';
 
 import { categories, listItem, page, persona } from '../../fixtures';
 import { renderWithQuery, resetSession, signedInSession } from '../../testUtils';
@@ -98,7 +99,8 @@ describe('Keşfet with a persona', () => {
     expect(screen.getAllByText('%28 indirim').length).toBeGreaterThan(0);
     const badge = screen.getByTestId('match-badge-p1');
     expect(badge.type).toBe('Text');
-    expect(badge.props.numberOfLines).toBe(1);
+    // One line at the default text size; from 1.3x it may wrap (a cut "Sana uygun %9…" would say less).
+    expect(badge.props.numberOfLines).toBe(lines(1));
   });
 
   it('switches the active style from the sheet', async () => {

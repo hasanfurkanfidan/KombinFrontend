@@ -4,6 +4,7 @@ import { router } from 'expo-router';
 
 import { getMe, logout } from '@/api/endpoints/auth';
 import { listSavedIds } from '@/api/endpoints/engagement';
+import { getLeagueMe } from '@/api/endpoints/league';
 import {
   activatePersona,
   archivePersona,
@@ -19,7 +20,9 @@ import { useSessionStore } from '@/session/sessionStore';
 import { theme } from '@/theme';
 
 import { persona, profile, sizeEntry } from '../../fixtures';
+import { HIDDEN } from '../../a11y/support';
 import { renderWithQuery, resetSession, signedInSession } from '../../testUtils';
+import { leagueMe, notJoined } from '../league/fixtures';
 
 jest.mock('@/api/endpoints/auth');
 jest.mock('@/api/endpoints/engagement');
@@ -56,6 +59,8 @@ const hafta = persona({
 beforeEach(async () => {
   jest.clearAllMocks();
   await resetSession();
+  // No league unless a test says so (the server has it switched off by default).
+  jest.mocked(getLeagueMe).mockResolvedValue(null);
   getMeMock.mockResolvedValue(me);
   // Not a creator unless a test says so.
   jest
@@ -94,9 +99,9 @@ describe('ProfileScreen', () => {
     await renderWithQuery(<ProfileScreen />);
 
     expect(await screen.findByText('Ayşe Yılmaz')).toBeTruthy();
-    expect(screen.getByText('A')).toBeTruthy();
+    expect(screen.getByText('A', HIDDEN)).toBeTruthy();
     // The initial sits on the `surface` circle (it used to be `bg`, i.e. no circle at all).
-    const avatar = screen.getByTestId('profile-avatar').props.style as object | object[];
+    const avatar = screen.getByTestId('profile-avatar', HIDDEN).props.style as object | object[];
     const avatarStyle = Object.assign(
       {},
       ...(Array.isArray(avatar) ? avatar.flat(Infinity) : [avatar]),
@@ -296,5 +301,39 @@ describe('Tarzlarım', () => {
     await fireEvent.press(await screen.findByTestId('profile-creator-stats'));
 
     expect(router.push).toHaveBeenCalledWith('/profile/creator');
+  });
+});
+
+describe('the league row', () => {
+  beforeEach(async () => {
+    await signedInSession();
+  });
+
+  it('is not there when the league does not exist', async () => {
+    await renderWithQuery(<ProfileScreen />);
+
+    await screen.findByText('Ayşe Yılmaz');
+    await waitFor(() => expect(jest.mocked(getLeagueMe)).toHaveBeenCalled());
+    expect(screen.queryByTestId('profile-league')).toBeNull();
+    expect(screen.queryByText('Kombin Ligi')).toBeNull();
+  });
+
+  it('offers the league to someone who has not joined, and opens the join screen', async () => {
+    jest.mocked(getLeagueMe).mockResolvedValue(notJoined());
+    await renderWithQuery(<ProfileScreen />);
+
+    const row = await screen.findByTestId('profile-league');
+    expect(screen.getByText('Bugünkü kombinin yarışsın')).toBeTruthy();
+    await fireEvent.press(row);
+    expect(router.push).toHaveBeenCalledWith('/league/join');
+  });
+
+  it('shows the tier and the place to a player, and opens the league home', async () => {
+    jest.mocked(getLeagueMe).mockResolvedValue(leagueMe());
+    await renderWithQuery(<ProfileScreen />);
+
+    await fireEvent.press(await screen.findByTestId('profile-league'));
+    expect(screen.getByText('Altın lig · 7. sıra')).toBeTruthy();
+    expect(router.push).toHaveBeenCalledWith('/league');
   });
 });

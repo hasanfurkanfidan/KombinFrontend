@@ -13,6 +13,7 @@ import { theme } from '@/theme';
 import { formatTry } from '@/utils/money';
 
 import { useTryPost } from './hooks';
+import { lines } from '@/utils/a11y';
 
 interface TrySheetProps {
   postId: string;
@@ -104,7 +105,7 @@ function TryOutfit({ outfit }: { outfit: Outfit }) {
         {gaps.map((piece) => (
           <View key={`${piece.slot}-${piece.name}`} style={styles.gapRow}>
             <View style={styles.gapText}>
-              <Text style={styles.gapName} numberOfLines={1}>
+              <Text style={styles.gapName} numberOfLines={lines(1)}>
                 {piece.name}
               </Text>
               {piece.offer ? (

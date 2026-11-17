@@ -253,12 +253,14 @@ function ItemBody({
         )}
       </View>
       <View style={styles.body}>
-        <Text style={styles.name} testID="item-title">
+        <Text accessibilityRole="header" style={styles.name} testID="item-title">
           {item.name ?? category ?? tr.wardrobeItemUnnamed}
         </Text>
 
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>{tr.pairingsTitle}</Text>
+          <Text accessibilityRole="header" style={styles.sectionTitle}>
+            {tr.pairingsTitle}
+          </Text>
           {pairings.data ? (
             <Pressable
               accessibilityRole="button"

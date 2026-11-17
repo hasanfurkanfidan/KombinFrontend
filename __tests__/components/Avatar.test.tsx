@@ -3,6 +3,7 @@ import { screen } from '@testing-library/react-native';
 import { Avatar, initialOf } from '@/components/Avatar';
 import { theme } from '@/theme';
 
+import { HIDDEN } from '../a11y/support';
 import { renderWithQuery } from '../testUtils';
 
 const flat = (style: unknown): Record<string, unknown> =>
@@ -12,17 +13,17 @@ describe('Avatar', () => {
   it('draws the initial on a surface circle', async () => {
     await renderWithQuery(<Avatar name="ışıl Demir" testID="avatar" />);
 
-    const circle = flat(screen.getByTestId('avatar').props.style);
+    const circle = flat(screen.getByTestId('avatar', HIDDEN).props.style);
     expect(circle.backgroundColor).toBe(theme.colors.surface);
     expect(circle.width).toBe(theme.sizes.postAvatar);
     expect(circle.borderRadius).toBe(theme.sizes.postAvatar / 2);
-    expect(screen.getByText('I')).toBeTruthy();
+    expect(screen.getByText('I', HIDDEN)).toBeTruthy();
   });
 
   it('has a large size for profiles', async () => {
     await renderWithQuery(<Avatar name="Ali" size="lg" testID="avatar" />);
 
-    const circle = flat(screen.getByTestId('avatar').props.style);
+    const circle = flat(screen.getByTestId('avatar', HIDDEN).props.style);
     expect(circle.width).toBe(theme.sizes.avatar);
     expect(circle.backgroundColor).toBe(theme.colors.surface);
   });

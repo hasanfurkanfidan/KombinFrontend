@@ -39,13 +39,17 @@ export function resetUserScopedState(): void {
 }
 
 /**
- * Runs `resetUserScopedState` whenever the store leaves `signedIn` (sign-out, account deletion, a rejected refresh).
+ * Runs `resetUserScopedState` whenever the store leaves `signedIn` (sign-out, account deletion, a rejected refresh), and
+ * forgets the remembered worn outfit when the start ends signed out.
  * Installed once at app start; returns the unsubscribe for tests.
  */
 export function installUserScopeReset(): () => void {
   return useSessionStore.subscribe((state, previous) => {
     if (previous.status === 'signedIn' && state.status !== 'signedIn') {
       resetUserScopedState();
+    } else if (previous.status === 'booting' && state.status === 'signedOut') {
+      // Nobody is signed in after the start: the file of the last account on this phone has no owner to show it to.
+      usePrefsStore.getState().clearHomeCardWorn();
     }
   });
 }

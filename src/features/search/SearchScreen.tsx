@@ -28,6 +28,7 @@ import { MIN_SEARCH_LENGTH, useBrandSuggestions, useSearchTerm } from './hooks';
 import { priceLabel } from './priceFilter';
 import { PriceSheet } from './PriceSheet';
 import { SearchInput } from './SearchField';
+import { lines } from '@/utils/a11y';
 
 interface Refinements {
   sort?: SortValue;
@@ -251,7 +252,7 @@ export function SearchScreen() {
                   testID={`search-recent-${recent}`}
                 >
                   <Icon name="search" size={18} color={theme.colors.muted} />
-                  <Text style={styles.recentText} numberOfLines={1}>
+                  <Text style={styles.recentText} numberOfLines={lines(1)}>
                     {recent}
                   </Text>
                 </Pressable>

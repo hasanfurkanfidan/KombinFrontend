@@ -7,6 +7,7 @@ import {
   type QueryClient,
 } from '@tanstack/react-query';
 
+import { getMe } from '@/api/endpoints/auth';
 import {
   dismissOutfit,
   getDailyOutfit,
@@ -18,7 +19,10 @@ import {
 } from '@/api/endpoints/outfits';
 import type { DailyOutfit, HowToWear, Outfit } from '@/api/models';
 import { queryKeys } from '@/api/queryKeys';
+import { usePrefsStore } from '@/session/prefsStore';
+import { userScopeEpoch } from '@/session/userScope';
 import { useSession } from '@/session/useSession';
+import { istanbulDay } from '@/utils/istanbulTime';
 import { toNumber } from '@/utils/money';
 
 import type { OccasionValue } from './labels';
@@ -136,16 +140,48 @@ export function useSaveOutfit() {
   });
 }
 
+/**
+ * Remembers the outfit for Keşfet's card (`prefsStore.homeCardWorn`, persisted with the account's id), but only when the
+ * outfit is about today: the card must not settle on tomorrow's outfit. Best effort; without the account id (`GET /me`
+ * unreachable) nothing is remembered and the card simply asks again after a restart.
+ */
+async function rememberWornOutfit(queryClient: QueryClient, outfit: Outfit): Promise<void> {
+  if (outfit.date !== istanbulDay(new Date())) {
+    return;
+  }
+  const epoch = userScopeEpoch();
+  try {
+    const me = await queryClient.ensureQueryData({
+      queryKey: queryKeys.me,
+      queryFn: ({ signal }) => getMe(signal),
+    });
+    // The session ended while the account was being looked up: that account's card is not this phone's any more.
+    if (epoch === userScopeEpoch()) {
+      usePrefsStore
+        .getState()
+        .markHomeCardWorn({ userId: me.id, day: outfit.date, outfitId: outfit.id });
+    }
+  } catch {
+    // Nothing to remember it for.
+  }
+}
+
+/**
+ * "Worn" for any outfit. The write of the remembered worn outfit lives here, in the mutation's own `onSuccess`, not in a
+ * per-call `mutate` callback: those are skipped when the component that tapped has unmounted by the time the answer
+ * comes (the daily screen closed right after "Bugün giydim"), and the card would then forget the outfit.
+ */
 export function useWearOutfit() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (id: string) => wearOutfit(id),
-    onSuccess: (outfit) => {
+    onSuccess: async (outfit) => {
       patchOutfit(queryClient, outfit);
       // The home card's settled state shows this outfit by its id; hand it over so it does not ask again.
       queryClient.setQueryData(queryKeys.outfit(outfit.id), outfit);
       // The wardrobe pieces were worn: their counts and the stats change.
       void queryClient.invalidateQueries({ queryKey: queryKeys.wardrobeAll });
+      await rememberWornOutfit(queryClient, outfit);
     },
   });
 }

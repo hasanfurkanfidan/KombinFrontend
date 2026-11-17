@@ -216,8 +216,10 @@ describe('NotificationsScreen', () => {
 
     const unread = await screen.findByTestId('notification-101');
     const read = screen.getByTestId('notification-103');
-    expect(unread.props.accessibilityState).toMatchObject({ selected: true });
-    expect(read.props.accessibilityState).toMatchObject({ selected: false });
+    // Unread is said in words (`selected` would read as "seçili"), not only drawn as a filled card.
+    expect(unread.props.accessibilityLabel).toMatch(/^Okunmamış. /);
+    expect(read.props.accessibilityLabel).not.toMatch(/Okunmamış/);
+    expect(unread.props.accessibilityState?.selected).toBeUndefined();
     expect(within(unread).getByText('Takip ettiğin blazer 850 ₺ düştü')).toBeTruthy();
   });
 });

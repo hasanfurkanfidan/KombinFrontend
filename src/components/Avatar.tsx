@@ -24,6 +24,9 @@ export function Avatar({ name, size = 'md', testID }: AvatarProps) {
   return (
     <View
       testID={testID}
+      // The name always sits beside an avatar: the initial would be read as a stray letter.
+      accessibilityElementsHidden
+      importantForAccessibility="no-hide-descendants"
       style={[styles.circle, { width: diameter, height: diameter, borderRadius: diameter / 2 }]}
     >
       {initial ? (

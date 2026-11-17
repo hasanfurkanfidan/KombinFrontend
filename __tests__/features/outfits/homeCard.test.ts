@@ -1,9 +1,11 @@
 import { theme } from '@/theme';
 import {
+  canWearOutfit,
   homeCardDay,
   homeCardPrimary,
   homeCardState,
   istanbulDay,
+  wornToday,
 } from '@/features/outfits/homeCard';
 
 describe('home card gating', () => {
@@ -34,16 +36,17 @@ describe('home card gating', () => {
 });
 
 describe('homeCardDay', () => {
-  it('is today until 18:00, and nothing but the clock moves it', () => {
-    expect(homeCardDay(new Date(2026, 10, 8, 0, 1))).toBe('today');
-    expect(homeCardDay(new Date(2026, 10, 8, 9, 0))).toBe('today');
-    expect(homeCardDay(new Date(2026, 10, 8, 13, 0))).toBe('today');
-    expect(homeCardDay(new Date(2026, 10, 8, 17, 59))).toBe('today');
+  // Instants are UTC: Istanbul is UTC+3, so 15:00Z is 18:00 there. The device-zone cases are in __tests__/clock.
+  it('is today until 18:00 in Istanbul, and nothing but the clock moves it', () => {
+    expect(homeCardDay(new Date('2026-11-07T21:01:00Z'))).toBe('today');
+    expect(homeCardDay(new Date('2026-11-08T06:00:00Z'))).toBe('today');
+    expect(homeCardDay(new Date('2026-11-08T10:00:00Z'))).toBe('today');
+    expect(homeCardDay(new Date('2026-11-08T14:59:00Z'))).toBe('today');
   });
 
   it('is tomorrow from 18:00 on', () => {
-    expect(homeCardDay(new Date(2026, 10, 8, 18, 0))).toBe('tomorrow');
-    expect(homeCardDay(new Date(2026, 10, 8, 22, 0))).toBe('tomorrow');
+    expect(homeCardDay(new Date('2026-11-08T15:00:00Z'))).toBe('tomorrow');
+    expect(homeCardDay(new Date('2026-11-08T19:00:00Z'))).toBe('tomorrow');
   });
 });
 
@@ -59,12 +62,45 @@ describe('istanbulDay', () => {
 });
 
 describe('homeCardPrimary', () => {
-  it('offers "wear" only for a complete outfit today', () => {
-    expect(homeCardPrimary({ completeness: 'Complete' }, 'today')).toBe('wear');
-    expect(homeCardPrimary({ completeness: 'NeedsOne' }, 'today')).toBe('open');
-    expect(homeCardPrimary({ completeness: 'CatalogOnly' }, 'today')).toBe('open');
-    expect(homeCardPrimary({ completeness: 'Complete' }, 'tomorrow')).toBe('open');
-    expect(homeCardPrimary(null, 'today')).toBe('open');
+  // Monday 2 November 2026, 09:00 in Istanbul.
+  const now = new Date('2026-11-02T06:00:00Z');
+  const complete = { completeness: 'Complete', date: '2026-11-02' } as const;
+
+  it('offers "wear" only for a complete outfit that is about today', () => {
+    expect(homeCardPrimary(complete, 'today', now)).toBe('wear');
+    expect(homeCardPrimary({ ...complete, completeness: 'NeedsOne' }, 'today', now)).toBe('open');
+    expect(homeCardPrimary({ ...complete, completeness: 'CatalogOnly' }, 'today', now)).toBe(
+      'open',
+    );
+    expect(homeCardPrimary(complete, 'tomorrow', now)).toBe('open');
+    expect(homeCardPrimary(null, 'today', now)).toBe('open');
+  });
+
+  it('does not offer "wear" for an outfit of another day: the backend records the wear for today', () => {
+    expect(homeCardPrimary({ ...complete, date: '2026-11-03' }, 'today', now)).toBe('open');
+    expect(homeCardPrimary({ ...complete, date: '2026-11-01' }, 'today', now)).toBe('open');
+  });
+});
+
+describe('wornToday', () => {
+  const now = new Date('2026-11-02T06:00:00Z');
+
+  it('needs both the outfit and the wear mark to be today in Istanbul', () => {
+    expect(wornToday({ date: '2026-11-02', wornAt: '2026-11-02T05:00:00Z' }, now)).toBe(true);
+    // 00:30 Istanbul on the 2nd is 21:30Z on the 1st: still today's.
+    expect(wornToday({ date: '2026-11-02', wornAt: '2026-11-01T21:30:00Z' }, now)).toBe(true);
+  });
+
+  it('is not settled by yesterday evening’s mark, nor by a mark on another day’s outfit', () => {
+    // 23:30 Istanbul time on the 1st.
+    expect(wornToday({ date: '2026-11-02', wornAt: '2026-11-01T20:30:00Z' }, now)).toBe(false);
+    expect(wornToday({ date: '2026-11-03', wornAt: '2026-11-02T05:00:00Z' }, now)).toBe(false);
+    expect(wornToday({ date: '2026-11-02', wornAt: null }, now)).toBe(false);
+  });
+
+  it('knows which outfits may be worn at all', () => {
+    expect(canWearOutfit({ date: '2026-11-02' }, now)).toBe(true);
+    expect(canWearOutfit({ date: '2026-11-03' }, now)).toBe(false);
   });
 });
 

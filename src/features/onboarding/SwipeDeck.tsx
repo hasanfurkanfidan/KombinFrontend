@@ -5,6 +5,7 @@ import Animated, {
   Extrapolation,
   interpolate,
   useAnimatedStyle,
+  useReducedMotion,
   useSharedValue,
   withSpring,
   withTiming,
@@ -18,6 +19,7 @@ import { tr } from '@/i18n/tr';
 import { theme } from '@/theme';
 
 import { styleFamilyLabels } from './labels';
+import { announce, lines } from '@/utils/a11y';
 
 export type SwipeDecision = 'Like' | 'Dislike' | 'Skip';
 
@@ -57,6 +59,14 @@ export function SwipeDeck({ cards, onSwipe, onFinish }: SwipeDeckProps) {
 
   const current = cards[index];
   const next = cards[index + 1];
+
+  // A new card is spoken (Android through the card's live region, iOS here); the buttons below keep the focus.
+  const currentLabel = current
+    ? tr.a11ySwipeCard(index + 1, cards.length, current.title, styleFamilyLabels[current.family])
+    : '';
+  useEffect(() => {
+    announce(currentLabel, 'ios');
+  }, [currentLabel]);
 
   const commit = useCallback(
     (decision: SwipeDecision, fromX = 0) => {
@@ -152,7 +162,13 @@ export function SwipeDeck({ cards, onSwipe, onFinish }: SwipeDeckProps) {
     <View style={styles.root}>
       <View style={[styles.stack, { width: cardWidth }]}>
         {next ? (
-          <View style={[styles.card, styles.behind, { width: cardWidth }]} pointerEvents="none">
+          <View
+            style={[styles.card, styles.behind, { width: cardWidth }]}
+            pointerEvents="none"
+            // The card waiting behind is not read: one card at a time.
+            accessibilityElementsHidden
+            importantForAccessibility="no-hide-descendants"
+          >
             <CardFace card={next} />
           </View>
         ) : null}
@@ -161,13 +177,24 @@ export function SwipeDeck({ cards, onSwipe, onFinish }: SwipeDeckProps) {
           <GestureDetector gesture={pan}>
             <Animated.View
               style={[styles.card, { width: cardWidth }, topStyle]}
+              accessible
+              accessibilityLabel={currentLabel}
+              accessibilityLiveRegion="polite"
               testID={`swipe-card-${current.id}`}
             >
               <CardFace card={current} progress={{ current: index + 1, total: cards.length }} />
-              <Animated.View style={[styles.stamp, styles.stampLike, likeStampStyle]}>
+              <Animated.View
+                style={[styles.stamp, styles.stampLike, likeStampStyle]}
+                accessibilityElementsHidden
+                importantForAccessibility="no-hide-descendants"
+              >
                 <Text style={[styles.stampText, styles.stampTextLike]}>{tr.swipeStampLike}</Text>
               </Animated.View>
-              <Animated.View style={[styles.stamp, styles.stampNope, nopeStampStyle]}>
+              <Animated.View
+                style={[styles.stamp, styles.stampNope, nopeStampStyle]}
+                accessibilityElementsHidden
+                importantForAccessibility="no-hide-descendants"
+              >
                 <Text style={[styles.stampText, styles.stampTextNope]}>{tr.swipeStampNope}</Text>
               </Animated.View>
             </Animated.View>
@@ -246,10 +273,10 @@ function CardFace({
       )}
       <View style={styles.label}>
         <View style={styles.labelText}>
-          <Text style={styles.labelTitle} numberOfLines={1}>
+          <Text style={styles.labelTitle} numberOfLines={lines(1)}>
             {card.title}
           </Text>
-          <Text style={styles.labelSub} numberOfLines={1}>
+          <Text style={styles.labelSub} numberOfLines={lines(1)}>
             {styleFamilyLabels[card.family]}
           </Text>
         </View>
@@ -282,16 +309,20 @@ function LeavingCard({
   const x = useSharedValue(fromX);
   const y = useSharedValue(0);
   const opacity = useSharedValue(1);
+  // Reduced motion: the card fades where it is, it does not fly across the screen.
+  const reduceMotion = useReducedMotion();
 
   useEffect(() => {
     const direction = decision === 'Like' ? 1 : decision === 'Dislike' ? -1 : 0;
-    if (direction === 0) {
-      y.set(withTiming(-theme.sizes.swipeCardHeight, { duration: EXIT_MS }));
-    } else {
-      x.set(withTiming(direction * screenWidth, { duration: EXIT_MS }));
+    if (!reduceMotion) {
+      if (direction === 0) {
+        y.set(withTiming(-theme.sizes.swipeCardHeight, { duration: EXIT_MS }));
+      } else {
+        x.set(withTiming(direction * screenWidth, { duration: EXIT_MS }));
+      }
     }
     opacity.set(withTiming(0, { duration: EXIT_MS }));
-  }, [decision, screenWidth, x, y, opacity]);
+  }, [decision, screenWidth, x, y, opacity, reduceMotion]);
 
   const style = useAnimatedStyle(() => ({
     opacity: opacity.get(),

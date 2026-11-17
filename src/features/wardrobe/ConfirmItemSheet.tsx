@@ -101,7 +101,9 @@ function NotGarment({ item, onDone }: { item: WardrobeItem; onDone: () => void }
   return (
     <>
       <Cutout item={item} color={item.primaryColor} />
-      <Text style={styles.notGarmentTitle}>{tr.wardrobeNotGarmentTitle}</Text>
+      <Text accessibilityRole="header" style={styles.notGarmentTitle}>
+        {tr.wardrobeNotGarmentTitle}
+      </Text>
       <Text style={styles.hint}>{tr.wardrobeNotGarmentBody}</Text>
       <Button
         label={tr.wardrobeKeepAnyway}
@@ -250,7 +252,7 @@ function ItemForm({
               accessibilityRole="button"
               accessibilityLabel={colorLabels[value]}
               accessibilityState={{ selected: color === value }}
-              hitSlop={theme.spacing.xs}
+              hitSlop={(theme.sizes.touch - theme.sizes.colorSwatch) / 2}
               onPress={() => setColor(value)}
               style={[
                 styles.swatch,

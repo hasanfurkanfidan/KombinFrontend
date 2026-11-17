@@ -21,6 +21,7 @@ import { useCreator, useFollowToggle, useUserPosts, useUserProfile } from './hoo
 import { postKey, renderPost } from './PostCard';
 import { usePostViewTracking, type PostViewSource } from './postViews';
 import { SocialHeader } from './SocialHeader';
+import { lines } from '@/utils/a11y';
 
 /** A profile link is the creator's own page (an Instagram, a blog): only web links are opened, and never a seller. */
 /**
@@ -159,7 +160,7 @@ function ProfileCard({ profile, disclosure }: { profile: UserProfile; disclosure
       <View style={styles.identity}>
         <Avatar name={profile.displayName} size="lg" testID="profile-card-avatar" />
         <View style={styles.identityText}>
-          <Text style={styles.name} numberOfLines={1}>
+          <Text style={styles.name} numberOfLines={lines(1)}>
             {profile.displayName}
           </Text>
           {profile.handle ? <Text style={styles.handle}>{`@${profile.handle}`}</Text> : null}
@@ -177,7 +178,7 @@ function ProfileCard({ profile, disclosure }: { profile: UserProfile; disclosure
           }
           testID="profile-link"
         >
-          <Text style={styles.link} numberOfLines={1}>
+          <Text style={styles.link} numberOfLines={lines(1)}>
             {linkHost}
           </Text>
         </Pressable>

@@ -10,6 +10,7 @@ import { formatTry, toNumber } from '@/utils/money';
 
 import { useOutfitActions, type OutfitActions } from './actions';
 import { gapPieces } from './labels';
+import { lines } from '@/utils/a11y';
 
 /** Pulling the sheet down this far counts as dismissing the outfit. */
 const SWIPE_DOWN_PX = 80;
@@ -74,14 +75,16 @@ export function OutfitSheet({ outfit, actions, onSwipeDown }: OutfitSheetProps) 
           <Text style={styles.caption}>{tr.outfitReady}</Text>
           <View style={styles.buttons}>
             {saveButton}
-            <Button
-              label={actions.worn ? tr.outfitWornToday : tr.outfitWearToday}
-              onPress={actions.wear}
-              loading={actions.wearing}
-              disabled={actions.worn}
-              style={styles.half}
-              testID="outfit-wear"
-            />
+            {actions.canWear ? (
+              <Button
+                label={actions.worn ? tr.outfitWornToday : tr.outfitWearToday}
+                onPress={actions.wear}
+                loading={actions.wearing}
+                disabled={actions.worn}
+                style={styles.half}
+                testID="outfit-wear"
+              />
+            ) : null}
           </View>
         </>
       ) : (
@@ -108,7 +111,7 @@ export function OutfitSheet({ outfit, actions, onSwipeDown }: OutfitSheetProps) 
                 style={styles.row}
                 testID={`outfit-gap-${piece.slot}`}
               >
-                <Text style={styles.rowText} numberOfLines={1}>
+                <Text style={styles.rowText} numberOfLines={lines(1)}>
                   {piece.offer?.seller
                     ? tr.outfitPieceLine(piece.offer.seller.name, piece.name)
                     : piece.name}

@@ -126,7 +126,9 @@ describe('signing out forgets the account that left', () => {
     usePrefsStore.getState().addRecentSearch('siyah bot');
     usePrefsStore.getState().skipOnboarding();
     usePrefsStore.getState().setPushToken('ExponentPushToken[a]');
-    usePrefsStore.getState().markHomeCardWorn({ day: '2026-11-08', outfitId: 'worn-a' });
+    usePrefsStore
+      .getState()
+      .markHomeCardWorn({ userId: 'user-a', day: '2026-11-08', outfitId: 'worn-a' });
     useAddStore.getState().setLocalUri('local-1', 'file:///cache/ImagePicker/a.jpg');
     usePendingDeletionStore
       .getState()

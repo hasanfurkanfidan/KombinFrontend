@@ -1,5 +1,6 @@
-import { fireEvent, screen, waitFor } from '@testing-library/react-native';
+import { fireEvent, screen, waitFor, within } from '@testing-library/react-native';
 import { router } from 'expo-router';
+import { StyleSheet } from 'react-native';
 
 import {
   deleteAlert,
@@ -325,6 +326,38 @@ describe('Takip: Alarmlar', () => {
 
     await waitFor(() => expect(deleteAlertMock).toHaveBeenCalledWith('a2'));
     await waitFor(() => expect(screen.queryByTestId('alert-row-a2')).toBeNull());
+  });
+
+  it('reaches the swipe actions through the screen reader: settings and delete as actions', async () => {
+    deleteAlertMock.mockImplementation(async () => {
+      listAlertsMock.mockResolvedValue({ items: [mavi, levis] });
+    });
+
+    await renderWithQuery(<TrackingScreen />);
+    const row = await screen.findByTestId('alert-row-a2');
+
+    expect(row.props.accessibilityActions).toEqual([
+      { name: 'settings', label: 'Alarm ayarları' },
+      { name: 'delete', label: 'Sil' },
+    ]);
+    await fireEvent(row, 'accessibilityAction', { nativeEvent: { actionName: 'settings' } });
+    expect(await screen.findByTestId('alert-switch-a2')).toBeTruthy();
+    expect(screen.getByTestId('alert-switch-a2').props.accessibilityLabel).toBe('Alarm açık');
+
+    await fireEvent(row, 'accessibilityAction', { nativeEvent: { actionName: 'delete' } });
+    await waitFor(() => expect(deleteAlertMock).toHaveBeenCalledWith('a2'));
+  });
+
+  it('says an alarm that is off in words, and keeps its text at full contrast', async () => {
+    listAlertsMock.mockResolvedValue({ items: [mavi, { ...zara, isActive: false }, levis] });
+
+    await renderWithQuery(<TrackingScreen />);
+    const row = await screen.findByTestId('alert-row-a2');
+
+    expect(within(row).getByText('Alarm kapalı')).toBeTruthy();
+    expect(within(screen.getByTestId('alert-row-a1')).queryByText('Alarm kapalı')).toBeNull();
+    const style = StyleSheet.flatten(row.props.style) as { opacity?: number };
+    expect(style.opacity).toBeUndefined();
   });
 
   it('switches an alert off from the settings sheet (long press)', async () => {

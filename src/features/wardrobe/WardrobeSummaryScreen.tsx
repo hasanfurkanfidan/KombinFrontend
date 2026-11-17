@@ -36,6 +36,7 @@ import {
   unpricedCount,
   valueCountsSentence,
 } from './summary';
+import { lines } from '@/utils/a11y';
 
 /**
  * "Dolap özeti": what the wardrobe is worth, what each piece costs per wear and what has never been worn. Everything
@@ -273,7 +274,7 @@ function CostPerWearRow({ entry }: { entry: CostPerWearItem }) {
     >
       <Thumb item={entry.item} />
       <View style={styles.rowText}>
-        <Text style={styles.name} numberOfLines={2}>
+        <Text style={styles.name} numberOfLines={lines(2)}>
           {name}
         </Text>
         <Text style={styles.muted} testID={`summary-cpw-caption-${entry.item.id}`}>
@@ -331,7 +332,7 @@ function UnwornRow({ entry }: { entry: UnwornItem }) {
       >
         <Thumb item={entry.item} />
         <View style={styles.rowText}>
-          <Text style={styles.name} numberOfLines={2}>
+          <Text style={styles.name} numberOfLines={lines(2)}>
             {name}
           </Text>
           <Text style={styles.muted}>{days}</Text>
@@ -368,7 +369,7 @@ function UnlockRow({ itemId, unlock }: { itemId: string; unlock: PairingUnlock }
           )}
         </View>
         <View style={styles.rowText}>
-          <Text style={styles.name} numberOfLines={2}>
+          <Text style={styles.name} numberOfLines={lines(2)}>
             {unlock.name}
           </Text>
           <Text style={styles.muted}>{tr.outfitPieceLine(seller, price)}</Text>

@@ -32,6 +32,7 @@ import {
   type DraftDot,
 } from './tagDraft';
 import { TagPickerSheet, type PickKind } from './TagPickerSheet';
+import { lines } from '@/utils/a11y';
 
 interface TagEditorProps {
   post: Pick<Post, 'id' | 'image' | 'kind'>;
@@ -211,10 +212,37 @@ function DraggableDot({
   );
 
   const half = theme.sizes.tagDot / 2;
+  // Dragging has no switch-access or screen-reader equivalent: the same move, a step at a time.
+  const nudge = (dx: number, dy: number) => {
+    const { center: now, onMove: move } = live.current;
+    move(dot.key, { left: now.left + dx, top: now.top + dy });
+  };
   return (
     <View
       {...pan.panHandlers}
+      accessible
+      accessibilityRole="adjustable"
       accessibilityLabel={tr.tagEditorDot(index + 1)}
+      accessibilityState={{ selected }}
+      accessibilityActions={[
+        { name: 'moveUp', label: tr.a11yTagUp },
+        { name: 'moveDown', label: tr.a11yTagDown },
+        { name: 'moveLeft', label: tr.a11yTagLeft },
+        { name: 'moveRight', label: tr.a11yTagRight },
+      ]}
+      onAccessibilityTap={() => live.current.onSelect(dot.key)}
+      onAccessibilityAction={(event) => {
+        switch (event.nativeEvent.actionName) {
+          case 'moveUp':
+            return nudge(0, -DOT_STEP);
+          case 'moveDown':
+            return nudge(0, DOT_STEP);
+          case 'moveLeft':
+            return nudge(-DOT_STEP, 0);
+          case 'moveRight':
+            return nudge(DOT_STEP, 0);
+        }
+      }}
       testID={`edit-dot-${dot.key}`}
       style={[
         styles.dot,
@@ -232,6 +260,9 @@ function DraggableDot({
     </View>
   );
 }
+
+/** One screen-reader move, as a share of the photo. */
+const DOT_STEP = 0.05;
 
 interface DotRowProps {
   dot: DraftDot;
@@ -264,10 +295,13 @@ function DotRow({ dot, index, selected, onPick, onConfirmSuggestion, onRemove }:
           )}
         </View>
         <View style={styles.rowText}>
-          <Text style={styles.rowTitle} numberOfLines={1}>
+          <Text style={styles.rowTitle} numberOfLines={lines(1)}>
             {description || tr.tagEditorDot(index + 1)}
           </Text>
-          <Text style={choice === null ? styles.rowPending : styles.rowChosen} numberOfLines={1}>
+          <Text
+            style={choice === null ? styles.rowPending : styles.rowChosen}
+            numberOfLines={lines(1)}
+          >
             {choice === null
               ? tr.tagEditorUnconfirmed
               : choice.kind === 'Unknown'

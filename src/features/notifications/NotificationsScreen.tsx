@@ -46,7 +46,9 @@ export function NotificationsScreen() {
           onPress={() => (router.canGoBack() ? router.back() : router.replace('/'))}
           testID="notifications-back"
         />
-        <Text style={styles.title}>{tr.notifTitle}</Text>
+        <Text accessibilityRole="header" style={styles.title}>
+          {tr.notifTitle}
+        </Text>
         {isSignedIn ? (
           <View style={styles.actions}>
             <IconButton

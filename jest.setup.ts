@@ -122,6 +122,21 @@ jest.mock('@/analytics', () => ({
   rotateAnonymousId: jest.fn(async () => undefined),
 }));
 
+// The league is switched off on the server by default (every route answers 404, which the endpoints turn into `null`): so
+// every screen that asks for it, Keşfet's row and the morning card's line included, sees "no league" unless a test says
+// otherwise (`__tests__/features/league`).
+jest.mock('@/api/endpoints/league', () => ({
+  getLeagueMe: jest.fn(async () => null),
+  getLeagueResults: jest.fn(async () => null),
+  getLeagueTable: jest.fn(async () => null),
+  getNextPair: jest.fn(),
+  joinLeague: jest.fn(),
+  leaveLeague: jest.fn(),
+  reportPair: jest.fn(),
+  voteOnPair: jest.fn(),
+  withdrawLeagueEntry: jest.fn(),
+}));
+
 jest.mock('expo-notifications', () => ({
   AndroidImportance: { DEFAULT: 3 },
   getPermissionsAsync: jest.fn(async () => ({ status: 'undetermined' })),

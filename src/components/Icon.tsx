@@ -52,6 +52,15 @@ const PATHS = {
   ],
   shuffle: ['M16 3h5v5', 'M4 20 21 3', 'M21 16v5h-5', 'M15 15l6 6', 'M4 4l5 5'],
   search: ['M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16z', 'M21 21l-4.35-4.35'],
+  trophy: [
+    'M6 9H4.5a2.5 2.5 0 0 1 0-5H6',
+    'M18 9h1.5a2.5 2.5 0 0 0 0-5H18',
+    'M4 22h16',
+    'M10 14.66V17c0 .55-.47.98-1.97 1.21C7.85 18.75 7 20.24 7 22',
+    'M14 14.66V17c0 .55.47.98 1.97 1.21C16.15 18.75 17 20.24 17 22',
+    'M18 2H6v7a6 6 0 0 0 12 0V2z',
+  ],
+  flag: ['M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z', 'M4 22v-7'],
   star: ['M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z'],
 } as const;
 
@@ -74,7 +83,14 @@ export function Icon({
   filled = false,
 }: IconProps) {
   return (
-    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" accessibilityElementsHidden>
+    <Svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      accessibilityElementsHidden
+      importantForAccessibility="no-hide-descendants"
+    >
       {PATHS[name].map((d) => (
         <Path
           key={d}

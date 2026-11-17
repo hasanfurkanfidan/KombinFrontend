@@ -8,6 +8,7 @@ import type {
 import { tr } from '@/i18n/tr';
 import type { OccasionValue } from '@/features/outfits/labels';
 import { formatShortWeekday, formatWeekday } from '@/utils/dates';
+import { istanbulDay } from '@/utils/istanbulTime';
 
 export const MIN_BUDGET = 100;
 export const MAX_BUDGET = 100_000;
@@ -164,12 +165,6 @@ export function wardrobeHasShoes(stats: WardrobeStats | undefined): boolean {
   );
 }
 
-function isoOf(date: Date): string {
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  return `${date.getFullYear()}-${month}-${day}`;
-}
-
 export interface DateOption {
   value: string;
   label: string;
@@ -192,19 +187,24 @@ const MONTHS = [
   'Aralık',
 ];
 
-/** Bugün, Yarın, then each day up to a week ahead as "Cum 20". */
+/**
+ * Bugün, Yarın, then each day up to a week ahead as "Cum 20". The days count from today in Europe/Istanbul (the day the
+ * backend's "today" is), not from the phone's calendar, so a request never names a day the backend rejects.
+ */
 export function dateOptions(now: Date): DateOption[] {
   const options: DateOption[] = [
     { value: 'today', label: tr.budgetDateToday, spoken: tr.budgetDateToday },
     { value: 'tomorrow', label: tr.budgetDateTomorrow, spoken: tr.budgetDateTomorrow },
   ];
+  const [year = 1970, month = 1, day = 1] = istanbulDay(now).split('-').map(Number);
   for (let ahead = 2; ahead <= BUDGET_DAYS_AHEAD; ahead += 1) {
-    const day = new Date(now.getFullYear(), now.getMonth(), now.getDate() + ahead);
-    const weekday = formatWeekday(isoOf(day));
+    // A calendar day, read with the UTC getters, so no time zone moves it.
+    const date = new Date(Date.UTC(year, month - 1, day + ahead));
+    const iso = date.toISOString().slice(0, 10);
     options.push({
-      value: isoOf(day),
-      label: tr.budgetDateChip(formatShortWeekday(isoOf(day)), day.getDate()),
-      spoken: `${weekday}, ${day.getDate()} ${MONTHS[day.getMonth()] ?? ''}`,
+      value: iso,
+      label: tr.budgetDateChip(formatShortWeekday(iso), date.getUTCDate()),
+      spoken: `${formatWeekday(iso)}, ${date.getUTCDate()} ${MONTHS[date.getUTCMonth()] ?? ''}`,
     });
   }
   return options;

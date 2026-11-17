@@ -11,6 +11,7 @@ import { theme } from '@/theme';
 
 import { useBlocks, useUnblockUser } from './hooks';
 import { SocialHeader } from './SocialHeader';
+import { lines } from '@/utils/a11y';
 
 /** "Engellenenler": the people the user blocked, each with a way to undo it. */
 export function BlockedUsersScreen() {
@@ -39,7 +40,7 @@ export function BlockedUsersScreen() {
           renderItem={({ item }) => (
             <View style={styles.row} testID={`blocked-${item.id}`}>
               <Avatar name={item.displayName} testID={`blocked-avatar-${item.id}`} />
-              <Text style={styles.name} numberOfLines={1}>
+              <Text style={styles.name} numberOfLines={lines(1)}>
                 {item.displayName}
               </Text>
               <Button

@@ -6,11 +6,14 @@ import {
 } from 'expo-file-system/legacy';
 
 /**
- * The outfit the user marked worn from Keşfet's card or the daily screen, and the Istanbul day it was for. Not a
- * secret (an id and a date), so it lives in a small file in the app's own document folder, never in the token storage.
- * It goes away with the app and with the session (`prefsStore.reset`).
+ * The outfit the user marked worn from Keşfet's card or the daily screen, the Istanbul day it was for and the account
+ * that did it (another account on the same phone must never see it). Not a secret (ids and a date), so it lives in a
+ * small file in the app's own document folder, never in the token storage. It goes away with the app and with the
+ * session (`prefsStore.reset`).
  */
 export interface StoredWornOutfit {
+  /** The id of the account (`GET /me`) the outfit was worn by. */
+  userId: string;
   /** `yyyy-MM-dd`, the Europe/Istanbul day the outfit was worn on. */
   day: string;
   outfitId: string;
@@ -22,23 +25,35 @@ function fileUri(): string | null {
   return documentDirectory ? `${documentDirectory}${FILE_NAME}` : null;
 }
 
-function isStoredWornOutfit(value: unknown): value is StoredWornOutfit {
+/**
+ * What was read. A file from before the account id was stored has `userId: null`: it cannot be tied to anyone, so the
+ * reader hands it over as such and the caller treats it as stale.
+ */
+export interface ReadWornOutfit {
+  userId: string | null;
+  day: string;
+  outfitId: string;
+}
+
+function toReadWornOutfit(value: unknown): ReadWornOutfit | null {
   if (typeof value !== 'object' || value === null) {
-    return false;
+    return null;
   }
-  const { day, outfitId } = value as Record<string, unknown>;
-  return typeof day === 'string' && typeof outfitId === 'string' && outfitId.length > 0;
+  const { userId, day, outfitId } = value as Record<string, unknown>;
+  if (typeof day !== 'string' || typeof outfitId !== 'string' || outfitId.length === 0) {
+    return null;
+  }
+  return { userId: typeof userId === 'string' && userId.length > 0 ? userId : null, day, outfitId };
 }
 
 /** Reads the stored value; a missing, unreadable or malformed file is simply "nothing stored". Never throws. */
-export async function readStoredWornOutfit(): Promise<StoredWornOutfit | null> {
+export async function readStoredWornOutfit(): Promise<ReadWornOutfit | null> {
   const uri = fileUri();
   if (!uri) {
     return null;
   }
   try {
-    const parsed: unknown = JSON.parse(await readAsStringAsync(uri));
-    return isStoredWornOutfit(parsed) ? { day: parsed.day, outfitId: parsed.outfitId } : null;
+    return toReadWornOutfit(JSON.parse(await readAsStringAsync(uri)));
   } catch {
     return null;
   }

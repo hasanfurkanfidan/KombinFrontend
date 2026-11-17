@@ -42,6 +42,11 @@ export function PriceSummary({ summary, history }: PriceSummaryProps) {
 
         <Pressable
           accessibilityRole="button"
+          accessibilityLabel={
+            highest !== null && lowestNow !== null
+              ? `${tr.productPriceHistory}. ${tr.a11yPriceChart(formatTry(highest), formatTry(lowestNow))}`
+              : undefined
+          }
           accessibilityState={{ expanded, disabled: !canExpand }}
           disabled={!canExpand}
           onPress={() => setExpanded((value) => !value)}

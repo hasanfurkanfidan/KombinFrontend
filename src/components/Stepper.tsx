@@ -56,7 +56,11 @@ export function Stepper({
       >
         <Icon name="minus" size={18} />
       </Pressable>
-      <Text style={styles.value} testID={testID ? `${testID}-value` : undefined}>
+      <Text
+        style={styles.value}
+        accessibilityLiveRegion="polite"
+        testID={testID ? `${testID}-value` : undefined}
+      >
         {format(value)}
       </Text>
       <Pressable

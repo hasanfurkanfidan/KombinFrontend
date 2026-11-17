@@ -210,8 +210,8 @@ writes `detail` for users; network errors show our own Turkish line. Accepted.
 Measured: `npm audit --omit=dev` reports 9 moderate, 0 high, 0 critical, all in Expo's build tooling (`@expo/cli`, `@expo/config`,
 `@expo/config-plugins`, `@expo/fingerprint`, `@expo/metro-config`, `glob`, `minimatch`, `node-forge`). None is in the bundle (checked
 against the export's source map; only `@expo/cli`'s Metro module runtime is, not the vulnerable code). **Accepted** with a gate:
-`npm run audit:ci` fails on any high/critical advisory and on any advisory outside `scripts/audit-allowlist.json` (each entry with its
-reason). `npx expo-doctor`: 18/20 checks pass; 15 packages are a patch behind SDK 58 and `react-native-safe-area-context` a minor
+`npm run audit:ci` fails on any advisory outside `scripts/audit-allowlist.json` (each entry an advisory at its root package, with its
+reason and review date; dependants of a listed root pass without being listed; since 17.11.2026, see CLAUDE.md "Dependencies"). `npx expo-doctor`: 18/20 checks pass; 15 packages are a patch behind SDK 58 and `react-native-safe-area-context` a minor
 (the other failure is the React Native Directory server being unreachable). **Planned:** `npx expo install --check` in its own branch; several
 of those packages are native, so it needs a new development build and a device check.
 
@@ -422,14 +422,14 @@ experimental tree shaking is the other route.
 
 ## CI guards added
 
-| Command / test                                | Fails when                                                                                                                                |
-| --------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| `npm run size:check`                          | the Android Hermes bundle exceeds `scripts/size-budget.json` (4,695,272 B measured, limit +5 % = 4,930,036 B); `-- --update` re-measures  |
-| `npm run audit:ci`                            | `npm audit --omit=dev` reports a high/critical advisory, or any advisory outside `scripts/audit-allowlist.json`                           |
-| `__tests__/performance/renderCounts.test.tsx` | a Keşfet grid card or a feed card re-renders when its props did not change                                                                |
-| `__tests__/performance/lists.test.ts`         | a paged screen renders without a virtualised list, or a photo list drops `IMAGE_LIST_TUNING`                                              |
-| `__tests__/session/userScope.test.tsx`        | anything of the previous user can render, or stay in a store, after sign-out                                                              |
-| `__tests__/security/guards.test.ts`           | an ungated `console.*` appears; a validator (API URL, route params, `goPath`, legal URL, temp files, screen names) lets something through |
+| Command / test                                | Fails when                                                                                                                                     |
+| --------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `npm run size:check`                          | the Android Hermes bundle exceeds `scripts/size-budget.json` (fixed limit 10,240,000 B = 10000 KB since 17.11.2026); `-- --update` re-measures |
+| `npm run audit:ci`                            | `npm audit --omit=dev` reports a high/critical advisory, or any advisory outside `scripts/audit-allowlist.json`                                |
+| `__tests__/performance/renderCounts.test.tsx` | a Keşfet grid card or a feed card re-renders when its props did not change                                                                     |
+| `__tests__/performance/lists.test.ts`         | a paged screen renders without a virtualised list, or a photo list drops `IMAGE_LIST_TUNING`                                                   |
+| `__tests__/session/userScope.test.tsx`        | anything of the previous user can render, or stay in a store, after sign-out                                                                   |
+| `__tests__/security/guards.test.ts`           | an ungated `console.*` appears; a validator (API URL, route params, `goPath`, legal URL, temp files, screen names) lets something through      |
 
 ---
 

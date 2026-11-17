@@ -1,5 +1,6 @@
 import { tr } from '@/i18n/tr';
 import { formatLongDay, monthName } from '@/utils/dates';
+import { istanbulDay } from '@/utils/istanbulTime';
 
 /** The contract: a trip is 1-14 days and starts between today and a year ahead. */
 export const MAX_TRIP_DAYS = 14;
@@ -34,11 +35,9 @@ export function diffDays(from: string, to: string): number {
   return Math.round((toUtc(to) - toUtc(from)) / DAY_MS);
 }
 
-/** Today on the phone's calendar. */
+/** Today in Europe/Istanbul, the day the backend judges a trip's dates against (never the phone's own calendar). */
 export function todayIso(now: Date = new Date()): string {
-  const month = String(now.getMonth() + 1).padStart(2, '0');
-  const day = String(now.getDate()).padStart(2, '0');
-  return `${now.getFullYear()}-${month}-${day}`;
+  return istanbulDay(now);
 }
 
 /** Days in a trip, both ends counted: "2026-11-20" to "2026-11-22" is 3. */

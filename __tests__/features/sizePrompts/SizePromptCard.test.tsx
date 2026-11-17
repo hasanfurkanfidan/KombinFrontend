@@ -12,6 +12,7 @@ import { useToastStore } from '@/components/toastStore';
 import { ProfileScreen } from '@/features/profile/ProfileScreen';
 import { CONFIRMATION_MS, SizePromptCard } from '@/features/sizePrompts/SizePromptCard';
 import { theme } from '@/theme';
+import { currentFontScale, readingTime } from '@/utils/a11y';
 
 import { persona, profile, sizePrompt } from '../../fixtures';
 import { heldOpen, renderWithQuery, resetSession, signedInSession } from '../../testUtils';
@@ -44,7 +45,8 @@ const confirmation = () => screen.queryByTestId('size-prompt-confirmation');
 /** The confirming line stays for a moment; this lets it go. */
 async function letConfirmationGo() {
   await act(async () => {
-    await jest.advanceTimersByTimeAsync(CONFIRMATION_MS);
+    // It stays longer at large text (Jest's window reports an enlarged scale of its own).
+    await jest.advanceTimersByTimeAsync(readingTime(CONFIRMATION_MS, false, currentFontScale()));
   });
 }
 

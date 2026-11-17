@@ -17,6 +17,8 @@ import { Button } from '@/components/Button';
 import { Icon } from '@/components/Icon';
 import { PressableScale } from '@/components/PressableScale';
 import { Skeleton } from '@/components/Skeleton';
+import { LeagueEntryLine } from '@/features/league/LeagueEntryLine';
+import { useMe } from '@/features/profile/hooks';
 import { addPhotos } from '@/features/wardrobe/addItem';
 import { useWardrobeStats } from '@/features/wardrobe/hooks';
 import { pickPhotos } from '@/features/wardrobe/picker';
@@ -31,7 +33,7 @@ import {
   homeCardDay,
   homeCardPrimary,
   homeCardState,
-  istanbulDay,
+  wornToday,
   type HomeCardDay,
 } from './homeCard';
 import { useDailyOutfit, useOutfit } from './hooks';
@@ -44,14 +46,14 @@ import { initialSeedState, shuffleSeed } from './seeds';
 const LARGE_TEXT_SCALE = 1.5;
 
 /**
- * The outfit card on Keşfet (only there: the app shows it once; design screen 02). Today's outfit until 18:00, then
- * tomorrow's; two actions on the card ("Bunu giyiyorum" and "Başka göster"), so the morning outfit is settled in one
+ * The outfit card on Keşfet (only there: the app shows it once; design screen 02). Today's outfit until 18:00 Istanbul
+ * time (whatever zone the phone is set to), then tomorrow's; two actions on the card ("Bunu giyiyorum" and "Başka göster"), so the morning outfit is settled in one
  * tap. Tapping the figure or the title opens the daily screen on the very outfit it shows (same date, seed and
  * occasion, so the same query).
  *
  * Once today's outfit is worn the card stays on it, settled ("Bugün giyiyorsun"), until 18:00, also after a restart:
- * the worn outfit's id is remembered (`prefsStore.homeCardWorn`) and loaded by id, because the daily endpoint does not
- * return it and it may not be the plain seed-0 outfit.
+ * the worn outfit's id is remembered (`prefsStore.homeCardWorn`, per account) and loaded by id, because the daily
+ * endpoint does not return it and it may not be the plain seed-0 outfit.
  */
 export function DailyCard() {
   const { isSignedIn } = useSession();
@@ -62,7 +64,7 @@ export function DailyCard() {
     itemCount,
     statsPending: isSignedIn && stats.isPending,
   });
-  const worn = usePrefsStore((prefs) => prefs.homeCardWorn);
+  const storedWorn = usePrefsStore((prefs) => prefs.homeCardWorn);
   const wornLoaded = usePrefsStore((prefs) => prefs.homeCardWornLoaded);
 
   // "Now" is read again whenever the app comes back to the front: a card left open overnight must not stay on
@@ -78,15 +80,21 @@ export function DailyCard() {
   }, []);
 
   const day = homeCardDay(now);
-  const today = istanbulDay(now);
 
-  // Read the remembered outfit once per launch, and drop it as soon as its day is over.
+  // The remembered outfit is kept per account: read it once per launch, once the account is known (`GET /me`). If the
+  // account cannot be looked up, the card goes on without it rather than wait for ever.
+  const me = useMe();
+  const userId = me.data?.id ?? null;
+  const meFailed = me.isError;
   useEffect(() => {
-    if (isSignedIn) {
-      void usePrefsStore.getState().hydrateHomeCardWorn(today);
+    if (isSignedIn && (userId !== null || meFailed)) {
+      void usePrefsStore.getState().hydrateHomeCardWorn(userId);
     }
-  }, [isSignedIn, today]);
-  const staleWorn = worn !== null && worn.day !== today;
+  }, [isSignedIn, userId, meFailed]);
+  // Another account's value never shows, whatever is in memory.
+  const worn = storedWorn !== null && storedWorn.userId === userId ? storedWorn : null;
+  // Over only when its day is before the real Istanbul day, read now: the card's own `now` may be hours old.
+  const staleWorn = worn !== null && usePrefsStore.getState().isHomeCardWornStale(worn);
   useEffect(() => {
     if (staleWorn) {
       usePrefsStore.getState().clearHomeCardWorn();
@@ -220,6 +228,7 @@ function SettledCard({ outfit, onOpen }: SettledCardProps) {
           >
             {tr.homeCardSettledLabel}
           </Text>
+          <LeagueEntryLine />
           <Pressable accessibilityRole="button" onPress={onOpen} testID="home-card-title">
             <Text style={styles.title}>{outfit ? titleFor(outfit) : tr.homeCardTitleComplete}</Text>
           </Pressable>
@@ -288,7 +297,10 @@ function OutfitCard({ day }: { day: HomeCardDay }) {
   const [occasion, setOccasion] = useState<OccasionValue | undefined>(undefined);
   const [choosing, setChoosing] = useState(false);
   const daily = useDailyOutfit({ date: day, occasion, seed: seeds.seed });
-  const { wearing, wear } = useWear();
+  const { wear } = useWear();
+  // The outfit the user tapped "Bunu giyiyorum" on. The settled card shows **that** one while the request runs and after
+  // it answers, whatever the daily query holds by then (a shuffle that lands, a refetch).
+  const [tapped, setTapped] = useState<Outfit | null>(null);
 
   if (daily.isPending) {
     return <LoadingCard day={day} />;
@@ -297,8 +309,12 @@ function OutfitCard({ day }: { day: HomeCardDay }) {
   const outfit = daily.data?.outfit ?? null;
   const weather = daily.data?.weather ?? null;
   const weatherText = weatherTag(weather);
-  // The request is optimistic: the card settles on the tap and goes back to its actions if the call fails.
-  const settled = day === 'today' && outfit !== null && (Boolean(outfit.wornAt) || wearing);
+  // While the next outfit of a shuffle is on its way, the card still shows the old one: nothing may be done to it.
+  const busy = daily.isPlaceholderData;
+  // The request is optimistic: the card settles on the tap and goes back to its actions if the call fails. Otherwise it
+  // is settled only by an outfit that is about today and was worn today.
+  const settledOutfit =
+    tapped ?? (day === 'today' && outfit !== null && wornToday(outfit) ? outfit : null);
   const primary = homeCardPrimary(outfit, day);
   const chosenLabel = OCCASIONS.find((entry) => entry.value === occasion)?.label ?? null;
   const shownOccasion = chosenLabel ?? occasionLabel(outfit?.occasion ?? null);
@@ -314,15 +330,26 @@ function OutfitCard({ day }: { day: HomeCardDay }) {
     });
 
   const wearNow = () => {
-    if (!outfit) {
+    if (!outfit || busy) {
       return;
     }
     AccessibilityInfo.announceForAccessibility(tr.homeCardSettledAnnounce);
-    wear(outfit.id, { quiet: true });
+    setTapped(outfit);
+    wear(outfit.id, { quiet: true, onError: () => setTapped(null) });
   };
 
-  if (settled) {
-    return <SettledCard outfit={outfit} onOpen={open} />;
+  if (settledOutfit) {
+    const settledId = settledOutfit.id;
+    return (
+      <SettledCard
+        outfit={settledOutfit}
+        onOpen={
+          tapped
+            ? () => router.push({ pathname: '/outfits/[id]', params: { id: settledId } })
+            : open
+        }
+      />
+    );
   }
 
   const shuffle = () => {
@@ -377,6 +404,7 @@ function OutfitCard({ day }: { day: HomeCardDay }) {
           label={primary === 'wear' ? tr.homeCardWear : tr.homeCardOpen}
           accessibilityLabel={primary === 'wear' ? tr.homeCardWearLabel : tr.homeCardOpenLabel}
           wrap
+          disabled={busy}
           style={large ? undefined : styles.action}
           onPress={primary === 'wear' ? wearNow : open}
           testID={primary === 'wear' ? 'home-card-wear' : 'home-card-open'}
@@ -387,6 +415,7 @@ function OutfitCard({ day }: { day: HomeCardDay }) {
             accessibilityLabel={tr.homeCardShuffleLabel}
             variant="secondary"
             wrap
+            disabled={busy}
             style={large ? undefined : styles.action}
             onPress={shuffle}
             testID="home-card-shuffle"

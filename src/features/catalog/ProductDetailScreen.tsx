@@ -115,7 +115,9 @@ export function ProductDetailScreen({ id, source = 'direct' }: ProductDetailScre
                   <Text style={styles.brand}>{product.data.brand.name}</Text>
                   <MatchPill score={product.data.matchScore} />
                 </View>
-                <Text style={styles.name}>{product.data.name}</Text>
+                <Text accessibilityRole="header" style={styles.name}>
+                  {product.data.name}
+                </Text>
               </View>
               <SizeSlot
                 product={product.data}
@@ -140,7 +142,7 @@ export function ProductDetailScreen({ id, source = 'direct' }: ProductDetailScre
               <Icon name="chevronRight" size={20} color={theme.colors.muted} />
             </Pressable>
             <View style={styles.offers}>
-              <Text style={styles.offersTitle}>
+              <Text accessibilityRole="header" style={styles.offersTitle}>
                 {tr.productSellersFound(product.data.offers.length)}
               </Text>
               {product.data.offers.length === 0 ? (
@@ -193,6 +195,7 @@ export function ProductDetailScreen({ id, source = 'direct' }: ProductDetailScre
                 formatTry(cheapest.currentPrice),
               )}
               trailingIcon="arrowUpRight"
+              accessibilityHint={tr.a11yBuyHint}
               onPress={() => void buy(cheapest)}
               style={styles.buyButton}
               testID="buy-button"
@@ -311,11 +314,16 @@ function ProductImages({ product }: { product: Product }) {
           onMomentumScrollEnd={(event) =>
             setIndex(Math.round(event.nativeEvent.contentOffset.x / width))
           }
-          renderItem={({ item }) => (
+          renderItem={({ item, index: position }) => (
             <AppImage
               uri={item}
               style={{ width, height: theme.sizes.detailImageHeight }}
               contentFit="cover"
+              accessibilityLabel={tr.a11yProductPhoto(
+                `${product.brand.name} ${product.name}`,
+                position + 1,
+                images.length,
+              )}
             />
           )}
         />
@@ -323,6 +331,7 @@ function ProductImages({ product }: { product: Product }) {
       {images.length > 1 ? (
         <View
           style={styles.dots}
+          accessible
           accessibilityLabel={tr.productImageCount(index + 1, images.length)}
         >
           {images.map((url, position) => (

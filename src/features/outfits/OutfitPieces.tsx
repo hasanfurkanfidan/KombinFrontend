@@ -1,5 +1,13 @@
 import type { ReactNode } from 'react';
-import { StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  useWindowDimensions,
+  type DimensionValue,
+  type StyleProp,
+  type ViewStyle,
+} from 'react-native';
 
 import type { OutfitPiece } from '@/api/models';
 import { AppImage } from '@/components/AppImage';
@@ -9,6 +17,7 @@ import { theme } from '@/theme';
 import { formatTry, toNumber } from '@/utils/money';
 
 import { figureBands } from './labels';
+import { lines } from '@/utils/a11y';
 
 const PANEL_PADDING = theme.spacing.lg;
 const BAND_GAP = theme.spacing.sm;
@@ -24,19 +33,40 @@ const WELL = {
   shoes: { width: 0.6, height: 0.4 },
 } as const;
 
-interface PieceProps {
-  piece: OutfitPiece;
+/**
+ * What a figure needs of a piece. The outfit screens pass their `OutfitPiece`s; the league passes pieces that carry only
+ * a slot and a picture (with the slot's name as `name`).
+ */
+export type FigurePiece = Pick<OutfitPiece, 'slot' | 'role' | 'name' | 'imageUrl' | 'offer'>;
+
+interface PieceProps<P extends FigurePiece = OutfitPiece> {
+  piece: P;
   /** An outfit of catalog ideas for an empty wardrobe: every piece is "from the store", none is missing. */
   shopping: boolean;
   /**
    * Replaces the label beside a well (budget outfits say "Dolabında var" or the price and a buy link per piece).
    * A figure with its own labels draws no ghost: a piece to buy is a normal piece there.
    */
-  detail?: (piece: OutfitPiece) => ReactNode;
+  detail?: (piece: P) => ReactNode;
 }
 
-function priceOf(piece: OutfitPiece): string | null {
+function priceOf(piece: FigurePiece): string | null {
   return piece.offer ? formatTry(toNumber(piece.offer.price)) : null;
+}
+
+/** One piece as a screen reader says it: the name, then what the picture and the label would have told. */
+export function spokenPiece(piece: FigurePiece, shopping: boolean): string {
+  const price = priceOf(piece);
+  const parts: (string | null)[] = [piece.name];
+  if (piece.role === 'Anchor') {
+    parts.push(tr.outfitAnchor);
+  } else if (shopping) {
+    parts.push(price);
+  } else if (piece.role === 'Gap') {
+    parts.push(tr.a11yOutfitMissing(price ?? ''));
+    parts.push(piece.offer?.seller ? tr.outfitCheapestAt(piece.offer.seller.name) : null);
+  }
+  return parts.filter(Boolean).join(', ');
 }
 
 /**
@@ -44,18 +74,24 @@ function priceOf(piece: OutfitPiece): string | null {
  * product photos read the same there); the anchor gets the green edge (it is the piece the user chose); a gap piece
  * (to buy) is a chalk-dashed ghost of itself carrying "Eksik · price".
  */
-export function PieceTile({
+export function PieceTile<P extends FigurePiece = OutfitPiece>({
   piece,
   shopping,
   detail,
   width,
   height,
   layer,
-}: PieceProps & {
-  width: number;
-  height: number;
+  onImageSettled,
+  wellStyle,
+}: PieceProps<P> & {
+  width: DimensionValue;
+  height: DimensionValue;
   /** In a layered torso: the top sits behind, the outerwear in front. */
   layer?: 'back' | 'front';
+  /** The picture loaded or failed to: the league times a vote from the moment every picture has settled. */
+  onImageSettled?: () => void;
+  /** Replaces the well's white (the league sits its figure on a white card, so its wells are `surface`). */
+  wellStyle?: StyleProp<ViewStyle>;
 }) {
   const gap = piece.role === 'Gap' && !shopping && !detail;
   const anchor = piece.role === 'Anchor';
@@ -71,6 +107,7 @@ export function PieceTile({
         gap && styles.ghost,
         gap && layer === 'front' && styles.ghostFront,
         anchor && styles.anchor,
+        wellStyle,
       ]}
       testID={`piece-${piece.slot}`}
     >
@@ -79,11 +116,14 @@ export function PieceTile({
           uri={piece.imageUrl}
           style={[styles.image, gap && styles.ghostImage]}
           contentFit="contain"
+          onLoad={onImageSettled}
+          onError={onImageSettled}
+          testID={`piece-image-${piece.slot}`}
         />
       ) : (
         <Icon
           name="shirt"
-          size={Math.min(48, height / 2)}
+          size={typeof height === 'number' ? Math.min(48, height / 2) : 32}
           color={theme.colors.control}
           strokeWidth={1.4}
         />
@@ -123,7 +163,7 @@ function Leader({ piece, shopping, detail }: PieceProps) {
     <View style={styles.leader}>
       <View style={[styles.leaderLine, gap && styles.leaderLineGap]} />
       <View style={styles.leaderText}>
-        <Text style={styles.name} numberOfLines={2}>
+        <Text style={styles.name} numberOfLines={lines(2)}>
           {piece.name}
         </Text>
         {status ? (
@@ -133,7 +173,7 @@ function Leader({ piece, shopping, detail }: PieceProps) {
         ) : null}
         {/* The ghost already says "Eksik · price"; the label adds where it is cheapest. */}
         {gap && piece.offer?.seller ? (
-          <Text style={styles.seller} numberOfLines={1}>
+          <Text style={styles.seller} numberOfLines={lines(1)}>
             {tr.outfitCheapestAt(piece.offer.seller.name)}
           </Text>
         ) : null}
@@ -163,7 +203,7 @@ function AccessoryTile({ piece, shopping, detail }: PieceProps) {
         {detail ? (
           detail(piece)
         ) : (
-          <Text style={styles.name} numberOfLines={2}>
+          <Text style={styles.name} numberOfLines={lines(2)}>
             {piece.name}
           </Text>
         )}
@@ -198,9 +238,24 @@ export function OutfitPieces({
   const area = width ?? window.width - theme.screenPaddingX * 2;
   const figure = Math.round((area - PANEL_PADDING * 2) * theme.sizes.outfitFigureRatio);
   const { bands, accessories } = figureBands(pieces);
+  // Head to toe, then the accessories: the order the eye takes. With a per-piece `detail` (the budget outfits' buy
+  // links) the panel stays a group of controls instead of one picture.
+  const spoken = detail
+    ? undefined
+    : tr.a11yOutfitFigure(
+        [...bands.flatMap((band) => band.pieces), ...accessories]
+          .map((piece) => spokenPiece(piece, shopping))
+          .join('; '),
+      );
 
   return (
-    <View style={styles.panel} testID="outfit-figure">
+    <View
+      style={styles.panel}
+      accessible={spoken !== undefined}
+      accessibilityRole={spoken === undefined ? undefined : 'image'}
+      accessibilityLabel={spoken}
+      testID="outfit-figure"
+    >
       {bands.map((band) => {
         if (band.kind === 'torso' && band.pieces.length === 2) {
           const [outer, top] = band.pieces as [OutfitPiece, OutfitPiece];

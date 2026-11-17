@@ -12,6 +12,7 @@ import { formatTry, toNumber } from '@/utils/money';
 
 import { toFigurePiece } from './pieces';
 import { shippingNote } from './shipping';
+import { lines } from '@/utils/a11y';
 
 interface BudgetOutfitSectionProps {
   outfit: BudgetOutfit;
@@ -155,7 +156,7 @@ export function PieceLabel({
   if (piece.source === 'Wardrobe') {
     return (
       <>
-        <Text style={styles.name} numberOfLines={2}>
+        <Text style={styles.name} numberOfLines={lines(2)}>
           {piece.name}
         </Text>
         <Text style={styles.owned}>{tr.outfitInWardrobe}</Text>
@@ -175,7 +176,7 @@ export function PieceLabel({
           style={styles.buy}
           testID={`budget-buy-${piece.slot}`}
         >
-          <Text style={styles.name} numberOfLines={2}>
+          <Text style={styles.name} numberOfLines={lines(2)}>
             {piece.name}
           </Text>
           <Text style={styles.price}>{price}</Text>
@@ -191,7 +192,7 @@ export function PieceLabel({
         </Pressable>
       ) : (
         <>
-          <Text style={styles.name} numberOfLines={2}>
+          <Text style={styles.name} numberOfLines={lines(2)}>
             {piece.name}
           </Text>
           <Text style={styles.price}>{price}</Text>

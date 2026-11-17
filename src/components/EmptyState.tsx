@@ -13,7 +13,9 @@ interface EmptyStateProps {
 export function EmptyState({ title, body, action }: EmptyStateProps) {
   return (
     <View style={styles.root}>
-      <Text style={styles.title}>{title}</Text>
+      <Text style={styles.title} accessibilityRole="header">
+        {title}
+      </Text>
       {body ? <Text style={styles.body}>{body}</Text> : null}
       {action ? (
         <Button

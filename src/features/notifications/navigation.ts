@@ -4,6 +4,7 @@ import { activatePersona } from '@/api/endpoints/profile';
 import type { Notification } from '@/api/models';
 import { queryClient } from '@/api/queryClient';
 import { productHref, type ProductSource } from '@/features/catalog/productLink';
+import { parseResultsDay } from '@/features/league/labels';
 import { refreshPersonaDependents } from '@/features/personas/hooks';
 
 type Router = ReturnType<typeof useRouter>;
@@ -12,12 +13,17 @@ type Router = ReturnType<typeof useRouter>;
 export type DeepLinkTarget =
   | { type: 'product'; id: string }
   | { type: 'matches'; personaId: string }
-  | { type: 'notifications' };
+  | { type: 'notifications' }
+  /** The evening result of a league day; `day` is `yyyy-MM-dd`, or `null` for the latest one. */
+  | { type: 'league-results'; day: string | null };
 
 /** Every id the backend puts in a deep link is a uuid; nothing else is accepted. */
 const ID = '[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}';
 
-/** `kombin://product/{id}`, `kombin://matches/{personaId}` or `kombin://notifications`; anything else is `null`. */
+/**
+ * `kombin://product/{id}`, `kombin://matches/{personaId}`, `kombin://notifications` or `kombin://league/results?day=yyyy-MM-dd`
+ * (the day is optional); anything else is `null`.
+ */
 export function parseDeepLink(url: string | null | undefined): DeepLinkTarget | null {
   if (!url) {
     return null;
@@ -30,7 +36,16 @@ export function parseDeepLink(url: string | null | undefined): DeepLinkTarget | 
   if (matches?.[1]) {
     return { type: 'matches', personaId: matches[1] };
   }
-  return /^kombin:\/\/notifications\/?$/.test(url) ? { type: 'notifications' } : null;
+  if (/^kombin:\/\/notifications\/?$/.test(url)) {
+    return { type: 'notifications' };
+  }
+  const league = /^kombin:\/\/league\/results\/?(?:\?day=([^&#]*))?$/.exec(url);
+  if (league) {
+    const day = parseResultsDay(league[1]);
+    // A day that is not a real date is not a link to some other day: it opens the latest result.
+    return { type: 'league-results', day };
+  }
+  return null;
 }
 
 /** `data.deepLink` of a notification or push payload (`data` is untyped JSON). */
@@ -59,6 +74,10 @@ export async function goToTarget(
     router.push(productHref(target.id, source));
   } else if (target.type === 'notifications') {
     router.push('/notifications');
+  } else if (target.type === 'league-results') {
+    router.push(
+      target.day ? { pathname: '/league/results', params: { day: target.day } } : '/league/results',
+    );
   } else {
     try {
       await activatePersona(target.personaId);

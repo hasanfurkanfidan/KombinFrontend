@@ -46,7 +46,9 @@ function SignedOutWardrobe() {
   const router = useRouter();
   return (
     <View style={styles.signedOut}>
-      <Text style={styles.title}>{tr.wardrobeTitle}</Text>
+      <Text accessibilityRole="header" style={styles.title}>
+        {tr.wardrobeTitle}
+      </Text>
       <EmptyState
         title={tr.wardrobeSignedOutTitle}
         body={tr.wardrobeSignedOutBody}
@@ -105,7 +107,9 @@ function SignedInWardrobe() {
   const header = (
     <View style={styles.header}>
       <View style={styles.titleRow}>
-        <Text style={styles.title}>{tr.wardrobeTitle}</Text>
+        <Text accessibilityRole="header" style={styles.title}>
+          {tr.wardrobeTitle}
+        </Text>
         <AddButton onPress={() => setAddOpen(true)} />
       </View>
       <WardrobeSummaryEntry />

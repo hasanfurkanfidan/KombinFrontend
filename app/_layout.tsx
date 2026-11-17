@@ -28,6 +28,10 @@ export default function RootLayout() {
         <Stack.Screen name="trips/index" />
         <Stack.Screen name="trips/saved" />
         <Stack.Screen name="trips/[id]" />
+        <Stack.Screen name="league/index" />
+        <Stack.Screen name="league/join" />
+        <Stack.Screen name="league/vote" />
+        <Stack.Screen name="league/results" />
         <Stack.Screen name="lens" />
         <Stack.Screen name="search" options={{ animation: 'fade' }} />
         <Stack.Screen name="(auth)" options={{ presentation: 'modal' }} />

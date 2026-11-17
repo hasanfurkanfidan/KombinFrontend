@@ -10,6 +10,7 @@ import { EmptyState } from '@/components/EmptyState';
 import { ErrorState } from '@/components/ErrorState';
 import { Screen } from '@/components/Screen';
 import { BudgetEntry } from '@/features/budget/BudgetEntry';
+import { LeagueEntry } from '@/features/league/LeagueEntry';
 import { tr } from '@/i18n/tr';
 import { useActivePersona, usePersonas } from '@/features/personas/hooks';
 import { StyleSwitcher } from '@/features/personas/StyleSwitcher';
@@ -34,6 +35,7 @@ import { buildGreeting } from './greeting';
 import { productsKey, useProducts } from './hooks';
 import { ProductGrid, ProductGridSkeleton } from './ProductGrid';
 import { productHref } from './productLink';
+import { lines } from '@/utils/a11y';
 
 /**
  * Keşfet: the product grid. The feed used to be a second section here ("Ürünler / Akış"); it is its own tab now, and
@@ -181,12 +183,14 @@ function DiscoverTop() {
     // name is never cut.
     <View style={styles.greeting}>
       <View style={styles.greetingRow}>
-        <Text style={styles.date} numberOfLines={1}>
+        <Text style={styles.date} numberOfLines={lines(1)}>
           {formatLongDay(now)}
         </Text>
         <NotificationBell />
       </View>
-      <Text style={styles.hello}>{buildGreeting(now, me.data?.displayName)}</Text>
+      <Text accessibilityRole="header" style={styles.hello}>
+        {buildGreeting(now, me.data?.displayName)}
+      </Text>
     </View>
   );
 }
@@ -200,9 +204,12 @@ function DiscoverHeader({ filters, onChangeFilters, personaId }: DiscoverHeaderP
       <StyleSwitcher />
       <SizePromptCard />
       <DailyCard />
+      <LeagueEntry />
       <BudgetEntry />
 
-      <Text style={styles.sectionTitle}>{tr.discoverForYou}</Text>
+      <Text accessibilityRole="header" style={styles.sectionTitle}>
+        {tr.discoverForYou}
+      </Text>
       <View style={styles.filters}>
         <FilterBar filters={filters} onChange={onChangeFilters} personaId={personaId} />
       </View>

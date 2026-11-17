@@ -20,6 +20,7 @@ import {
   todayIso,
   type DateRange,
 } from './calendar';
+import { LiveText } from '@/components/LiveText';
 
 const WEEKDAYS = ['Pt', 'Sa', 'Ça', 'Pe', 'Cu', 'Ct', 'Pz'];
 
@@ -116,9 +117,9 @@ export function TripDatesSheet({ visible, onClose, value, onDone }: TripDatesShe
         })}
       </View>
 
-      <Text style={styles.hint} accessibilityLiveRegion="polite" testID="trip-dates-hint">
+      <LiveText style={styles.hint} testID="trip-dates-hint">
         {hint}
-      </Text>
+      </LiveText>
       <Text style={styles.limit}>{tr.tripDatesLimit}</Text>
       <Button
         label={tr.tripDatesDone}

@@ -3,6 +3,8 @@ import { StyleSheet, Text, TextInput, View, type TextInputProps } from 'react-na
 
 import { theme } from '@/theme';
 
+import { LiveText } from './LiveText';
+
 interface TextFieldProps extends TextInputProps {
   label: string;
   error?: string;
@@ -22,9 +24,17 @@ export function TextField({
 
   return (
     <View style={styles.wrapper}>
-      <Text style={styles.label}>{label}</Text>
+      {/* The input carries the label (and the error or hint as its hint): read once, not twice. */}
+      <Text
+        style={styles.label}
+        accessibilityElementsHidden
+        importantForAccessibility="no-hide-descendants"
+      >
+        {label}
+      </Text>
       <TextInput
         accessibilityLabel={label}
+        accessibilityHint={error ?? hint}
         placeholderTextColor={theme.colors.muted}
         {...inputProps}
         onFocus={(event) => {
@@ -43,9 +53,7 @@ export function TextField({
         ]}
       />
       {error ? (
-        <Text style={styles.error} accessibilityLiveRegion="polite">
-          {error}
-        </Text>
+        <LiveText style={styles.error}>{error}</LiveText>
       ) : hint ? (
         <Text style={styles.hint}>{hint}</Text>
       ) : null}

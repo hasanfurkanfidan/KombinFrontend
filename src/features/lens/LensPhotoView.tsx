@@ -59,6 +59,7 @@ export function LensPhotoView({
           uri={uri}
           style={StyleSheet.absoluteFill}
           contentFit="cover"
+          accessibilityLabel={tr.a11yLensPhoto}
           testID="lens-photo"
         />
         {drawn.map(({ region, position }) => {

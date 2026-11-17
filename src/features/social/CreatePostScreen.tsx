@@ -31,6 +31,7 @@ import { DEFAULT_VISIBILITY, MAX_CAPTION, statusMessage } from './labels';
 import { dotsFromProposals, toPublishTags, type DraftDot } from './tagDraft';
 import { TagEditor } from './TagEditor';
 import { VisibilityPicker } from './VisibilityPicker';
+import { lines } from '@/utils/a11y';
 
 type Step = 'choose' | 'outfits' | 'working' | 'editor' | 'details' | 'done' | 'ended';
 
@@ -319,7 +320,7 @@ export function CreatePostScreen({ resumePostId }: CreatePostScreenProps) {
     body = (
       <View style={styles.centered} testID="post-working">
         <ActivityIndicator color={theme.colors.ink} />
-        <Text style={styles.title}>
+        <Text accessibilityRole="header" style={styles.title}>
           {working === 'uploading' ? tr.postNewUploading : tr.postNewProcessing}
         </Text>
         {working === 'processing' ? (
@@ -330,7 +331,9 @@ export function CreatePostScreen({ resumePostId }: CreatePostScreenProps) {
   } else if (step === 'editor' && post) {
     body = (
       <>
-        <Text style={styles.title}>{tr.tagEditorTitle}</Text>
+        <Text accessibilityRole="header" style={styles.title}>
+          {tr.tagEditorTitle}
+        </Text>
         <TagEditor
           post={post}
           dots={dots}
@@ -365,7 +368,7 @@ export function CreatePostScreen({ resumePostId }: CreatePostScreenProps) {
     body = (
       <View style={styles.centered} testID="post-done">
         <Icon name="check" size={32} />
-        <Text style={styles.title}>
+        <Text accessibilityRole="header" style={styles.title}>
           {outcome.status === 'NeedsReview'
             ? tr.postNewReviewDone
             : outcome.visibility === 'Private'
@@ -379,7 +382,9 @@ export function CreatePostScreen({ resumePostId }: CreatePostScreenProps) {
   } else {
     body = (
       <View style={styles.centered} testID="post-ended">
-        <Text style={styles.title}>{message ?? tr.postNewFailed}</Text>
+        <Text accessibilityRole="header" style={styles.title}>
+          {message ?? tr.postNewFailed}
+        </Text>
         {resumePostId ? null : (
           <Button
             label={tr.postNewAgain}
@@ -403,7 +408,9 @@ export function CreatePostScreen({ resumePostId }: CreatePostScreenProps) {
     <Screen scroll padded contentStyle={styles.content}>
       <View style={styles.header}>
         <IconButton icon="close" label={tr.close} onPress={close} testID="post-new-close" />
-        <Text style={styles.heading}>{tr.postNewTitle}</Text>
+        <Text accessibilityRole="header" style={styles.heading}>
+          {tr.postNewTitle}
+        </Text>
       </View>
       {body}
     </Screen>
@@ -450,7 +457,9 @@ function DetailsStep({ post, dots, onBack, onPublished }: DetailsStepProps) {
 
   return (
     <View style={styles.details} testID="post-details">
-      <Text style={styles.title}>{tr.publishTitle}</Text>
+      <Text accessibilityRole="header" style={styles.title}>
+        {tr.publishTitle}
+      </Text>
 
       <View style={styles.field}>
         <Text style={styles.label}>{tr.publishCaption}</Text>
@@ -548,7 +557,7 @@ function OutfitPicker({
           <View style={styles.outfitCollage}>
             <OutfitMiniFigure pieces={outfit.pieces} />
           </View>
-          <Text style={styles.outfitText} numberOfLines={2}>
+          <Text style={styles.outfitText} numberOfLines={lines(2)}>
             {outfit.narration.text}
           </Text>
         </Pressable>

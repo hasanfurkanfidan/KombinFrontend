@@ -14,6 +14,7 @@ import { theme } from '@/theme';
 import { formatAmount, formatTry, toNumber } from '@/utils/money';
 
 import { alertStatus, hasRecentTrigger, isChalkStatus, type AlertStatus } from './stats';
+import { lines } from '@/utils/a11y';
 
 /**
  * The status line. `signal` is the chalk tag and only goes with an unseen trigger (see `isChalkStatus`); a price rise
@@ -117,10 +118,22 @@ export function AlertRow({ alert, triggers, now, onOpen }: AlertRowProps) {
           accessibilityRole="button"
           onPress={() => onOpen(alert.product.id)}
           onLongPress={openSheet}
-          style={[styles.row, chalk && styles.rowChalk, !alert.isActive && styles.rowInactive]}
+          // The swipe and the long press have no screen-reader gesture: the same two things as actions.
+          accessibilityActions={[
+            { name: 'settings', label: tr.a11yAlertSettings },
+            { name: 'delete', label: tr.trackDelete },
+          ]}
+          onAccessibilityAction={(event) => {
+            if (event.nativeEvent.actionName === 'settings') {
+              openSheet();
+            } else if (event.nativeEvent.actionName === 'delete') {
+              confirmDelete();
+            }
+          }}
+          style={[styles.row, chalk && styles.rowChalk]}
           testID={`alert-row-${alert.id}`}
         >
-          <View style={styles.thumb}>
+          <View style={[styles.thumb, !alert.isActive && styles.thumbInactive]}>
             {showImage ? (
               <AppImage
                 uri={alert.product.primaryImageUrl ?? ''}
@@ -133,23 +146,24 @@ export function AlertRow({ alert, triggers, now, onOpen }: AlertRowProps) {
             )}
           </View>
           <View style={styles.body}>
-            <Text style={styles.brand} numberOfLines={1}>
+            <Text style={styles.brand} numberOfLines={lines(1)}>
               {alert.product.brandName}
             </Text>
-            <Text style={styles.name} numberOfLines={1}>
+            <Text style={styles.name} numberOfLines={lines(1)}>
               {alert.product.name}
             </Text>
             <View style={styles.priceRow}>
               {price !== null ? (
                 <Text style={styles.price}>{formatTry(toNumber(price))}</Text>
               ) : null}
-              <Text style={styles.caption} numberOfLines={1}>
+              <Text style={styles.caption} numberOfLines={lines(1)}>
                 {alertCaption(alert)}
               </Text>
             </View>
-            <Text style={[styles.status, styles[status.tone]]} numberOfLines={1}>
+            <Text style={[styles.status, styles[status.tone]]} numberOfLines={lines(1)}>
               {status.text}
             </Text>
+            {!alert.isActive ? <Text style={styles.off}>{tr.a11yAlertOff}</Text> : null}
           </View>
         </Pressable>
       </Swipeable>
@@ -162,6 +176,7 @@ export function AlertRow({ alert, triggers, now, onOpen }: AlertRowProps) {
         <View style={styles.switchRow}>
           <Text style={styles.switchLabel}>{tr.trackAlertActive}</Text>
           <Switch
+            accessibilityLabel={tr.trackAlertActive}
             value={alert.isActive}
             onValueChange={(isActive) =>
               update.mutate(
@@ -200,8 +215,13 @@ const styles = StyleSheet.create({
     borderWidth: theme.sizes.dashedBorder,
     borderColor: theme.colors.chalkLine,
   },
-  rowInactive: {
+  // An alarm that is off dims its photo only: text stays at full contrast, and "Alarm kapalı" says it in words.
+  thumbInactive: {
     opacity: 0.55,
+  },
+  off: {
+    ...theme.typography.captionMedium,
+    color: theme.colors.ink2,
   },
   thumb: {
     width: theme.sizes.thumbWidth,

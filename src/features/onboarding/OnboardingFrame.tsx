@@ -48,7 +48,11 @@ export function OnboardingFrame({
   return (
     <Screen scroll contentStyle={styles.content}>
       <View style={styles.header}>
-        <View style={styles.dashes} accessibilityLabel={`${step} / ${total}`}>
+        <View
+          style={styles.dashes}
+          accessible
+          accessibilityLabel={tr.a11yOnboardingStep(step, total)}
+        >
           {Array.from({ length: total }, (_, position) => (
             <View
               key={position}
@@ -67,7 +71,9 @@ export function OnboardingFrame({
         </Pressable>
       </View>
       <View style={styles.titles}>
-        <Text style={styles.title}>{title}</Text>
+        <Text accessibilityRole="header" style={styles.title}>
+          {title}
+        </Text>
         {subtitle ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
       </View>
       {children}

@@ -23,6 +23,7 @@ import {
 } from '@/features/social/ProfileScreens';
 
 import { post, postAuthor, userProfile } from '../../fixtures';
+import { HIDDEN } from '../../a11y/support';
 import { renderWithQuery, resetSession, signedInSession } from '../../testUtils';
 
 import { theme } from '@/theme';
@@ -31,7 +32,7 @@ jest.mock('@/api/endpoints/auth');
 jest.mock('@/api/endpoints/social');
 
 const surfaceOf = (id: string) => {
-  const style = screen.getByTestId(id).props.style as object | object[];
+  const style = screen.getByTestId(id, HIDDEN).props.style as object | object[];
   return Object.assign({}, ...(Array.isArray(style) ? style.flat(Infinity) : [style]))
     .backgroundColor;
 };
@@ -105,7 +106,7 @@ describe('creator page', () => {
 
     await renderWithQuery(<CreatorScreen handle="elif.stil" />);
 
-    await screen.findByTestId('profile-card-avatar');
+    await screen.findByTestId('profile-card-avatar', HIDDEN);
     expect(surfaceOf('profile-card-avatar')).toBe(theme.colors.surface);
   });
 
@@ -248,7 +249,9 @@ describe('Engellenenler', () => {
 
     await screen.findByText('Kaan Demir');
     expect(surfaceOf('blocked-avatar-b1')).toBe(theme.colors.surface);
-    expect(within(screen.getByTestId('blocked-avatar-b1')).getByText('K')).toBeTruthy();
+    expect(
+      within(screen.getByTestId('blocked-avatar-b1', HIDDEN)).getByText('K', HIDDEN),
+    ).toBeTruthy();
   });
 
   it('says so when nobody is blocked', async () => {

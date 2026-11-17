@@ -24,7 +24,9 @@ export function RegisterScreen() {
           onPress={() => (router.canGoBack() ? router.back() : router.replace('/'))}
         />
         <View style={styles.header}>
-          <Text style={styles.title}>{tr.authRegisterTitle}</Text>
+          <Text accessibilityRole="header" style={styles.title}>
+            {tr.authRegisterTitle}
+          </Text>
           <Text style={styles.subtitle}>{tr.authRegisterSubtitle}</Text>
         </View>
         {/* A new account is sent to onboarding by `OnboardingGate`, exactly like a registration. */}

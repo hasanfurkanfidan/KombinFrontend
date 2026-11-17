@@ -2,7 +2,9 @@ import { useEffect, useState } from 'react';
 import { Animated, type DimensionValue, type StyleProp, type ViewStyle } from 'react-native';
 import { useReducedMotion } from 'react-native-reanimated';
 
+import { tr } from '@/i18n/tr';
 import { theme } from '@/theme';
+import { announce } from '@/utils/a11y';
 
 interface SkeletonProps {
   width?: DimensionValue;
@@ -20,6 +22,11 @@ export function Skeleton({
   const [opacity] = useState(() => new Animated.Value(0.55));
   // Reduced motion: a still placeholder instead of a pulsing one.
   const reduceMotion = useReducedMotion();
+
+  // A skeleton is silent for a screen reader: say once that something is loading (several mount together).
+  useEffect(() => {
+    announce(tr.a11yLoading);
+  }, []);
 
   useEffect(() => {
     if (reduceMotion) {

@@ -10,7 +10,7 @@ export const colors = {
   /** Hairlines and dividers. */
   line: '#DCE1DC',
   /** Borders of unselected controls (chips, secondary buttons, fields). */
-  control: '#8D948E',
+  control: '#858C86',
   /** Primary text. */
   ink: '#131E15',
   /** Body text on panels, secondary emphasis. */
@@ -39,6 +39,23 @@ export const colors = {
   onImage: '#FFFFFF',
   /** Scrim behind modals and over a photo being scanned. */
   scrim: 'rgba(19, 30, 21, 0.45)',
+} as const;
+
+/**
+ * The league's dark zone ("Arena", `Tasarım/kombin-ligi`): a moss-green ground inside the white app. The content sits on
+ * white cards that use the ordinary `ink` / `muted` / `line` tokens; chalk is what it always is here: the one action and
+ * what was chosen. Everything drawn straight on the ground uses these.
+ */
+export const arena = {
+  ground: '#075726',
+  /** Icon buttons and the consent panel: one step lighter than the ground. */
+  raised: '#0E6B33',
+  /** Steps of the progress bar that are not reached yet, and hairlines on the ground. */
+  track: '#2C7A4B',
+  /** Text and icons on the ground. */
+  text: '#FFFFFF',
+  /** Secondary text on the ground: subtitles, quiet buttons. */
+  textSoft: '#CFE3D3',
 } as const;
 
 /** Shape: 6 tags, 12 controls, 14 the primary CTA, 16 tiles, 20 panels. Round things use half their size. */
@@ -161,4 +178,21 @@ export const sizes = {
   lensRailImageHeight: 168,
   /** A wardrobe piece in the "Dolabında benzeri var" strip. */
   lensWardrobeThumb: 64,
+  /** One step of the league's ten-step progress bar. */
+  arenaProgress: 6,
+  /** An accessory under the standing figure of a league card. */
+  arenaAccessory: 36,
+  /** Room at the top of a league card for its report menu (the button is 44 high and sits in this corner). */
+  arenaCardTop: 36,
+  /** A vote card never gets shorter than this (large text scrolls the screen instead). */
+  arenaCardMinHeight: 260,
+  /** The edge of a vote card: in the card's own colour, chalk on the chosen one, so choosing never resizes it. */
+  arenaCardBorder: 4,
+  /** Round number of a step on the join screen. */
+  arenaStepNumber: 28,
+  /** The outfit panel beside the big rank on the results screen. */
+  arenaResultFigureWidth: 132,
+  arenaResultFigureHeight: 232,
+  /** The icon square of the league row on Keşfet and Profil. */
+  arenaEntryIcon: 40,
 } as const;

@@ -4,6 +4,7 @@ import { useRouter } from 'expo-router';
 import { Icon } from '@/components/Icon';
 import { tr } from '@/i18n/tr';
 import { theme } from '@/theme';
+import { lines } from '@/utils/a11y';
 
 /** Longest term the field takes; the `search` event allows up to 200. */
 export const SEARCH_MAX_LENGTH = 100;
@@ -17,14 +18,15 @@ export function SearchEntry() {
   return (
     <View style={[styles.field, styles.entry]}>
       <Pressable
-        accessibilityRole="search"
+        accessibilityRole="button"
         accessibilityLabel={tr.searchPlaceholder}
+        accessibilityHint={tr.a11ySearchHint}
         onPress={() => router.push('/search')}
         style={styles.entryPress}
         testID="search-entry"
       >
         <Icon name="search" size={20} color={theme.colors.muted} />
-        <Text style={styles.placeholder} numberOfLines={1}>
+        <Text style={styles.placeholder} numberOfLines={lines(1)}>
           {tr.searchPlaceholder}
         </Text>
       </Pressable>

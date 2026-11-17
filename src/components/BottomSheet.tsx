@@ -34,8 +34,12 @@ export function BottomSheet({ visible, onClose, title, children }: BottomSheetPr
           accessibilityLabel={tr.close}
           accessibilityRole="button"
         />
-        <View style={styles.sheet}>
-          {title ? <Text style={styles.title}>{title}</Text> : null}
+        <View style={styles.sheet} onAccessibilityEscape={onClose}>
+          {title ? (
+            <Text style={styles.title} accessibilityRole="header">
+              {title}
+            </Text>
+          ) : null}
           <ScrollView
             showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"

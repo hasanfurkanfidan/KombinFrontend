@@ -12,6 +12,7 @@ import { colorTint } from '@/theme/colorNames';
 import { toNumber } from '@/utils/money';
 
 import { useAddStore } from './addStore';
+import { lines } from '@/utils/a11y';
 
 /**
  * The muted line under a tile: how many pieces it goes with. Not shown while the item is processing or failed, nor for
@@ -52,7 +53,15 @@ export const ItemTile = memo(function ItemTile({ item, width, onPress, onRetry }
     <View style={{ width }}>
       <PressableScale
         accessibilityRole="button"
-        accessibilityLabel={item.name ?? tr.wardrobeItemUnnamed}
+        accessibilityLabel={[
+          item.name ?? tr.wardrobeItemUnnamed,
+          processing ? tr.wardrobeProcessing : null,
+          failed ? [tr.a11yWardrobeFailed, failureReason].filter(Boolean).join(': ') : null,
+        ]
+          .filter(Boolean)
+          .join(', ')}
+        accessibilityHint={failed ? tr.a11yWardrobeRetryHint : undefined}
+        accessibilityState={{ busy: processing, disabled: processing }}
         disabled={processing}
         onPress={() => (failed ? onRetry(item.id) : onPress(item.id))}
         style={[
@@ -91,12 +100,20 @@ export const ItemTile = memo(function ItemTile({ item, width, onPress, onRetry }
         ) : null}
       </PressableScale>
       {caption ? (
-        <Text style={styles.caption} numberOfLines={1} testID={`wardrobe-companions-${item.id}`}>
+        <Text
+          style={styles.caption}
+          numberOfLines={lines(1)}
+          testID={`wardrobe-companions-${item.id}`}
+        >
           {caption}
         </Text>
       ) : null}
       {failed && failureReason ? (
-        <Text style={styles.reason} numberOfLines={2} testID={`wardrobe-failure-reason-${item.id}`}>
+        <Text
+          style={styles.reason}
+          numberOfLines={lines(2)}
+          testID={`wardrobe-failure-reason-${item.id}`}
+        >
           {failureReason}
         </Text>
       ) : null}

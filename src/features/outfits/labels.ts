@@ -51,30 +51,30 @@ export function sortPieces<T extends { slot: OutfitSlot }>(pieces: readonly T[])
   return [...pieces].sort((a, b) => SLOT_ORDER.indexOf(a.slot) - SLOT_ORDER.indexOf(b.slot));
 }
 
-export type FigureBand =
-  | { kind: 'torso'; pieces: OutfitPiece[] }
-  | { kind: 'bottom'; pieces: [OutfitPiece] }
-  | { kind: 'shoes'; pieces: [OutfitPiece] };
+export type FigureBand<T extends { slot: OutfitSlot } = OutfitPiece> =
+  { kind: 'torso'; pieces: T[] } | { kind: 'bottom'; pieces: [T] } | { kind: 'shoes'; pieces: [T] };
 
 /**
  * The outfit as a standing figure, head to toe: the torso band (a top, outerwear, or outerwear layered over a top:
  * `[outerwear, top]`), then the bottom, then the shoes; bands without a piece are left out. Accessories (and any
  * second piece of a slot) are not on the figure; they become side tiles.
  */
-export function figureBands(pieces: readonly OutfitPiece[]): {
-  bands: FigureBand[];
-  accessories: OutfitPiece[];
+export function figureBands<T extends { slot: OutfitSlot }>(
+  pieces: readonly T[],
+): {
+  bands: FigureBand<T>[];
+  accessories: T[];
 } {
   const sorted = sortPieces(pieces);
-  const first = (slot: OutfitSlot) => sorted.find((piece) => piece.slot === slot);
+  const first = (slot: OutfitSlot): T | undefined => sorted.find((piece) => piece.slot === slot);
   const top = first('Top');
   const outer = first('Outerwear');
   const bottom = first('Bottom');
   const shoes = first('Shoes');
   const placed = new Set([top, outer, bottom, shoes].filter(Boolean));
 
-  const bands: FigureBand[] = [];
-  const torso = [outer, top].filter((piece): piece is OutfitPiece => Boolean(piece));
+  const bands: FigureBand<T>[] = [];
+  const torso = [outer, top].filter((piece): piece is T => Boolean(piece));
   if (torso.length > 0) {
     bands.push({ kind: 'torso', pieces: torso });
   }

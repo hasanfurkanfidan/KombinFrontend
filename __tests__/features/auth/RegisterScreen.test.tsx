@@ -9,6 +9,7 @@ import { getLegal } from '@/api/endpoints/legal';
 import { queryClient } from '@/api/queryClient';
 import { RegisterScreen } from '@/features/auth/RegisterScreen';
 
+import { HIDDEN } from '../../a11y/support';
 import { renderWithQuery, resetSession, tokens } from '../../testUtils';
 
 jest.mock('@/api/endpoints/auth');
@@ -35,7 +36,7 @@ describe('RegisterScreen', () => {
 
     // Title and submit button share the label.
     expect(screen.getAllByText('Hesap oluştur')).toHaveLength(2);
-    expect(screen.getByText('Adın')).toBeTruthy();
+    expect(screen.getByText('Adın', HIDDEN)).toBeTruthy();
     expect(screen.getByText('En az 8 karakter, bir harf ve bir rakam')).toBeTruthy();
   });
 

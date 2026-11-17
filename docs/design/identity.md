@@ -15,7 +15,7 @@ v1's screens and layouts, v3's skin. The structure, routes, copy and behaviour a
 | `bg`                   | `#FFFFFF`             | page                                                       |
 | `surface`              | `#EFF4F0`             | panels, image wells, tiles, icon buttons                   |
 | `line`                 | `#DCE1DC`             | hairlines                                                  |
-| `control`              | `#8D948E`             | borders of unselected controls; decorative placeholder art |
+| `control`              | `#858C86`             | borders of unselected controls; decorative placeholder art |
 | `ink` / `ink2`         | `#131E15` / `#38433A` | text, body text on panels                                  |
 | `muted`                | `#5D665E`             | captions, inactive tabs, placeholders                      |
 | `primary`              | `#075726`             | see above; `primaryPressed #00451B`, `primarySoft #DFF3E2` |
@@ -23,7 +23,7 @@ v1's screens and layouts, v3's skin. The structure, routes, copy and behaviour a
 | `danger`               | `#A8372E`             | with `onDanger`                                            |
 | `onPrimary`, `onImage` | white                 | text on green; text and outlines over a photo or scrim     |
 
-Measured contrast (WCAG): ink on bg 17.2, ink2 on surface 9.3, muted on bg 5.95 and on surface 5.35, primary on bg 8.75 and on primarySoft 7.5, white on primary 8.75, chalkInk on chalk 7.55, danger on bg 6.46; graphics: control on bg 3.11, chalkLine on bg 3.98 and on surface 3.57.
+Measured contrast (WCAG): ink on bg 17.2, ink2 on surface 9.3, muted on bg 5.95 and on surface 5.35, primary on bg 8.75 and on primarySoft 7.5, white on primary 8.75, chalkInk on chalk 7.55, danger on bg 6.46; graphics: control on bg 3.45 and on surface 3.10, chalkLine on bg 3.98 and on surface 3.57.
 
 **Radius:** `tag` 6 · `control` 12 (buttons, chips, icon buttons, fields) · `cta` 14 (the filled primary button) · `tile` 16 · `panel` 20. No pills **(guarded)**: round things (avatars, radios, dots, badges, swatches) use half their own size. **No shadows (guarded)**: depth is `surface` on `bg` plus hairlines. Colour literals live only in `src/theme` **(guarded)**.
 
@@ -59,5 +59,6 @@ Measured contrast (WCAG): ink on bg 17.2, ink2 on surface 9.3, muted on bg 5.95 
 - **Chalk dashed underline** uses text decoration: dashed and chalk on iOS; Android has no decoration style or colour, so it shows a solid underline in the text colour.
 - **Discount tags are chalk** (a seller's markdown is a price drop), so a discounted grid carries several chalk tags.
 - **Apple's sign-in button** uses its white-outline style (no black buttons; the HIG allows it).
-- **Outlined controls on a `surface` panel** (home-card prompt, "İncele", "Ölçüleri güncelle", chips) always have a `bg` (white) fill and keep the `control` border (founder's decision after the render review): the border alone measures 2.79:1 against `surface`, the white fill carries the edge.
+- **Outlined controls on a `surface` panel** (home-card prompt, "İncele", "Ölçüleri güncelle", chips) always have a `bg` (white) fill and keep the `control` border (founder's decision after the render review): the border alone measured 2.79:1 against `surface`, the white fill still carries the edge.
+- **`control` darkened `#8D948E` → `#858C86`** (owner's decision, 16.11.2026, Task A1): the border of an unselected control now measures 3.45:1 on `bg` and 3.10:1 on `surface` (3:1 for graphics); the white fill still carries the edge.
 - **Render review (390 × 844, web build):** the CEO approved the direction; the follow-ups (Keşfet greeting on its own row, owned pieces without status, "Başka öneri" in the outfit header, outerwear in front, prices never cut, a quiet "Takip ediliyor") are in.

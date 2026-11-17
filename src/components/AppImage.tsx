@@ -8,6 +8,13 @@ export interface AppImageProps {
   /** Same names as `expo-image`'s `contentFit`, so a later swap keeps every call site. */
   contentFit?: 'cover' | 'contain';
   onError?: () => void;
+  /** The picture has been decoded and drawn (the league times a vote from the moment both figures are on screen). */
+  onLoad?: () => void;
+  /**
+   * What the picture shows, when it carries information a screen reader user would miss. Without it the image is
+   * decorative: hidden from the tree (the name and price beside it already say what it is).
+   */
+  accessibilityLabel?: string;
   accessibilityIgnoresInvertColors?: boolean;
   testID?: string;
 }
@@ -25,6 +32,8 @@ export function AppImage({
   style,
   contentFit = 'cover',
   onError,
+  onLoad,
+  accessibilityLabel,
   accessibilityIgnoresInvertColors,
   testID,
 }: AppImageProps) {
@@ -35,6 +44,11 @@ export function AppImage({
       resizeMode={contentFit}
       resizeMethod="resize"
       onError={onError ? () => onError() : undefined}
+      onLoad={onLoad ? () => onLoad() : undefined}
+      accessible={accessibilityLabel !== undefined}
+      accessibilityLabel={accessibilityLabel}
+      accessibilityRole={accessibilityLabel === undefined ? undefined : 'image'}
+      importantForAccessibility={accessibilityLabel === undefined ? 'no' : 'yes'}
       accessibilityIgnoresInvertColors={accessibilityIgnoresInvertColors}
       testID={testID}
     />

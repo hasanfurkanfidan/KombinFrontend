@@ -19,10 +19,12 @@ import { PressableScale } from '@/components/PressableScale';
 import { TextField } from '@/components/TextField';
 import { tr } from '@/i18n/tr';
 import { theme } from '@/theme';
+import { announce, useReadingTime } from '@/utils/a11y';
 import { rateLimitedText } from '@/utils/rateLimit';
 
 import { isGone, useAnswerSizePrompt, useFirstSizePrompt, useSizePromptsEnabled } from './hooks';
 import { initialSize } from './labels';
+import { LiveText } from '@/components/LiveText';
 
 const MAX_SIZE_LENGTH = 20;
 
@@ -54,13 +56,15 @@ export function SizePromptCard() {
     reset();
   }, [promptId, reset]);
 
+  // Longer at large text and with a screen reader, which reads the line before it can do anything else.
+  const confirmationMs = useReadingTime(CONFIRMATION_MS);
   useEffect(() => {
     if (confirmation === null) {
       return;
     }
-    const timer = setTimeout(() => setConfirmation(null), CONFIRMATION_MS);
+    const timer = setTimeout(() => setConfirmation(null), confirmationMs);
     return () => clearTimeout(timer);
-  }, [confirmation]);
+  }, [confirmation, confirmationMs]);
 
   if (!enabled) {
     return null;
@@ -73,6 +77,9 @@ export function SizePromptCard() {
 }
 
 function ConfirmationRow({ text }: { text: string }) {
+  useEffect(() => {
+    announce(text, 'ios');
+  }, [text]);
   return (
     <View
       style={[styles.card, styles.confirmation]}
@@ -108,6 +115,11 @@ function PromptCard({ prompt, answer }: { prompt: SizePrompt; answer: Answering 
 
   const busy = answer.isPending;
   const failed = answer.isError && !isGone(answer.error) ? failureText(answer.error) : null;
+  useEffect(() => {
+    if (failed) {
+      announce(failed, 'ios');
+    }
+  }, [failed]);
   const name = prompt.product.name;
 
   const send = (kind: SizePromptAnswer, chosenSize: string | null) =>
@@ -263,13 +275,13 @@ function PromptCard({ prompt, answer }: { prompt: SizePrompt; answer: Answering 
             />
           )}
           {sizeError ? (
-            <Text
+            <LiveText
               style={styles.error}
-              accessibilityLiveRegion="polite"
+             
               testID="size-prompt-size-error"
             >
               {sizeError}
-            </Text>
+            </LiveText>
           ) : null}
           <Button
             label={tr.sizePromptSizeSave}

@@ -18,6 +18,7 @@ import { formatRange } from './calendar';
 import { useDeleteTrip, useSavedTrips } from './hooks';
 import { coverageSentence } from './labels';
 import { TripHeader } from './TripHeader';
+import { lines } from '@/utils/a11y';
 
 /** The saved trips: open one, or delete it after a confirmation. */
 export function SavedTripsScreen() {
@@ -96,7 +97,7 @@ export function SavedTripsScreen() {
                 style={styles.rowMain}
                 testID={`trip-open-${item.id}`}
               >
-                <Text style={styles.name} numberOfLines={2}>
+                <Text style={styles.name} numberOfLines={lines(2)}>
                   {item.name}
                 </Text>
                 <Text style={styles.muted}>
