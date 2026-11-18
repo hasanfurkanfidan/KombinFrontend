@@ -3875,6 +3875,108 @@
         }
       }
     },
+    "/api/v1/me/wardrobe/bulk/upload-url": {
+      "post": {
+        "tags": [
+          "Wardrobe"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/me/wardrobe/bulk/{id}/process": {
+      "post": {
+        "tags": [
+          "Wardrobe"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/me/wardrobe/bulk/{id}": {
+      "get": {
+        "tags": [
+          "Wardrobe"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Wardrobe"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/me/wardrobe/bulk/{id}/confirm": {
+      "post": {
+        "tags": [
+          "Wardrobe"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/v1/me/outfits/daily": {
       "get": {
         "tags": [
@@ -7281,7 +7383,7 @@
         "tags": [
           "TryOn"
         ],
-        "description": "\"Manken üstünde gör\": the outfit drawn on a mannequin proportioned from the caller's measurements. Ready carries a presigned image URL (one hour); Preparing means a garment is still being prepared (ask again); Unavailable means the action must be hidden. A render reveals body proportions: the image is private to the caller.",
+        "description": "\"Manken üstünde gör\": the outfit drawn on a mannequin proportioned from the caller's measurements. Ready carries a presigned image URL (one hour); Preparing means a garment is still being prepared (ask again); Unavailable means the action must be hidden. A render reveals body proportions: the image is private to the caller. With check=true nothing is drawn and no render limit is spent: the answer is the status and reason only (Ready means a real request would draw it; imageUrl, garments and renderer stay empty), the way to decide whether to show the action. Ready carries renderer, which the app sends back with a \"Yanlış görünüyor\" report.",
         "operationId": "GetTryOn",
         "parameters": [
           {
@@ -7302,6 +7404,13 @@
           },
           {
             "name": "WithWardrobe",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "Check",
             "in": "query",
             "schema": {
               "type": "boolean"
@@ -7377,7 +7486,7 @@
         "tags": [
           "TryOn"
         ],
-        "description": "\"Yanlış görünüyor\": a mannequin drawing looks wrong. Stored for review (a garment shown from the back, most often); the same report twice is stored once.",
+        "description": "\"Yanlış görünüyor\": a mannequin drawing looks wrong. It must be about one of the caller's own drawings of that outfit or product, by the renderer the Ready answer named (else 404 TryOn.RenderNotFound). Stored for review (a garment shown from the back, most often); one report per drawing, the same drawing again stores nothing.",
         "operationId": "ReportTryOn",
         "requestBody": {
           "content": {
@@ -9580,7 +9689,7 @@
             ]
           }
         },
-        "description": "One piece of an outfit as the league shows it: the slot and an image, nothing else. To a voter the image is always the league's own copy\n(random key) or a catalog image, so nothing in it links to a person or to the same piece on another day. `ImageUrl` is null only in the\nowner's own view of an entry whose piece has no image any more."
+        "description": "One piece of an outfit as the league shows it: the slot and an image, nothing else. To a voter the image is always the league's own copy\n(a random key, new every day) or a catalog image. The league's promise is no name, no profile and no stable identifier in any response; it is\nnot that an outfit cannot be traced to its owner, because the picture is the owner's own photo (only the file's bytes differ) and someone who\nknows the piece can recognise it. `ImageUrl` is null only in the owner's own view of an entry whose piece has no image any more."
       },
       "LeaguePointsResponse": {
         "required": [
@@ -9750,7 +9859,7 @@
             ]
           }
         },
-        "description": "The caller's result of one closed day (screen 04, \"Akşamki sonuç\"). `Status` and `Message`: LeagueResultStatus;\nthe message is \"Kombinin inceleniyor. Sonuç inceleme bitince görünecek.\" while under review, null otherwise. `Entry`: their own outfit\n(null when they had none, or it is older than the entries are kept). `Competed`: it was in the pool at the close. `Ranked`: it\nreached the comparisons to be ranked (null while under review); when false the app says \"yeterli oy toplanamadı\". `Rank` (1 = best) of `RankedCount` ranked outfits; `Comparisons`: the counted\nvotes on it. `PiecePointsAvailable`: a piece added now would still earn its points this week (\"Eklersen 5 puan\"). Nothing about any\nother player."
+        "description": "The caller's result of one closed day (screen 04, \"Akşamki sonuç\"). `Status` and `Message`: LeagueResultStatus;\nthe message is \"Kombinin inceleniyor. Sonuç inceleme bitince görünecek.\" while under review, the removal's line (`LeagueCopy.Removed`)\nwhen a review took the outfit out, null for a final result. `Entry`: their own outfit\n(null when they had none, or it is older than the entries are kept). `Competed`: it was in the pool at the close. `Ranked`: it\nreached the comparisons to be ranked (null while under review); when false the app says \"yeterli oy toplanamadı\". `Rank` (1 = best) of `RankedCount` ranked outfits; `Comparisons`: the counted\nvotes on it. `PiecePointsAvailable`: a piece added now would still earn its points this week (\"Eklersen 5 puan\"). Nothing about any\nother player."
       },
       "LeagueResultsWeekResponse": {
         "required": [
@@ -9866,7 +9975,8 @@
           "tierUp",
           "tierDown",
           "size",
-          "rows"
+          "rows",
+          "state"
         ],
         "type": "object",
         "properties": {
@@ -9941,9 +10051,12 @@
             "items": {
               "$ref": "#/components/schemas/LeagueTableRow"
             }
+          },
+          "state": {
+            "$ref": "#/components/schemas/LeagueWeekState"
           }
         },
-        "description": "The caller's group table this week (screen 05, \"Haftalık lig\"). `Tier`: the caller's own league this week; `TierUp` /\n`TierDown`: the leagues above and below it (null at Diamond / Bronze). `TodayPoints`: today's total once today is closed\n(`TodayIsFinal`), else the usage points earned so far today. `PromoteCount` / `RelegateCount`: the bands as they stand\n(`min(5, floor(competed / 3))`). `Rows`: `{ rank, points, isMe, alias }` in table order, nothing else; the app shows \"Sen\" for\n`isMe`. Between Sunday's close and Monday 00:00 it is last week's final table."
+        "description": "The caller's group table this week (screen 05, \"Haftalık lig\"). `Tier`: the caller's own league this week; `TierUp` /\n`TierDown`: the leagues above and below it (null at Diamond / Bronze). `TodayPoints`: today's total once today is closed\n(`TodayIsFinal`), else the usage points earned so far today. `PromoteCount` / `RelegateCount`: the bands as they stand\n(`min(5, floor(competed / 3))`). `Rows`: `{ rank, points, isMe, alias }` in table order, nothing else; the app shows \"Sen\" for\n`isMe`. `State`: Open (the week runs), Ending (the week is over but its close has not run, so the next groups are not formed: this is\nlast week's table as the day closes left it, at any hour of Sunday evening or Monday if the close is late) or Final (closed: between\nSunday's close and Monday 00:00 it is last week's final table)."
       },
       "LeagueTableRow": {
         "required": [
@@ -10024,7 +10137,7 @@
             }
           }
         },
-        "description": "The caller's outfit in today's league. `Status`: Pending (waiting for the image safety check), Competing, NotCompeting (with a\n`Reason`), Withdrawn, Removed. `Message` is the rules' line for `RecentlyCompeted` (\"Bu kombin yakın zamanda yarıştı, bugün\nyarışmıyor.\"), null otherwise. The pieces are the owner's own view."
+        "description": "The caller's outfit in today's league. `Status`: Pending (waiting for the image safety check), Competing, NotCompeting (with a\n`Reason`), Withdrawn, Removed. `Message` is the Turkish line to show (`LeagueCopy`): one for every `Reason` of a NotCompeting entry\n(RecentlyCompeted, UnsafePiece, IncompleteOutfit, PieceUnavailable, AgeRestricted, NotWorn) and one for Removed; null for Pending, Competing\nand Withdrawn. The pieces are the owner's own view."
       },
       "LeagueTodayResponse": {
         "required": [
@@ -10097,7 +10210,8 @@
           "groupSize",
           "points",
           "pointsToPromotion",
-          "endsAt"
+          "endsAt",
+          "state"
         ],
         "type": "object",
         "properties": {
@@ -10137,9 +10251,20 @@
           "endsAt": {
             "type": "string",
             "format": "date-time"
+          },
+          "state": {
+            "$ref": "#/components/schemas/LeagueWeekState"
           }
         },
-        "description": "The caller's week in their group: place, group size, week points so far (the best five closed days), points to the promotion line (\"5. sıraya\n17 puan\"; null inside the band or without one) and when the week ends. Null for a player in no group this week."
+        "description": "The caller's week in their group: place, group size, week points so far (the best five closed days), points to the promotion line (\"5. sıraya\n17 puan\"; null inside the band or without one) and when the week ends. `State`: Open (running), Ending (the week is over and its close has\nnot run yet: this is last week's table until the new groups are formed, never an error) or Final (closed). Null for a player in no group."
+      },
+      "LeagueWeekState": {
+        "enum": [
+          "Open",
+          "Ending",
+          "Final"
+        ],
+        "description": "Where a week stands: `Open` (it is running), `Ending` (its last close has passed but the week close has not run: the table is as the day\ncloses left it, and the next week's groups are still to be formed) or `Final` (closed: the stored final table)."
       },
       "LegalResponse": {
         "required": [
@@ -13650,7 +13775,7 @@
             ]
           }
         },
-        "description": "\"Yanlış görünüyor\": exactly one of `OutfitId` and `ProductId` (what `GET /me/tryon` was asked with), the `GarmentIds` of\nits answer (the pieces' IDs) and the `Renderer` that drew it."
+        "description": "\"Yanlış görünüyor\": exactly one of `OutfitId` and `ProductId` (what `GET /me/tryon` was asked with), the `GarmentIds` of\nits answer (the pieces' IDs, every one of them in the drawing) and the `Renderer` that drew it (`renderer` of the Ready answer)."
       },
       "ReviewEntryRequest": {
         "required": [
@@ -15660,9 +15785,15 @@
                 "$ref": "#/components/schemas/TryOnUnavailableReason"
               }
             ]
+          },
+          "renderer": {
+            "type": [
+              "null",
+              "string"
+            ]
           }
         },
-        "description": "\"Manken üstünde gör\". `Status`: `Ready` (show `ImageUrl`, a presigned GET valid for an hour, with \"Manken üzerinde yaklaşık\ngörünüm\"), `Preparing` (show \"Hazırlanıyor\" and ask again), `Unavailable` (hide the action entirely, never a disabled button).\n`Garments` (Ready only): each drawn piece by the ID the outfit gives it (wardrobe item or product) with its fit label, null when nothing\nwas comparable. `DefaultedMeasurements` (Ready only): the measurements the mannequin guessed; not empty → \"Ölçülerini ekle, manken sana\nbenzesin\". `Reason` (Unavailable only): why, for the app team and support."
+        "description": "\"Manken üstünde gör\". `Status`: `Ready` (show `ImageUrl`, a presigned GET valid for an hour, with \"Manken üzerinde yaklaşık\ngörünüm\"), `Preparing` (show \"Hazırlanıyor\" and ask again), `Unavailable` (hide the action entirely, never a disabled button).\n`Garments` (Ready only): each drawn piece by the ID the outfit gives it (wardrobe item or product) with its fit label, null when nothing\nwas comparable. `DefaultedMeasurements` (Ready only): the measurements the mannequin guessed; not empty → \"Ölçülerini ekle, manken sana\nbenzesin\". `Reason` (Unavailable only): why, for the app team and support. `Renderer` (Ready with an image only): the name of the\nrenderer that drew it, sent back as `renderer` of `POST /me/tryon/reports` (\"Yanlış görünüyor\"); null otherwise, a check included."
       },
       "TryOnStatus": {
         "enum": [
