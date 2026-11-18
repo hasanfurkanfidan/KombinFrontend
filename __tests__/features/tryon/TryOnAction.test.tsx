@@ -5,6 +5,7 @@ import { router } from 'expo-router';
 
 import { ApiError } from '@/api/client';
 import { getTryOn, reportTryOn } from '@/api/endpoints/tryon';
+import type { TryOn } from '@/api/models';
 import { useToastStore } from '@/components/toastStore';
 import { resetTryOnGate } from '@/features/tryon/gate';
 import { TRYON_ASK_DELAY_MS, TRYON_MAX_POLLS, TRYON_POLL_MS } from '@/features/tryon/hooks';
@@ -12,7 +13,20 @@ import { TryOnAction } from '@/features/tryon/TryOnAction';
 
 import { flat } from '../../a11y/support';
 import { renderWithQuery, resetSession, signedInSession } from '../../testUtils';
-import { flush, IMAGE_URL, NAMES, preparing, Switcher, tryOn, unavailable } from './support';
+import {
+  checkCalls,
+  checkReady,
+  drawCalls,
+  flush,
+  IMAGE_URL,
+  mockTryOn,
+  NAMES,
+  preparing,
+  Switcher,
+  tryOn,
+  unavailable,
+  type Answer,
+} from './support';
 
 const getTryOnMock = jest.mocked(getTryOn);
 const reportMock = jest.mocked(reportTryOn);
@@ -21,6 +35,14 @@ const apiError = (status: number, errorCode: string | null = null, retryAfterSec
   new ApiError({ status, errorCode, correlationId: 'c', retryAfterSeconds });
 
 const action = () => screen.queryByTestId('tryon-action');
+const toastId = () => useToastStore.getState().id;
+const FAILED = 'İşlem yapılamadı, tekrar dene';
+
+/** The user taps the quiet action: the sheet opens and the drawing is asked for. */
+async function tap() {
+  await fireEvent.press(screen.getByTestId('tryon-action'));
+  await flush(0);
+}
 
 /** A screen that can be left and opened again while the query cache lives on, as a sheet's screen is by its user. */
 function Reopenable() {
@@ -38,6 +60,16 @@ function Reopenable() {
   );
 }
 
+/** Leaves the screen and opens it again `times` times, giving each opening time to ask. */
+async function reopen(times: number) {
+  for (let opening = 0; opening < times; opening += 1) {
+    await fireEvent.press(screen.getByTestId('toggle-screen'));
+    expect(screen.queryByTestId('tryon-action')).toBeNull();
+    await fireEvent.press(screen.getByTestId('toggle-screen'));
+    await flush(TRYON_ASK_DELAY_MS + TRYON_POLL_MS);
+  }
+}
+
 beforeEach(async () => {
   jest.clearAllMocks();
   jest.useFakeTimers();
@@ -45,7 +77,7 @@ beforeEach(async () => {
   useToastStore.getState().hide();
   await resetSession();
   await signedInSession();
-  getTryOnMock.mockResolvedValue(unavailable());
+  mockTryOn();
   reportMock.mockResolvedValue(undefined);
 });
 
@@ -54,8 +86,7 @@ afterEach(() => {
 });
 
 describe('when the action shows', () => {
-  it('asks only after the outfit stood still, then shows the quiet action for Ready', async () => {
-    getTryOnMock.mockResolvedValue(tryOn());
+  it('checks only after the outfit stood still, then shows the quiet action for Ready', async () => {
     await renderWithQuery(<Switcher ids={['o1']} />);
 
     await flush(TRYON_ASK_DELAY_MS - 1);
@@ -69,7 +100,7 @@ describe('when the action shows', () => {
   });
 
   it('shows the action while the backend is still preparing', async () => {
-    getTryOnMock.mockResolvedValue(preparing());
+    mockTryOn({ check: preparing() });
     await renderWithQuery(<Switcher ids={['o1']} />);
     await flush(TRYON_ASK_DELAY_MS);
 
@@ -78,7 +109,6 @@ describe('when the action shows', () => {
 
   it('asks nothing when signed out', async () => {
     await resetSession();
-    getTryOnMock.mockResolvedValue(tryOn());
     await renderWithQuery(<Switcher ids={['o1']} />);
     await flush(5000);
 
@@ -87,28 +117,93 @@ describe('when the action shows', () => {
   });
 });
 
+describe('check and draw are different requests', () => {
+  it('every availability request carries { check: true }; the drawing request carries no option', async () => {
+    await renderWithQuery(<Switcher ids={['o1', 'o2']} />);
+    await flush(TRYON_ASK_DELAY_MS);
+    await fireEvent.press(screen.getByTestId('next-outfit'));
+    await flush(TRYON_ASK_DELAY_MS);
+    await tap();
+
+    expect(checkCalls()).toHaveLength(2);
+    for (const call of checkCalls()) {
+      expect(call[2]).toEqual({ check: true });
+    }
+    expect(drawCalls()).toHaveLength(1);
+    expect(drawCalls()[0]?.[0]).toEqual({ kind: 'outfit', id: 'o2' });
+    expect(drawCalls()[0]?.[2]).toBeUndefined();
+  });
+
+  it('makes no drawing request until the user taps, however long the sheet stays open', async () => {
+    await renderWithQuery(<Switcher ids={['o1']} />);
+    await flush(TRYON_ASK_DELAY_MS);
+    await flush(60 * 60_000);
+
+    expect(screen.getByTestId('tryon-action')).toBeTruthy();
+    expect(checkCalls()).toHaveLength(1);
+    expect(drawCalls()).toHaveLength(0);
+    expect(screen.queryByTestId('tryon-preparing')).toBeNull();
+    expect(screen.queryByTestId('tryon-image')).toBeNull();
+
+    await tap();
+    expect(drawCalls()).toHaveLength(1);
+  });
+
+  it('while the drawing is out the panel shows the shimmer and "Hazırlanıyor", then the picture', async () => {
+    let release: (answer: TryOn) => void = () => undefined;
+    mockTryOn({ draw: () => new Promise<TryOn>((resolve) => (release = resolve)) });
+    await renderWithQuery(<Switcher ids={['o1']} />);
+    await flush(TRYON_ASK_DELAY_MS);
+
+    await tap();
+    expect(drawCalls()).toHaveLength(1);
+    expect(screen.getByTestId('tryon-preparing')).toHaveTextContent('Hazırlanıyor');
+    expect(screen.queryByTestId('tryon-image')).toBeNull();
+
+    release(tryOn());
+    await flush(0);
+    expect(screen.getByTestId('tryon-image')).toBeTruthy();
+    expect(screen.queryByTestId('tryon-preparing')).toBeNull();
+  });
+
+  it('a repeated tap after Ready (close and reopen) makes no second drawing request', async () => {
+    await renderWithQuery(<Switcher ids={['o1']} />);
+    await flush(TRYON_ASK_DELAY_MS);
+    await tap();
+    expect(screen.getByTestId('tryon-image')).toBeTruthy();
+
+    await fireEvent.press(screen.getByLabelText('Kapat'));
+    await tap();
+    await fireEvent.press(screen.getByLabelText('Kapat'));
+    await tap();
+    await flush(5000);
+
+    expect(screen.getByTestId('tryon-image')).toBeTruthy();
+    expect(drawCalls()).toHaveLength(1);
+    expect(checkCalls()).toHaveLength(1);
+  });
+});
+
 describe('everything else hides it completely', () => {
-  const cases: [string, () => Promise<never> | Promise<unknown>][] = [
-    ['Unavailable', async () => unavailable()],
-    ['404 TryOn.Disabled', () => Promise.reject(apiError(404, 'TryOn.Disabled'))],
-    ['404 TryOn.OutfitNotFound', () => Promise.reject(apiError(404, 'TryOn.OutfitNotFound'))],
-    ['429', () => Promise.reject(apiError(429, 'RateLimited', 90))],
-    [
-      '503 TryOn.RendererUnavailable',
-      () => Promise.reject(apiError(503, 'TryOn.RendererUnavailable')),
-    ],
-    ['a network error', () => Promise.reject(apiError(0))],
-    ['an unexpected error', () => Promise.reject(new Error('boom'))],
+  const cases: [string, Answer][] = [
+    ['Unavailable', unavailable()],
+    ['404 TryOn.Disabled', apiError(404, 'TryOn.Disabled')],
+    ['404 TryOn.OutfitNotFound', apiError(404, 'TryOn.OutfitNotFound')],
+    ['429', apiError(429, 'RateLimited', 90)],
+    ['503 TryOn.RendererUnavailable', apiError(503, 'TryOn.RendererUnavailable')],
+    ['a network error', apiError(0)],
+    ['an unexpected error', new Error('boom')],
   ];
 
   it.each(cases)(
-    '%s: no action, no disabled button, no message, no placeholder',
+    'a check that says %s: no action, no disabled button, no message, no placeholder',
     async (_name, answer) => {
-      getTryOnMock.mockImplementation(answer as () => Promise<never>);
+      mockTryOn({ check: answer });
       await renderWithQuery(<Switcher ids={['o1']} />);
       await flush(TRYON_ASK_DELAY_MS + 50);
 
       expect(getTryOnMock).toHaveBeenCalledTimes(1);
+      expect(drawCalls()).toHaveLength(0);
       expect(action()).toBeNull();
       expect(screen.queryByText(/Manken/)).toBeNull();
       expect(screen.queryByText(/Hazırlanıyor/)).toBeNull();
@@ -117,7 +212,8 @@ describe('everything else hides it completely', () => {
     },
   );
 
-  it('an outfit that was hidden is not asked about again in the session', async () => {
+  it('an outfit that was hidden is not checked again in the session', async () => {
+    mockTryOn({ check: unavailable() });
     await renderWithQuery(<Switcher ids={['o1', 'o2']} />);
     await flush(TRYON_ASK_DELAY_MS);
     expect(getTryOnMock).toHaveBeenCalledTimes(1);
@@ -128,7 +224,7 @@ describe('everything else hides it completely', () => {
 });
 
 describe('the asking rule', () => {
-  it('waits until shuffling stops: rapid outfits cost one request, for the last one', async () => {
+  it('waits until shuffling stops: rapid outfits cost one check, for the last one', async () => {
     await renderWithQuery(<Switcher ids={['o1', 'o2', 'o3']} />);
 
     await flush(200);
@@ -141,10 +237,10 @@ describe('the asking rule', () => {
     await flush(1);
     expect(getTryOnMock).toHaveBeenCalledTimes(1);
     expect(getTryOnMock.mock.calls[0]?.[0]).toEqual({ kind: 'outfit', id: 'o3' });
+    expect(getTryOnMock.mock.calls[0]?.[2]).toEqual({ check: true });
   });
 
   it('keeps an answer for the session: going back to an outfit asks nothing', async () => {
-    getTryOnMock.mockResolvedValue(tryOn());
     await renderWithQuery(<Switcher ids={['o1', 'o2']} />);
     await flush(TRYON_ASK_DELAY_MS);
     await fireEvent.press(screen.getByTestId('next-outfit'));
@@ -156,39 +252,57 @@ describe('the asking rule', () => {
     expect(getTryOnMock).toHaveBeenCalledTimes(2);
   });
 
-  it('after a 429 nothing is asked until Retry-After has passed', async () => {
-    getTryOnMock.mockRejectedValueOnce(apiError(429, 'RateLimited', 120));
-    getTryOnMock.mockResolvedValue(tryOn());
-    await renderWithQuery(<Switcher ids={['o1', 'o2', 'o3']} />);
+  it('a 429 on a check hides that outfit until Retry-After; another outfit is still checked', async () => {
+    let first = true;
+    mockTryOn({
+      check: () => {
+        if (first) {
+          first = false;
+          return Promise.reject(apiError(429, 'RateLimited', 120));
+        }
+        return Promise.resolve(checkReady());
+      },
+    });
+    await renderWithQuery(<Switcher ids={['o1', 'o2']} />);
     await flush(TRYON_ASK_DELAY_MS);
-    expect(getTryOnMock).toHaveBeenCalledTimes(1);
-
-    await fireEvent.press(screen.getByTestId('next-outfit'));
-    await flush(TRYON_ASK_DELAY_MS);
-    // The second outfit never reached the server, and shows nothing.
-    expect(getTryOnMock).toHaveBeenCalledTimes(1);
+    expect(checkCalls()).toHaveLength(1);
     expect(action()).toBeNull();
 
-    await flush(121_000);
+    // A check is free and the 429 belongs to that outfit: the next outfit is checked.
     await fireEvent.press(screen.getByTestId('next-outfit'));
     await flush(TRYON_ASK_DELAY_MS);
-    expect(getTryOnMock).toHaveBeenCalledTimes(2);
+    expect(checkCalls()).toHaveLength(2);
+    expect(screen.getByTestId('tryon-action')).toBeTruthy();
+  });
+
+  it('a check that got a 429 is not repeated for that outfit before Retry-After', async () => {
+    mockTryOn({ check: apiError(429, 'RateLimited', 120) });
+    await renderWithQuery(<Reopenable />);
+    await flush(TRYON_ASK_DELAY_MS);
+    expect(checkCalls()).toHaveLength(1);
+
+    await reopen(2);
+    expect(checkCalls()).toHaveLength(1);
+
+    await flush(121_000);
+    mockTryOn();
+    await reopen(1);
+    expect(checkCalls()).toHaveLength(2);
     expect(screen.getByTestId('tryon-action')).toBeTruthy();
   });
 
   it('a 429 without Retry-After waits a long time, not zero', async () => {
-    getTryOnMock.mockRejectedValueOnce(apiError(429, 'RateLimited'));
-    getTryOnMock.mockResolvedValue(tryOn());
-    await renderWithQuery(<Switcher ids={['o1', 'o2']} />);
+    mockTryOn({ check: apiError(429, 'RateLimited') });
+    await renderWithQuery(<Reopenable />);
     await flush(TRYON_ASK_DELAY_MS);
-    await fireEvent.press(screen.getByTestId('next-outfit'));
     await flush(60_000);
+    await reopen(1);
 
-    expect(getTryOnMock).toHaveBeenCalledTimes(1);
+    expect(checkCalls()).toHaveLength(1);
   });
 
   it('a switched-off server (404 TryOn.Disabled) is asked once for the whole session', async () => {
-    getTryOnMock.mockRejectedValue(apiError(404, 'TryOn.Disabled'));
+    mockTryOn({ check: apiError(404, 'TryOn.Disabled') });
     await renderWithQuery(<Switcher ids={['o1', 'o2', 'o3']} />);
     await flush(TRYON_ASK_DELAY_MS);
     await fireEvent.press(screen.getByTestId('next-outfit'));
@@ -198,75 +312,156 @@ describe('the asking rule', () => {
 
     expect(getTryOnMock).toHaveBeenCalledTimes(1);
     expect(action()).toBeNull();
+  });
+});
+
+describe('a drawing that fails', () => {
+  const failures: [string, Answer][] = [
+    ['rejects', new Error('boom')],
+    ['answers 503', apiError(503, 'TryOn.RendererUnavailable')],
+    ['answers 404 TryOn.Disabled', apiError(404, 'TryOn.Disabled')],
+    ['answers Unavailable', unavailable()],
+    ['answers Ready without a picture', tryOn({ imageUrl: null })],
+  ];
+
+  it.each(failures)(
+    'when it %s the panel closes, the action is gone, one toast shows and the outfit is not asked again',
+    async (_name, draw) => {
+      mockTryOn({ draw });
+      await renderWithQuery(<Reopenable />);
+      await flush(TRYON_ASK_DELAY_MS);
+      const before = toastId();
+
+      await tap();
+
+      expect(drawCalls()).toHaveLength(1);
+      expect(screen.queryByTestId('tryon-preparing')).toBeNull();
+      expect(screen.queryByTestId('tryon-panel')).toBeNull();
+      expect(screen.queryByTestId('tryon-image')).toBeNull();
+      expect(action()).toBeNull();
+      expect(useToastStore.getState().message).toBe(FAILED);
+      expect(toastId()).toBe(before + 1);
+
+      await flush(60 * 60_000);
+      await reopen(2);
+      expect(action()).toBeNull();
+      expect(checkCalls()).toHaveLength(1);
+      expect(drawCalls()).toHaveLength(1);
+      expect(toastId()).toBe(before + 1);
+    },
+  );
+
+  it('a 429 on a drawing hides the action and blocks the next outfit’s drawing, but not its check', async () => {
+    let first = true;
+    mockTryOn({
+      draw: () => {
+        if (first) {
+          first = false;
+          return Promise.reject(apiError(429, 'RateLimited', 120));
+        }
+        return Promise.resolve(tryOn());
+      },
+    });
+    await renderWithQuery(<Switcher ids={['o1', 'o2', 'o3']} />);
+    await flush(TRYON_ASK_DELAY_MS);
+
+    await tap();
+    expect(drawCalls()).toHaveLength(1);
+    expect(action()).toBeNull();
+    expect(useToastStore.getState().message).toBe(FAILED);
+
+    // The next outfit is checked as usual; its drawing waits for Retry-After and never reaches the server.
+    await fireEvent.press(screen.getByTestId('next-outfit'));
+    await flush(TRYON_ASK_DELAY_MS);
+    expect(checkCalls()).toHaveLength(2);
+    expect(screen.getByTestId('tryon-action')).toBeTruthy();
+    await tap();
+    expect(drawCalls()).toHaveLength(1);
+    expect(screen.queryByTestId('tryon-panel')).toBeNull();
+    expect(action()).toBeNull();
+
+    // After Retry-After a later outfit is drawn.
+    await flush(121_000);
+    await fireEvent.press(screen.getByTestId('next-outfit'));
+    await flush(TRYON_ASK_DELAY_MS);
+    await tap();
+    expect(drawCalls()).toHaveLength(2);
+    expect(screen.getByTestId('tryon-image')).toBeTruthy();
   });
 });
 
 describe('preparing', () => {
   it('shows "Hazırlanıyor" on a surface panel, polls every 3 seconds and swaps in the picture', async () => {
-    getTryOnMock
-      .mockResolvedValueOnce(preparing())
-      .mockResolvedValueOnce(preparing())
-      .mockResolvedValue(tryOn());
+    let asks = 0;
+    mockTryOn({
+      draw: () => Promise.resolve((asks += 1) <= 2 ? preparing() : tryOn()),
+    });
     await renderWithQuery(<Switcher ids={['o1']} />);
     await flush(TRYON_ASK_DELAY_MS);
-    await fireEvent.press(screen.getByTestId('tryon-action'));
+    await tap();
     expect(screen.getByTestId('tryon-preparing')).toHaveTextContent('Hazırlanıyor');
     expect(screen.queryByTestId('tryon-image')).toBeNull();
 
     await flush(TRYON_POLL_MS - 1);
-    expect(getTryOnMock).toHaveBeenCalledTimes(1);
+    expect(drawCalls()).toHaveLength(1);
     await flush(1);
-    expect(getTryOnMock).toHaveBeenCalledTimes(2);
+    expect(drawCalls()).toHaveLength(2);
     await flush(TRYON_POLL_MS);
-    expect(getTryOnMock).toHaveBeenCalledTimes(3);
+    expect(drawCalls()).toHaveLength(3);
     // The answer reaches the screen a tick after the request that carried it.
     await flush(1);
     expect(screen.getByTestId('tryon-image')).toBeTruthy();
     expect(screen.queryByTestId('tryon-preparing')).toBeNull();
 
-    // Ready stops the polling.
+    // Ready stops the polling, and nothing was checked again meanwhile.
     await flush(10 * TRYON_POLL_MS);
-    expect(getTryOnMock).toHaveBeenCalledTimes(3);
+    expect(drawCalls()).toHaveLength(3);
+    expect(checkCalls()).toHaveLength(1);
   });
 
-  it('gives up after ten polls and hides the action', async () => {
-    getTryOnMock.mockResolvedValue(preparing());
+  it('gives up after ten polls: the panel closes, the action is hidden, one toast shows', async () => {
+    mockTryOn({ draw: preparing() });
     await renderWithQuery(<Switcher ids={['o1']} />);
     await flush(TRYON_ASK_DELAY_MS);
     expect(screen.getByTestId('tryon-action')).toBeTruthy();
+    const before = toastId();
 
+    await tap();
+    expect(screen.getByTestId('tryon-preparing')).toBeTruthy();
     await flush(TRYON_POLL_MS * (TRYON_MAX_POLLS + 5));
 
     // The first ask and ten polls: never more, however long the screen stays open.
-    expect(getTryOnMock).toHaveBeenCalledTimes(1 + TRYON_MAX_POLLS);
+    expect(drawCalls()).toHaveLength(1 + TRYON_MAX_POLLS);
+    expect(screen.queryByTestId('tryon-preparing')).toBeNull();
     expect(action()).toBeNull();
+    expect(useToastStore.getState().message).toBe(FAILED);
+    expect(toastId()).toBe(before + 1);
   });
 
   it('after giving up it is a hidden answer for the session: opening the screen again asks nothing', async () => {
-    getTryOnMock.mockResolvedValue(preparing());
+    mockTryOn({ draw: preparing() });
     await renderWithQuery(<Reopenable />);
     await flush(TRYON_ASK_DELAY_MS);
+    await tap();
     await flush(TRYON_POLL_MS * (TRYON_MAX_POLLS + 2));
-    expect(getTryOnMock).toHaveBeenCalledTimes(1 + TRYON_MAX_POLLS);
+    expect(drawCalls()).toHaveLength(1 + TRYON_MAX_POLLS);
+    const before = toastId();
 
-    for (let opening = 0; opening < 3; opening += 1) {
-      await fireEvent.press(screen.getByTestId('toggle-screen'));
-      expect(screen.queryByTestId('tryon-action')).toBeNull();
-      await fireEvent.press(screen.getByTestId('toggle-screen'));
-      await flush(TRYON_ASK_DELAY_MS + TRYON_POLL_MS);
-    }
+    await reopen(3);
 
-    expect(getTryOnMock).toHaveBeenCalledTimes(1 + TRYON_MAX_POLLS);
+    expect(drawCalls()).toHaveLength(1 + TRYON_MAX_POLLS);
+    expect(checkCalls()).toHaveLength(1);
     expect(action()).toBeNull();
+    expect(toastId()).toBe(before);
   });
 });
 
 describe('the picture and what goes with it', () => {
-  async function openReady(overrides = {}) {
-    getTryOnMock.mockResolvedValue(tryOn(overrides));
+  async function openReady(overrides: Partial<TryOn> = {}) {
+    mockTryOn({ draw: tryOn(overrides) });
     await renderWithQuery(<Switcher ids={['o1']} />);
     await flush(TRYON_ASK_DELAY_MS);
-    await fireEvent.press(screen.getByTestId('tryon-action'));
+    await tap();
   }
 
   it('shows the image on a panel with the honest label, described for a screen reader with its pieces', async () => {
@@ -331,11 +526,11 @@ describe('the picture and what goes with it', () => {
 
 describe('"Yanlış görünüyor"', () => {
   // The backend refuses a report without a renderer, so the control exists only for an answer that names one.
-  async function openReady(overrides = {}) {
-    getTryOnMock.mockResolvedValue(tryOn({ renderer: 'mannequin-v5', ...overrides }));
+  async function openReady(overrides: Partial<TryOn> = {}) {
+    mockTryOn({ draw: tryOn(overrides) });
     await renderWithQuery(<Switcher ids={['o1']} />);
     await flush(TRYON_ASK_DELAY_MS);
-    await fireEvent.press(screen.getByTestId('tryon-action'));
+    await tap();
   }
 
   it('sends one report with no form and the answer’s renderer, then says thanks and offers nothing more', async () => {
@@ -349,14 +544,22 @@ describe('"Yanlış görünüyor"', () => {
       outfitId: 'o1',
       productId: null,
       garmentIds: ['w1', 'w2'],
-      renderer: 'mannequin-v5',
+      renderer: tryOn().renderer,
     });
     expect(screen.getByTestId('tryon-thanks')).toHaveTextContent('Teşekkürler');
     expect(screen.queryByTestId('tryon-report')).toBeNull();
   });
 
+  it('reports the renderer the answer names, trimmed', async () => {
+    await openReady({ renderer: '  mannequin-v6 ' });
+
+    await fireEvent.press(screen.getByTestId('tryon-report'));
+    await flush(0);
+
+    expect(reportMock).toHaveBeenCalledWith(expect.objectContaining({ renderer: 'mannequin-v6' }));
+  });
+
   it.each([
-    ['carries no renderer', undefined],
     ['carries a null renderer', null],
     ['carries an empty renderer', ''],
     ['carries a blank renderer', '   '],
@@ -381,11 +584,12 @@ describe('"Yanlış görünüyor"', () => {
 
     // Close the sheet and open it again.
     await fireEvent.press(screen.getByLabelText('Kapat'));
-    await fireEvent.press(screen.getByTestId('tryon-action'));
+    await tap();
 
     expect(screen.getByTestId('tryon-thanks')).toBeTruthy();
     expect(screen.queryByTestId('tryon-report')).toBeNull();
     expect(reportMock).toHaveBeenCalledTimes(1);
+    expect(drawCalls()).toHaveLength(1);
   });
 
   it('a failed report says so and can be tried again', async () => {
@@ -395,17 +599,15 @@ describe('"Yanlış görünüyor"', () => {
     await fireEvent.press(screen.getByTestId('tryon-report'));
     await flush(0);
 
-    expect(useToastStore.getState().message).toBe('İşlem yapılamadı, tekrar dene');
+    expect(useToastStore.getState().message).toBe(FAILED);
     expect(screen.getByTestId('tryon-report')).toBeTruthy();
     expect(screen.queryByTestId('tryon-thanks')).toBeNull();
   });
 });
 
 describe('a product', () => {
-  it('is asked with the product id and reported by it', async () => {
-    getTryOnMock.mockResolvedValue(
-      tryOn({ garments: [{ id: 'p1', fitLevel: 'Loose' }], renderer: 'mannequin-v5' }),
-    );
+  it('is checked and drawn with the product id and reported by it', async () => {
+    mockTryOn({ draw: tryOn({ garments: [{ id: 'p1', fitLevel: 'Loose' }] }) });
     await renderWithQuery(
       <TryOnAction
         subject={{ kind: 'product', id: 'p1' }}
@@ -417,7 +619,11 @@ describe('a product', () => {
     await flush(TRYON_ASK_DELAY_MS);
 
     expect(getTryOnMock.mock.calls[0]?.[0]).toEqual({ kind: 'product', id: 'p1' });
-    await fireEvent.press(screen.getByTestId('tryon-action'));
+    expect(getTryOnMock.mock.calls[0]?.[2]).toEqual({ check: true });
+    expect(drawCalls()).toHaveLength(0);
+
+    await tap();
+    expect(drawCalls()[0]?.[0]).toEqual({ kind: 'product', id: 'p1' });
     expect(screen.getByTestId('tryon-image').props.accessibilityLabel).toBe(
       'Manken üzerinde yaklaşık görünüm: Koton Yün karışımlı blazer ve dolabından parçalar',
     );
@@ -429,19 +635,17 @@ describe('a product', () => {
       outfitId: null,
       productId: 'p1',
       garmentIds: ['p1'],
-      renderer: 'mannequin-v5',
+      renderer: tryOn().renderer,
     });
   });
 });
 
 describe('accessibility', () => {
   it('every control has a role and a name and is at least 44 points high; the image is described', async () => {
-    getTryOnMock.mockResolvedValue(
-      tryOn({ defaultedMeasurements: ['chest'], renderer: 'mannequin-v5' }),
-    );
+    mockTryOn({ draw: tryOn({ defaultedMeasurements: ['chest'] }) });
     await renderWithQuery(<Switcher ids={['o1']} />);
     await flush(TRYON_ASK_DELAY_MS);
-    await fireEvent.press(screen.getByTestId('tryon-action'));
+    await tap();
 
     for (const id of ['tryon-action', 'tryon-measurements-action', 'tryon-report']) {
       const control = screen.getByTestId(id);
@@ -457,10 +661,9 @@ describe('accessibility', () => {
   });
 
   it('the picture is not a button and the label under it is plain text', async () => {
-    getTryOnMock.mockResolvedValue(tryOn());
     await renderWithQuery(<Switcher ids={['o1']} />);
     await flush(TRYON_ASK_DELAY_MS);
-    await fireEvent.press(screen.getByTestId('tryon-action'));
+    await tap();
 
     expect(screen.getByTestId('tryon-caption').props.accessibilityRole).toBeUndefined();
   });

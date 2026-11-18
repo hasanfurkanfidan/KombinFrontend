@@ -6,6 +6,7 @@ let featureOff = false;
 /** The hourly allowance ran out (429): nothing is asked before this moment (epoch ms). */
 let blockedUntil = 0;
 const reported = new Set<string>();
+const failedDraws = new Set<string>();
 
 /** With no `Retry-After` the wait is long: the allowance is per hour, and a later screen can try again. */
 export const UNKNOWN_RETRY_AFTER_MS = 10 * 60_000;
@@ -39,8 +40,18 @@ export function wasReported(key: string): boolean {
   return reported.has(key);
 }
 
+/** A drawing the user asked for failed (or came back Unavailable): its action stays hidden for the rest of the session. */
+export function markDrawFailed(key: string): void {
+  failedDraws.add(key);
+}
+
+export function didDrawFail(key: string): boolean {
+  return failedDraws.has(key);
+}
+
 export function resetTryOnGate(): void {
   featureOff = false;
   blockedUntil = 0;
   reported.clear();
+  failedDraws.clear();
 }

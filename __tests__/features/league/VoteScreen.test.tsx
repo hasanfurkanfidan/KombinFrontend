@@ -1,6 +1,7 @@
 import { act, fireEvent, screen, waitFor, within } from '@testing-library/react-native';
 import { router } from 'expo-router';
 
+import { track } from '@/analytics';
 import { ApiError } from '@/api/client';
 import { getLeagueMe, getNextPair, reportPair, voteOnPair } from '@/api/endpoints/league';
 import type { LeagueVoteResult } from '@/api/models';
@@ -187,9 +188,13 @@ describe('voting', () => {
     await fireEvent.press(screen.getByTestId('vote-skip'));
 
     expect(voteMock).toHaveBeenCalledTimes(1);
+    expect(track).not.toHaveBeenCalledWith('league_vote', expect.anything());
     await act(async () => resolve(voteResult()));
     expect(await screen.findByTestId('vote-result')).toBeTruthy();
     expect(voteMock).toHaveBeenCalledTimes(1);
+    expect(jest.mocked(track).mock.calls.filter(([name]) => name === 'league_vote')).toEqual([
+      ['league_vote', { choice: 'left', counted: true }],
+    ]);
   });
 
   it('puts the pair back, with a message, when the vote fails, and lets the player try again', async () => {
@@ -203,10 +208,15 @@ describe('voting', () => {
     );
     expect(screen.queryByTestId('vote-result')).toBeNull();
     expect(screen.getByTestId('vote-left').props.accessibilityState.disabled).toBe(false);
+    // A failed attempt is not a vote.
+    expect(track).not.toHaveBeenCalledWith('league_vote', expect.anything());
 
     await fireEvent.press(screen.getByTestId('vote-left'));
     expect(await screen.findByTestId('vote-result')).toBeTruthy();
     expect(voteMock).toHaveBeenCalledTimes(2);
+    expect(jest.mocked(track).mock.calls.filter(([name]) => name === 'league_vote')).toHaveLength(
+      1,
+    );
     // The same pair both times: nothing was skipped or re-asked.
     expect(voteMock.mock.calls.map((call) => call[0])).toEqual([PAIR_ID, PAIR_ID]);
     expect(pairMock).toHaveBeenCalledTimes(1);
@@ -225,6 +235,10 @@ describe('voting', () => {
 
     await waitFor(() => expect(voteMock).toHaveBeenCalledTimes(1));
     expect(voteMock.mock.calls[0]?.[1]).toMatchObject({ choice: 'skip' });
+    expect(track).toHaveBeenCalledWith('league_vote', { choice: 'skip', counted: false });
+    expect(track).toHaveBeenCalledTimes(
+      jest.mocked(track).mock.calls.filter(([name]) => name !== 'league_vote').length + 1,
+    );
     await waitFor(() => expect(pairMock).toHaveBeenCalledTimes(2));
     expect(screen.queryByTestId('vote-result')).toBeNull();
     expect(await screen.findByTestId('vote-board')).toBeTruthy();
@@ -286,6 +300,7 @@ describe('after the vote (design 03)', () => {
     expect(await screen.findByTestId('vote-not-counted')).toHaveTextContent(
       'Bu oy sayılmadı, biraz daha bakarak seç',
     );
+    expect(track).toHaveBeenCalledWith('league_vote', { choice: 'left', counted: false });
     expect(screen.getByTestId('vote-count')).toHaveTextContent('3/10 oy');
   });
 
@@ -336,6 +351,9 @@ describe('reporting', () => {
     expect(reportMock).toHaveBeenCalledWith(PAIR_ID, { side: 'right', reason: 'Inappropriate' });
     expect(voteMock).not.toHaveBeenCalled();
     await waitFor(() => expect(pairMock).toHaveBeenCalledTimes(2));
+    expect(jest.mocked(track).mock.calls.filter(([name]) => name === 'league_report')).toEqual([
+      ['league_report', {}],
+    ]);
     expect(useToastStore.getState().message).toBe(
       'Bildirdin, teşekkürler. Bu kombini bir daha görmeyeceksin.',
     );
@@ -368,6 +386,8 @@ describe('reporting', () => {
       expect(useToastStore.getState().message).toBe('Bildirilemedi, tekrar dene.'),
     );
     expect(pairMock).toHaveBeenCalledTimes(2);
+    // Neither the repeat (409) nor the failed report is a sent report.
+    expect(track).not.toHaveBeenCalledWith('league_report', expect.anything());
   });
 });
 

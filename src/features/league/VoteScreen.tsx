@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 
+import { track } from '@/analytics';
 import { ApiError } from '@/api/client';
 import type { LeagueNextPair, LeaguePair, LeagueVoteResult } from '@/api/models';
 import { BottomSheet } from '@/components/BottomSheet';
@@ -131,6 +132,7 @@ export function VoteScreen() {
       { pairId: current.id, choice, decisionMs },
       {
         onSuccess: (result) => {
+          track('league_vote', { choice, counted: result.counted });
           busy.current = false;
           setPending(null);
           if (choice === 'skip') {
@@ -159,6 +161,7 @@ export function VoteScreen() {
       { pairId: current.id, side, reason: 'Inappropriate' },
       {
         onSuccess: () => {
+          track('league_report', {});
           showToast(tr.leagueReported);
           advance();
         },

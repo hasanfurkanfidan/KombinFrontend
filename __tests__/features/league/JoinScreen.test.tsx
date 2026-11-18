@@ -1,6 +1,7 @@
 import { fireEvent, screen, waitFor } from '@testing-library/react-native';
 import { router } from 'expo-router';
 
+import { track } from '@/analytics';
 import { ApiError } from '@/api/client';
 import { getLeagueMe, joinLeague } from '@/api/endpoints/league';
 import { useToastStore } from '@/components/toastStore';
@@ -55,6 +56,9 @@ describe('join (design 01)', () => {
     expect(joinMock.mock.calls[0]?.[0]).toBe('2027-01-v3');
     await waitFor(() => expect(router.replace).toHaveBeenCalledWith('/league'));
     expect(useToastStore.getState().message).toBe("Kombin Ligi'ne katıldın");
+    expect(jest.mocked(track).mock.calls.filter(([name]) => name === 'league_join')).toEqual([
+      ['league_join', {}],
+    ]);
   });
 
   it('"Şimdi değil" closes and joins nothing', async () => {
@@ -100,6 +104,7 @@ describe('join (design 01)', () => {
       'Lige yalnızca 18 yaşından büyükler katılabilir.',
     );
     expect(router.replace).not.toHaveBeenCalled();
+    expect(track).not.toHaveBeenCalledWith('league_join', expect.anything());
     // The button is usable again.
     expect(screen.getByTestId('join-submit').props.accessibilityState.disabled).toBe(false);
   });

@@ -45,7 +45,14 @@ export function leagueMe(overrides: Partial<LeagueMe> = {}): LeagueMe {
       target: 10,
       limit: 30,
     },
-    week: { groupRank: 7, groupSize: 30, points: 414, pointsToPromotion: 17, endsAt: WEEK_END },
+    week: {
+      groupRank: 7,
+      groupSize: 30,
+      points: 414,
+      pointsToPromotion: 17,
+      endsAt: WEEK_END,
+      state: 'Open',
+    },
     ...overrides,
   };
 }
@@ -152,6 +159,7 @@ export function table(overrides: Partial<LeagueTable> = {}): LeagueTable {
     tierUp: 'Platinum',
     tierDown: 'Silver',
     size: 30,
+    state: 'Open',
     rows: ALIASES.map((alias, index) => ({
       rank: index + 1,
       points: POINTS[index] ?? 0,

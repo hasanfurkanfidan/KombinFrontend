@@ -64,29 +64,30 @@ describe('the line under "Bugün giyiyorsun"', () => {
     expect(entryNote(entry({ status: 'Competing' }))).toBe('Kombinin ligde yarışıyor');
     expect(entryNote(entry({ status: 'Pending' }))).toBe('Lige hazırlanıyor');
     expect(entryNote(entry({ status: 'Withdrawn' }))).toBe('Kombinini bugünkü yarıştan çıkardın');
-    expect(entryNote(entry({ status: 'Removed' }))).toBe('Kombin ligden kaldırıldı');
     expect(entryNote(null)).toBeNull();
   });
 
-  it('uses the server’s message for a kombin that does not compete, and a sentence of ours for the other reasons', () => {
-    const message = 'Bu kombin yakın zamanda yarıştı, bugün yarışmıyor.';
-    expect(entryNote(entry({ status: 'NotCompeting', reason: 'RecentlyCompeted', message }))).toBe(
-      message,
-    );
+  it('shows the server’s message exactly as it is for every reason and for a removed outfit', () => {
     for (const reason of [
+      'RecentlyCompeted',
       'UnsafePiece',
       'IncompleteOutfit',
       'PieceUnavailable',
       'AgeRestricted',
       'NotWorn',
     ] as const) {
-      const note = entryNote(entry({ status: 'NotCompeting', reason }));
-      expect(note).toBeTruthy();
-      expect(note).not.toBe('Bu kombin bugün yarışmıyor.');
+      const message = `Sunucunun cümlesi: ${reason}`;
+      expect(entryNote(entry({ status: 'NotCompeting', reason, message }))).toBe(message);
     }
-    expect(entryNote(entry({ status: 'NotCompeting', reason: null }))).toBe(
-      'Bu kombin bugün yarışmıyor.',
-    );
+    expect(entryNote(entry({ status: 'Removed', message: 'Kaldırıldı.' }))).toBe('Kaldırıldı.');
+  });
+
+  it('shows nothing, not an invented line, when the server sends no message', () => {
+    expect(entryNote(entry({ status: 'Removed', message: null }))).toBeNull();
+    expect(
+      entryNote(entry({ status: 'NotCompeting', reason: 'NotWorn', message: null })),
+    ).toBeNull();
+    expect(entryNote(entry({ status: 'NotCompeting', reason: null, message: null }))).toBeNull();
   });
 });
 

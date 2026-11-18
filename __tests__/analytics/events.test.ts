@@ -54,6 +54,12 @@ const BACKEND_TABLE: Record<string, { required: string[]; optional: string[] }> 
   wardrobe_summary_view: { required: ['pieceCount', 'unwornCount', 'hasEstimate'], optional: [] },
   size_prompt_view: { required: ['promptId'], optional: [] },
   size_prompt_answer: { required: ['promptId', 'answer'], optional: [] },
+  league_join: { required: [], optional: [] },
+  league_leave: { required: [], optional: [] },
+  league_vote: { required: ['choice', 'counted'], optional: [] },
+  league_report: { required: [], optional: [] },
+  league_results_view: { required: ['status'], optional: [] },
+  league_table_view: { required: [], optional: [] },
 };
 
 describe('event allow-list', () => {

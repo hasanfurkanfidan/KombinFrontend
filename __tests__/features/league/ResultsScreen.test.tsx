@@ -1,6 +1,7 @@
 import { fireEvent, screen, waitFor, within } from '@testing-library/react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 
+import { track } from '@/analytics';
 import { ApiError } from '@/api/client';
 import { getLeagueMe, getLeagueResults } from '@/api/endpoints/league';
 import ResultsRoute from '../../../app/league/results';
@@ -24,6 +25,32 @@ beforeEach(async () => {
 });
 
 afterEach(() => unfreezeClock());
+
+describe('the results view event', () => {
+  it('reports one view with the results’ status once the result is on screen', async () => {
+    await renderWithQuery(<ResultsScreen day={null} />);
+    await screen.findByTestId('results-ranked');
+
+    expect(
+      jest.mocked(track).mock.calls.filter(([name]) => name === 'league_results_view'),
+    ).toEqual([['league_results_view', { status: 'Final' }]]);
+  });
+
+  it.each(['UnderReview', 'Removed'] as const)('carries the status %s', async (status) => {
+    resultsMock.mockResolvedValue(results({ status, message: 'Sunucunun cümlesi.' }));
+    await renderWithQuery(<ResultsScreen day={null} />);
+    await screen.findByText('Sunucunun cümlesi.');
+
+    expect(track).toHaveBeenCalledWith('league_results_view', { status });
+  });
+
+  it('reports nothing for "no result yet" or an error', async () => {
+    resultsMock.mockResolvedValue(null);
+    await renderWithQuery(<ResultsScreen day={null} />);
+    await screen.findByText('Sonuç henüz yok');
+    expect(track).not.toHaveBeenCalledWith('league_results_view', expect.anything());
+  });
+});
 
 describe('a ranked day (design 04)', () => {
   it('shows the big rank, the field, the comparisons, the figure and the points', async () => {
@@ -153,7 +180,7 @@ describe('the other days', () => {
     expect(screen.getByTestId('points-total-value')).toHaveTextContent('25');
   });
 
-  it('removed after a review: a sentence of ours when the server sent none, and no vote points', async () => {
+  it('removed after a review with no message from the server: no message paragraph, no rank, no vote points', async () => {
     resultsMock.mockResolvedValue(
       results({
         status: 'Removed',
@@ -165,9 +192,9 @@ describe('the other days', () => {
     );
     await renderWithQuery(<ResultsScreen day={null} />);
 
-    expect(
-      await screen.findByText('Kombin incelemeden sonra yarıştan çıkarıldı, oy puanı verilmedi.'),
-    ).toBeTruthy();
+    expect(await screen.findByTestId('results-removed')).toBeTruthy();
+    expect(screen.queryByTestId('results-headline')).toBeNull();
+    expect(screen.queryByText(/yarıştan çıkarıldı/)).toBeNull();
     expect(screen.queryByTestId('results-rank')).toBeNull();
     expect(screen.queryByTestId('points-votes')).toBeNull();
   });

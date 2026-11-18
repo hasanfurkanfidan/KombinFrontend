@@ -53,17 +53,47 @@ describe('who may ask', () => {
     expect(callers).toEqual(['features/tryon/hooks.ts']);
   });
 
-  it('only an outfit sheet and "Dolabımla dene" use the hook or the action', () => {
+  it('only an outfit sheet and "Dolabımla dene" use the hooks or the action', () => {
     const files = sources
-      .filter(({ source }) => /\b(useTryOn|TryOnAction)\b/.test(code(source)))
+      .filter(({ source }) => /\b(useTryOnAvailable|useTryOnDraw|TryOnAction)\b/.test(code(source)))
       .map(({ name }) => name)
       .filter((name) => !name.startsWith('features/tryon/') || name === 'features/tryon/hooks.ts')
       .sort();
     expect(files).toEqual(
-      ASKERS.filter(
-        (name) => name !== 'api/endpoints/tryon.ts' && name !== 'features/tryon/TryOnAction.tsx',
-      ).sort(),
+      [
+        'features/tryon/hooks.ts',
+        'features/outfits/OutfitSheet.tsx',
+        'features/social/TrySheet.tsx',
+      ].sort(),
     );
+    // Every one of them is on the list of askers above.
+    for (const name of files) {
+      expect(ASKERS).toContain(name);
+    }
+  });
+
+  it('only the availability path asks with check: true, and the drawing query waits for the tap', () => {
+    const hook = code(sources.find(({ name }) => name === 'features/tryon/hooks.ts')?.source ?? '');
+    expect(hook.match(/getTryOn\(/g)).toHaveLength(2);
+
+    const available = hook.slice(
+      hook.indexOf('async function askAvailable'),
+      hook.indexOf('async function draw('),
+    );
+    const drawing = hook.slice(
+      hook.indexOf('async function draw('),
+      hook.indexOf('function useSettled'),
+    );
+    // The one call with `check: true` is the availability check; the drawing call carries no option at all.
+    expect(available.match(/getTryOn\(/g)).toHaveLength(1);
+    expect(available).toMatch(/getTryOn\(subject, signal, \{ check: true \}\)/);
+    expect(drawing.match(/getTryOn\(/g)).toHaveLength(1);
+    expect(drawing).toMatch(/getTryOn\(subject, signal\)/);
+    expect(hook.match(/check: true/g)).toHaveLength(1);
+
+    // The drawing query is enabled only while the user wants it (the tap, or the switch to the mannequin).
+    const drawHook = hook.slice(hook.indexOf('export function useTryOnDraw'));
+    expect(drawHook).toMatch(/const enabled = [^;]*\bwanted\b[^;]*;/);
   });
 
   it('no list, card or grid is among them', () => {

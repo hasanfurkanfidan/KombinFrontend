@@ -996,6 +996,163 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/me/wardrobe/bulk/upload-url": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/wardrobe/bulk/{id}/process": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/wardrobe/bulk/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/wardrobe/bulk/{id}/confirm": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/me/outfits/daily": {
         parameters: {
             query?: never;
@@ -1772,7 +1929,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description "Manken üstünde gör": the outfit drawn on a mannequin proportioned from the caller's measurements. Ready carries a presigned image URL (one hour); Preparing means a garment is still being prepared (ask again); Unavailable means the action must be hidden. A render reveals body proportions: the image is private to the caller. */
+        /** @description "Manken üstünde gör": the outfit drawn on a mannequin proportioned from the caller's measurements. Ready carries a presigned image URL (one hour); Preparing means a garment is still being prepared (ask again); Unavailable means the action must be hidden. A render reveals body proportions: the image is private to the caller. With check=true nothing is drawn and no render limit is spent: the answer is the status and reason only (Ready means a real request would draw it; imageUrl, garments and renderer stay empty), the way to decide whether to show the action. Ready carries renderer, which the app sends back with a "Yanlış görünüyor" report. */
         get: operations["GetTryOn"];
         put?: never;
         post?: never;
@@ -1791,7 +1948,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description "Yanlış görünüyor": a mannequin drawing looks wrong. Stored for review (a garment shown from the back, most often); the same report twice is stored once. */
+        /** @description "Yanlış görünüyor": a mannequin drawing looks wrong. It must be about one of the caller's own drawings of that outfit or product, by the renderer the Ready answer named (else 404 TryOn.RenderNotFound). Stored for review (a garment shown from the back, most often); one report per drawing, the same drawing again stores nothing. */
         post: operations["ReportTryOn"];
         delete?: never;
         options?: never;
@@ -2379,8 +2536,9 @@ export interface components {
         };
         /**
          * @description One piece of an outfit as the league shows it: the slot and an image, nothing else. To a voter the image is always the league's own copy
-         *     (random key) or a catalog image, so nothing in it links to a person or to the same piece on another day. `ImageUrl` is null only in the
-         *     owner's own view of an entry whose piece has no image any more.
+         *     (a random key, new every day) or a catalog image. The league's promise is no name, no profile and no stable identifier in any response; it is
+         *     not that an outfit cannot be traced to its owner, because the picture is the owner's own photo (only the file's bytes differ) and someone who
+         *     knows the piece can recognise it. `ImageUrl` is null only in the owner's own view of an entry whose piece has no image any more.
          */
         LeaguePieceResponse: {
             slot: components["schemas"]["OutfitSlot"];
@@ -2415,7 +2573,8 @@ export interface components {
         LeagueResultStatus: "Final" | "UnderReview" | "Removed";
         /**
          * @description The caller's result of one closed day (screen 04, "Akşamki sonuç"). `Status` and `Message`: LeagueResultStatus;
-         *     the message is "Kombinin inceleniyor. Sonuç inceleme bitince görünecek." while under review, null otherwise. `Entry`: their own outfit
+         *     the message is "Kombinin inceleniyor. Sonuç inceleme bitince görünecek." while under review, the removal's line (`LeagueCopy.Removed`)
+         *     when a review took the outfit out, null for a final result. `Entry`: their own outfit
          *     (null when they had none, or it is older than the entries are kept). `Competed`: it was in the pool at the close. `Ranked`: it
          *     reached the comparisons to be ranked (null while under review); when false the app says "yeterli oy toplanamadı". `Rank` (1 = best) of `RankedCount` ranked outfits; `Comparisons`: the counted
          *     votes on it. `PiecePointsAvailable`: a piece added now would still earn its points this week ("Eklersen 5 puan"). Nothing about any
@@ -2476,7 +2635,9 @@ export interface components {
          *     `TierDown`: the leagues above and below it (null at Diamond / Bronze). `TodayPoints`: today's total once today is closed
          *     (`TodayIsFinal`), else the usage points earned so far today. `PromoteCount` / `RelegateCount`: the bands as they stand
          *     (`min(5, floor(competed / 3))`). `Rows`: `{ rank, points, isMe, alias }` in table order, nothing else; the app shows "Sen" for
-         *     `isMe`. Between Sunday's close and Monday 00:00 it is last week's final table.
+         *     `isMe`. `State`: Open (the week runs), Ending (the week is over but its close has not run, so the next groups are not formed: this is
+         *     last week's table as the day closes left it, at any hour of Sunday evening or Monday if the close is late) or Final (closed: between
+         *     Sunday's close and Monday 00:00 it is last week's final table).
          */
         LeagueTableResponse: {
             /** Format: date */
@@ -2496,6 +2657,7 @@ export interface components {
             /** Format: int32 */
             size: number | string;
             rows: components["schemas"]["LeagueTableRow"][];
+            state: components["schemas"]["LeagueWeekState"];
         };
         /** @description One row of a group table as everyone in the group sees it: the place, the week points, whether it is the caller, the week's alias. */
         LeagueTableRow: {
@@ -2510,8 +2672,9 @@ export interface components {
         LeagueTier: "Bronze" | "Silver" | "Gold" | "Platinum" | "Diamond" | null;
         /**
          * @description The caller's outfit in today's league. `Status`: Pending (waiting for the image safety check), Competing, NotCompeting (with a
-         *     `Reason`), Withdrawn, Removed. `Message` is the rules' line for `RecentlyCompeted` ("Bu kombin yakın zamanda yarıştı, bugün
-         *     yarışmıyor."), null otherwise. The pieces are the owner's own view.
+         *     `Reason`), Withdrawn, Removed. `Message` is the Turkish line to show (`LeagueCopy`): one for every `Reason` of a NotCompeting entry
+         *     (RecentlyCompeted, UnsafePiece, IncompleteOutfit, PieceUnavailable, AgeRestricted, NotWorn) and one for Removed; null for Pending, Competing
+         *     and Withdrawn. The pieces are the owner's own view.
          */
         LeagueTodayEntryResponse: {
             status: components["schemas"]["LeagueEntryStatus"];
@@ -2541,7 +2704,8 @@ export interface components {
         };
         /**
          * @description The caller's week in their group: place, group size, week points so far (the best five closed days), points to the promotion line ("5. sıraya
-         *     17 puan"; null inside the band or without one) and when the week ends. Null for a player in no group this week.
+         *     17 puan"; null inside the band or without one) and when the week ends. `State`: Open (running), Ending (the week is over and its close has
+         *     not run yet: this is last week's table until the new groups are formed, never an error) or Final (closed). Null for a player in no group.
          */
         LeagueWeekResponse: {
             /** Format: int32 */
@@ -2554,7 +2718,14 @@ export interface components {
             pointsToPromotion: null | number | string;
             /** Format: date-time */
             endsAt: string;
+            state: components["schemas"]["LeagueWeekState"];
         };
+        /**
+         * @description Where a week stands: `Open` (it is running), `Ending` (its last close has passed but the week close has not run: the table is as the day
+         *     closes left it, and the next week's groups are still to be formed) or `Final` (closed: the stored final table).
+         * @enum {unknown}
+         */
+        LeagueWeekState: "Open" | "Ending" | "Final";
         /** @description What the app needs to link to the legal texts and to know when to ask users to read them again. */
         LegalResponse: {
             version: string;
@@ -3434,7 +3605,7 @@ export interface components {
         };
         /**
          * @description "Yanlış görünüyor": exactly one of `OutfitId` and `ProductId` (what `GET /me/tryon` was asked with), the `GarmentIds` of
-         *     its answer (the pieces' IDs) and the `Renderer` that drew it.
+         *     its answer (the pieces' IDs, every one of them in the drawing) and the `Renderer` that drew it (`renderer` of the Ready answer).
          */
         ReportTryOnRequest: {
             /** Format: uuid */
@@ -3964,7 +4135,8 @@ export interface components {
          *     görünüm"), `Preparing` (show "Hazırlanıyor" and ask again), `Unavailable` (hide the action entirely, never a disabled button).
          *     `Garments` (Ready only): each drawn piece by the ID the outfit gives it (wardrobe item or product) with its fit label, null when nothing
          *     was comparable. `DefaultedMeasurements` (Ready only): the measurements the mannequin guessed; not empty → "Ölçülerini ekle, manken sana
-         *     benzesin". `Reason` (Unavailable only): why, for the app team and support.
+         *     benzesin". `Reason` (Unavailable only): why, for the app team and support. `Renderer` (Ready with an image only): the name of the
+         *     renderer that drew it, sent back as `renderer` of `POST /me/tryon/reports` ("Yanlış görünüyor"); null otherwise, a check included.
          */
         TryOnResponse: {
             status: components["schemas"]["TryOnStatus"];
@@ -3972,6 +4144,7 @@ export interface components {
             garments: components["schemas"]["TryOnGarmentResponse"][];
             defaultedMeasurements: string[];
             reason: null | components["schemas"]["TryOnUnavailableReason"];
+            renderer?: null | string;
         };
         /**
          * @description What the app does: show the image, show "Hazırlanıyor", or hide the action entirely.
@@ -10131,6 +10304,7 @@ export interface operations {
                 OutfitId?: string;
                 ProductId?: string;
                 WithWardrobe?: boolean;
+                Check?: boolean;
             };
             header?: never;
             path?: never;

@@ -7,16 +7,24 @@ const BASE = '/api/v1/me/tryon';
 export type TryOnSubject = { kind: 'outfit'; id: string } | { kind: 'product'; id: string };
 
 /**
- * `GET /me/tryon`. A call can make the server draw a new image (30 an hour per user), so only `features/tryon/hooks`
- * asks, under the rules written there. The answer's `imageUrl` is a private one-hour link: it is shown and dropped, never
- * stored, logged or sent to analytics.
+ * `GET /me/tryon`. Without `check` a call can make the server draw a new image (30 an hour per user), so it is made only
+ * when the user taps the action. With `check: true` nothing is drawn and no allowance is spent: the answer is the status
+ * and reason only (`Ready` means a real request would draw it), which is how the app decides whether to show the action.
+ * Only `features/tryon/hooks` asks, under the rules written there. The answer's `imageUrl` is a private one-hour link: it
+ * is shown and dropped, never stored, logged or sent to analytics.
  */
-export function getTryOn(subject: TryOnSubject, signal?: AbortSignal): Promise<TryOn> {
+export function getTryOn(
+  subject: TryOnSubject,
+  signal?: AbortSignal,
+  options: { check?: boolean } = {},
+): Promise<TryOn> {
   return request<TryOn>(BASE, {
-    query:
-      subject.kind === 'outfit'
+    query: {
+      ...(subject.kind === 'outfit'
         ? { OutfitId: subject.id }
-        : { ProductId: subject.id, WithWardrobe: true },
+        : { ProductId: subject.id, WithWardrobe: true }),
+      ...(options.check ? { Check: true } : {}),
+    },
     auth: true,
     signal,
   });

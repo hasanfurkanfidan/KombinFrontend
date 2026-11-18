@@ -80,6 +80,8 @@ export const queryKeys = {
    */
   tryOnAll: ['tryon'] as const,
   tryOn: (kind: 'outfit' | 'product', id: string) => ['tryon', kind, id] as const,
+  /** The availability check (`check=true`): nothing is drawn, so it is its own entry next to the drawing's. */
+  tryOnCheck: (kind: 'outfit' | 'product', id: string) => ['tryon', 'check', kind, id] as const,
 
   trips: ['trips', 'list'] as const,
   trip: (id: string) => ['trips', 'one', id] as const,

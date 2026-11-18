@@ -39,7 +39,10 @@ beforeEach(async () => {
 
 afterEach(() => unfreezeClock());
 
-const entry = (status: 'Competing' | 'Pending' | 'NotCompeting', message: string | null = null) =>
+const entry = (
+  status: 'Competing' | 'Pending' | 'NotCompeting' | 'Removed',
+  message: string | null = null,
+) =>
   leagueMock.mockResolvedValue(
     leagueMe({
       today: todayWith({ entry: { status, reason: null, message, pieces: [] } }),
@@ -70,6 +73,24 @@ describe('the settled morning card and the league', () => {
       await within(card).findByText('Bu kombin yakın zamanda yarıştı, bugün yarışmıyor.'),
     ).toBeTruthy();
   });
+
+  it('shows the server’s sentence for a removed outfit exactly as it is', async () => {
+    entry('Removed', 'Kombin incelendi ve ligden çıkarıldı.');
+    const card = await settledCard();
+
+    expect(await within(card).findByText('Kombin incelendi ve ligden çıkarıldı.')).toBeTruthy();
+  });
+
+  it.each(['NotCompeting', 'Removed'] as const)(
+    'shows no line when the server sends no message for %s',
+    async (status) => {
+      entry(status, null);
+      const card = await settledCard();
+
+      expect(leagueMock).toHaveBeenCalled();
+      expect(within(card).queryByTestId('league-line')).toBeNull();
+    },
+  );
 
   it('says "Lige hazırlanıyor" while the outfit waits for its image check', async () => {
     entry('Pending');

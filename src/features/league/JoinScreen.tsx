@@ -5,6 +5,7 @@ import { useQueryClient } from '@tanstack/react-query';
 
 import { ApiError } from '@/api/client';
 import { queryKeys } from '@/api/queryKeys';
+import { track } from '@/analytics';
 import { Button } from '@/components/Button';
 import { LiveText } from '@/components/LiveText';
 import { showToast } from '@/components/toastStore';
@@ -110,6 +111,7 @@ export function JoinScreen() {
     setError(null);
     join.mutate(me.consent.version, {
       onSuccess: () => {
+        track('league_join', {});
         showToast(tr.leagueJoined);
         router.replace('/league');
       },

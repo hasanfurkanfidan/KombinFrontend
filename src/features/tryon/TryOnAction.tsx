@@ -6,7 +6,7 @@ import { BottomSheet } from '@/components/BottomSheet';
 import { Button } from '@/components/Button';
 import { tr } from '@/i18n/tr';
 
-import { TRYON_ASK_DELAY_MS, useTryOn } from './hooks';
+import { TRYON_ASK_DELAY_MS, useTryOnAvailable, useTryOnDraw } from './hooks';
 import type { PieceNames } from './labels';
 import { QuietLink } from './QuietLink';
 import { TryOnPanel } from './TryOnPanel';
@@ -15,7 +15,7 @@ interface TryOnActionProps {
   subject: TryOnSubject;
   names: PieceNames;
   productName?: string;
-  /** `text`: the quiet action in an outfit sheet's header. `outlined`: a secondary action (unused since the product detail one was removed, until a no-draw availability check exists). */
+  /** `text`: the quiet action in an outfit sheet's header. `outlined`: a secondary action (unused since the product detail one was removed; it comes back when the product is asked about, see CLAUDE.md). */
   variant: 'text' | 'outlined';
   /** How long the subject must stand still before it is asked about (see `useTryOn`). */
   delayMs?: number;
@@ -24,8 +24,9 @@ interface TryOnActionProps {
 
 /**
  * "Manken üstünde gör". It exists only while the backend says `Ready` or `Preparing`: anything else (Unavailable, a 404, a
- * 429, an error) renders nothing, with no placeholder, no disabled state and no message. A tap opens the mannequin in a
- * sheet; the request itself was made when the surface that holds this action opened (see `useTryOn`).
+ * 429, an error) renders nothing, with no placeholder, no disabled state and no message. Whether to show it is a free
+ * availability check; the drawing is requested only when the user taps, and the sheet shows its shimmer meanwhile. A
+ * drawing that fails closes the sheet and hides the action (see `useTryOnDraw`).
  */
 export function TryOnAction({
   subject,
@@ -35,10 +36,11 @@ export function TryOnAction({
   delayMs = TRYON_ASK_DELAY_MS,
   testID = 'tryon-action',
 }: TryOnActionProps) {
-  const state = useTryOn(subject, delayMs);
+  const available = useTryOnAvailable(subject, delayMs);
   const [open, setOpen] = useState(false);
+  const state = useTryOnDraw(subject, open, () => setOpen(false));
 
-  if (state.phase === 'hidden') {
+  if (!available) {
     return null;
   }
   const show = () => setOpen(true);

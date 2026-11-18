@@ -2,6 +2,7 @@ import { fireEvent, screen, waitFor, within } from '@testing-library/react-nativ
 import { Alert } from 'react-native';
 import { router } from 'expo-router';
 
+import { track } from '@/analytics';
 import { ApiError } from '@/api/client';
 import {
   getLeagueMe,
@@ -41,6 +42,23 @@ beforeEach(async () => {
 afterEach(() => unfreezeClock());
 
 describe('the table (design 05)', () => {
+  it('reports one table view per opening, with no properties, once the table is on screen', async () => {
+    await renderWithQuery(<LeagueHomeScreen />);
+    expect(await screen.findByTestId('league-table')).toBeTruthy();
+
+    expect(jest.mocked(track).mock.calls.filter(([name]) => name === 'league_table_view')).toEqual([
+      ['league_table_view', {}],
+    ]);
+  });
+
+  it('reports no table view while there is no table (group not formed yet)', async () => {
+    tableMock.mockResolvedValue(null);
+    await renderWithQuery(<LeagueHomeScreen />);
+    await screen.findByText('Grubun Pazartesi kurulacak');
+
+    expect(track).not.toHaveBeenCalledWith('league_table_view', expect.anything());
+  });
+
   it('shows the league, the time left and today’s points', async () => {
     await renderWithQuery(<LeagueHomeScreen />);
 
@@ -312,6 +330,9 @@ describe('settings', () => {
     await waitFor(() => expect(leaveMock).toHaveBeenCalledTimes(1));
     await waitFor(() => expect(router.replace).toHaveBeenCalledWith('/'));
     expect(useToastStore.getState().message).toBe('Ligden ayrıldın');
+    expect(jest.mocked(track).mock.calls.filter(([name]) => name === 'league_leave')).toEqual([
+      ['league_leave', {}],
+    ]);
   });
 
   it('does nothing when the confirmation is cancelled', async () => {
@@ -343,5 +364,7 @@ describe('settings', () => {
       expect(useToastStore.getState().message).toBe('İşlem yapılamadı, tekrar dene.'),
     );
     expect(router.replace).not.toHaveBeenCalledWith('/');
+    // Neither "not joined" nor a failure is a confirmed leave.
+    expect(track).not.toHaveBeenCalledWith('league_leave', expect.anything());
   });
 });

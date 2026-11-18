@@ -156,11 +156,7 @@ export type TryGroup = Schemas['TryGroup'];
 export type TryOnStatus = Schemas['TryOnStatus'];
 export type TryOnFitLevel = NonNullable<Schemas['TryOnFitLevel']>;
 export type TryOnGarment = Schemas['TryOnGarmentResponse'];
-/**
- * `GET /me/tryon`. The contract's answer carries no `renderer`, but the report ("Yanlış görünüyor") requires one: the
- * optional field is read if the backend ever adds it, never invented (like `Legal.contactEmail`).
- */
-export type TryOn = Schemas['TryOnResponse'] & { renderer?: string | null };
+export type TryOn = Schemas['TryOnResponse'];
 export type ReportTryOnRequest = Schemas['ReportTryOnRequest'];
 export type CreatorPage = Schemas['CreatorPageResponse'];
 export type CreatorStats = Schemas['CreatorStatsResponse'];
