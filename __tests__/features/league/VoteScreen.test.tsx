@@ -9,7 +9,7 @@ import { VoteScreen } from '@/features/league/VoteScreen';
 
 import { freezeClockAt, moveClockTo, unfreezeClock } from '../../support/fakeClock';
 import { renderWithQuery, resetSession, signedInSession } from '../../testUtils';
-import { leagueMe, nextPair, NEXT_PAIR_ID, PAIR_ID, voteResult } from './fixtures';
+import { leagueMe, nextPair, NEXT_PAIR_ID, PAIR_ID, piece, voteResult } from './fixtures';
 
 const meMock = jest.mocked(getLeagueMe);
 const pairMock = jest.mocked(getNextPair);
@@ -141,6 +141,37 @@ describe('voting', () => {
     await fireEvent(images.at(-1)!, 'error', imageFailed());
     await fireEvent.press(screen.getByTestId('vote-left'));
     await waitFor(() => expect(voteMock).toHaveBeenCalledTimes(1));
+  });
+
+  it('does not wait for pictures the figure never draws (only three accessories fit)', async () => {
+    jest.useFakeTimers();
+    try {
+      const crowded = [
+        ...nextPair().pair!.left.pieces,
+        piece('Accessory', 'https://img.test/acc-1.jpg'),
+        piece('Accessory', 'https://img.test/acc-2.jpg'),
+        piece('Accessory', 'https://img.test/acc-3.jpg'),
+        piece('Accessory', 'https://img.test/acc-4.jpg'),
+        piece('Accessory', 'https://img.test/acc-5.jpg'),
+      ];
+      pairMock.mockResolvedValue(
+        nextPair({ pair: { ...nextPair().pair!, left: { pieces: crowded } } }),
+      );
+      await renderWithQuery(<VoteScreen />);
+      await screen.findByTestId('vote-board');
+
+      // Six pictures are on screen on the left (three pieces and three accessories) and three on the right.
+      const images = screen.getAllByTestId(/^piece-image-/);
+      expect(images).toHaveLength(9);
+      for (const image of images) {
+        await fireEvent(image, 'load', imageLoaded());
+      }
+
+      // Every picture that is drawn has loaded: the votes are open well before the 5-second fallback.
+      expect(screen.getByTestId('vote-left').props.accessibilityState.disabled).toBe(false);
+    } finally {
+      jest.useRealTimers();
+    }
   });
 
   it('sends one vote for a double tap', async () => {

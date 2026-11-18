@@ -1,3 +1,5 @@
+import { useState } from 'react';
+import { Pressable } from 'react-native';
 import { fireEvent, screen } from '@testing-library/react-native';
 import { router } from 'expo-router';
 
@@ -19,6 +21,22 @@ const apiError = (status: number, errorCode: string | null = null, retryAfterSec
   new ApiError({ status, errorCode, correlationId: 'c', retryAfterSeconds });
 
 const action = () => screen.queryByTestId('tryon-action');
+
+/** A screen that can be left and opened again while the query cache lives on, as a sheet's screen is by its user. */
+function Reopenable() {
+  const [open, setOpen] = useState(true);
+  return (
+    <>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel="Ekranı aç/kapat"
+        onPress={() => setOpen((value) => !value)}
+        testID="toggle-screen"
+      />
+      {open ? <Switcher ids={['o1']} /> : null}
+    </>
+  );
+}
 
 beforeEach(async () => {
   jest.clearAllMocks();
@@ -223,6 +241,24 @@ describe('preparing', () => {
     expect(getTryOnMock).toHaveBeenCalledTimes(1 + TRYON_MAX_POLLS);
     expect(action()).toBeNull();
   });
+
+  it('after giving up it is a hidden answer for the session: opening the screen again asks nothing', async () => {
+    getTryOnMock.mockResolvedValue(preparing());
+    await renderWithQuery(<Reopenable />);
+    await flush(TRYON_ASK_DELAY_MS);
+    await flush(TRYON_POLL_MS * (TRYON_MAX_POLLS + 2));
+    expect(getTryOnMock).toHaveBeenCalledTimes(1 + TRYON_MAX_POLLS);
+
+    for (let opening = 0; opening < 3; opening += 1) {
+      await fireEvent.press(screen.getByTestId('toggle-screen'));
+      expect(screen.queryByTestId('tryon-action')).toBeNull();
+      await fireEvent.press(screen.getByTestId('toggle-screen'));
+      await flush(TRYON_ASK_DELAY_MS + TRYON_POLL_MS);
+    }
+
+    expect(getTryOnMock).toHaveBeenCalledTimes(1 + TRYON_MAX_POLLS);
+    expect(action()).toBeNull();
+  });
 });
 
 describe('the picture and what goes with it', () => {
@@ -294,39 +330,49 @@ describe('the picture and what goes with it', () => {
 });
 
 describe('"Yanlış görünüyor"', () => {
+  // The backend refuses a report without a renderer, so the control exists only for an answer that names one.
   async function openReady(overrides = {}) {
-    getTryOnMock.mockResolvedValue(tryOn(overrides));
+    getTryOnMock.mockResolvedValue(tryOn({ renderer: 'mannequin-v5', ...overrides }));
     await renderWithQuery(<Switcher ids={['o1']} />);
     await flush(TRYON_ASK_DELAY_MS);
     await fireEvent.press(screen.getByTestId('tryon-action'));
   }
 
-  it('sends one report with no form, then says thanks and offers nothing more', async () => {
+  it('sends one report with no form and the answer’s renderer, then says thanks and offers nothing more', async () => {
     await openReady();
 
     await fireEvent.press(screen.getByTestId('tryon-report'));
     await flush(0);
 
     expect(reportMock).toHaveBeenCalledTimes(1);
-    // The contract's answer carries no renderer, so none is sent: `null` is what the request type allows.
     expect(reportMock).toHaveBeenCalledWith({
       outfitId: 'o1',
       productId: null,
       garmentIds: ['w1', 'w2'],
-      renderer: null,
+      renderer: 'mannequin-v5',
     });
     expect(screen.getByTestId('tryon-thanks')).toHaveTextContent('Teşekkürler');
     expect(screen.queryByTestId('tryon-report')).toBeNull();
   });
 
-  it('sends the renderer when the answer ever names one', async () => {
-    await openReady({ renderer: 'mannequin-v5' } as never);
+  it.each([
+    ['carries no renderer', undefined],
+    ['carries a null renderer', null],
+    ['carries an empty renderer', ''],
+    ['carries a blank renderer', '   '],
+  ])(
+    'offers no report at all when the answer %s: no control, no request, no toast',
+    async (_name, renderer) => {
+      await openReady({ renderer });
 
-    await fireEvent.press(screen.getByTestId('tryon-report'));
-    await flush(0);
-
-    expect(reportMock).toHaveBeenCalledWith(expect.objectContaining({ renderer: 'mannequin-v5' }));
-  });
+      expect(screen.getByTestId('tryon-panel')).toBeTruthy();
+      expect(screen.queryByTestId('tryon-report')).toBeNull();
+      expect(screen.queryByTestId('tryon-thanks')).toBeNull();
+      expect(screen.queryByText('Yanlış görünüyor')).toBeNull();
+      expect(reportMock).not.toHaveBeenCalled();
+      expect(useToastStore.getState().message).toBeNull();
+    },
+  );
 
   it('is not offered again for the same drawing in the session', async () => {
     await openReady();
@@ -357,7 +403,9 @@ describe('"Yanlış görünüyor"', () => {
 
 describe('a product', () => {
   it('is asked with the product id and reported by it', async () => {
-    getTryOnMock.mockResolvedValue(tryOn({ garments: [{ id: 'p1', fitLevel: 'Loose' }] }));
+    getTryOnMock.mockResolvedValue(
+      tryOn({ garments: [{ id: 'p1', fitLevel: 'Loose' }], renderer: 'mannequin-v5' }),
+    );
     await renderWithQuery(
       <TryOnAction
         subject={{ kind: 'product', id: 'p1' }}
@@ -381,14 +429,16 @@ describe('a product', () => {
       outfitId: null,
       productId: 'p1',
       garmentIds: ['p1'],
-      renderer: null,
+      renderer: 'mannequin-v5',
     });
   });
 });
 
 describe('accessibility', () => {
   it('every control has a role and a name and is at least 44 points high; the image is described', async () => {
-    getTryOnMock.mockResolvedValue(tryOn({ defaultedMeasurements: ['chest'] }));
+    getTryOnMock.mockResolvedValue(
+      tryOn({ defaultedMeasurements: ['chest'], renderer: 'mannequin-v5' }),
+    );
     await renderWithQuery(<Switcher ids={['o1']} />);
     await flush(TRYON_ASK_DELAY_MS);
     await fireEvent.press(screen.getByTestId('tryon-action'));

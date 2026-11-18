@@ -85,7 +85,12 @@ function Cutout({ item, color }: { item: WardrobeItem; color: ProductColor }) {
   return (
     <View style={[styles.cutout, { backgroundColor: colorTint(color) }]}>
       {uri ? (
-        <AppImage uri={uri} style={styles.cutoutImage} contentFit="contain" />
+        <AppImage
+          uri={uri}
+          style={styles.cutoutImage}
+          contentFit="contain"
+          private={uri === item.originalUrl}
+        />
       ) : (
         <Icon name="shirt" size={64} color={theme.colors.control} strokeWidth={1.2} />
       )}

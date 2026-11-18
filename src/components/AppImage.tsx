@@ -12,6 +12,11 @@ export interface AppImageProps {
   /** `cover` crops to fill the box, `contain` shows the whole picture; the same names as before and as `expo-image`'s. */
   contentFit?: 'cover' | 'contain';
   onError?: () => void;
+  /**
+   * The picture shows a person's body or an unprocessed photo (a try-on render, a post's photo, a Lens photo, an
+   * original): it is kept in memory only and never written to the disk cache, so nothing of it outlives the launch.
+   */
+  private?: boolean;
   /** The picture has been decoded and drawn (the league times a vote from the moment both figures are on screen). */
   onLoad?: () => void;
   /**
@@ -29,7 +34,7 @@ export const IMAGE_TRANSITION_MS = 120;
 /**
  * The one image component of the app, over `expo-image`: every remote picture is downloaded once and then comes from
  * the memory or disk cache (`memory-disk`, kept across launches, emptied at sign-out: see `clearImageCache`). The cache
- * policy lives here and nowhere else.
+ * policy lives here and nowhere else. A `private` picture (see the prop) uses `memory` instead.
  *
  * - `source.cacheKey` (`imageCacheKey`): a presigned link keeps one cache entry whatever its signature says.
  * - `recyclingKey`: a list cell that is reused for another picture drops the old one at once instead of showing it
@@ -43,6 +48,7 @@ export function AppImage({
   style,
   contentFit = 'cover',
   onError,
+  private: keepOffDisk = false,
   onLoad,
   accessibilityLabel,
   accessibilityIgnoresInvertColors,
@@ -55,7 +61,7 @@ export function AppImage({
       source={cacheKey === undefined ? { uri } : { uri, cacheKey }}
       style={style}
       contentFit={contentFit}
-      cachePolicy="memory-disk"
+      cachePolicy={keepOffDisk ? 'memory' : 'memory-disk'}
       recyclingKey={cacheKey ?? uri}
       transition={reduceMotion ? 0 : IMAGE_TRANSITION_MS}
       onError={onError ? () => onError() : undefined}

@@ -89,6 +89,11 @@ export function useSession() {
 
 /** Called by the auth forms after a successful register/login response; `method` says which credentials opened it. */
 export async function completeSignIn(tokens: AuthTokens, method?: SignInMethod): Promise<void> {
+  if (useSessionStore.getState().status === 'signedIn') {
+    // A sign-in that replaces a session still open (the store never leaves `signedIn`, so the usual trigger would not
+    // fire): `installUserScopeReset` forgets what belonged to the first account before the second one's tokens apply.
+    useSessionStore.getState().markSessionReplaced();
+  }
   await applyAuthTokens(tokens);
   if (method) {
     await rememberSignInMethod(method);

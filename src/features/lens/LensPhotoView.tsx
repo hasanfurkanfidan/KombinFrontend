@@ -59,6 +59,7 @@ export function LensPhotoView({
           uri={uri}
           style={StyleSheet.absoluteFill}
           contentFit="cover"
+          private
           accessibilityLabel={tr.a11yLensPhoto}
           testID="lens-photo"
         />

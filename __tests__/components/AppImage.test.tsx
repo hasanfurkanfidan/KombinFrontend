@@ -29,6 +29,14 @@ describe('AppImage (the one image component, over expo-image)', () => {
     expect(props.source).toEqual([{ uri: 'https://img.test/a.jpg' }]);
   });
 
+  it('keeps a private picture in memory only: it never reaches the disk', async () => {
+    const props = await rendered(
+      <AppImage uri="https://img.test/a.jpg?sig=1" style={box} private testID="img" />,
+    );
+
+    expect(props.cachePolicy).toBe('memory');
+  });
+
   it('does not fade under reduced motion', async () => {
     jest.spyOn(reanimated, 'useReducedMotion').mockReturnValue(true);
     const props = await rendered(

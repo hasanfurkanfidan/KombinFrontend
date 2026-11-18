@@ -133,6 +133,7 @@ function MyPostRow({
               uri={post.image ? stableImageUrl(`${post.id}:preview`, thumb) : thumb}
               style={styles.thumbImage}
               contentFit="cover"
+              private={Boolean(post.image)}
             />
           ) : (
             <Icon name="shirt" size={24} color={theme.colors.control} strokeWidth={1.4} />
