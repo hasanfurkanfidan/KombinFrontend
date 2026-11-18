@@ -2,7 +2,7 @@ import { StyleSheet, View } from 'react-native';
 
 import type { LeaguePiece } from '@/api/models';
 import { figureBands } from '@/features/outfits/labels';
-import { PieceTile } from '@/features/outfits/OutfitPieces';
+import { PieceTile, type FigurePiece } from '@/features/outfits/OutfitPieces';
 import { tr } from '@/i18n/tr';
 import { theme } from '@/theme';
 
@@ -14,6 +14,18 @@ const BAND = {
   bottom: { weight: 1.15, width: '80%' },
   shoes: { weight: 0.5, width: '62%' },
 } as const;
+
+/** The accessories row has room for this many wells; any more pieces of the outfit are not drawn. */
+const MAX_ACCESSORIES = 3;
+
+/**
+ * The pieces the figure actually draws, in the order it draws them: one per band (the outerwear and the top share the
+ * torso band) and at most `MAX_ACCESSORIES` accessories. The vote waits for these pictures and for no others.
+ */
+export function drawnPieces(pieces: readonly LeaguePiece[]): FigurePiece[] {
+  const { bands, accessories } = figureBands(figurePieces(pieces));
+  return [...bands.flatMap((band) => band.pieces), ...accessories.slice(0, MAX_ACCESSORIES)];
+}
 
 /** Two overlapping wells share the torso band (outerwear in front of the top), each this wide. */
 const LAYERED_WIDTH = '66%';
@@ -89,7 +101,7 @@ export function LeagueFigure({ pieces, onImageSettled, testID }: LeagueFigurePro
       })}
       {accessories.length > 0 ? (
         <View style={styles.accessories}>
-          {accessories.slice(0, 3).map((piece, index) => (
+          {accessories.slice(0, MAX_ACCESSORIES).map((piece, index) => (
             <PieceTile
               key={`${piece.slot}-${index}`}
               piece={piece}

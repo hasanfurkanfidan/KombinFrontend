@@ -23,11 +23,19 @@ interface SessionState {
   /** Epoch milliseconds at which the access token expires. */
   expiresAt: number | null;
   endReason: SessionEndReason | null;
+  /**
+   * How many times `endSession` has dropped credentials. It tells "a stored session was rejected at start-up" (the
+   * counter moves while the status goes from `booting` to `signedOut`) from "nobody was ever signed in on this start".
+   */
+  sessionsEnded: number;
+  /** How many times a sign-in has replaced a session that was still open (another account taking over the phone). */
+  sessionsReplaced: number;
+  markSessionReplaced: () => void;
   /** `null` while unknown (a session from before the hint was stored). */
   signInMethod: SignInMethod | null;
   setSignInMethod: (method: SignInMethod | null) => void;
   setSignedIn: (accessToken: string, expiresInSeconds: number, now?: number) => void;
-  setSignedOut: (reason?: SessionEndReason) => void;
+  setSignedOut: (reason?: SessionEndReason, endedStoredSession?: boolean) => void;
   clearEndReason: () => void;
 }
 
@@ -36,6 +44,9 @@ export const useSessionStore = create<SessionState>((set) => ({
   accessToken: null,
   expiresAt: null,
   endReason: null,
+  sessionsEnded: 0,
+  sessionsReplaced: 0,
+  markSessionReplaced: () => set((state) => ({ sessionsReplaced: state.sessionsReplaced + 1 })),
   signInMethod: null,
   setSignInMethod: (signInMethod) => set({ signInMethod }),
   setSignedIn: (accessToken, expiresInSeconds, now = Date.now()) =>
@@ -45,14 +56,15 @@ export const useSessionStore = create<SessionState>((set) => ({
       expiresAt: now + expiresInSeconds * 1000,
       endReason: null,
     }),
-  setSignedOut: (reason) =>
-    set({
+  setSignedOut: (reason, endedStoredSession = false) =>
+    set((state) => ({
       status: 'signedOut',
       accessToken: null,
       expiresAt: null,
       endReason: reason ?? null,
       signInMethod: null,
-    }),
+      sessionsEnded: state.sessionsEnded + (endedStoredSession ? 1 : 0),
+    })),
   clearEndReason: () => set({ endReason: null }),
 }));
 
@@ -70,7 +82,7 @@ export async function rememberSignInMethod(method: SignInMethod): Promise<void> 
 
 /** Drops every credential. A `reason` makes the root layout send the user to the login screen. */
 export async function endSession(reason?: SessionEndReason): Promise<void> {
-  useSessionStore.getState().setSignedOut(reason);
+  useSessionStore.getState().setSignedOut(reason, true);
   await clearRefreshToken();
   await clearSignInMethod();
 }

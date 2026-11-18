@@ -19,6 +19,7 @@ import { ArenaHeader, ArenaMessage, ArenaScreen } from './ArenaScreen';
 import { useLeagueMe, useNextPair, useNow, useReportPair, useVote } from './hooks';
 import { formatCountdown, istanbulClock, tierLeague } from './labels';
 import { ResultCard, SIDE_NAMES, VoteCard, type Side } from './LeagueCard';
+import { drawnPieces } from './LeagueFigure';
 import { Reveal } from './Reveal';
 import { VoteProgress } from './VoteProgress';
 
@@ -341,7 +342,8 @@ interface PairBoardProps {
  * first compare them, and what `decisionMs` is counted from. A fallback timer opens them anyway.
  */
 function PairBoard({ pair, pending, error, onVote, onMenu, onShown }: PairBoardProps) {
-  const total = [...pair.left.pieces, ...pair.right.pieces].filter(
+  // Only pictures the figures draw report back: a piece the figure has no room for must not hold the vote.
+  const total = [...drawnPieces(pair.left.pieces), ...drawnPieces(pair.right.pieces)].filter(
     (piece) => piece.imageUrl,
   ).length;
   const [settled, setSettled] = useState(0);

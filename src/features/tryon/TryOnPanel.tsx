@@ -12,7 +12,7 @@ import { theme } from '@/theme';
 import { lines } from '@/utils/a11y';
 
 import { markReported, wasReported } from './gate';
-import { buildReport, useReportTryOn, type TryOnState } from './hooks';
+import { buildReport, reportableRenderer, useReportTryOn, type TryOnState } from './hooks';
 import { fitRows, spokenTryOn, type PieceNames } from './labels';
 import { QuietLink } from './QuietLink';
 
@@ -64,6 +64,7 @@ export function TryOnPanel({ subject, state, names, productName, onLeave }: TryO
             uri={answer.imageUrl}
             style={styles.image}
             contentFit="contain"
+            private
             accessibilityLabel={spokenTryOn(names, productName ?? null)}
             testID="tryon-image"
           />
@@ -126,6 +127,7 @@ function ReportAction({ subject, state }: { subject: TryOnSubject; state: TryOnS
   const report = useReportTryOn();
   const [sent, setSent] = useState(() => wasReported(key));
   const { answer } = state;
+  const renderer = answer ? reportableRenderer(answer) : null;
 
   if (sent) {
     return (
@@ -133,6 +135,10 @@ function ReportAction({ subject, state }: { subject: TryOnSubject; state: TryOnS
         {tr.tryOnReportThanks}
       </LiveText>
     );
+  }
+  // The backend refuses a report that names no renderer: with none there is nothing to offer (no control, no toast).
+  if (renderer === null) {
+    return null;
   }
   return (
     <QuietLink
@@ -142,7 +148,7 @@ function ReportAction({ subject, state }: { subject: TryOnSubject; state: TryOnS
         if (!answer || report.isPending) {
           return;
         }
-        report.mutate(buildReport(subject, answer), {
+        report.mutate(buildReport(subject, answer, renderer), {
           onSuccess: () => {
             markReported(key);
             setSent(true);

@@ -98,6 +98,7 @@ export function PostPhoto({ post, onTagPress, onBandPress }: PostPhotoProps) {
           uri={stableImageUrl(post.id, post.image.url)}
           style={styles.fill}
           contentFit="cover"
+          private
           accessibilityLabel={tr.a11yPostPhoto(post.author.displayName)}
           accessibilityIgnoresInvertColors
         />

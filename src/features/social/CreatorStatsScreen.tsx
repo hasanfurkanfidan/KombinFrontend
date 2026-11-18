@@ -93,6 +93,7 @@ function StatsBody({ stats }: { stats: CreatorStats }) {
                     uri={stableImageUrl(`${post.postId}:preview`, post.previewUrl)}
                     style={styles.thumbImage}
                     contentFit="cover"
+                    private
                   />
                 ) : (
                   <Icon name="shirt" size={22} color={theme.colors.control} strokeWidth={1.4} />

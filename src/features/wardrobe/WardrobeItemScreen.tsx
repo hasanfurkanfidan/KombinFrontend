@@ -247,7 +247,12 @@ function ItemBody({
         ]}
       >
         {uri ? (
-          <AppImage uri={uri} style={styles.cutoutImage} contentFit="contain" />
+          <AppImage
+            uri={uri}
+            style={styles.cutoutImage}
+            contentFit="contain"
+            private={uri === item.originalUrl}
+          />
         ) : (
           <Icon name="shirt" size={72} color={theme.colors.control} strokeWidth={1.2} />
         )}

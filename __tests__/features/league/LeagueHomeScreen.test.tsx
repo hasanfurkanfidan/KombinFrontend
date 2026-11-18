@@ -130,6 +130,20 @@ describe('the table (design 05)', () => {
     expect(screen.getAllByTestId('table-me')).toHaveLength(1);
   });
 
+  it('draws two rows that share a rank without a key collision', async () => {
+    const errors = jest.spyOn(console, 'error').mockImplementation(() => undefined);
+    try {
+      const rows = table().rows.map((row) => (row.rank === 4 ? { ...row, rank: 3 } : row));
+      await renderWithQuery(<LeagueTable table={table({ rows })} />);
+
+      expect(screen.getAllByTestId(/^table-row-/).length).toBeGreaterThanOrEqual(8);
+      const keyWarnings = errors.mock.calls.filter((call) => String(call[0]).includes('same key'));
+      expect(keyWarnings).toEqual([]);
+    } finally {
+      errors.mockRestore();
+    }
+  });
+
   it('shows a calm note when the group has not been formed yet', async () => {
     tableMock.mockResolvedValue(null);
     await renderWithQuery(<LeagueHomeScreen />);

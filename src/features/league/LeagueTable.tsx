@@ -49,10 +49,11 @@ export function LeagueTable({ table }: { table: Table }) {
           {tr.leaguePromoteLine(promote, tierName(table.tierUp))}
         </Text>
       ) : null}
-      {table.rows.map((row) => {
+      {table.rows.map((row, index) => {
         const rank = toNumber(row.rank);
         return (
-          <View key={rank}>
+          // Alias plus position: two rows may share a rank (a tie), and the alias alone is a per-week name.
+          <View key={`${row.alias}-${index}`}>
             {showRelegation && rank === firstRelegated && table.tierDown ? (
               <Text style={styles.relegate} testID="table-relegate-label">
                 {tr.leagueRelegateLine(relegate, tierName(table.tierDown))}

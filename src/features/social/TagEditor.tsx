@@ -142,7 +142,12 @@ function DotPhoto({ postId, image, dots, selected, onSelect, onMove }: DotPhotoP
 
   return (
     <View style={[styles.photo, { aspectRatio: aspect }]} onLayout={onLayout} testID="tag-photo">
-      <AppImage uri={stableImageUrl(postId, image.url)} style={styles.fill} contentFit="cover" />
+      <AppImage
+        uri={stableImageUrl(postId, image.url)}
+        style={styles.fill}
+        contentFit="cover"
+        private
+      />
       {dots.map((dot, index) => (
         <DraggableDot
           key={dot.key}

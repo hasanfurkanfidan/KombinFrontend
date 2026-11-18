@@ -1,7 +1,10 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { useEffect } from 'react';
+import { AppState, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useQueryClient } from '@tanstack/react-query';
 
 import type { LeagueMe } from '@/api/models';
+import { queryKeys } from '@/api/queryKeys';
 import { Icon } from '@/components/Icon';
 import { PressableScale } from '@/components/PressableScale';
 import { tr } from '@/i18n/tr';
@@ -31,10 +34,28 @@ export function joinedRowBody(me: LeagueMe, closed: boolean): string {
  */
 export function LeagueEntry() {
   const me = useLeagueState();
+  useRefreshWhenActive();
   if (!me) {
     return null;
   }
   return isActivePlayer(me) ? <JoinedRow me={me} /> : <JoinRow reconsent={me.joined} />;
+}
+
+/**
+ * The row's answer is from the moment Keşfet last asked; a phone that was in a pocket across the day's close would show
+ * yesterday's "Sonuçlar hazır" until the next day. When the app comes back to the front the league state is asked once
+ * more (only where a league exists, so a server with the league off is never asked again). No timer, no polling.
+ */
+function useRefreshWhenActive() {
+  const queryClient = useQueryClient();
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (state) => {
+      if (state === 'active' && queryClient.getQueryData(queryKeys.leagueMe)) {
+        void queryClient.invalidateQueries({ queryKey: queryKeys.leagueMe });
+      }
+    });
+    return () => subscription.remove();
+  }, [queryClient]);
 }
 
 function JoinRow({ reconsent }: { reconsent: boolean }) {

@@ -57,6 +57,11 @@ async function ask(
       return hidden(null);
     }
     const polls = previous?.answer?.status === 'Preparing' ? previous.polls + 1 : 0;
+    if (answer.status === 'Preparing' && polls >= TRYON_MAX_POLLS) {
+      // Still preparing after the last poll: that is no answer. It is kept as a hidden one for the session, like every
+      // other hidden answer, so opening the screen again does not ask again.
+      return hidden(null);
+    }
     return { answer, retryAt: null, polls };
   } catch (error) {
     if (signal.aborted) {
@@ -133,10 +138,7 @@ export function useTryOn(subject: TryOnSubject | null, delayMs = TRYON_ASK_DELAY
       return entry.retryAt === null ? Infinity : Math.max(0, entry.retryAt - Date.now());
     },
     refetchInterval: (current) =>
-      current.state.data?.answer?.status === 'Preparing' &&
-      current.state.data.polls < TRYON_MAX_POLLS
-        ? TRYON_POLL_MS
-        : false,
+      current.state.data?.answer?.status === 'Preparing' ? TRYON_POLL_MS : false,
   });
 
   // Measurements, sizes or the wardrobe changed on another screen (`invalidateTryOn` marks the answers without asking):
@@ -159,8 +161,8 @@ export function useTryOn(subject: TryOnSubject | null, delayMs = TRYON_ASK_DELAY
   if (answer.status === 'Ready' && answer.imageUrl) {
     return { phase: 'ready', answer };
   }
-  // Ten asks after the first answer, and it still says "Preparing": that is no answer, and the action goes away.
-  if (answer.status === 'Preparing' && (query.data?.polls ?? 0) < TRYON_MAX_POLLS) {
+  // (Ten asks after the first answer that still say "Preparing" are stored as a hidden answer by `ask`.)
+  if (answer.status === 'Preparing') {
     return { phase: 'preparing', answer };
   }
   return NOTHING;
@@ -179,13 +181,25 @@ export function useReportTryOn() {
   return useMutation({ mutationFn: (body: ReportTryOnRequest) => reportTryOn(body) });
 }
 
-/** The report for a drawing: what was asked about, the pieces the answer drew and the renderer, when the answer names one. */
-export function buildReport(subject: TryOnSubject, answer: TryOn): ReportTryOnRequest {
+/**
+ * The renderer the answer names, or `null` when it names none. The backend refuses a report without one, so a drawing
+ * whose answer carries none cannot be reported and the app offers no "Yanlış görünüyor" for it.
+ */
+export function reportableRenderer(answer: TryOn): string | null {
+  const renderer = answer.renderer?.trim();
+  return renderer ? renderer : null;
+}
+
+/** The report for a drawing: what was asked about, the pieces the answer drew and the renderer that drew them. */
+export function buildReport(
+  subject: TryOnSubject,
+  answer: TryOn,
+  renderer: string,
+): ReportTryOnRequest {
   return {
     outfitId: subject.kind === 'outfit' ? subject.id : null,
     productId: subject.kind === 'product' ? subject.id : null,
     garmentIds: answer.garments.map((garment) => garment.id),
-    // The contract's answer has no renderer: `null` is what it allows (the backend asks for a value; see the task notes).
-    renderer: answer.renderer ?? null,
+    renderer,
   };
 }

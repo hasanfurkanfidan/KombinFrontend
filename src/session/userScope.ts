@@ -4,6 +4,7 @@ import { usePendingDeletionStore } from '@/features/auth/pendingDeletion';
 import { resetImageUrls } from '@/features/social/imageUrl';
 import { resetTryOnGate } from '@/features/tryon/gate';
 import { useAddStore } from '@/features/wardrobe/addStore';
+import { clearImageCache } from '@/utils/imageCache';
 import { purgeTempPhotos } from '@/utils/tempFiles';
 
 import { usePrefsStore } from './prefsStore';
@@ -25,7 +26,8 @@ export function userScopeEpoch(): number {
  * wardrobe, personas, outfits, saved products, alerts, notifications, posts with their per-viewer fields, creator
  * stats, blocks, and the scored catalog lists), the in-memory stores (recent searches, onboarding skip, push token
  * and prompt flag, the wardrobe add queue and its local photos, pending-deletion credentials), the post photo URL map,
- * the temporary photos on disk, and the anonymous analytics id.
+ * the temporary photos on disk, the image cache (memory and disk: every picture downloaded for this account), and the
+ * anonymous analytics id.
  */
 export function resetUserScopedState(): void {
   epoch += 1;
@@ -37,21 +39,34 @@ export function resetUserScopedState(): void {
   resetImageUrls();
   resetTryOnGate();
   void purgeTempPhotos();
+  void clearImageCache();
   void rotateAnonymousId();
 }
 
 /**
- * Runs `resetUserScopedState` whenever the store leaves `signedIn` (sign-out, account deletion, a rejected refresh), and
- * forgets the remembered worn outfit when the start ends signed out.
+ * Runs `resetUserScopedState` whenever the store leaves `signedIn` (sign-out, account deletion, a rejected refresh) or
+ * another sign-in replaces the open session, and
+ * forgets the remembered worn outfit when the start ends signed out. A stored session that is rejected while the app is
+ * starting (or later, after the splash gave up waiting) never was `signedIn` here, but the previous account's pictures
+ * may still be on the phone: the image cache is emptied for that too. A start with no stored session is not a session
+ * ending and keeps its cache (a visitor's catalogue pictures).
  * Installed once at app start; returns the unsubscribe for tests.
  */
 export function installUserScopeReset(): () => void {
   return useSessionStore.subscribe((state, previous) => {
-    if (previous.status === 'signedIn' && state.status !== 'signedIn') {
+    if (
+      (previous.status === 'signedIn' && state.status !== 'signedIn') ||
+      state.sessionsReplaced !== previous.sessionsReplaced
+    ) {
       resetUserScopedState();
-    } else if (previous.status === 'booting' && state.status === 'signedOut') {
+      return;
+    }
+    if (previous.status === 'booting' && state.status === 'signedOut') {
       // Nobody is signed in after the start: the file of the last account on this phone has no owner to show it to.
       usePrefsStore.getState().clearHomeCardWorn();
+    }
+    if (state.sessionsEnded !== previous.sessionsEnded && previous.status !== 'signedIn') {
+      void clearImageCache();
     }
   });
 }

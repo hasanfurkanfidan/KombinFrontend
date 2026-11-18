@@ -1,5 +1,6 @@
 import { act, fireEvent, screen, waitFor } from '@testing-library/react-native';
 import { router } from 'expo-router';
+import { AppState } from 'react-native';
 
 import { ApiError } from '@/api/client';
 import { getLeagueMe } from '@/api/endpoints/league';
@@ -97,6 +98,62 @@ describe('Keşfet’s league row', () => {
     expect(screen.getByText('Altın · 7. sırada · Sonuçlar hazır')).toBeTruthy();
     await fireEvent.press(row);
     expect(router.push).toHaveBeenCalledWith('/league/results');
+  });
+});
+
+describe('Keşfet’s league row when the app comes back to the front', () => {
+  function captureAppState() {
+    const listeners: ((state: string) => void)[] = [];
+    jest.spyOn(AppState, 'addEventListener').mockImplementation(((
+      _type: string,
+      listener: (state: string) => void,
+    ) => {
+      listeners.push(listener);
+      return { remove: jest.fn() };
+    }) as never);
+    return (state: string) => act(async () => listeners.forEach((listener) => listener(state)));
+  }
+
+  afterEach(() => jest.restoreAllMocks());
+
+  it('asks for the league state once when the app becomes active, so yesterday’s "Sonuçlar hazır" does not stay', async () => {
+    freezeClockAt('2026-11-02T18:05:00Z');
+    meMock.mockResolvedValue(leagueMe({ today: todayWith({ closesAt: DAY_CLOSE }) }));
+    const change = captureAppState();
+    await renderWithQuery(<LeagueEntry />);
+    expect(await screen.findByText('Altın · 7. sırada · Sonuçlar hazır')).toBeTruthy();
+    expect(meMock).toHaveBeenCalledTimes(1);
+
+    // A new day's state arrives with the next answer.
+    meMock.mockResolvedValue(
+      leagueMe({ today: todayWith({ day: '2026-11-03', countedVotes: 0 }) }),
+    );
+    await change('active');
+
+    expect(await screen.findByText('Altın · 7. sırada · 0/10 oy')).toBeTruthy();
+    expect(meMock).toHaveBeenCalledTimes(2);
+  });
+
+  it('does nothing when the app goes to the background, and never polls', async () => {
+    const change = captureAppState();
+    await renderWithQuery(<LeagueEntry />);
+    await screen.findByTestId('league-entry-joined');
+
+    await change('background');
+    await change('inactive');
+
+    expect(meMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not ask again where there is no league', async () => {
+    meMock.mockResolvedValue(null);
+    const change = captureAppState();
+    await renderWithQuery(<LeagueEntry />);
+    await waitFor(() => expect(meMock).toHaveBeenCalledTimes(1));
+
+    await change('active');
+
+    expect(meMock).toHaveBeenCalledTimes(1);
   });
 });
 
