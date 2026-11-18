@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 
+import { track } from '@/analytics';
 import { Button } from '@/components/Button';
 import { IconButton } from '@/components/IconButton';
 import { tr } from '@/i18n/tr';
@@ -31,6 +32,15 @@ export function LeagueHomeScreen() {
 
   const joined = me?.joined ?? false;
   const table = useLeagueTable(joined);
+
+  // Once per opening, when the table itself is on screen (not for the "group not formed yet" note).
+  const tableViewed = useRef(false);
+  useEffect(() => {
+    if (table.data && !tableViewed.current) {
+      tableViewed.current = true;
+      track('league_table_view', {});
+    }
+  }, [table.data]);
 
   useEffect(() => {
     if (meQuery.data === null) {

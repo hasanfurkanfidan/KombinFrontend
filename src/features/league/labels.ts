@@ -1,11 +1,4 @@
-import type {
-  LeagueEntryReason,
-  LeagueMe,
-  LeaguePiece,
-  LeagueTier,
-  LeagueTodayEntry,
-  OutfitSlot,
-} from '@/api/models';
+import type { LeagueMe, LeaguePiece, LeagueTier, LeagueTodayEntry, OutfitSlot } from '@/api/models';
 import type { FigurePiece } from '@/features/outfits/OutfitPieces';
 import { tr } from '@/i18n/tr';
 import { formatWeekday } from '@/utils/dates';
@@ -107,19 +100,10 @@ export function istanbulWeekday(iso: string): string {
   return formatWeekday(istanbulDay(new Date(iso)));
 }
 
-const REASON_NOTES: Record<LeagueEntryReason, string> = {
-  RecentlyCompeted: tr.leagueLineRecentlyCompeted,
-  UnsafePiece: tr.leagueLineUnsafePiece,
-  IncompleteOutfit: tr.leagueLineIncompleteOutfit,
-  PieceUnavailable: tr.leagueLinePieceUnavailable,
-  AgeRestricted: tr.leagueLineAgeRestricted,
-  NotWorn: tr.leagueLineNotWorn,
-};
-
 /**
- * The one line under "Bugün giyiyorsun": what today's worn outfit is doing in the league. The server's own `message` wins
- * (it carries the repeat rule's sentence); the contract gives a message only for `RecentlyCompeted`, so the other reasons
- * have a sentence of ours.
+ * The one line under "Bugün giyiyorsun": what today's worn outfit is doing in the league. For a kombin that does not
+ * compete (every reason) and for a removed one the line is the server's own `message`, shown exactly as it is; with no
+ * message there is no line. Competing, pending and withdrawn (the server sends no message for them) keep our short lines.
  */
 export function entryNote(entry: LeagueTodayEntry | null): string | null {
   if (!entry) {
@@ -133,11 +117,8 @@ export function entryNote(entry: LeagueTodayEntry | null): string | null {
     case 'Withdrawn':
       return tr.leagueLineWithdrawn;
     case 'Removed':
-      return tr.leagueLineRemoved;
     case 'NotCompeting':
-      return (
-        entry.message ?? (entry.reason ? REASON_NOTES[entry.reason] : tr.leagueLineNotCompeting)
-      );
+      return entry.message || null;
   }
 }
 

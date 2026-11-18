@@ -1,7 +1,8 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 
+import { track } from '@/analytics';
 import type { LeagueResults } from '@/api/models';
 import { Button } from '@/components/Button';
 import { tr } from '@/i18n/tr';
@@ -34,6 +35,16 @@ export function ResultsScreen({ day }: ResultsScreenProps) {
 
   const close = () => (router.canGoBack() ? router.back() : router.replace('/'));
   const result = query.data ?? null;
+
+  // Once per opening, when the result itself has settled (not for "no result yet" or an error).
+  const viewed = useRef(false);
+  const resultStatus = result?.status ?? null;
+  useEffect(() => {
+    if (resultStatus && !viewed.current) {
+      viewed.current = true;
+      track('league_results_view', { status: resultStatus });
+    }
+  }, [resultStatus]);
   const subtitle = result
     ? tr.leagueResultsTitle(formatWeekday(result.day))
     : tr.leagueResultsDefaultTitle;
@@ -177,8 +188,10 @@ function Hero({ result, kind }: { result: LeagueResults; kind: Kind }) {
         ? tr.leagueNotRankedTitle
         : kind === 'notCompeted'
           ? tr.leagueNotCompetedTitle
-          : (result.message ??
-            (kind === 'removed' ? tr.leagueRemovedMessage : tr.leagueUnderReviewFallback));
+          : kind === 'removed'
+            ? // The server's sentence as it is; with none there is no paragraph.
+              (result.message ?? null)
+            : (result.message ?? tr.leagueUnderReviewFallback);
     const detail =
       kind === 'notRanked'
         ? tr.leagueNotRankedBody
@@ -187,13 +200,15 @@ function Hero({ result, kind }: { result: LeagueResults; kind: Kind }) {
           : null;
     text = (
       <View style={styles.heroText}>
-        <Text
-          accessibilityRole="header"
-          style={kind === 'underReview' || kind === 'removed' ? styles.message : styles.headline}
-          testID="results-headline"
-        >
-          {title}
-        </Text>
+        {title ? (
+          <Text
+            accessibilityRole="header"
+            style={kind === 'underReview' || kind === 'removed' ? styles.message : styles.headline}
+            testID="results-headline"
+          >
+            {title}
+          </Text>
+        ) : null}
         {detail ? <Text style={styles.detail}>{detail}</Text> : null}
         {kind === 'notRanked' && comparedLine ? (
           <Text style={styles.detail}>{comparedLine}</Text>

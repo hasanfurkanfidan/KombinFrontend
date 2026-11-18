@@ -2,8 +2,8 @@ import { tsxFiles } from '../../a11y/sourceScan';
 
 /**
  * What the league must never do, checked on its source: it has no buying (the app sells nothing, and nothing on a league
- * screen is for sale), sends no analytics (the allow-list has no league event, and an id of a pair, an entry or a
- * picture must never leave the phone that way), and keeps nothing of another player on disk.
+ * screen is for sale), sends only the six allow-listed league events with enums and booleans (an id of a pair, an entry,
+ * a picture or a player must never leave the phone that way), and keeps nothing of another player on disk.
  */
 const FILES = [...tsxFiles('src/features/league'), ...tsxFiles('app/league')];
 
@@ -44,8 +44,28 @@ describe('the league screens', () => {
     expect(hits(/ProductCard|productHref|\.offer\b.*price|seller/i)).toEqual([]);
   });
 
-  it('send no analytics event: none of the league’s facts leaves the phone that way', () => {
-    expect(hits(/@\/analytics|\btrack\(/)).toEqual([]);
+  it('send only the six allow-listed league events, and no identifier, alias or link in their properties', () => {
+    const ALLOWED = [
+      'league_join',
+      'league_leave',
+      'league_vote',
+      'league_report',
+      'league_results_view',
+      'league_table_view',
+    ];
+    const names = new Set<string>();
+    for (const file of ALL) {
+      const calls = /track\(\s*'([^']+)'\s*,\s*(\{[^}]*\})/g;
+      for (let call = calls.exec(file.source); call; call = calls.exec(file.source)) {
+        names.add(call[1] ?? '');
+        // Properties are enums and booleans from the response, never an id, an alias, a link or a piece.
+        expect(call[2]).not.toMatch(/pairId|entryId|userId|alias|imageUrl|url|pieces|\.id|day/i);
+      }
+    }
+    expect([...names].sort()).toEqual([...ALLOWED].sort());
+    // Nothing else of the analytics module is used (no custom id, no other call).
+    expect(hits(/@\/analytics'/).length).toBeGreaterThan(0);
+    expect(hits(/track\(\s*[^'\s]/)).toEqual([]);
   });
 
   it('keep nothing on disk: no storage, no store of pair, entry or picture identifiers', () => {

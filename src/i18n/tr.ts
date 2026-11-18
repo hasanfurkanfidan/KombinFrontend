@@ -1172,15 +1172,7 @@ export const tr = {
   leagueLineCompeting: 'Kombinin ligde yarışıyor',
   leagueLinePending: 'Lige hazırlanıyor',
   leagueLineWithdrawn: 'Kombinini bugünkü yarıştan çıkardın',
-  leagueLineRemoved: 'Kombin ligden kaldırıldı',
-  leagueLineRecentlyCompeted: 'Bu kombin yakın zamanda yarıştı, bugün yarışmıyor.',
-  leagueLineUnsafePiece: 'Kombinin parçalarından biri lige uygun bulunmadı.',
-  leagueLineIncompleteOutfit:
-    'Bu kombin lige girmedi: yalnızca dolabındaki parçalardan oluşan kombinler yarışır.',
-  leagueLinePieceUnavailable: 'Kombinindeki bir parça artık dolabında değil.',
   leagueLineAgeRestricted: 'Lige yalnızca 18 yaşından büyükler katılabilir.',
-  leagueLineNotWorn: 'Bu kombini artık giymiyorsun, yarışmıyor.',
-  leagueLineNotCompeting: 'Bu kombin bugün yarışmıyor.',
 
   // Join (design 01)
   leagueJoinTitle: 'Bugünkü kombinin yarışsın.',
@@ -1245,7 +1237,6 @@ export const tr = {
   leagueNotRankedBody:
     'Kombinin sıralamaya girecek kadar karşılaştırılmadı. Kullanım puanların yine de sayıldı.',
   leagueUnderReviewFallback: 'Kombinin inceleniyor. Sonuç inceleme bitince görünecek.',
-  leagueRemovedMessage: 'Kombin incelemeden sonra yarıştan çıkarıldı, oy puanı verilmedi.',
   leagueNotCompetedTitle: 'Kombinin yarışmadı',
   leagueNotCompetedBody:
     "Yarın 21:00'den önce kombinini “Bunu giyiyorum” diye işaretle; kendiliğinden yarışır.",

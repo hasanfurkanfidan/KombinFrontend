@@ -1,6 +1,7 @@
 import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 
+import { track } from '@/analytics';
 import { ApiError } from '@/api/client';
 import type { LeagueTodayEntry } from '@/api/models';
 import { BottomSheet } from '@/components/BottomSheet';
@@ -69,6 +70,7 @@ export function LeagueSettings({ visible, onClose, entry }: LeagueSettingsProps)
         onPress: () =>
           leave.mutate(undefined, {
             onSuccess: () => {
+              track('league_leave', {});
               showToast(tr.leagueLeaveDone);
               // The league screen has nothing to show for someone who is not in it.
               router.replace('/');

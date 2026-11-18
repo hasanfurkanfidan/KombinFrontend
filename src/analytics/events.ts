@@ -106,6 +106,15 @@ export interface EventProps {
   size_prompt_view: { promptId: string };
   /** The question was answered; `answer` is the enum name, never the size. */
   size_prompt_answer: { promptId: string; answer: SizePromptAnswer };
+  /** Kombin Ligi. No pair, entry, picture or player identifier is ever a property. */
+  league_join: Record<string, never>;
+  league_leave: Record<string, never>;
+  /** One answered pair: `counted` is whether the vote's response counted it. */
+  league_vote: { choice: 'left' | 'right' | 'skip'; counted: boolean };
+  league_report: Record<string, never>;
+  /** The results screen settled with data; `status` is the results' own status. */
+  league_results_view: { status: 'Final' | 'UnderReview' | 'Removed' };
+  league_table_view: Record<string, never>;
 }
 
 export type EventName = keyof EventProps;
@@ -171,6 +180,12 @@ export const EVENT_KEYS: Record<EventName, KeySpec> = {
   },
   size_prompt_view: { required: ['promptId'], optional: [] },
   size_prompt_answer: { required: ['promptId', 'answer'], optional: [] },
+  league_join: { required: [], optional: [] },
+  league_leave: { required: [], optional: [] },
+  league_vote: { required: ['choice', 'counted'], optional: [] },
+  league_report: { required: [], optional: [] },
+  league_results_view: { required: ['status'], optional: [] },
+  league_table_view: { required: [], optional: [] },
 };
 
 /** Property keys that name personal data; refused on every event. */

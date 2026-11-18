@@ -9,7 +9,7 @@ import { Chip } from '@/components/Chip';
 import { openOffer } from '@/features/catalog/buy';
 import { gapPieces } from '@/features/outfits/labels';
 import { OutfitMiniFigure } from '@/features/outfits/OutfitMiniFigure';
-import { useTryOn } from '@/features/tryon/hooks';
+import { useTryOnAvailable, useTryOnDraw } from '@/features/tryon/hooks';
 import { outfitPieceNames } from '@/features/tryon/labels';
 import { TryOnPanel } from '@/features/tryon/TryOnPanel';
 import { tr } from '@/i18n/tr';
@@ -112,9 +112,10 @@ function Group({
  */
 function FirstTryOutfit({ outfit, onClose }: { outfit: Outfit; onClose: () => void }) {
   const subject = { kind: 'outfit', id: outfit.id } as const;
-  const state = useTryOn(subject);
+  const available = useTryOnAvailable(subject);
   const [view, setView] = useState<'figure' | 'mannequin'>('figure');
-  const available = state.phase !== 'hidden';
+  // The drawing is asked for only when the user switches to the mannequin; if it fails the figure comes back quietly.
+  const state = useTryOnDraw(subject, available && view === 'mannequin', () => setView('figure'));
 
   return (
     <View style={styles.firstOutfit} testID="try-first-outfit">

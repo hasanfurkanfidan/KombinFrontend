@@ -8,8 +8,8 @@ import { entryNote, isActivePlayer } from './labels';
 
 /**
  * One line under "Bugün giyiyorsun" on the morning card: what today's worn outfit is doing in the league. Competing:
- * "Kombinin ligde yarışıyor"; not competing: the server's message (the repeat rule) or the reason in words; pending: "Lige
- * hazırlanıyor". Nothing for someone who is not in the league (or when there is no league at all). The card has just
+ * "Kombinin ligde yarışıyor"; not competing or removed: the server's message as it is (nothing when it sends none);
+ * pending: "Lige hazırlanıyor". Nothing for someone who is not in the league (or when there is no league at all). The card has just
  * settled, so the state is asked for again when the line appears.
  */
 export function LeagueEntryLine() {

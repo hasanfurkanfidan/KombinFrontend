@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Pressable } from 'react-native';
 import { act } from '@testing-library/react-native';
 
+import { getTryOn, type TryOnSubject } from '@/api/endpoints/tryon';
 import type { TryOn } from '@/api/models';
 import { TryOnAction } from '@/features/tryon/TryOnAction';
 
@@ -31,15 +32,71 @@ export function tryOn(overrides: Partial<TryOn> = {}): TryOn {
     ],
     defaultedMeasurements: [],
     reason: null,
+    renderer: 'mannequin-v5',
     ...overrides,
   };
 }
 
 export const unavailable = (): TryOn =>
-  tryOn({ status: 'Unavailable', imageUrl: null, garments: [], reason: 'PieceNotReady' });
+  tryOn({
+    status: 'Unavailable',
+    imageUrl: null,
+    garments: [],
+    reason: 'PieceNotReady',
+    renderer: null,
+  });
 
 export const preparing = (): TryOn =>
-  tryOn({ status: 'Preparing', imageUrl: null, garments: [], defaultedMeasurements: [] });
+  tryOn({
+    status: 'Preparing',
+    imageUrl: null,
+    garments: [],
+    defaultedMeasurements: [],
+    renderer: null,
+  });
+
+/** The answer to an availability check (`check: true`): status and reason only, never a picture. */
+export const checkReady = (): TryOn => ({
+  status: 'Ready',
+  imageUrl: null,
+  garments: [],
+  defaultedMeasurements: [],
+  reason: null,
+  renderer: null,
+});
+
+/** What a mocked ask answers: a value, an error to reject with, or a function (a sequence, a request held open). */
+export type Answer = TryOn | Error | ((subject: TryOnSubject) => Promise<TryOn>);
+
+function answerWith(answer: Answer, subject: TryOnSubject): Promise<TryOn> {
+  if (answer instanceof Error) {
+    return Promise.reject(answer);
+  }
+  return typeof answer === 'function' ? answer(subject) : Promise.resolve(answer);
+}
+
+/**
+ * Makes the mocked `getTryOn` answer by option: a call with `{ check: true }` gets `check`, any other call (the real
+ * drawing) gets `draw`. By default every check says `Ready` and every drawing returns the `tryOn()` fixture.
+ */
+export function mockTryOn({
+  check = checkReady(),
+  draw = tryOn(),
+}: { check?: Answer; draw?: Answer } = {}): void {
+  jest
+    .mocked(getTryOn)
+    .mockImplementation((subject, _signal, options) =>
+      answerWith(options?.check ? check : draw, subject),
+    );
+}
+
+const callsOf = (check: boolean) =>
+  jest.mocked(getTryOn).mock.calls.filter(([, , options]) => Boolean(options?.check) === check);
+
+/** The availability checks made so far (each carried `{ check: true }`). */
+export const checkCalls = () => callsOf(true);
+/** The real drawing requests made so far (no `check` option). */
+export const drawCalls = () => callsOf(false);
 
 export const NAMES = { w1: 'Koyu yeşil blazer', w2: 'Siyah kumaş pantolon', w3: 'Kahverengi bot' };
 

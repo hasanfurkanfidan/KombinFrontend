@@ -28,7 +28,7 @@ export interface TryOnPanelProps {
 }
 
 /**
- * The mannequin picture and what goes with it. `preparing`: a surface panel the size of the figure with "Hazırlanıyor".
+ * The mannequin picture and what goes with it. `preparing` (the drawing was just asked for): a surface panel the size of the figure with "Hazırlanıyor".
  * `ready`: the image on a white panel, the honest label under it, the fit of each piece, the line about measurements the
  * mannequin had to guess, and the one-tap "Yanlış görünüyor". No sharing here.
  *
@@ -42,7 +42,7 @@ export function TryOnPanel({ subject, state, names, productName, onLeave }: TryO
   );
   const { answer, phase } = state;
 
-  if (!answer || phase === 'hidden') {
+  if (phase === 'hidden') {
     return null;
   }
 
@@ -55,6 +55,9 @@ export function TryOnPanel({ subject, state, names, productName, onLeave }: TryO
     );
   }
 
+  if (!answer) {
+    return null;
+  }
   const rows = fitRows(answer, names);
   return (
     <View style={styles.root} testID="tryon-panel">
