@@ -115,6 +115,10 @@ export interface EventProps {
   /** The results screen settled with data; `status` is the results' own status. */
   league_results_view: { status: 'Final' | 'UnderReview' | 'Removed' };
   league_table_view: Record<string, never>;
+  /** Ask a friend: an ask was created (201). Never the link, token or outfit contents. */
+  ask_create: { askId: string; kind: 'Single' | 'Pair' };
+  /** The share sheet completed (not dismissed). */
+  ask_share: { askId: string };
 }
 
 export type EventName = keyof EventProps;
@@ -186,6 +190,8 @@ export const EVENT_KEYS: Record<EventName, KeySpec> = {
   league_report: { required: [], optional: [] },
   league_results_view: { required: ['status'], optional: [] },
   league_table_view: { required: [], optional: [] },
+  ask_create: { required: ['askId', 'kind'], optional: [] },
+  ask_share: { required: ['askId'], optional: [] },
 };
 
 /** Property keys that name personal data; refused on every event. */

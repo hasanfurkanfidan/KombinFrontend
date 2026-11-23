@@ -150,6 +150,16 @@ jest.mock('@/api/endpoints/league', () => ({
   withdrawLeagueEntry: jest.fn(),
 }));
 
+// "Arkadaşına sor" is switched off by default: the consent answer is 404 `AskFriend.Disabled`, so the button stays hidden on
+// every screen that holds it unless a test gives the consent its own answer (`__tests__/features/askFriend`).
+jest.mock('@/api/endpoints/askFriend', () => ({
+  getAskConsent: jest.fn(async () => {
+    const { ApiError } = jest.requireActual('@/api/client');
+    throw new ApiError({ status: 404, errorCode: 'AskFriend.Disabled', correlationId: 'test' });
+  }),
+  createAsk: jest.fn(),
+}));
+
 jest.mock('expo-notifications', () => ({
   AndroidImportance: { DEFAULT: 3 },
   getPermissionsAsync: jest.fn(async () => ({ status: 'undetermined' })),

@@ -60,6 +60,8 @@ const BACKEND_TABLE: Record<string, { required: string[]; optional: string[] }> 
   league_report: { required: [], optional: [] },
   league_results_view: { required: ['status'], optional: [] },
   league_table_view: { required: [], optional: [] },
+  ask_create: { required: ['askId', 'kind'], optional: [] },
+  ask_share: { required: ['askId'], optional: [] },
 };
 
 describe('event allow-list', () => {

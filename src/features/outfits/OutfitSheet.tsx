@@ -11,6 +11,7 @@ import { formatTry, toNumber } from '@/utils/money';
 import { useOutfitActions, type OutfitActions } from './actions';
 import { gapPieces } from './labels';
 import { lines } from '@/utils/a11y';
+import { AskFriendButton } from '@/features/askFriend/AskFriendButton';
 import { TryOnAction } from '@/features/tryon/TryOnAction';
 import { outfitPieceNames } from '@/features/tryon/labels';
 
@@ -41,13 +42,15 @@ interface OutfitSheetProps {
   actions: OutfitActions;
   /** Swiping the sheet down dismisses the outfit (the daily screen asks why); omitted where there is nothing to dismiss. */
   onSwipeDown?: () => void;
+  /** The quiet "Arkadaşına sor" under the buttons (the stored-outfit view); hidden by itself while the feature is off. */
+  askFriend?: boolean;
 }
 
 /**
  * The white panel under the grid. `Complete`: save and "wore it today". `NeedsOne` / `CatalogOnly`: what is missing,
  * what it costs, where it is cheapest, and the way to buy it. Prices come from the backend; nothing is computed here.
  */
-export function OutfitSheet({ outfit, actions, onSwipeDown }: OutfitSheetProps) {
+export function OutfitSheet({ outfit, actions, onSwipeDown, askFriend }: OutfitSheetProps) {
   const handlers = useSwipeDown(onSwipeDown);
   const gaps = gapPieces(outfit.pieces);
   const shopping = outfit.kind === 'Shopping';
@@ -150,14 +153,24 @@ export function OutfitSheet({ outfit, actions, onSwipeDown }: OutfitSheetProps) 
           </View>
         </>
       )}
+      {askFriend ? (
+        <AskFriendButton outfit={outfit} variant="quiet" wrap style={styles.ask} />
+      ) : null}
     </View>
   );
 }
 
 /** `OutfitSheet` wired to the outfit's save / wear / buy actions. */
-export function OutfitPanel({ outfit, onSwipeDown }: Omit<OutfitSheetProps, 'actions'>) {
+export function OutfitPanel({ outfit, onSwipeDown, askFriend }: Omit<OutfitSheetProps, 'actions'>) {
   const actions = useOutfitActions(outfit);
-  return <OutfitSheet outfit={outfit} actions={actions} onSwipeDown={onSwipeDown} />;
+  return (
+    <OutfitSheet
+      outfit={outfit}
+      actions={actions}
+      onSwipeDown={onSwipeDown}
+      askFriend={askFriend}
+    />
+  );
 }
 
 const REASONS = [
@@ -273,6 +286,9 @@ const styles = StyleSheet.create({
   },
   half: {
     flex: 1,
+  },
+  ask: {
+    alignSelf: 'center',
   },
   reason: {
     minHeight: theme.sizes.touch,

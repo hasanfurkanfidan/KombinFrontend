@@ -67,7 +67,7 @@ export function OutfitDetailScreen({ id }: { id: string }) {
       title={outfit ? outfitTitle(outfit, outfit.date) : tr.outfitViewTitle}
       subtitle={outfit ? outfitSubtitle(outfit.weather, undefined) : null}
       onClose={close}
-      sheet={outfit ? <OutfitPanel outfit={outfit} /> : undefined}
+      sheet={outfit ? <OutfitPanel outfit={outfit} askFriend /> : undefined}
     >
       {body}
     </OutfitFrame>

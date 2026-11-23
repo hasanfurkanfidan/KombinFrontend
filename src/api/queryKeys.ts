@@ -74,6 +74,9 @@ export const queryKeys = {
   leagueResults: (day: string | null) => ['league', 'results', day ?? 'latest'] as const,
   leagueTable: ['league', 'table'] as const,
 
+  /** Ask a friend: the consent answer doubles as "is the feature on" (a 404 `AskFriend.Disabled` is an error here). */
+  askConsent: ['asks', 'consent'] as const,
+
   /**
    * "Manken üstünde gör", one entry per outfit or product, under its own root (not `outfits`: `patchOutfit` walks that
    * prefix). A change of measurements, sizes or wardrobe invalidates the prefix: the server draws another image then.

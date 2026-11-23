@@ -17,6 +17,7 @@ import { Button } from '@/components/Button';
 import { Icon } from '@/components/Icon';
 import { PressableScale } from '@/components/PressableScale';
 import { Skeleton } from '@/components/Skeleton';
+import { AskFriendButton } from '@/features/askFriend/AskFriendButton';
 import { LeagueEntryLine } from '@/features/league/LeagueEntryLine';
 import { useMe } from '@/features/profile/hooks';
 import { addPhotos } from '@/features/wardrobe/addItem';
@@ -422,6 +423,7 @@ function OutfitCard({ day }: { day: HomeCardDay }) {
           />
         ) : null}
       </View>
+      {outfit ? <AskFriendButton outfit={outfit} variant="quiet" wrap style={styles.ask} /> : null}
       <OccasionSheet
         visible={choosing}
         value={occasion}
@@ -505,6 +507,10 @@ const styles = StyleSheet.create({
   },
   action: {
     flex: 1,
+  },
+  ask: {
+    alignSelf: 'flex-start',
+    paddingHorizontal: 0,
   },
   emptyActions: {
     gap: theme.spacing.xs,
