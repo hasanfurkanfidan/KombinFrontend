@@ -14,6 +14,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { AnalyticsTracker } from '@/analytics/AnalyticsTracker';
 import { apiUrlProblem } from '@/api/client';
 import { queryClient } from '@/api/queryClient';
+import { initErrorReporting } from '@/errorReporting';
 import { OnboardingGate } from '@/features/onboarding/OnboardingGate';
 import { NotificationHandler, PushRegistration } from '@/push/PushLifecycle';
 import { useSessionStore } from '@/session/sessionStore';
@@ -28,6 +29,9 @@ const apiProblem = __DEV__ ? null : apiUrlProblem(process.env.EXPO_PUBLIC_API_UR
 if (apiProblem !== null) {
   throw new Error(apiProblem);
 }
+
+// Crash and error reporting (scrubbed; off without a DSN, on web, in Expo Go and when the user turned it off).
+initErrorReporting();
 
 // Keep the native splash up until fonts and the session are ready, so a logged-in user never sees the login screen.
 SplashScreen.preventAutoHideAsync().catch(() => undefined);

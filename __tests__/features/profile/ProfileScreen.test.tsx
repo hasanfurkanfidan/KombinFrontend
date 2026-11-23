@@ -1,4 +1,4 @@
-import { fireEvent, screen, waitFor } from '@testing-library/react-native';
+import { act, fireEvent, screen, waitFor, within } from '@testing-library/react-native';
 import * as SecureStore from 'expo-secure-store';
 import { router } from 'expo-router';
 
@@ -15,6 +15,11 @@ import {
 } from '@/api/endpoints/profile';
 import { ApiError } from '@/api/client';
 import { getCreatorStats } from '@/api/endpoints/social';
+import {
+  isErrorReportingAvailable,
+  setErrorReportingEnabled,
+  useErrorReportingStore,
+} from '@/errorReporting';
 import { ProfileScreen } from '@/features/profile/ProfileScreen';
 import { useSessionStore } from '@/session/sessionStore';
 import { theme } from '@/theme';
@@ -28,6 +33,12 @@ jest.mock('@/api/endpoints/auth');
 jest.mock('@/api/endpoints/engagement');
 jest.mock('@/api/endpoints/profile');
 jest.mock('@/api/endpoints/social');
+// The real store and hook; availability and the setter are controlled per test (no DSN under Jest).
+jest.mock('@/errorReporting', () => ({
+  ...jest.requireActual('@/errorReporting'),
+  isErrorReportingAvailable: jest.fn(() => false),
+  setErrorReportingEnabled: jest.fn(() => Promise.resolve()),
+}));
 
 const getMeMock = jest.mocked(getMe);
 const logoutMock = jest.mocked(logout);
@@ -335,5 +346,65 @@ describe('the league row', () => {
     await fireEvent.press(await screen.findByTestId('profile-league'));
     expect(screen.getByText('Altın lig · 7. sıra')).toBeTruthy();
     expect(router.push).toHaveBeenCalledWith('/league');
+  });
+});
+
+describe('the error-report switch', () => {
+  const availableMock = jest.mocked(isErrorReportingAvailable);
+  const setEnabledMock = jest.mocked(setErrorReportingEnabled);
+
+  beforeEach(async () => {
+    await signedInSession();
+    availableMock.mockReturnValue(false);
+    useErrorReportingStore.setState({ enabled: true });
+  });
+
+  it('is not there when reporting is not available', async () => {
+    await renderWithQuery(<ProfileScreen />);
+
+    await screen.findByText('Ayşe Yılmaz');
+    expect(screen.getByTestId('profile-privacy')).toBeTruthy();
+    expect(screen.queryByTestId('profile-error-reports')).toBeNull();
+    expect(screen.queryByText('Hata raporları')).toBeNull();
+  });
+
+  it('shows in "Hesap", on by default, with its privacy line, and turns reporting off', async () => {
+    availableMock.mockReturnValue(true);
+    await renderWithQuery(<ProfileScreen />);
+
+    const toggle = await screen.findByRole('switch', { name: 'Hata raporları' });
+    expect(within(screen.getByTestId('profile-account')).getByTestId('profile-error-reports')).toBe(
+      toggle,
+    );
+    expect(toggle).toBeChecked();
+    expect(
+      screen.getByText(
+        'Uygulamada bir hata olursa ne olduğunu bize bildirir; adın, e-postan, fotoğrafların ve yazdıkların gönderilmez.',
+      ),
+    ).toBeTruthy();
+
+    await fireEvent(toggle, 'valueChange', false);
+    expect(setEnabledMock).toHaveBeenCalledWith(false);
+  });
+
+  it('reflects the stored choice', async () => {
+    availableMock.mockReturnValue(true);
+    useErrorReportingStore.setState({ enabled: false });
+    await renderWithQuery(<ProfileScreen />);
+
+    const toggle = await screen.findByRole('switch', { name: 'Hata raporları' });
+    expect(toggle).not.toBeChecked();
+
+    await act(async () => useErrorReportingStore.setState({ enabled: true }));
+    expect(screen.getByRole('switch', { name: 'Hata raporları' })).toBeChecked();
+  });
+
+  it('shows signed out too, since the switch belongs to the device', async () => {
+    availableMock.mockReturnValue(true);
+    useSessionStore.getState().setSignedOut();
+    await renderWithQuery(<ProfileScreen />);
+
+    expect(await screen.findByRole('switch', { name: 'Hata raporları' })).toBeTruthy();
+    expect(screen.queryByTestId('profile-sign-out')).toBeNull();
   });
 });

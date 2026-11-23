@@ -124,6 +124,24 @@ jest.mock('expo-file-system', () => ({
   },
 }));
 
+// Error reporting has a native SDK: under Jest every call is a mock (`__tests__/errorReporting` checks the options).
+jest.mock('@sentry/react-native', () => {
+  const passthrough = ({ children }: { children?: unknown }) => children ?? null;
+  return {
+    init: jest.fn(),
+    close: jest.fn(async () => undefined),
+    flush: jest.fn(async () => true),
+    captureException: jest.fn(() => 'event-id'),
+    captureMessage: jest.fn(() => 'event-id'),
+    addBreadcrumb: jest.fn(),
+    setTag: jest.fn(),
+    setContext: jest.fn(),
+    withScope: jest.fn((callback: (scope: unknown) => void) => callback({ setTag: jest.fn() })),
+    wrap: jest.fn((component: unknown) => component),
+    ErrorBoundary: passthrough,
+  };
+});
+
 jest.mock('expo-device', () => ({ isDevice: true, deviceName: 'Test Phone' }));
 
 // Screens only report events; the real queue (and its flush timer) is exercised in __tests__/analytics via

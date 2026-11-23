@@ -1,6 +1,17 @@
-import { Stack } from 'expo-router';
+import { useEffect } from 'react';
+import { Stack, type ErrorBoundaryProps } from 'expo-router';
 
 import { AppProviders } from '@/components/AppProviders';
+import { RootErrorFallback } from '@/components/RootErrorFallback';
+import { reportBoundaryError } from '@/errorReporting';
+
+/** Expo Router's root error boundary: reports the error once (scrubbed, if reporting is on) and offers a retry. */
+export function ErrorBoundary({ error, retry }: ErrorBoundaryProps) {
+  useEffect(() => {
+    reportBoundaryError(error);
+  }, [error]);
+  return <RootErrorFallback onRetry={() => void retry()} />;
+}
 
 export default function RootLayout() {
   return (

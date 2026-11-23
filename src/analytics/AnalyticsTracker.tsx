@@ -2,6 +2,8 @@ import { useEffect, useRef } from 'react';
 import { AppState } from 'react-native';
 import { usePathname } from 'expo-router';
 
+import { addNavigationBreadcrumb } from '@/errorReporting';
+
 import { flushAnalytics, track } from './index';
 import { screenName } from './screenName';
 
@@ -18,6 +20,7 @@ export function AnalyticsTracker() {
     if (screen !== lastScreen.current) {
       lastScreen.current = screen;
       track('screen_view', { screen });
+      addNavigationBreadcrumb(screen);
     }
   }, [pathname]);
 

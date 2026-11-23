@@ -1,5 +1,6 @@
 import * as Crypto from 'expo-crypto';
 
+import { addHttpBreadcrumb } from '@/errorReporting';
 import { tr } from '@/i18n/tr';
 import { applyAuthTokens, endSession, useSessionStore } from '@/session/sessionStore';
 import { getRefreshToken } from '@/session/tokenStorage';
@@ -164,6 +165,7 @@ async function send<T>(path: string, options: RequestOptions, token: string | nu
     if (isAbort(cause)) {
       throw cause;
     }
+    addHttpBreadcrumb(method, path, 'network_error');
     if (__DEV__) {
       console.warn(
         `[api] ${method} ${path} failed: network error (correlationId=${correlationId})`,
@@ -177,6 +179,7 @@ async function send<T>(path: string, options: RequestOptions, token: string | nu
     });
   }
 
+  addHttpBreadcrumb(method, path, response.status);
   if (response.ok) {
     if (response.status === 204) {
       return undefined as T;

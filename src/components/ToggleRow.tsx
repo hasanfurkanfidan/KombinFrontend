@@ -19,6 +19,8 @@ export function ToggleRow({ title, caption, value, onChange, testID }: ToggleRow
         {caption ? <Text style={styles.caption}>{caption}</Text> : null}
       </View>
       <Switch
+        accessibilityRole="switch"
+        accessibilityState={{ checked: value }}
         accessibilityLabel={title}
         accessibilityHint={caption}
         value={value}
