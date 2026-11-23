@@ -56,7 +56,7 @@ handler.
 
 1. Create a Sentry project (platform React Native) in the **EU region** and apply the project settings above.
 2. Copy its DSN into EAS: `eas env:create --name EXPO_PUBLIC_SENTRY_DSN --value <dsn> --environment preview --environment production
-   --visibility plaintext` (a DSN is a public client key, not a secret, but keep it out of the repo).
+--visibility plaintext` (a DSN is a public client key, not a secret, but keep it out of the repo).
 3. Build the phones again with EAS (the native module is part of the build).
 4. Check: trigger a test error in a preview build and look for it in the project, with no user or IP shown.
 
@@ -69,7 +69,10 @@ When the owner wants readable traces:
 
 1. Add the Expo plugin to `plugins` in `app.json`, with placeholders replaced by the real values:
    ```json
-   ["@sentry/react-native/expo", { "url": "https://de.sentry.io/", "organization": "<org-slug>", "project": "<project-slug>" }]
+   [
+     "@sentry/react-native/expo",
+     { "url": "https://de.sentry.io/", "organization": "<org-slug>", "project": "<project-slug>" }
+   ]
    ```
    Use the URL of the EU region the project lives in. The plugin writes these into the native build's `sentry.properties`; the token is
    never put in app config.
