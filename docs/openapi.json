@@ -6,7 +6,7 @@
   },
   "servers": [
     {
-      "url": "http://localhost:8081/"
+      "url": "http://localhost/"
     }
   ],
   "paths": {
@@ -3880,9 +3880,68 @@
         "tags": [
           "Wardrobe"
         ],
+        "summary": "Starts a bulk add: creates a batch and a presigned PUT for the photo of several garments.",
+        "operationId": "CreateWardrobeBulkUploadUrl",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateUploadUrlRequest"
+              }
+            }
+          },
+          "required": true
+        },
         "responses": {
-          "200": {
-            "description": "OK"
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BulkCreateUploadUrlResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
           }
         }
       }
@@ -3892,6 +3951,8 @@
         "tags": [
           "Wardrobe"
         ],
+        "summary": "Checks the uploaded photo and starts the analysis; the app then polls GET /bulk/{id}.",
+        "operationId": "ProcessWardrobeBulkBatch",
         "parameters": [
           {
             "name": "id",
@@ -3904,8 +3965,65 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
+          "202": {
+            "description": "Accepted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BulkProcessResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
           }
         }
       }
@@ -3915,6 +4033,9 @@
         "tags": [
           "Wardrobe"
         ],
+        "summary": "The status of a bulk add: everything the review screen draws.",
+        "description": "Poll while status is Processing. Ready carries the pieces with private presigned links (thumbUrl for the grid, imageUrl for the review image) that expire at urlsExpireAt: ask again to refresh them. A likelyDuplicate is a hint about the caller's own wardrobe, never a block. Every sentence is the server's.",
+        "operationId": "GetWardrobeBulkBatch",
         "parameters": [
           {
             "name": "id",
@@ -3928,7 +4049,34 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BulkBatchResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
           }
         }
       },
@@ -3936,6 +4084,9 @@
         "tags": [
           "Wardrobe"
         ],
+        "summary": "Cancels a bulk add: the pieces and every staged image are deleted. Idempotent.",
+        "description": "A cancelled or expired batch answers 204 again; a confirmed one 409 BulkAlreadyConfirmed.",
+        "operationId": "CancelWardrobeBulkBatch",
         "parameters": [
           {
             "name": "id",
@@ -3948,8 +4099,38 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
+          "204": {
+            "description": "No Content"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
           }
         }
       }
@@ -3959,6 +4140,9 @@
         "tags": [
           "Wardrobe"
         ],
+        "summary": "Adds the ticked pieces to the wardrobe; the pieces not listed are dropped with the batch.",
+        "description": "Each listed piece becomes an ordinary wardrobe item whose id is the piece's id. A second confirm of the same batch answers 200 with the stored result and ignores the new body. 409 BulkNotReady before Ready, BulkExpired after a cancel or expiry; 503 StorageUnavailable commits nothing and is safe to retry.",
+        "operationId": "ConfirmWardrobeBulkBatch",
         "parameters": [
           {
             "name": "id",
@@ -3970,9 +4154,76 @@
             }
           }
         ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BulkConfirmRequest"
+              }
+            }
+          },
+          "required": true
+        },
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BulkBatchResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
           }
         }
       }
@@ -7749,7 +8000,7 @@
             ]
           }
         },
-        "description": "The acquisition variant: no wardrobe, no sizes, no persona, nothing stored. `Audience` (Women, Men or Unisex) is required; the rest, `IncludeShoes`\nincluded, is as in `POST /me/outfits/budget`."
+        "description": "The acquisition variant: no wardrobe, no sizes, no persona, nothing stored. `Audience` (Women, Men or Unisex) is required; the rest, `IncludeShoes`\r\nincluded, is as in `POST /me/outfits/budget`."
       },
       "AnswerSizePromptRequest": {
         "required": [
@@ -7828,7 +8079,7 @@
             "type": "boolean"
           }
         },
-        "description": "What every sign-in returns. `IsNewUser` is true only when this request created the account (register, or a first Google/Apple\nsign-in); the app routes those users to onboarding."
+        "description": "What every sign-in returns. `IsNewUser` is true only when this request created the account (register, or a first Google/Apple\r\nsign-in); the app routes those users to onboarding."
       },
       "BlockedUserResponse": {
         "required": [
@@ -7959,7 +8210,7 @@
             "format": "double"
           }
         },
-        "description": "The offer a bought piece comes from. `Price` includes shipping (`ShippingCost`, 0 when free: the app says \"kargo dahil\"); `OriginalPrice`\nis the seller's crossed-out price on the same basis (list price plus the same shipping), present only with a real saving."
+        "description": "The offer a bought piece comes from. `Price` includes shipping (`ShippingCost`, 0 when free: the app says \"kargo dahil\"); `OriginalPrice`\r\nis the seller's crossed-out price on the same basis (list price plus the same shipping), present only with a real saving."
       },
       "BudgetOutfitResponse": {
         "required": [
@@ -8065,7 +8316,7 @@
             "$ref": "#/components/schemas/OutfitNarrationResponse"
           }
         },
-        "description": "A budget outfit. `Id` and `Status` exist for a signed-in caller (the outfit is stored: save, worn, feedback and dismiss work on it).\n`Savings` appears only when a seller shows a real crossed-out price; `OverBudgetBy` only on the one over-budget answer."
+        "description": "A budget outfit. `Id` and `Status` exist for a signed-in caller (the outfit is stored: save, worn, feedback and dismiss work on it).\r\n`Savings` appears only when a seller shows a real crossed-out price; `OverBudgetBy` only on the one over-budget answer."
       },
       "BudgetOutfitsRequest": {
         "required": [
@@ -8138,7 +8389,7 @@
             ]
           }
         },
-        "description": "`Budget` in TRY (100-100,000). `Occasion`: office, weekend, evening, sport or event. `Date`: today (default), tomorrow or\n`yyyy-MM-dd` up to a week ahead. `UseWardrobe` (default true): owned pieces cost nothing and come first. `Seed` (default 0): the next\nseed shows other outfits. `Count` 1-5 (default 3). `PersonaId` follows the catalog convention.\n`IncludeShoes` (default true): false (\"Ayakkabım var\") builds outfits without shoes."
+        "description": "`Budget` in TRY (100-100,000). `Occasion`: office, weekend, evening, sport or event. `Date`: today (default), tomorrow or\r\n`yyyy-MM-dd` up to a week ahead. `UseWardrobe` (default true): owned pieces cost nothing and come first. `Seed` (default 0): the next\r\nseed shows other outfits. `Count` 1-5 (default 3). `PersonaId` follows the catalog convention.\r\n`IncludeShoes` (default true): false (\"Ayakkabım var\") builds outfits without shoes."
       },
       "BudgetOutfitsResponse": {
         "required": [
@@ -8221,7 +8472,7 @@
             }
           }
         },
-        "description": "`Outfits` fit `Budget`. `WithoutShoes`: they have no shoes (the request said `includeShoes: false`, or no outfit with shoes fit and\n`Message` says so). When nothing fits at all, `OverBudget` is true and the single outfit is the closest one (`Message` says by how\nmuch), or the list is empty and `Message` says so. `Weather` is the forecast used, if any (signed-in callers with a city)."
+        "description": "`Outfits` fit `Budget`. `WithoutShoes`: they have no shoes (the request said `includeShoes: false`, or no outfit with shoes fit and\r\n`Message` says so). When nothing fits at all, `OverBudget` is true and the single outfit is the closest one (`Message` says by how\r\nmuch), or the list is empty and `Message` says so. `Weather` is the forecast used, if any (signed-in callers with a city)."
       },
       "BudgetPieceResponse": {
         "required": [
@@ -8313,7 +8564,489 @@
             ]
           }
         },
-        "description": "One piece. A wardrobe piece costs 0 and has `WardrobeItemId`; a catalog piece has `ProductId`, its `Offer` (the cheapest in the caller's\nsize, or the cheapest at all with `SizeUnknown`) and, when the size is known, `Size`."
+        "description": "One piece. A wardrobe piece costs 0 and has `WardrobeItemId`; a catalog piece has `ProductId`, its `Offer` (the cheapest in the caller's\r\nsize, or the cheapest at all with `SizeUnknown`) and, when the size is known, `Size`."
+      },
+      "BulkBatchResponse": {
+        "required": [
+          "id",
+          "status",
+          "expiresAt",
+          "refusal",
+          "failure",
+          "pieces",
+          "unseparated",
+          "cutOff",
+          "items"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "$ref": "#/components/schemas/BulkBatchStatus"
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "refusal": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/BulkRefusal"
+              }
+            ]
+          },
+          "failure": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/BulkFailure"
+              }
+            ]
+          },
+          "pieces": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BulkPieceResponse"
+            }
+          },
+          "unseparated": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/BulkUnseparated"
+              }
+            ]
+          },
+          "cutOff": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/BulkCutOff"
+              }
+            ]
+          },
+          "items": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/WardrobeItemSummary"
+            }
+          }
+        },
+        "description": "Everything the review screen draws (design note, section d); the app polls it every second or so while `Processing` and again to\r\nrefresh expired links. `Pieces` is empty unless `Ready`; `Items` is there only once `Confirmed`. Every sentence is the\r\nserver's (BulkAddCopy)."
+      },
+      "BulkBatchStatus": {
+        "enum": [
+          "Created",
+          "Processing",
+          "Ready",
+          "Refused",
+          "Failed",
+          "Confirmed",
+          "Cancelled",
+          "Expired"
+        ]
+      },
+      "BulkBox": {
+        "required": [
+          "x",
+          "y",
+          "w",
+          "h"
+        ],
+        "type": "object",
+        "properties": {
+          "x": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "y": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "w": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "h": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "double"
+          }
+        },
+        "description": "A box on the photo in fractions (0-1) of its width and height: left, top, width, height."
+      },
+      "BulkCategoryRef": {
+        "required": [
+          "slug",
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "slug": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "BulkConfirmPiece": {
+        "required": [
+          "id",
+          "categorySlug",
+          "primaryColor",
+          "secondaryColor",
+          "clear"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "categorySlug": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "primaryColor": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "secondaryColor": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "clear": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "description": "One ticked piece and its edits: `PATCH /items/{id}`'s own fields and rules for the category and the colours (a null field is left as the\r\nanalysis said, `clear: [\"secondaryColor\"]` empties the second colour). Everything else is edited afterwards with `PATCH`."
+      },
+      "BulkConfirmRequest": {
+        "required": [
+          "pieces"
+        ],
+        "type": "object",
+        "properties": {
+          "pieces": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/BulkConfirmPiece"
+            }
+          }
+        },
+        "description": "The ticks are the list: a piece not in it is not added, and is gone with the batch."
+      },
+      "BulkCreateUploadUrlResponse": {
+        "required": [
+          "batchId",
+          "uploadUrl",
+          "headers",
+          "expiresAt"
+        ],
+        "type": "object",
+        "properties": {
+          "batchId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "uploadUrl": {
+            "type": "string"
+          },
+          "headers": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "description": "PUT the photo to `UploadUrl` with exactly `Headers` before `ExpiresAt`, then call `process` on the batch."
+      },
+      "BulkCutOff": {
+        "required": [
+          "count",
+          "message"
+        ],
+        "type": "object",
+        "properties": {
+          "count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "description": "Pieces the service found beyond what one batch keeps: how many, and the server's sentence (it names no limit)."
+      },
+      "BulkFailure": {
+        "required": [
+          "code",
+          "message",
+          "retryable"
+        ],
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "retryable": {
+            "type": "boolean"
+          }
+        },
+        "description": "`Code` is the BulkFailureCode name; `Retryable` says whether \"tekrar dene\" (`process` again) makes sense."
+      },
+      "BulkLikelyDuplicate": {
+        "required": [
+          "itemId",
+          "thumbUrl",
+          "message"
+        ],
+        "type": "object",
+        "properties": {
+          "itemId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "thumbUrl": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "description": "\"Dolabında benzeri var.\": the user's own item this piece looks like, with its normal public thumbnail. A hint, never a block."
+      },
+      "BulkPieceResponse": {
+        "required": [
+          "id",
+          "thumbUrl",
+          "imageUrl",
+          "urlsExpireAt",
+          "box",
+          "preTicked",
+          "reasons",
+          "category",
+          "needsCategory",
+          "categoryCandidates",
+          "primaryColor",
+          "secondaryColor",
+          "pattern",
+          "warnings",
+          "likelyDuplicate"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "thumbUrl": {
+            "type": "string"
+          },
+          "imageUrl": {
+            "type": "string"
+          },
+          "urlsExpireAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "box": {
+            "$ref": "#/components/schemas/BulkBox"
+          },
+          "preTicked": {
+            "type": "boolean"
+          },
+          "reasons": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BulkReason"
+            }
+          },
+          "category": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/BulkCategoryRef"
+              }
+            ]
+          },
+          "needsCategory": {
+            "type": "boolean"
+          },
+          "categoryCandidates": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BulkCategoryRef"
+            }
+          },
+          "primaryColor": {
+            "$ref": "#/components/schemas/ProductColor"
+          },
+          "secondaryColor": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/ProductColor"
+              }
+            ]
+          },
+          "pattern": {
+            "$ref": "#/components/schemas/ProductPattern"
+          },
+          "warnings": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "likelyDuplicate": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/BulkLikelyDuplicate"
+              }
+            ]
+          }
+        },
+        "description": "One piece of the review screen. `ThumbUrl` is the grid image (vision's 400 px thumbnail) and `ImageUrl` the review image (the cut-out as\r\nvision sent it); both are private presigned links that expire at `UrlsExpireAt` (the app asks again). `Category`, the colours, the\r\npattern and `NeedsCategory` are the wardrobe item's own names and rules, so the single add's chips and pickers work unchanged."
+      },
+      "BulkProcessResponse": {
+        "required": [
+          "batchId",
+          "status"
+        ],
+        "type": "object",
+        "properties": {
+          "batchId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "$ref": "#/components/schemas/BulkBatchStatus"
+          }
+        }
+      },
+      "BulkReason": {
+        "required": [
+          "code",
+          "message"
+        ],
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "description": "Why a piece is not pre-ticked: the service's code and the server's sentence (BulkAddCopy)."
+      },
+      "BulkRefusal": {
+        "required": [
+          "code",
+          "message"
+        ],
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "BulkUnseparated": {
+        "required": [
+          "count",
+          "message",
+          "regions"
+        ],
+        "type": "object",
+        "properties": {
+          "count": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "message": {
+            "type": "string"
+          },
+          "regions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BulkBox"
+            }
+          }
+        },
+        "description": "Garments the service saw together and could not cut apart: how many, the server's sentence and where they are."
       },
       "CancelDeletionRequest": {
         "type": "object",
@@ -8361,7 +9094,7 @@
             ]
           }
         },
-        "description": "The same credentials as signing in: `Email` and `Password`, or `Provider` and `IdToken` (with `Nonce` when the app\nused one). They are what proves who is cancelling; nothing else in the body is trusted."
+        "description": "The same credentials as signing in: `Email` and `Password`, or `Provider` and `IdToken` (with `Nonce` when the app\r\nused one). They are what proves who is cancelling; nothing else in the body is trusted."
       },
       "CategoryCount": {
         "required": [
@@ -8627,7 +9360,7 @@
             "format": "int32"
           }
         },
-        "description": "`ClosedNow`: this call closed the day (false: it was closed before and nothing changed). The rest is the day's row: when it closed, the\nranked human outfits (the N of the percentile), the engine outfits, the counted votes in the fit, the Bradley–Terry iterations and whether\nthey converged, and how long the close took."
+        "description": "`ClosedNow`: this call closed the day (false: it was closed before and nothing changed). The rest is the day's row: when it closed, the\r\nranked human outfits (the N of the percentile), the engine outfits, the counted votes in the fit, the Bradley–Terry iterations and whether\r\nthey converged, and how long the close took."
       },
       "ColorCount": {
         "required": [
@@ -9104,7 +9837,7 @@
             }
           }
         },
-        "description": "The owner's numbers over the last `Days`. `EstimatedEarnings` is an estimate (its inputs are listed); `ConfirmedEarnings`\nsums imported conversions, 0 until the import exists."
+        "description": "The owner's numbers over the last `Days`. `EstimatedEarnings` is an estimate (its inputs are listed); `ConfirmedEarnings`\r\nsums imported conversions, 0 until the import exists."
       },
       "CreatorTopPost": {
         "required": [
@@ -9189,7 +9922,7 @@
             ]
           }
         },
-        "description": "`Outfit` is null only when nothing wearable could be built (then `Message` says so). `WardrobeEmpty` means the outfits\nare catalog shopping ideas (`kind` Shopping, `completeness` CatalogOnly). `Weather` is the forecast used, if any."
+        "description": "`Outfit` is null only when nothing wearable could be built (then `Message` says so). `WardrobeEmpty` means the outfits\r\nare catalog shopping ideas (`kind` Shopping, `completeness` CatalogOnly). `Weather` is the forecast used, if any."
       },
       "DeleteAccountRequest": {
         "required": [
@@ -9345,7 +10078,7 @@
             ]
           }
         },
-        "description": "One event as the app sends it. `AnonymousId` is the device's pre-login ID; it is required while the caller is anonymous and\nrecommended after login. `Properties` is a flat object whose keys depend on `Name` (AnalyticsEventCatalog)."
+        "description": "One event as the app sends it. `AnonymousId` is the device's pre-login ID; it is required while the caller is anonymous and\r\nrecommended after login. `Properties` is a flat object whose keys depend on `Name` (AnalyticsEventCatalog)."
       },
       "ExternalSignInRequest": {
         "required": [
@@ -9385,7 +10118,7 @@
             ]
           }
         },
-        "description": "An ID token the app obtained from Google or Apple on the device. `DisplayName` is used only when this sign-in creates the account\n(Apple gives the app the user's name once, on the very first sign-in). `Nonce` is the raw nonce the app generated for the provider,\nwhen it used one. Nothing in the body is trusted for identity: who the user is comes from the verified token's claims alone."
+        "description": "An ID token the app obtained from Google or Apple on the device. `DisplayName` is used only when this sign-in creates the account\r\n(Apple gives the app the user's name once, on the very first sign-in). `Nonce` is the raw nonce the app generated for the provider,\r\nwhen it used one. Nothing in the body is trusted for identity: who the user is comes from the verified token's claims alone."
       },
       "FeedReason": {
         "enum": [
@@ -9498,7 +10231,7 @@
             ]
           }
         },
-        "description": "`Outfits` are built around the anchor (in every outfit with `role` Anchor), wardrobe pieces first; gaps come from the catalog\nwithin the persona's budget, each with its cheapest offer, and `completionPrice` sums them. A product the user already owns is\nanchored as the wardrobe item. `Message` explains an empty list or catalog-only ideas."
+        "description": "`Outfits` are built around the anchor (in every outfit with `role` Anchor), wardrobe pieces first; gaps come from the catalog\r\nwithin the persona's budget, each with its cheapest offer, and `completionPrice` sums them. A product the user already owns is\r\nanchored as the wardrobe item. `Message` explains an empty list or catalog-only ideas."
       },
       "IFormFile": {
         "type": "string",
@@ -9633,7 +10366,7 @@
             ]
           }
         },
-        "description": "The caller's league state. `Joined`: in the league now. `ConsentRequired`: the join screen must be shown (never joined, left, or\njoined under an older consent version). `Tier` is null for someone who never joined; a player who left keeps theirs. `Today`: the\nday's entry and votes. `Week`: the caller's group this week (null when not in one)."
+        "description": "The caller's league state. `Joined`: in the league now. `ConsentRequired`: the join screen must be shown (never joined, left, or\r\njoined under an older consent version). `Tier` is null for someone who never joined; a player who left keeps theirs. `Today`: the\r\nday's entry and votes. `Week`: the caller's group this week (null when not in one)."
       },
       "LeagueNoPairReason": {
         "enum": [
@@ -9670,7 +10403,7 @@
             "format": "int32"
           }
         },
-        "description": "`Id`: random per serve, the only identifier the voter sees. `Sequence`: 1 to the day's limit (a number is never reused,\n    even when the pair it named was deleted with an account)."
+        "description": "`Id`: random per serve, the only identifier the voter sees. `Sequence`: 1 to the day's limit (a number is never reused,\r\n    even when the pair it named was deleted with an account)."
       },
       "LeaguePieceResponse": {
         "required": [
@@ -9689,7 +10422,7 @@
             ]
           }
         },
-        "description": "One piece of an outfit as the league shows it: the slot and an image, nothing else. To a voter the image is always the league's own copy\n(a random key, new every day) or a catalog image. The league's promise is no name, no profile and no stable identifier in any response; it is\nnot that an outfit cannot be traced to its owner, because the picture is the owner's own photo (only the file's bytes differ) and someone who\nknows the piece can recognise it. `ImageUrl` is null only in the owner's own view of an entry whose piece has no image any more."
+        "description": "One piece of an outfit as the league shows it: the slot and an image, nothing else. To a voter the image is always the league's own copy\r\n(a random key, new every day) or a catalog image. The league's promise is no name, no profile and no stable identifier in any response; it is\r\nnot that an outfit cannot be traced to its owner, because the picture is the owner's own photo (only the file's bytes differ) and someone who\r\nknows the piece can recognise it. `ImageUrl` is null only in the owner's own view of an entry whose piece has no image any more."
       },
       "LeaguePointsResponse": {
         "required": [
@@ -9743,7 +10476,7 @@
             "format": "int32"
           }
         },
-        "description": "The day's points: from the votes (0-70), voting on ten pairs (0/15), the worn outfit (0/10), a piece added (0/5), and the total shown.\nWhile the outfit is under review `Votes` is null and `Total` is the usage points only."
+        "description": "The day's points: from the votes (0-70), voting on ten pairs (0/15), the worn outfit (0/10), a piece added (0/5), and the total shown.\r\nWhile the outfit is under review `Votes` is null and `Total` is the usage points only."
       },
       "LeagueResultEntryResponse": {
         "required": [
@@ -9759,14 +10492,6 @@
           }
         },
         "description": "The caller's own outfit of that day, as the owner sees it."
-      },
-      "LeagueResultStatus": {
-        "enum": [
-          "Final",
-          "UnderReview",
-          "Removed"
-        ],
-        "description": "`Final`: the result as the close decided it. `UnderReview`: the outfit was reported and waits for a review; the rank and the vote\npoints are held back (they are stored and already count in the week). `Removed`: a review took the outfit out after the close; it has\nno rank and no vote points."
       },
       "LeagueResultsResponse": {
         "required": [
@@ -9859,7 +10584,15 @@
             ]
           }
         },
-        "description": "The caller's result of one closed day (screen 04, \"Akşamki sonuç\"). `Status` and `Message`: LeagueResultStatus;\nthe message is \"Kombinin inceleniyor. Sonuç inceleme bitince görünecek.\" while under review, the removal's line (`LeagueCopy.Removed`)\nwhen a review took the outfit out, null for a final result. `Entry`: their own outfit\n(null when they had none, or it is older than the entries are kept). `Competed`: it was in the pool at the close. `Ranked`: it\nreached the comparisons to be ranked (null while under review); when false the app says \"yeterli oy toplanamadı\". `Rank` (1 = best) of `RankedCount` ranked outfits; `Comparisons`: the counted\nvotes on it. `PiecePointsAvailable`: a piece added now would still earn its points this week (\"Eklersen 5 puan\"). Nothing about any\nother player."
+        "description": "The caller's result of one closed day (screen 04, \"Akşamki sonuç\"). `Status` and `Message`: LeagueResultStatus;\r\nthe message is \"Kombinin inceleniyor. Sonuç inceleme bitince görünecek.\" while under review, the removal's line (`LeagueCopy.Removed`)\r\nwhen a review took the outfit out, null for a final result. `Entry`: their own outfit\r\n(null when they had none, or it is older than the entries are kept). `Competed`: it was in the pool at the close. `Ranked`: it\r\nreached the comparisons to be ranked (null while under review); when false the app says \"yeterli oy toplanamadı\". `Rank` (1 = best) of `RankedCount` ranked outfits; `Comparisons`: the counted\r\nvotes on it. `PiecePointsAvailable`: a piece added now would still earn its points this week (\"Eklersen 5 puan\"). Nothing about any\r\nother player."
+      },
+      "LeagueResultStatus": {
+        "enum": [
+          "Final",
+          "UnderReview",
+          "Removed"
+        ],
+        "description": "`Final`: the result as the close decided it. `UnderReview`: the outfit was reported and waits for a review; the rank and the vote\r\npoints are held back (they are stored and already count in the week). `Removed`: a review took the outfit out after the close; it has\r\nno rank and no vote points."
       },
       "LeagueResultsWeekResponse": {
         "required": [
@@ -9946,7 +10679,7 @@
             }
           }
         },
-        "description": "One reported outfit waiting for a review: its entry ID (operators only; never shown to players), its day and status, the reports that count\ntoward the hide and every report since the last review, whether a closed day's result is held back for it (`UnderReview`), and the pieces\nas voters see them."
+        "description": "One reported outfit waiting for a review: its entry ID (operators only; never shown to players), its day and status, the reports that count\r\ntoward the hide and every report since the last review, whether a closed day's result is held back for it (`UnderReview`), and the pieces\r\nas voters see them."
       },
       "LeagueSideResponse": {
         "required": [
@@ -10056,7 +10789,7 @@
             "$ref": "#/components/schemas/LeagueWeekState"
           }
         },
-        "description": "The caller's group table this week (screen 05, \"Haftalık lig\"). `Tier`: the caller's own league this week; `TierUp` /\n`TierDown`: the leagues above and below it (null at Diamond / Bronze). `TodayPoints`: today's total once today is closed\n(`TodayIsFinal`), else the usage points earned so far today. `PromoteCount` / `RelegateCount`: the bands as they stand\n(`min(5, floor(competed / 3))`). `Rows`: `{ rank, points, isMe, alias }` in table order, nothing else; the app shows \"Sen\" for\n`isMe`. `State`: Open (the week runs), Ending (the week is over but its close has not run, so the next groups are not formed: this is\nlast week's table as the day closes left it, at any hour of Sunday evening or Monday if the close is late) or Final (closed: between\nSunday's close and Monday 00:00 it is last week's final table)."
+        "description": "The caller's group table this week (screen 05, \"Haftalık lig\"). `Tier`: the caller's own league this week; `TierUp` /\r\n`TierDown`: the leagues above and below it (null at Diamond / Bronze). `TodayPoints`: today's total once today is closed\r\n(`TodayIsFinal`), else the usage points earned so far today. `PromoteCount` / `RelegateCount`: the bands as they stand\r\n(`min(5, floor(competed / 3))`). `Rows`: `{ rank, points, isMe, alias }` in table order, nothing else; the app shows \"Sen\" for\r\n`isMe`. `State`: Open (the week runs), Ending (the week is over but its close has not run, so the next groups are not formed: this is\r\nlast week's table as the day closes left it, at any hour of Sunday evening or Monday if the close is late) or Final (closed: between\r\nSunday's close and Monday 00:00 it is last week's final table)."
       },
       "LeagueTableRow": {
         "required": [
@@ -10137,7 +10870,7 @@
             }
           }
         },
-        "description": "The caller's outfit in today's league. `Status`: Pending (waiting for the image safety check), Competing, NotCompeting (with a\n`Reason`), Withdrawn, Removed. `Message` is the Turkish line to show (`LeagueCopy`): one for every `Reason` of a NotCompeting entry\n(RecentlyCompeted, UnsafePiece, IncompleteOutfit, PieceUnavailable, AgeRestricted, NotWorn) and one for Removed; null for Pending, Competing\nand Withdrawn. The pieces are the owner's own view."
+        "description": "The caller's outfit in today's league. `Status`: Pending (waiting for the image safety check), Competing, NotCompeting (with a\r\n`Reason`), Withdrawn, Removed. `Message` is the Turkish line to show (`LeagueCopy`): one for every `Reason` of a NotCompeting entry\r\n(RecentlyCompeted, UnsafePiece, IncompleteOutfit, PieceUnavailable, AgeRestricted, NotWorn) and one for Removed; null for Pending, Competing\r\nand Withdrawn. The pieces are the owner's own view."
       },
       "LeagueTodayResponse": {
         "required": [
@@ -10202,7 +10935,7 @@
             "format": "int32"
           }
         },
-        "description": "Today in the league (an Istanbul day). `ClosesAt`: votes stop and the results come (21:00 Istanbul). `Entry`: the caller's outfit,\nnull when no worn outfit entered. `ServedPairs` / `CountedVotes`: the caller's pairs today and the votes that counted; `Target`\ncounted votes earn the voting points, `Limit` pairs is the day's cap."
+        "description": "Today in the league (an Istanbul day). `ClosesAt`: votes stop and the results come (21:00 Istanbul). `Entry`: the caller's outfit,\r\nnull when no worn outfit entered. `ServedPairs` / `CountedVotes`: the caller's pairs today and the votes that counted; `Target`\r\ncounted votes earn the voting points, `Limit` pairs is the day's cap."
       },
       "LeagueWeekResponse": {
         "required": [
@@ -10256,7 +10989,7 @@
             "$ref": "#/components/schemas/LeagueWeekState"
           }
         },
-        "description": "The caller's week in their group: place, group size, week points so far (the best five closed days), points to the promotion line (\"5. sıraya\n17 puan\"; null inside the band or without one) and when the week ends. `State`: Open (running), Ending (the week is over and its close has\nnot run yet: this is last week's table until the new groups are formed, never an error) or Final (closed). Null for a player in no group."
+        "description": "The caller's week in their group: place, group size, week points so far (the best five closed days), points to the promotion line (\"5. sıraya\r\n17 puan\"; null inside the band or without one) and when the week ends. `State`: Open (running), Ending (the week is over and its close has\r\nnot run yet: this is last week's table until the new groups are formed, never an error) or Final (closed). Null for a player in no group."
       },
       "LeagueWeekState": {
         "enum": [
@@ -10264,7 +10997,7 @@
           "Ending",
           "Final"
         ],
-        "description": "Where a week stands: `Open` (it is running), `Ending` (its last close has passed but the week close has not run: the table is as the day\ncloses left it, and the next week's groups are still to be formed) or `Final` (closed: the stored final table)."
+        "description": "Where a week stands: `Open` (it is running), `Ending` (its last close has passed but the week close has not run: the table is as the day\r\ncloses left it, and the next week's groups are still to be formed) or `Final` (closed: the stored final table)."
       },
       "LegalResponse": {
         "required": [
@@ -10471,7 +11204,7 @@
             }
           }
         },
-        "description": "A garment found in the photo. `Category`, `Slot`, `Family` and `Color` are null for the whole-photo region (nothing was\ndetected). `FamilyRestricted` is false when the search was widened (low confidence) or covered every family. An empty\n`Results` is an honest \"no close product\". `WardrobeMatches` is present only for a signed-in caller."
+        "description": "A garment found in the photo. `Category`, `Slot`, `Family` and `Color` are null for the whole-photo region (nothing was\r\ndetected). `FamilyRestricted` is false when the search was widened (low confidence) or covered every family. An empty\r\n`Results` is an honest \"no close product\". `WardrobeMatches` is present only for a signed-in caller."
       },
       "LensResultResponse": {
         "required": [
@@ -10511,7 +11244,7 @@
             ]
           }
         },
-        "description": "One catalog match. `Product` is the catalog list item. `Similarity` (0-1) is for analytics buckets and ordering; the app shows\n`Level` (`close` \"yakın eşleşme\", `similar` \"benzer\"), never a percentage. `Offer` is null when nothing can be bought now."
+        "description": "One catalog match. `Product` is the catalog list item. `Similarity` (0-1) is for analytics buckets and ordering; the app shows\r\n`Level` (`close` \"yakın eşleşme\", `similar` \"benzer\"), never a percentage. `Offer` is null when nothing can be bought now."
       },
       "LensSearchResponse": {
         "required": [
@@ -10541,7 +11274,7 @@
             "type": "boolean"
           }
         },
-        "description": "Regions with results come first (best match first), then the empty ones, so the app can select the first. `Audience` is the filter\nthat was applied (null: none); `WholePhoto` is true when no garment region was found and the photo was searched as a whole."
+        "description": "Regions with results come first (best match first), then the empty ones, so the app can select the first. `Audience` is the filter\r\nthat was applied (null: none); `WholePhoto` is true when no garment region was found and the photo was searched as a whole."
       },
       "LensWardrobeMatchResponse": {
         "required": [
@@ -10748,7 +11481,7 @@
             "format": "date-time"
           }
         },
-        "description": "The next pair to vote on, or none with a reason. `CountedToday` / `ServedToday`: the caller's counted votes and served pairs today\n(served = the last sequence, so it agrees with the limit);\n`Target`: counted votes for the voting points; `Limit`: pairs a day; `ClosesAt`: when votes stop."
+        "description": "The next pair to vote on, or none with a reason. `CountedToday` / `ServedToday`: the caller's counted votes and served pairs today\r\n(served = the last sequence, so it agrees with the limit);\r\n`Target`: counted votes for the voting points; `Limit`: pairs a day; `ClosesAt`: when votes stop."
       },
       "NotificationKind": {
         "enum": [
@@ -10915,7 +11648,7 @@
             "format": "date-time"
           }
         },
-        "description": "`GoPath` (`/api/v1/go/{offerId}`) is the only way to open an offer: the redirect records the click and adds the affiliate\nparameters. The seller's own URL is never part of the response."
+        "description": "`GoPath` (`/api/v1/go/{offerId}`) is the only way to open an offer: the redirect records the click and adds the affiliate\r\nparameters. The seller's own URL is never part of the response."
       },
       "OfferSeries": {
         "required": [
@@ -10965,7 +11698,7 @@
             ]
           }
         },
-        "description": "`Action`: Save, Dismiss, Worn or Shuffle. Save, Dismiss and Worn do what their own endpoints do; Shuffle (\"another one\") is only\nrecorded. `Reason` is for Dismiss only (default Other)."
+        "description": "`Action`: Save, Dismiss, Worn or Shuffle. Save, Dismiss and Worn do what their own endpoints do; Shuffle (\"another one\") is only\r\nrecorded. `Reason` is for Dismiss only (default Other)."
       },
       "OutfitItemRole": {
         "enum": [
@@ -11101,7 +11834,7 @@
             ]
           }
         },
-        "description": "One piece. A wardrobe piece has `WardrobeItemId` and its thumbnail; a catalog piece (`Role` Gap, or an Anchor from the\ncatalog) has `ProductId`, the product image and `Offer`."
+        "description": "One piece. A wardrobe piece has `WardrobeItemId` and its thumbnail; a catalog piece (`Role` Gap, or an Anchor from the\r\ncatalog) has `ProductId`, the product image and `Offer`."
       },
       "OutfitResponse": {
         "required": [
@@ -11245,7 +11978,7 @@
             "format": "date-time"
           }
         },
-        "description": "An outfit. `CompletionPrice` is what the gap pieces cost (their cheapest offers, effective price), null when there are none;\n`AnchorPrice` is the catalog anchor's price; `TotalPrice` both together. `Rule` names why it works."
+        "description": "An outfit. `CompletionPrice` is what the gap pieces cost (their cheapest offers, effective price), null when there are none;\r\n`AnchorPrice` is the catalog anchor's price; `TotalPrice` both together. `Rule` names why it works."
       },
       "OutfitSlot": {
         "enum": [
@@ -11816,16 +12549,6 @@
           }
         }
       },
-      "PairReason": {
-        "enum": [
-          "neutral",
-          "tonal",
-          "complementary",
-          "analogous",
-          "statement"
-        ],
-        "description": "Why two pieces go together, in the word clients read."
-      },
       "PairingCompanion": {
         "required": [
           "item",
@@ -11878,6 +12601,54 @@
           }
         },
         "description": "A slot other than the item's own, possibly empty. `Total` counts every companion in it, also those past the limit."
+      },
+      "PairingsResponse": {
+        "required": [
+          "itemId",
+          "personaId",
+          "companions",
+          "outfitCount",
+          "unlock"
+        ],
+        "type": "object",
+        "properties": {
+          "itemId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "personaId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "companions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PairingSlot"
+            }
+          },
+          "outfitCount": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "unlock": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/PairingUnlock"
+              }
+            ]
+          }
+        },
+        "description": "What goes with one wardrobe item. `PersonaId` is the persona the scores are weighted for, or null for a user without personas.\r\n`OutfitCount` is how many of the outfits behind the stats' `possibleOutfits` wear the item; a layer or an accessory counts the\r\noutfits it can be worn with. `Unlock` is null when every slot has enough companions, or the catalog has nothing that fits."
       },
       "PairingUnlock": {
         "required": [
@@ -11948,55 +12719,17 @@
             "format": "int32"
           }
         },
-        "description": "The catalog piece that would help the item most. `LowestPrice`, `CheapestSeller` and `GoPath` are one offer, the cheapest\nby effective price. `UnlocksEstimate` is the outfits the item would gain. `MatchScore` is present only with a persona."
+        "description": "The catalog piece that would help the item most. `LowestPrice`, `CheapestSeller` and `GoPath` are one offer, the cheapest\r\nby effective price. `UnlocksEstimate` is the outfits the item would gain. `MatchScore` is present only with a persona."
       },
-      "PairingsResponse": {
-        "required": [
-          "itemId",
-          "personaId",
-          "companions",
-          "outfitCount",
-          "unlock"
+      "PairReason": {
+        "enum": [
+          "neutral",
+          "tonal",
+          "complementary",
+          "analogous",
+          "statement"
         ],
-        "type": "object",
-        "properties": {
-          "itemId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "personaId": {
-            "type": [
-              "null",
-              "string"
-            ],
-            "format": "uuid"
-          },
-          "companions": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/PairingSlot"
-            }
-          },
-          "outfitCount": {
-            "pattern": "^-?(?:0|[1-9]\\d*)$",
-            "type": [
-              "integer",
-              "string"
-            ],
-            "format": "int32"
-          },
-          "unlock": {
-            "oneOf": [
-              {
-                "type": "null"
-              },
-              {
-                "$ref": "#/components/schemas/PairingUnlock"
-              }
-            ]
-          }
-        },
-        "description": "What goes with one wardrobe item. `PersonaId` is the persona the scores are weighted for, or null for a user without personas.\n`OutfitCount` is how many of the outfits behind the stats' `possibleOutfits` wear the item; a layer or an accessory counts the\noutfits it can be worn with. `Unlock` is null when every slot has enough companions, or the catalog has nothing that fits."
+        "description": "Why two pieces go together, in the word clients read."
       },
       "PersonaListResponse": {
         "required": [
@@ -12433,7 +13166,7 @@
             "format": "date-time"
           }
         },
-        "description": "A post as the caller may see it. `Image` is null for an outfit post (lay the tags' images out as a collage) and before processing.\n`MatchScore` is the viewer's persona match of the product tags. `Disclosure` is set on creators' posts and must be shown.\n`StatusMessage` and `Proposals` are for the author only. `Reason` appears in the feed."
+        "description": "A post as the caller may see it. `Image` is null for an outfit post (lay the tags' images out as a collage) and before processing.\r\n`MatchScore` is the viewer's persona match of the product tags. `Disclosure` is set on creators' posts and must be shown.\r\n`StatusMessage` and `Proposals` are for the author only. `Reason` appears in the feed."
       },
       "PostStatus": {
         "enum": [
@@ -12447,7 +13180,7 @@
           "Failed",
           "AccountPending"
         ],
-        "description": "`Processing` → `Blocked` | `NeedsReview` | `Draft` (or `Failed` when the photo could not be processed); the\nauthor's confirmation turns a `Draft` into `Live` (a `NeedsReview` post waits for a reviewer). Three reports hide a\n`Live` post. `Deleted` is a tombstone until the purge job."
+        "description": "`Processing` → `Blocked` | `NeedsReview` | `Draft` (or `Failed` when the photo could not be processed); the\r\nauthor's confirmation turns a `Draft` into `Live` (a `NeedsReview` post waits for a reviewer). Three reports hide a\r\n`Live` post. `Deleted` is a tombstone until the purge job."
       },
       "PostSummaryResponse": {
         "required": [
@@ -12607,7 +13340,7 @@
             ]
           }
         },
-        "description": "A confirmed tag. `InWardrobe` is the viewer's: `exact` (they own that product, or it is their own piece), `similar` (they own a\nready piece of the same category and colour), null otherwise or when signed out. `ImageUrl` of a wardrobe tag is null for anyone but\nthe piece's owner until the safety filter allowed that photo."
+        "description": "A confirmed tag. `InWardrobe` is the viewer's: `exact` (they own that product, or it is their own piece), `similar` (they own a\r\nready piece of the same category and colour), null otherwise or when signed out. `ImageUrl` of a wardrobe tag is null for anyone but\r\nthe piece's owner until the safety filter allowed that photo."
       },
       "PostTagSource": {
         "enum": [
@@ -13277,7 +14010,7 @@
             }
           }
         },
-        "description": "`Visibility` is `Private`, `Followers` or `Public`. `Followers` is not private: anyone signed in can follow without\napproval and then sees the post (security review M5). `Tags` replaces every tag and proposal of the post."
+        "description": "`Visibility` is `Private`, `Followers` or `Public`. `Followers` is not private: anyone signed in can follow without\r\napproval and then sees the post (security review M5). `Tags` replaces every tag and proposal of the post."
       },
       "PublishTag": {
         "required": [
@@ -13351,7 +14084,7 @@
             ]
           }
         },
-        "description": "One confirmed tag. `Kind` is `Wardrobe` (with one of the author's `WardrobeItemId`), `Product` (with a\n`ProductId`) or `Unknown` (an optional `Label`). The box is fractions of the image (clamped into it)."
+        "description": "One confirmed tag. `Kind` is `Wardrobe` (with one of the author's `WardrobeItemId`), `Product` (with a\r\n`ProductId`) or `Unknown` (an optional `Label`). The box is fractions of the image (clamped into it)."
       },
       "PushDelivery": {
         "required": [
@@ -13470,7 +14203,7 @@
             "type": "boolean"
           }
         },
-        "description": "The seller. `Name`, `Kind`, `WebsiteUrl` and `IsActive` are replaced on every PUT. The affiliate fields are the\nexception, because workers that only know the shop would otherwise wipe what was configured by hand: left out = unchanged, an explicit\nnull (or blank) = cleared. The `*Set` flags record which of them the body contained; the JSON reader only calls an init accessor\nfor a property that is present."
+        "description": "The seller. `Name`, `Kind`, `WebsiteUrl` and `IsActive` are replaced on every PUT. The affiliate fields are the\r\nexception, because workers that only know the shop would otherwise wipe what was configured by hand: left out = unchanged, an explicit\r\nnull (or blank) = cleared. The `*Set` flags record which of them the body contained; the JSON reader only calls an init accessor\r\nfor a property that is present."
       },
       "PutSellerResponse": {
         "required": [
@@ -13775,7 +14508,7 @@
             ]
           }
         },
-        "description": "\"Yanlış görünüyor\": exactly one of `OutfitId` and `ProductId` (what `GET /me/tryon` was asked with), the `GarmentIds` of\nits answer (the pieces' IDs, every one of them in the drawing) and the `Renderer` that drew it (`renderer` of the Ready answer)."
+        "description": "\"Yanlış görünüyor\": exactly one of `OutfitId` and `ProductId` (what `GET /me/tryon` was asked with), the `GarmentIds` of\r\nits answer (the pieces' IDs, every one of them in the drawing) and the `Renderer` that drew it (`renderer` of the Ready answer)."
       },
       "ReviewEntryRequest": {
         "required": [
@@ -13905,7 +14638,7 @@
             ]
           }
         },
-        "description": "`Decision`: `Approve`, `Remove` or `Keep` (leave it as it is, at the back of the queue). `Reason` is what the\nauthor reads when the post is removed (at most 200 characters; the standard copy when left out)."
+        "description": "`Decision`: `Approve`, `Remove` or `Keep` (leave it as it is, at the back of the queue). `Reason` is what the\r\nauthor reads when the post is removed (at most 200 characters; the standard copy when left out)."
       },
       "ReviewPostResponse": {
         "required": [
@@ -14017,32 +14750,6 @@
           }
         }
       },
-      "SaveTripRequest": {
-        "required": [
-          "name",
-          "request"
-        ],
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": [
-              "null",
-              "string"
-            ]
-          },
-          "request": {
-            "oneOf": [
-              {
-                "type": "null"
-              },
-              {
-                "$ref": "#/components/schemas/TripPlanRequest"
-              }
-            ]
-          }
-        },
-        "description": "`Name` (1-60 characters) and the plan request (`POST /me/trips/plan`'s body)."
-      },
       "SavedIdsResponse": {
         "required": [
           "productIds"
@@ -14153,7 +14860,33 @@
             "format": "date-time"
           }
         },
-        "description": "The catalog's ProductListItem fields, flattened, plus `isActive` (saved products stay in the list after they\nare delisted) and `savedAt`. A product nobody sells has `offerCount` 0 and `lowestPrice` 0."
+        "description": "The catalog's ProductListItem fields, flattened, plus `isActive` (saved products stay in the list after they\r\nare delisted) and `savedAt`. A product nobody sells has `offerCount` 0 and `lowestPrice` 0."
+      },
+      "SaveTripRequest": {
+        "required": [
+          "name",
+          "request"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "request": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/TripPlanRequest"
+              }
+            ]
+          }
+        },
+        "description": "`Name` (1-60 characters) and the plan request (`POST /me/trips/plan`'s body)."
       },
       "Season": {
         "type": "string"
@@ -14393,7 +15126,7 @@
             ]
           }
         },
-        "description": "Which size to buy. `Size`, `Source` and `Confidence` are the user's own entry for the product's brand and group, when\nthere is one. Without it `Suggestion` may carry a guess from the user's sizes at other brands (not stored)."
+        "description": "Which size to buy. `Size`, `Source` and `Confidence` are the user's own entry for the product's brand and group, when\r\nthere is one. Without it `Suggestion` may carry a guess from the user's sizes at other brands (not stored)."
       },
       "SizeListResponse": {
         "required": [
@@ -14497,7 +15230,7 @@
             "format": "date-time"
           }
         },
-        "description": "One open question. `Group` is the size group the answer will be stored under; `AvailableSizes` are the sizes the clicked offer\nlisted (possibly none); `ExpiresAt` is when the question goes away by itself."
+        "description": "One open question. `Group` is the size group the answer will be stored under; `AvailableSizes` are the sizes the clicked offer\r\nlisted (possibly none); `ExpiresAt` is when the question goes away by itself."
       },
       "SizePromptsResponse": {
         "required": [
@@ -15453,7 +16186,7 @@
             "format": "uuid"
           }
         },
-        "description": "\"Valiz hazırlama\": the destination `City`, `StartDate`..`EndDate` (1-14 days, from today up to a year ahead), optional plans per day,\nat most `MaxPieces` packed (3-60), shoes on consecutive days (`AllowRepeatShoes`, default true), laundry on the way (`Laundry`,\ndefault false). `PersonaId` follows the catalog convention."
+        "description": "\"Valiz hazırlama\": the destination `City`, `StartDate`..`EndDate` (1-14 days, from today up to a year ahead), optional plans per day,\r\nat most `MaxPieces` packed (3-60), shoes on consecutive days (`AllowRepeatShoes`, default true), laundry on the way (`Laundry`,\r\ndefault false). `PersonaId` follows the catalog convention."
       },
       "TripPlanResponse": {
         "required": [
@@ -15516,7 +16249,7 @@
             ]
           }
         },
-        "description": "A packing plan. `Pieces` is the packing list grouped by slot, each piece with the number of days it is worn; `Days` one entry per day\nwith its weather and outfit (null when none could be made); `Coverage` the days with an outfit; `Gaps` what is missing and why.\nA piece removed from the wardrobe since the plan was made is `Missing`."
+        "description": "A packing plan. `Pieces` is the packing list grouped by slot, each piece with the number of days it is worn; `Days` one entry per day\r\nwith its weather and outfit (null when none could be made); `Coverage` the days with an outfit; `Gaps` what is missing and why.\r\nA piece removed from the wardrobe since the plan was made is `Missing`."
       },
       "TripResponse": {
         "required": [
@@ -15675,7 +16408,7 @@
             "$ref": "#/components/schemas/Season"
           }
         },
-        "description": "The day's weather and where it came from: `Forecast` (Open-Meteo, within 16 days), `Normal` (the climate normals of that calendar day)\nor `Season` (neither; the temperatures are then null and `Season` decided)."
+        "description": "The day's weather and where it came from: `Forecast` (Open-Meteo, within 16 days), `Normal` (the climate normals of that calendar day)\r\nor `Season` (neither; the temperatures are then null and `Season` decided)."
       },
       "TryGroup": {
         "required": [
@@ -15711,7 +16444,7 @@
             ]
           }
         },
-        "description": "The outfits built around one tagged product. `Owned`: the caller already has it, so the anchor is their own piece. The anchor's offer\nkeeps the post attribution (`goPath` with `post=`); gap pieces carry their own cheapest offer."
+        "description": "The outfits built around one tagged product. `Owned`: the caller already has it, so the anchor is their own piece. The anchor's offer\r\nkeeps the post attribution (`goPath` with `post=`); gap pieces carry their own cheapest offer."
       },
       "TryOnFitLevel": {
         "enum": [
@@ -15793,7 +16526,7 @@
             ]
           }
         },
-        "description": "\"Manken üstünde gör\". `Status`: `Ready` (show `ImageUrl`, a presigned GET valid for an hour, with \"Manken üzerinde yaklaşık\ngörünüm\"), `Preparing` (show \"Hazırlanıyor\" and ask again), `Unavailable` (hide the action entirely, never a disabled button).\n`Garments` (Ready only): each drawn piece by the ID the outfit gives it (wardrobe item or product) with its fit label, null when nothing\nwas comparable. `DefaultedMeasurements` (Ready only): the measurements the mannequin guessed; not empty → \"Ölçülerini ekle, manken sana\nbenzesin\". `Reason` (Unavailable only): why, for the app team and support. `Renderer` (Ready with an image only): the name of the\nrenderer that drew it, sent back as `renderer` of `POST /me/tryon/reports` (\"Yanlış görünüyor\"); null otherwise, a check included."
+        "description": "\"Manken üstünde gör\". `Status`: `Ready` (show `ImageUrl`, a presigned GET valid for an hour, with \"Manken üzerinde yaklaşık\r\ngörünüm\"), `Preparing` (show \"Hazırlanıyor\" and ask again), `Unavailable` (hide the action entirely, never a disabled button).\r\n`Garments` (Ready only): each drawn piece by the ID the outfit gives it (wardrobe item or product) with its fit label, null when nothing\r\nwas comparable. `DefaultedMeasurements` (Ready only): the measurements the mannequin guessed; not empty → \"Ölçülerini ekle, manken sana\r\nbenzesin\". `Reason` (Unavailable only): why, for the app team and support. `Renderer` (Ready with an image only): the name of the\r\nrenderer that drew it, sent back as `renderer` of `POST /me/tryon/reports` (\"Yanlış görünüyor\"); null otherwise, a check included."
       },
       "TryOnStatus": {
         "enum": [
@@ -16118,7 +16851,7 @@
             }
           }
         },
-        "description": "A partial update: a null field is left as it is, and `Clear` names the optional fields to empty (IReadOnlyList&lt;string&gt; UpdateItemRequest.ClearableFields).\nAn empty body is valid: it is the one-tap \"looks right\" confirmation. Enum values are names, matched case-insensitively."
+        "description": "A partial update: a null field is left as it is, and `Clear` names the optional fields to empty (IReadOnlyList&lt;string&gt; UpdateItemRequest.ClearableFields).\r\nAn empty body is valid: it is the one-tap \"looks right\" confirmation. Enum values are names, matched case-insensitively."
       },
       "UpdatePersonaRequest": {
         "required": [
@@ -16237,7 +16970,7 @@
             }
           }
         },
-        "description": "A partial update: a null field is left as it is, and a given list replaces the stored one (`[]` clears preferred/avoided\nlists, but not seasons). `ClearBudget: true` removes both budget bounds."
+        "description": "A partial update: a null field is left as it is, and a given list replaces the stored one (`[]` clears preferred/avoided\r\nlists, but not seasons). `ClearBudget: true` removes both budget bounds."
       },
       "UpdatePreferencesRequest": {
         "required": [
@@ -16303,7 +17036,7 @@
             ]
           }
         },
-        "description": "A partial update: a null field is left as it is. Quiet hours are `HH:mm` local times in Europe/Istanbul and come as a pair;\n`ClearQuietHours: true` removes them."
+        "description": "A partial update: a null field is left as it is. Quiet hours are `HH:mm` local times in Europe/Istanbul and come as a pair;\r\n`ClearQuietHours: true` removes them."
       },
       "UpdateProfileRequest": {
         "type": "object",
@@ -16390,7 +17123,7 @@
             ]
           }
         },
-        "description": "The measurements and the city, the same way as the seller PUT: left out = unchanged, an explicit null = cleared. The `*Set` flags\nrecord which of them the body contained; the JSON reader only calls an init accessor for a property that is present. `Audience` is\nthe exception, a null keeps the current one too (a profile always has an audience), and so is `SizePromptsEnabled` (\"beden sorularını kapat\":\nfalse stops the \"did the size fit?\" questions, a flag is never cleared). `City` (at most 80 characters; blank clears it)\nis where the outfit engine reads the weather."
+        "description": "The measurements and the city, the same way as the seller PUT: left out = unchanged, an explicit null = cleared. The `*Set` flags\r\nrecord which of them the body contained; the JSON reader only calls an init accessor for a property that is present. `Audience` is\r\nthe exception, a null keeps the current one too (a profile always has an audience), and so is `SizePromptsEnabled` (\"beden sorularını kapat\":\r\nfalse stops the \"did the size fit?\" questions, a flag is never cleared). `City` (at most 80 characters; blank clears it)\r\nis where the outfit engine reads the weather."
       },
       "UpsertItemError": {
         "required": [
@@ -16810,7 +17543,7 @@
             "type": "boolean"
           }
         },
-        "description": "A user as others see them. `Handle`, `Bio` and `Link` exist for creators only. `PostCount` counts the posts the caller\nmay see. `IsFollowing`: the caller follows them; `FollowsYou`: they follow the caller."
+        "description": "A user as others see them. `Handle`, `Bio` and `Link` exist for creators only. `PostCount` counts the posts the caller\r\nmay see. `IsFollowing`: the caller follows them; `FollowsYou`: they follow the caller."
       },
       "ValueCounts": {
         "required": [
@@ -17032,7 +17765,7 @@
             "format": "int32"
           }
         },
-        "description": "`Counted`: the vote counts (not a skip, not too fast). `ChosenWinRate` (0-100) and `ChosenGames`: the chosen outfit's real record\ntoday, this vote included; the rate is null below `League:MinGamesForWinRate` games (\"İlk oylardan biri seninki\"), both are null for a\nskip. The rest is the voter's progress: counted votes and served pairs today, the target for the voting points and the day's limit."
+        "description": "`Counted`: the vote counts (not a skip, not too fast). `ChosenWinRate` (0-100) and `ChosenGames`: the chosen outfit's real record\r\ntoday, this vote included; the rate is null below `League:MinGamesForWinRate` games (\"İlk oylardan biri seninki\"), both are null for a\r\nskip. The rest is the voter's progress: counted votes and served pairs today, the target for the voting points and the day's limit."
       },
       "WardrobeCategoryRef": {
         "required": [
@@ -17127,7 +17860,7 @@
             }
           }
         },
-        "description": "`PersonaId` is the persona the analysis was made for (the active one, else the first), or null for a user without personas.\n`SuggestedProducts` fill the first gap: catalog items of its category, color and formality band, active and in stock, not\nalready in the wardrobe, and with a persona a `matchScore` of at least int GetGapsEndpoint.MinMatchScore."
+        "description": "`PersonaId` is the persona the analysis was made for (the active one, else the first), or null for a user without personas.\r\n`SuggestedProducts` fill the first gap: catalog items of its category, color and formality band, active and in stock, not\r\nalready in the wardrobe, and with a persona a `matchScore` of at least int GetGapsEndpoint.MinMatchScore."
       },
       "WardrobeItemResponse": {
         "required": [
@@ -17338,7 +18071,7 @@
             "format": "date-time"
           }
         },
-        "description": "One wardrobe item. `ThumbUrl`/`CutoutUrl` are public and permanent (a catalog item whose image could not be copied shows the\ncatalog's image); `OriginalUrl` is a 15-minute presigned link, given only when there is no cutout to show. `NeedsCategory`\nasks the app to let the user pick one of `Analysis.CategoryCandidates`. `Analysis` is there once a photo was analysed."
+        "description": "One wardrobe item. `ThumbUrl`/`CutoutUrl` are public and permanent (a catalog item whose image could not be copied shows the\r\ncatalog's image); `OriginalUrl` is a 15-minute presigned link, given only when there is no cutout to show. `NeedsCategory`\r\nasks the app to let the user pick one of `Analysis.CategoryCandidates`. `Analysis` is there once a photo was analysed."
       },
       "WardrobeItemStatus": {
         "enum": [
@@ -17426,7 +18159,7 @@
             "format": "int32"
           }
         },
-        "description": "An item in lists (the wardrobe grid, the stats' most and least worn). `CompanionCount`, how many pieces of the wardrobe it pairs\nwith, is present only on `GET /items`; an item that cannot be worn (yet) has 0."
+        "description": "An item in lists (the wardrobe grid, the stats' most and least worn). `CompanionCount`, how many pieces of the wardrobe it pairs\r\nwith, is present only on `GET /items`; an item that cannot be worn (yet) has 0."
       },
       "WardrobeStatsResponse": {
         "required": [
@@ -17499,7 +18232,7 @@
             "format": "int32"
           }
         },
-        "description": "Over the wardrobe (not archived, not failed). An item counts as unworn for 180 days when its last wear, or its creation when it was\nnever worn, is more than 180 days ago. `PossibleOutfits` is the outfit engine's count of complete, wearable core outfits (top,\nbottom, shoes) the wardrobe makes, capped at 999 (see `OutfitCounter`); never null since Task 12. `UnmatchedCount` is how many\nwearable pieces pair with nothing else in the wardrobe (`companionCount` 0 on the grid): the pieces a purchase would unlock."
+        "description": "Over the wardrobe (not archived, not failed). An item counts as unworn for 180 days when its last wear, or its creation when it was\r\nnever worn, is more than 180 days ago. `PossibleOutfits` is the outfit engine's count of complete, wearable core outfits (top,\r\nbottom, shoes) the wardrobe makes, capped at 999 (see `OutfitCounter`); never null since Task 12. `UnmatchedCount` is how many\r\nwearable pieces pair with nothing else in the wardrobe (`companionCount` 0 on the grid): the pieces a purchase would unlock."
       },
       "WardrobeSummaryResponse": {
         "required": [
@@ -17555,7 +18288,7 @@
             ]
           }
         },
-        "description": "The wardrobe summary. With too few pieces only `PieceCount` and `Message` are there: no totals, no zeros that look like data.\nOtherwise `Value`, `CostPerWear` and `Unworn` are (see WardrobeSummaryRules). Every price that is not the\nuser's own is marked: `Value.IsEstimate`, `CategoryValue.IsEstimate`, `CostPerWearItem.PriceIsEstimate`."
+        "description": "The wardrobe summary. With too few pieces only `PieceCount` and `Message` are there: no totals, no zeros that look like data.\r\nOtherwise `Value`, `CostPerWear` and `Unworn` are (see WardrobeSummaryRules). Every price that is not the\r\nuser's own is marked: `Value.IsEstimate`, `CategoryValue.IsEstimate`, `CostPerWearItem.PriceIsEstimate`."
       },
       "WardrobeValue": {
         "required": [
@@ -17617,7 +18350,7 @@
             ]
           }
         },
-        "description": "The wardrobe's value. `Total` is `KnownTotal` (own prices) plus `EstimatedTotal` (catalog prices of linked pieces), null when\nno piece has a price. `IsEstimate` says the total includes estimates: the app labels it \"tahmini\". `Counts` are disjoint and add\nup to the number of pieces."
+        "description": "The wardrobe's value. `Total` is `KnownTotal` (own prices) plus `EstimatedTotal` (catalog prices of linked pieces), null when\r\nno piece has a price. `IsEstimate` says the total includes estimates: the app labels it \"tahmini\". `Counts` are disjoint and add\r\nup to the number of pieces."
       },
       "WearResponse": {
         "required": [

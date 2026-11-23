@@ -32,6 +32,9 @@ export const queryKeys = {
   notificationPreferences: ['notifications', 'preferences'] as const,
 
   /** Prefix of everything about the wardrobe (items, stats, gaps). */
+  /** Bulk add: deliberately not under `wardrobe` (a wardrobe change must not refetch a batch under review). */
+  bulkAvailable: ['bulk', 'available'] as const,
+  bulkBatch: (id: string) => ['bulk', 'batch', id] as const,
   wardrobeAll: ['wardrobe'] as const,
   wardrobeItems: (filters: { category?: string; color?: string }) =>
     ['wardrobe', 'items', filters] as const,

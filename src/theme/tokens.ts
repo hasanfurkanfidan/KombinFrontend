@@ -168,6 +168,14 @@ export const sizes = {
   postSkeleton: 320,
   postThumbWidth: 72,
   postThumbHeight: 90,
+  /** Bulk add: the tick square in a review tile's corner (the whole tile is the 44 pt target). */
+  bulkCheck: 24,
+  /** The visible face of a review tile's "büyüt ve düzenle" button (its target is `touch`). */
+  bulkTileButton: 32,
+  /** The existing piece's thumbnail beside "Dolabında benzeri var.". */
+  bulkSimilarThumb: 32,
+  /** The user's own photo while the pieces are separated: at most this share of the window height. */
+  bulkPhotoMaxRatio: 0.5,
   /** The photo on the Lens screen is at most this share of the window height (full width otherwise). */
   lensPhotoMaxRatio: 0.55,
   /** Number badge in a region outline's corner (the whole outline is the touch target). */

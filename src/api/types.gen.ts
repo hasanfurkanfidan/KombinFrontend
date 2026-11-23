@@ -1005,24 +1005,8 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-            };
-        };
+        /** Starts a bulk add: creates a batch and a presigned PUT for the photo of several garments. */
+        post: operations["CreateWardrobeBulkUploadUrl"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1038,26 +1022,8 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-            };
-        };
+        /** Checks the uploaded photo and starts the analysis; the app then polls GET /bulk/{id}. */
+        post: operations["ProcessWardrobeBulkBatch"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1071,48 +1037,18 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-            };
-        };
+        /**
+         * The status of a bulk add: everything the review screen draws.
+         * @description Poll while status is Processing. Ready carries the pieces with private presigned links (thumbUrl for the grid, imageUrl for the review image) that expire at urlsExpireAt: ask again to refresh them. A likelyDuplicate is a hint about the caller's own wardrobe, never a block. Every sentence is the server's.
+         */
+        get: operations["GetWardrobeBulkBatch"];
         put?: never;
         post?: never;
-        delete: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-            };
-        };
+        /**
+         * Cancels a bulk add: the pieces and every staged image are deleted. Idempotent.
+         * @description A cancelled or expired batch answers 204 again; a confirmed one 409 BulkAlreadyConfirmed.
+         */
+        delete: operations["CancelWardrobeBulkBatch"];
         options?: never;
         head?: never;
         patch?: never;
@@ -1127,26 +1063,11 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-            };
-        };
+        /**
+         * Adds the ticked pieces to the wardrobe; the pieces not listed are dropped with the batch.
+         * @description Each listed piece becomes an ordinary wardrobe item whose id is the piece's id. A second confirm of the same batch answers 200 with the stored result and ignores the new body. 409 BulkNotReady before Ready, BulkExpired after a cancel or expiry; 503 StorageUnavailable commits nothing and is safe to retry.
+         */
+        post: operations["ConfirmWardrobeBulkBatch"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2165,6 +2086,132 @@ export interface components {
             sizeUnknown: null | boolean;
         };
         /**
+         * @description Everything the review screen draws (design note, section d); the app polls it every second or so while `Processing` and again to
+         *     refresh expired links. `Pieces` is empty unless `Ready`; `Items` is there only once `Confirmed`. Every sentence is the
+         *     server's (BulkAddCopy).
+         */
+        BulkBatchResponse: {
+            /** Format: uuid */
+            id: string;
+            status: components["schemas"]["BulkBatchStatus"];
+            /** Format: date-time */
+            expiresAt: string;
+            refusal: null | components["schemas"]["BulkRefusal"];
+            failure: null | components["schemas"]["BulkFailure"];
+            pieces: components["schemas"]["BulkPieceResponse"][];
+            unseparated: null | components["schemas"]["BulkUnseparated"];
+            cutOff: null | components["schemas"]["BulkCutOff"];
+            items: null | components["schemas"]["WardrobeItemSummary"][];
+        };
+        /** @enum {unknown} */
+        BulkBatchStatus: "Created" | "Processing" | "Ready" | "Refused" | "Failed" | "Confirmed" | "Cancelled" | "Expired";
+        /** @description A box on the photo in fractions (0-1) of its width and height: left, top, width, height. */
+        BulkBox: {
+            /** Format: double */
+            x: number | string;
+            /** Format: double */
+            y: number | string;
+            /** Format: double */
+            w: number | string;
+            /** Format: double */
+            h: number | string;
+        };
+        BulkCategoryRef: {
+            slug: string;
+            name: string;
+        };
+        /**
+         * @description One ticked piece and its edits: `PATCH /items/{id}`'s own fields and rules for the category and the colours (a null field is left as the
+         *     analysis said, `clear: ["secondaryColor"]` empties the second colour). Everything else is edited afterwards with `PATCH`.
+         */
+        BulkConfirmPiece: {
+            /** Format: uuid */
+            id: string;
+            categorySlug: null | string;
+            primaryColor: null | string;
+            secondaryColor: null | string;
+            clear: null | string[];
+        };
+        /** @description The ticks are the list: a piece not in it is not added, and is gone with the batch. */
+        BulkConfirmRequest: {
+            pieces: null | components["schemas"]["BulkConfirmPiece"][];
+        };
+        /** @description PUT the photo to `UploadUrl` with exactly `Headers` before `ExpiresAt`, then call `process` on the batch. */
+        BulkCreateUploadUrlResponse: {
+            /** Format: uuid */
+            batchId: string;
+            uploadUrl: string;
+            headers: {
+                [key: string]: string;
+            };
+            /** Format: date-time */
+            expiresAt: string;
+        };
+        /** @description Pieces the service found beyond what one batch keeps: how many, and the server's sentence (it names no limit). */
+        BulkCutOff: {
+            /** Format: int32 */
+            count: number | string;
+            message: string;
+        };
+        /** @description `Code` is the BulkFailureCode name; `Retryable` says whether "tekrar dene" (`process` again) makes sense. */
+        BulkFailure: {
+            code: string;
+            message: string;
+            retryable: boolean;
+        };
+        /** @description "Dolabında benzeri var.": the user's own item this piece looks like, with its normal public thumbnail. A hint, never a block. */
+        BulkLikelyDuplicate: {
+            /** Format: uuid */
+            itemId: string;
+            thumbUrl: string;
+            message: string;
+        };
+        /**
+         * @description One piece of the review screen. `ThumbUrl` is the grid image (vision's 400 px thumbnail) and `ImageUrl` the review image (the cut-out as
+         *     vision sent it); both are private presigned links that expire at `UrlsExpireAt` (the app asks again). `Category`, the colours, the
+         *     pattern and `NeedsCategory` are the wardrobe item's own names and rules, so the single add's chips and pickers work unchanged.
+         */
+        BulkPieceResponse: {
+            /** Format: uuid */
+            id: string;
+            thumbUrl: string;
+            imageUrl: string;
+            /** Format: date-time */
+            urlsExpireAt: string;
+            box: components["schemas"]["BulkBox"];
+            preTicked: boolean;
+            reasons: components["schemas"]["BulkReason"][];
+            category: null | components["schemas"]["BulkCategoryRef"];
+            needsCategory: boolean;
+            categoryCandidates: components["schemas"]["BulkCategoryRef"][];
+            primaryColor: components["schemas"]["ProductColor"];
+            secondaryColor: null | components["schemas"]["ProductColor"];
+            pattern: components["schemas"]["ProductPattern"];
+            warnings: string[];
+            likelyDuplicate: null | components["schemas"]["BulkLikelyDuplicate"];
+        };
+        BulkProcessResponse: {
+            /** Format: uuid */
+            batchId: string;
+            status: components["schemas"]["BulkBatchStatus"];
+        };
+        /** @description Why a piece is not pre-ticked: the service's code and the server's sentence (BulkAddCopy). */
+        BulkReason: {
+            code: string;
+            message: string;
+        };
+        BulkRefusal: {
+            code: string;
+            message: string;
+        };
+        /** @description Garments the service saw together and could not cut apart: how many, the server's sentence and where they are. */
+        BulkUnseparated: {
+            /** Format: int32 */
+            count: number | string;
+            message: string;
+            regions: components["schemas"]["BulkBox"][];
+        };
+        /**
          * @description The same credentials as signing in: `Email` and `Password`, or `Provider` and `IdToken` (with `Nonce` when the app
          *     used one). They are what proves who is cancelling; nothing else in the body is trusted.
          */
@@ -2565,13 +2612,6 @@ export interface components {
             pieces: components["schemas"]["LeaguePieceResponse"][];
         };
         /**
-         * @description `Final`: the result as the close decided it. `UnderReview`: the outfit was reported and waits for a review; the rank and the vote
-         *     points are held back (they are stored and already count in the week). `Removed`: a review took the outfit out after the close; it has
-         *     no rank and no vote points.
-         * @enum {unknown}
-         */
-        LeagueResultStatus: "Final" | "UnderReview" | "Removed";
-        /**
          * @description The caller's result of one closed day (screen 04, "Akşamki sonuç"). `Status` and `Message`: LeagueResultStatus;
          *     the message is "Kombinin inceleniyor. Sonuç inceleme bitince görünecek." while under review, the removal's line (`LeagueCopy.Removed`)
          *     when a review took the outfit out, null for a final result. `Entry`: their own outfit
@@ -2598,6 +2638,13 @@ export interface components {
             piecePointsAvailable: boolean;
             week: null | components["schemas"]["LeagueResultsWeekResponse"];
         };
+        /**
+         * @description `Final`: the result as the close decided it. `UnderReview`: the outfit was reported and waits for a review; the rank and the vote
+         *     points are held back (they are stored and already count in the week). `Removed`: a review took the outfit out after the close; it has
+         *     no rank and no vote points.
+         * @enum {unknown}
+         */
+        LeagueResultStatus: "Final" | "UnderReview" | "Removed";
         /** @description The caller's week of that day (their tier, place in the group, points to the promotion line, when it ends); null when they were in no group. */
         LeagueResultsWeekResponse: {
             tier: components["schemas"]["LeagueTier"];
@@ -3117,11 +3164,6 @@ export interface components {
             /** Format: int32 */
             totalPages?: number | string;
         };
-        /**
-         * @description Why two pieces go together, in the word clients read.
-         * @enum {unknown}
-         */
-        PairReason: "neutral" | "tonal" | "complementary" | "analogous" | "statement";
         /** @description A piece that goes with the item. `Score` is 0-100 (see `OutfitPairs`), `Reason` names the colour harmony. */
         PairingCompanion: {
             item: components["schemas"]["WardrobeItemSummary"];
@@ -3135,6 +3177,21 @@ export interface components {
             /** Format: int32 */
             total: number | string;
             items: components["schemas"]["PairingCompanion"][];
+        };
+        /**
+         * @description What goes with one wardrobe item. `PersonaId` is the persona the scores are weighted for, or null for a user without personas.
+         *     `OutfitCount` is how many of the outfits behind the stats' `possibleOutfits` wear the item; a layer or an accessory counts the
+         *     outfits it can be worn with. `Unlock` is null when every slot has enough companions, or the catalog has nothing that fits.
+         */
+        PairingsResponse: {
+            /** Format: uuid */
+            itemId: string;
+            /** Format: uuid */
+            personaId: null | string;
+            companions: components["schemas"]["PairingSlot"][];
+            /** Format: int32 */
+            outfitCount: number | string;
+            unlock: null | components["schemas"]["PairingUnlock"];
         };
         /**
          * @description The catalog piece that would help the item most. `LowestPrice`, `CheapestSeller` and `GoPath` are one offer, the cheapest
@@ -3158,20 +3215,10 @@ export interface components {
             matchScore?: null | number | string;
         };
         /**
-         * @description What goes with one wardrobe item. `PersonaId` is the persona the scores are weighted for, or null for a user without personas.
-         *     `OutfitCount` is how many of the outfits behind the stats' `possibleOutfits` wear the item; a layer or an accessory counts the
-         *     outfits it can be worn with. `Unlock` is null when every slot has enough companions, or the catalog has nothing that fits.
+         * @description Why two pieces go together, in the word clients read.
+         * @enum {unknown}
          */
-        PairingsResponse: {
-            /** Format: uuid */
-            itemId: string;
-            /** Format: uuid */
-            personaId: null | string;
-            companions: components["schemas"]["PairingSlot"][];
-            /** Format: int32 */
-            outfitCount: number | string;
-            unlock: null | components["schemas"]["PairingUnlock"];
-        };
+        PairReason: "neutral" | "tonal" | "complementary" | "analogous" | "statement";
         PersonaListResponse: {
             items: components["schemas"]["PersonaResponse"][];
         };
@@ -3679,11 +3726,6 @@ export interface components {
             remaining: number | string;
             aborted: boolean;
         };
-        /** @description `Name` (1-60 characters) and the plan request (`POST /me/trips/plan`'s body). */
-        SaveTripRequest: {
-            name: null | string;
-            request: null | components["schemas"]["TripPlanRequest"];
-        };
         SavedIdsResponse: {
             productIds: string[];
         };
@@ -3712,6 +3754,11 @@ export interface components {
             isActive: boolean;
             /** Format: date-time */
             savedAt: string;
+        };
+        /** @description `Name` (1-60 characters) and the plan request (`POST /me/trips/plan`'s body). */
+        SaveTripRequest: {
+            name: null | string;
+            request: null | components["schemas"]["TripPlanRequest"];
         };
         Season: string;
         /** @enum {unknown} */
@@ -7598,6 +7645,291 @@ export interface operations {
             };
             /** @description Unauthorized */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    CreateWardrobeBulkUploadUrl: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateUploadUrlRequest"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BulkCreateUploadUrlResponse"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    ProcessWardrobeBulkBatch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Accepted */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BulkProcessResponse"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    GetWardrobeBulkBatch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BulkBatchResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    CancelWardrobeBulkBatch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    ConfirmWardrobeBulkBatch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BulkConfirmRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BulkBatchResponse"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };

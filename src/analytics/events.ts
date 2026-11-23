@@ -115,6 +115,29 @@ export interface EventProps {
   /** The results screen settled with data; `status` is the results' own status. */
   league_results_view: { status: 'Final' | 'UnderReview' | 'Removed' };
   league_table_view: Record<string, never>;
+  /** Bulk add (backend `bulk-add.md` section f): enums and counts only, never a batch, piece or item id, a box or an image. */
+  bulk_add_start: { source: 'camera' | 'library' };
+  bulk_add_result: {
+    status: 'Ready' | 'Refused' | 'Failed' | 'Timeout';
+    refusal?: 'closet' | 'rail' | 'pile' | 'worn' | 'nothing_found' | 'too_dark' | 'too_blurry';
+    failure?: 'VisionBusy' | 'VisionUnavailable' | 'PhotoUnreadable' | 'AnalysisFailed' | 'Interrupted';
+    durationMs: number;
+    pieces: number;
+    preTicked: number;
+    unseparated: number;
+    duplicateHints: number;
+  };
+  bulk_add_confirm: {
+    shown: number;
+    ticked: number;
+    preTickedTicked: number;
+    preTickedLeft: number;
+    extraTicked: number;
+    categoryEdits: number;
+    colourEdits: number;
+    durationMs: number;
+  };
+  bulk_add_cancel: { stage: 'Processing' | 'Review' };
 }
 
 export type EventName = keyof EventProps;
@@ -186,6 +209,25 @@ export const EVENT_KEYS: Record<EventName, KeySpec> = {
   league_report: { required: [], optional: [] },
   league_results_view: { required: ['status'], optional: [] },
   league_table_view: { required: [], optional: [] },
+  bulk_add_start: { required: ['source'], optional: [] },
+  bulk_add_result: {
+    required: ['status', 'durationMs', 'pieces', 'preTicked', 'unseparated', 'duplicateHints'],
+    optional: ['refusal', 'failure'],
+  },
+  bulk_add_confirm: {
+    required: [
+      'shown',
+      'ticked',
+      'preTickedTicked',
+      'preTickedLeft',
+      'extraTicked',
+      'categoryEdits',
+      'colourEdits',
+      'durationMs',
+    ],
+    optional: [],
+  },
+  bulk_add_cancel: { required: ['stage'], optional: [] },
 };
 
 /** Property keys that name personal data; refused on every event. */

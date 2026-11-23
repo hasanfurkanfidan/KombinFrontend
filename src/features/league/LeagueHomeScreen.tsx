@@ -120,11 +120,17 @@ export function LeagueHomeScreen() {
             <Text accessibilityRole="header" style={styles.title} testID="league-title">
               {tr.leagueHomeTitle(tierName(data.tier))}
             </Text>
+            {/* `state`: a running week shows when it ends; after Sunday's close the server still sends last
+                week's table, first while its results are being worked out (`Ending`), then final (`Final`). */}
             <Text style={styles.subtitle} testID="league-ends">
-              {tr.leagueEndsAt(
-                `${istanbulWeekday(data.endsAt)} ${istanbulClock(data.endsAt)}'de`,
-                weekTimeLeft(data.endsAt, now),
-              )}
+              {data.state === 'Ending'
+                ? tr.leagueWeekEnding
+                : data.state === 'Final'
+                  ? tr.leagueLastWeekTable
+                  : tr.leagueEndsAt(
+                      `${istanbulWeekday(data.endsAt)} ${istanbulClock(data.endsAt)}'de`,
+                      weekTimeLeft(data.endsAt, now),
+                    )}
             </Text>
           </View>
           <View

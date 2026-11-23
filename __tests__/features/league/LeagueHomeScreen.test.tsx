@@ -73,6 +73,25 @@ describe('the table (design 05)', () => {
     expect(screen.queryByTestId('league-today-provisional')).toBeNull();
   });
 
+  it('says the week is over while its results are worked out (state Ending)', async () => {
+    tableMock.mockResolvedValue(table({ state: 'Ending' }));
+    await renderWithQuery(<LeagueHomeScreen />);
+
+    expect(await screen.findByTestId('league-ends')).toHaveTextContent(
+      'Hafta bitti, sonuçlar hazırlanıyor',
+    );
+    expect(screen.getByTestId('league-table')).toBeTruthy();
+  });
+
+  it('labels the table as last week’s once the week is final (state Final)', async () => {
+    tableMock.mockResolvedValue(table({ state: 'Final' }));
+    await renderWithQuery(<LeagueHomeScreen />);
+
+    expect(await screen.findByTestId('league-ends')).toHaveTextContent('Geçen haftanın tablosu');
+    expect(screen.getByTestId('league-table')).toBeTruthy();
+    expect(screen.queryByText(/biter/)).toBeNull();
+  });
+
   it('marks today’s points as provisional until the day is final', async () => {
     tableMock.mockResolvedValue(table({ todayIsFinal: false, todayPoints: 25 }));
     await renderWithQuery(<LeagueHomeScreen />);

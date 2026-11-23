@@ -9,6 +9,7 @@ import { ErrorState } from '@/components/ErrorState';
 import { Screen } from '@/components/Screen';
 import { Skeleton } from '@/components/Skeleton';
 import { IMAGE_LIST_TUNING } from '@/components/listTuning';
+import { BulkEntry } from '@/features/bulkAdd/BulkEntry';
 import { TripEntry } from '@/features/trips/TripEntry';
 import { tr } from '@/i18n/tr';
 import { useSession } from '@/session/useSession';
@@ -110,7 +111,10 @@ function SignedInWardrobe() {
         <Text accessibilityRole="header" style={styles.title}>
           {tr.wardrobeTitle}
         </Text>
-        <AddButton onPress={() => setAddOpen(true)} />
+        <View style={styles.titleActions}>
+          <BulkEntry />
+          <AddButton onPress={() => setAddOpen(true)} />
+        </View>
       </View>
       <WardrobeSummaryEntry />
       <StatsRow
@@ -261,8 +265,17 @@ const styles = StyleSheet.create({
   },
   titleRow: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     alignItems: 'center',
     justifyContent: 'space-between',
+    gap: theme.spacing.sm,
+  },
+  titleActions: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'flex-end',
+    gap: theme.spacing.sm,
+    flexShrink: 1,
   },
   title: {
     ...theme.typography.display,

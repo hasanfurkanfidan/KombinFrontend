@@ -1,9 +1,8 @@
-import { useMemo, useState, type ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import type {
   BrandRef,
-  CategoryNode,
   ProductColor,
   ProductFit,
   ProductPattern,
@@ -18,14 +17,13 @@ import { Icon } from '@/components/Icon';
 import { Skeleton } from '@/components/Skeleton';
 import { TextField } from '@/components/TextField';
 import { showToast } from '@/components/toastStore';
-import { useCategories } from '@/features/catalog/hooks';
-import { colorLabels } from '@/features/catalog/filters';
 import { useBrandSearch } from '@/features/sizes/hooks';
 import { tr } from '@/i18n/tr';
 import { theme } from '@/theme';
 import { colorTint } from '@/theme/colorNames';
 import { toNumber } from '@/utils/money';
 
+import { CategoryChips, ColorSwatches } from './ItemFields';
 import { useArchiveItem, useUpdateItem, useWardrobeItem } from './hooks';
 import {
   FORMALITY_LABELS,
@@ -37,7 +35,6 @@ import {
   type Season,
 } from './labels';
 
-const COLORS = Object.keys(colorLabels) as ProductColor[];
 const PATTERNS = Object.keys(patternLabels) as ProductPattern[];
 const FITS = Object.keys(fitLabels) as ProductFit[];
 const FORMALITIES = [1, 2, 3, 4, 5];
@@ -74,10 +71,6 @@ export function ConfirmItemSheet({ itemId, mode, onClose, onDone }: ConfirmItemS
       )}
     </BottomSheet>
   );
-}
-
-function leaves(nodes: readonly CategoryNode[]): CategoryNode[] {
-  return nodes.flatMap((node) => (node.children.length > 0 ? leaves(node.children) : [node]));
 }
 
 function Cutout({ item, color }: { item: WardrobeItem; color: ProductColor }) {
@@ -142,10 +135,8 @@ function ItemForm({
   mode: ItemSheetMode;
   onDone: () => void;
 }) {
-  const categories = useCategories();
   const update = useUpdateItem();
   const [categorySlug, setCategorySlug] = useState<string | null>(item.category?.slug ?? null);
-  const [showAllCategories, setShowAllCategories] = useState(false);
   const [color, setColor] = useState<ProductColor>(item.primaryColor);
   const [detailsOpen, setDetailsOpen] = useState(mode === 'edit');
   const [pattern, setPattern] = useState<ProductPattern>(item.pattern);
@@ -162,14 +153,9 @@ function ItemForm({
   const [priceError, setPriceError] = useState<string | undefined>();
   const brandResults = useBrandSearch(brand ? '' : brandQuery);
 
-  const leafList = useMemo(() => leaves(categories.data ?? []), [categories.data]);
-  const categoryName = (slug: string) =>
-    leafList.find((leaf) => leaf.slug === slug)?.name ?? slug.split('/').pop() ?? slug;
   // The photo's own guesses first (best one first), then what the item already has; "Diğer" opens the whole list.
   const guessed = item.analysis?.categoryCandidates.map((candidate) => candidate.slug) ?? [];
   const suggested = [...new Set([...guessed, ...(item.category ? [item.category.slug] : [])])];
-  const categoryChoices =
-    showAllCategories || suggested.length === 0 ? leafList.map((leaf) => leaf.slug) : suggested;
   const hint = warningHint([...item.warnings, ...(item.analysis?.quality.warnings ?? [])]);
   const needsPick = categorySlug === null;
 
@@ -224,51 +210,14 @@ function ItemForm({
         </View>
       ) : null}
 
-      <View style={styles.block}>
-        <Text style={styles.label}>
-          {item.needsCategory && needsPick ? tr.wardrobeCategoryAsk : tr.wardrobeCategoryLabel}
-        </Text>
-        <View style={styles.chips}>
-          {categoryChoices.map((slug) => (
-            <Chip
-              key={slug}
-              label={categoryName(slug)}
-              selected={categorySlug === slug}
-              onPress={() => setCategorySlug(slug)}
-              testID={`item-category-${slug}`}
-            />
-          ))}
-          {!showAllCategories && suggested.length > 0 ? (
-            <Chip
-              label={tr.wardrobeCategoryOther}
-              onPress={() => setShowAllCategories(true)}
-              testID="item-category-other"
-            />
-          ) : null}
-        </View>
-      </View>
+      <CategoryChips
+        label={item.needsCategory && needsPick ? tr.wardrobeCategoryAsk : tr.wardrobeCategoryLabel}
+        suggested={suggested}
+        value={categorySlug}
+        onChange={setCategorySlug}
+      />
 
-      <View style={styles.block}>
-        <Text style={styles.label}>{tr.wardrobeColorLabel}</Text>
-        <View style={styles.swatches}>
-          {COLORS.map((value) => (
-            <Pressable
-              key={value}
-              accessibilityRole="button"
-              accessibilityLabel={colorLabels[value]}
-              accessibilityState={{ selected: color === value }}
-              hitSlop={(theme.sizes.touch - theme.sizes.colorSwatch) / 2}
-              onPress={() => setColor(value)}
-              style={[
-                styles.swatch,
-                { backgroundColor: theme.colorNames[value] },
-                color === value && styles.swatchSelected,
-              ]}
-              testID={`item-color-${value}`}
-            />
-          ))}
-        </View>
-      </View>
+      <ColorSwatches value={color} onChange={setColor} />
 
       <Pressable
         accessibilityRole="button"
@@ -460,22 +409,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: theme.spacing.sm,
-  },
-  swatches: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: theme.spacing.md,
-  },
-  swatch: {
-    width: theme.sizes.colorSwatch,
-    height: theme.sizes.colorSwatch,
-    borderRadius: theme.sizes.colorSwatch / 2,
-    borderWidth: 1,
-    borderColor: theme.colors.line,
-  },
-  swatchSelected: {
-    borderWidth: 3,
-    borderColor: theme.colors.primary,
   },
   detailsToggle: {
     minHeight: theme.sizes.touch,

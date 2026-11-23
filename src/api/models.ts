@@ -107,6 +107,16 @@ export type WardrobeGaps = Schemas['WardrobeGapsResponse'];
 export type WardrobeGap = Schemas['WardrobeGap'];
 export type UploadUrlRequest = Schemas['CreateUploadUrlRequest'];
 export type UploadUrl = Schemas['CreateUploadUrlResponse'];
+
+// Bulk add ("Toplu ekle").
+export type BulkUploadUrl = Schemas['BulkCreateUploadUrlResponse'];
+export type BulkProcess = Schemas['BulkProcessResponse'];
+export type BulkBatch = Schemas['BulkBatchResponse'];
+export type BulkConfirmRequest = Schemas['BulkConfirmRequest'];
+export type BulkConfirmPiece = Schemas['BulkConfirmPiece'];
+export type BulkBatchStatus = Schemas['BulkBatchStatus'];
+export type BulkPiece = Schemas['BulkPieceResponse'];
+export type BulkCategoryRef = Schemas['BulkCategoryRef'];
 export type ProcessItemResponse = Schemas['ProcessItemResponse'];
 export type UpdateWardrobeItemRequest = Schemas['UpdateItemRequest'];
 export type AddFromProductRequest = Schemas['AddFromProductRequest'];

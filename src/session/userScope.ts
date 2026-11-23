@@ -1,6 +1,7 @@
 import { rotateAnonymousId } from '@/analytics';
 import { queryClient } from '@/api/queryClient';
 import { usePendingDeletionStore } from '@/features/auth/pendingDeletion';
+import { useBulkStore } from '@/features/bulkAdd/bulkStore';
 import { resetImageUrls } from '@/features/social/imageUrl';
 import { resetTryOnGate } from '@/features/tryon/gate';
 import { useAddStore } from '@/features/wardrobe/addStore';
@@ -25,7 +26,7 @@ export function userScopeEpoch(): number {
  * Forgets everything that belongs to the account that just left this phone: every cached query and mutation (the
  * wardrobe, personas, outfits, saved products, alerts, notifications, posts with their per-viewer fields, creator
  * stats, blocks, and the scored catalog lists), the in-memory stores (recent searches, onboarding skip, push token
- * and prompt flag, the wardrobe add queue and its local photos, pending-deletion credentials), the post photo URL map,
+ * and prompt flag, the wardrobe add queue and its local photos, the bulk-add advice flag, pending-deletion credentials), the post photo URL map,
  * the temporary photos on disk, the image cache (memory and disk: every picture downloaded for this account), and the
  * anonymous analytics id.
  */
@@ -35,6 +36,7 @@ export function resetUserScopedState(): void {
   queryClient.clear();
   usePrefsStore.getState().reset();
   useAddStore.getState().reset();
+  useBulkStore.getState().reset();
   usePendingDeletionStore.getState().clear();
   resetImageUrls();
   resetTryOnGate();

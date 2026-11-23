@@ -60,6 +60,25 @@ const BACKEND_TABLE: Record<string, { required: string[]; optional: string[] }> 
   league_report: { required: [], optional: [] },
   league_results_view: { required: ['status'], optional: [] },
   league_table_view: { required: [], optional: [] },
+  bulk_add_start: { required: ['source'], optional: [] },
+  bulk_add_result: {
+    required: ['status', 'durationMs', 'pieces', 'preTicked', 'unseparated', 'duplicateHints'],
+    optional: ['refusal', 'failure'],
+  },
+  bulk_add_confirm: {
+    required: [
+      'shown',
+      'ticked',
+      'preTickedTicked',
+      'preTickedLeft',
+      'extraTicked',
+      'categoryEdits',
+      'colourEdits',
+      'durationMs',
+    ],
+    optional: [],
+  },
+  bulk_add_cancel: { required: ['stage'], optional: [] },
 };
 
 describe('event allow-list', () => {
