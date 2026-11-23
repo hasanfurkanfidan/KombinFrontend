@@ -19,6 +19,8 @@ export const WAIT_LIMIT_MS = 60_000;
 export const WAIT_LONG_MS = 10_000;
 /** The review asks for fresh picture links this long before they expire. */
 export const URL_REFRESH_LEAD_MS = 60_000;
+/** How long a poll that answered 429 without `Retry-After` waits before asking again. */
+export const POLL_BACKOFF_MS = 10_000;
 
 /** What the user decided about one piece. Edits start from the server's values; only differences are sent. */
 export interface PieceDraft {
@@ -239,6 +241,10 @@ export function problemFromError(error: unknown, stage: RequestStage): Problem |
     if (stage === 'confirm' && error.status === 409) {
       return { message: tr.bulkExpired, action: 'newPhoto' };
     }
+    // An unknown piece or category in the confirm body: the review stays, the user checks the types and tries again.
+    if (stage === 'confirm' && error.status === 400) {
+      return { message: tr.bulkConfirmRejected, action: 'retry' };
+    }
     const limited = rateLimitedText(error);
     if (limited) {
       return { message: limited, action: 'single' };
@@ -252,6 +258,24 @@ export function problemFromError(error: unknown, stage: RequestStage): Problem |
   }
   // Offline, 5xx, a storage PUT that failed, a photo the phone could not re-encode: the same photo can go again.
   return { message: tr.bulkUploadFailed, action: 'retry' };
+}
+
+/**
+ * What a failed status poll means for the polling. `backoff`: a 429, the batch is fine, ask again later (after
+ * `Retry-After`, else `POLL_BACKOFF_MS`); `stop`: any other 4xx, the batch is gone (or the feature is off), polling
+ * stops and the screen shows the problem; `null`: offline or 5xx, keep polling as usual.
+ */
+export function pollErrorKind(error: unknown): 'backoff' | 'stop' | null {
+  if (!(error instanceof ApiError) || error.status < 400 || error.status >= 500) {
+    return null;
+  }
+  return error.isRateLimited ? 'backoff' : 'stop';
+}
+
+/** The wait after a 429 on a poll, in ms. */
+export function pollBackoffMs(error: unknown): number {
+  const seconds = error instanceof ApiError ? error.retryAfterSeconds : null;
+  return seconds !== null && seconds > 0 ? Math.max(POLL_INTERVAL_MS, seconds * 1000) : POLL_BACKOFF_MS;
 }
 
 /** When the review should ask for fresh picture links (a minute before the first one expires), in ms from now. */

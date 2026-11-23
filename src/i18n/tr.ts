@@ -1358,6 +1358,7 @@ export const tr = {
   bulkKeepWaiting: 'Beklemeye devam et',
   bulkTimeout: 'Beklenenden uzun sürüyor; fotoğrafın hâlâ hazırlanıyor.',
   bulkNothing: 'Bu fotoğrafta eklenecek parça bulamadık.',
+  bulkConfirmRejected: 'Bazı parçalar eklenemedi. Parçaların türünü kontrol edip tekrar dene.',
   bulkConfirmFailed: 'Parçalar eklenemedi. Bağlantını kontrol edip tekrar dene.',
   bulkUploadFailed: 'Fotoğraf yüklenemedi. Bağlantını kontrol edip tekrar dene.',
   bulkUnreadable: 'Bu fotoğrafı okuyamadık, başka bir tane dene.',

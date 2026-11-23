@@ -15,7 +15,7 @@ import { theme } from '@/theme';
 
 const COLORS = Object.keys(colorLabels) as ProductColor[];
 
-function leaves(nodes: readonly CategoryNode[]): CategoryNode[] {
+export function leaves(nodes: readonly CategoryNode[]): CategoryNode[] {
   return nodes.flatMap((node) => (node.children.length > 0 ? leaves(node.children) : [node]));
 }
 

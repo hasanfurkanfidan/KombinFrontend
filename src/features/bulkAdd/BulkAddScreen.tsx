@@ -5,7 +5,6 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { track } from '@/analytics';
-import { ApiError } from '@/api/client';
 import {
   cancelBulkBatch,
   confirmBulkBatch,
@@ -43,6 +42,7 @@ import {
   confirmStats,
   initialDrafts,
   problemFromBatch,
+  pollErrorKind,
   problemFromError,
   resultEvent,
   tickedCount,
@@ -100,13 +100,21 @@ export function BulkAddScreen() {
   /** What a leave counts as in `bulk_add_cancel`; `null` once the batch has settled into a problem. */
   const cancelStage = useRef<'Processing' | 'Review' | null>(null);
   const resultSent = useRef(false);
+  /** A confirm or a re-process is on its way: a second tap (before the button shows it) sends nothing. */
+  const busy = useRef(false);
   const startedAt = useRef(0);
   const photoUri = useRef<string | null>(null);
 
   const tracking = stage.kind === 'tracking';
   const batch = useBulkBatch(tracking ? batchId : null, timedOut);
   const data = tracking ? batch.data : undefined;
-  const waiting = tracking && isWaiting(data);
+
+  // What a refused poll means: a 429 only slows the poll down (the waiting view stays); any other 4xx is a problem
+  // derived from it (no state of its own), and the batch is let go of below.
+  const pollError = tracking ? batch.error : null;
+  const pollFailure =
+    pollErrorKind(pollError) === 'stop' ? problemFromError(pollError, 'poll') : null;
+  const waiting = tracking && isWaiting(data) && pollFailure === null;
 
   const close = useCallback(() => {
     if (router.canGoBack()) router.back();
@@ -176,13 +184,8 @@ export function BulkAddScreen() {
 
   const drafts = useMemo(() => initialDrafts(data?.pieces ?? [], edits), [data, edits]);
 
-  // What the status answer and a refused poll mean: a problem derived from them (no state of its own), plus the
-  // side effects that go with it (analytics, letting go of a batch the server has given up on).
-  const pollError = tracking ? batch.error : null;
-  const pollFailure =
-    pollError instanceof ApiError && pollError.status >= 400 && pollError.status < 500
-      ? problemFromError(pollError, 'poll')
-      : null;
+  // What the status answer means: a problem derived from it, plus the side effects that go with it (analytics,
+  // letting go of a batch the server has given up on).
   const batchProblem = data ? problemFromBatch(data) : null;
 
   useEffect(() => {
@@ -257,6 +260,8 @@ export function BulkAddScreen() {
         }
         openBatch.current = upload.batchId;
         await putPhoto(upload, image.uri);
+        // Left during the upload: the batch is being cancelled, so it must not take a processing slot.
+        if (!alive()) return;
         at = 'process';
         await processBulkBatch(upload.batchId);
         if (!alive()) return;
@@ -291,7 +296,8 @@ export function BulkAddScreen() {
   /** "Tekrar dene" after a retryable failure: `process` again, no second upload (the server kept the photo). */
   const reprocess = async () => {
     const id = openBatch.current ?? batchId;
-    if (!id) return;
+    if (!id || busy.current) return;
+    busy.current = true;
     resultSent.current = false;
     startedAt.current = Date.now();
     setStage({ kind: 'uploading' });
@@ -308,6 +314,8 @@ export function BulkAddScreen() {
       setStage({ kind: 'tracking' });
     } catch (error) {
       if (mounted.current) fail(error, 'process');
+    } finally {
+      busy.current = false;
     }
   };
 
@@ -339,9 +347,10 @@ export function BulkAddScreen() {
   );
 
   const confirm = async () => {
-    if (!data || confirming) return;
+    if (!data || busy.current) return;
     const entries = confirmEntries(data.pieces, drafts);
     if (entries.length === 0) return;
+    busy.current = true;
     setConfirming(true);
     setConfirmError(null);
     try {
@@ -358,6 +367,7 @@ export function BulkAddScreen() {
       showToast(tr.bulkAdded(confirmed.items?.length ?? entries.length));
       close();
     } catch (error) {
+      busy.current = false;
       if (!mounted.current) return;
       setConfirming(false);
       const problem = problemFromError(error, 'confirm');
@@ -445,7 +455,7 @@ export function BulkAddScreen() {
       <ScrollView contentContainerStyle={styles.content} testID="bulk-problem">
         {photo ? (
           <View style={[styles.photo, styles.photoSmall]}>
-            <AppImage uri={photo.photo.uri} style={styles.fill} contentFit="cover" private />
+            <AppImage uri={photo.photo.uri} style={styles.fill} contentFit="contain" private />
           </View>
         ) : null}
         <LiveText style={styles.problemText} testID="bulk-problem-message">
@@ -469,7 +479,7 @@ export function BulkAddScreen() {
       <ScrollView contentContainerStyle={styles.content} testID="bulk-waiting">
         {photo ? (
           <View style={[styles.photo, { height: photoHeight }]}>
-            <AppImage uri={photo.photo.uri} style={styles.fill} contentFit="cover" private />
+            <AppImage uri={photo.photo.uri} style={styles.fill} contentFit="contain" private />
             <Shimmer />
           </View>
         ) : null}
@@ -502,7 +512,7 @@ export function BulkAddScreen() {
             ))}
             <Button
               label={tr.bulkSingleAdd}
-              variant="secondary"
+              variant="quiet"
               onPress={() => setSingleOpen(true)}
               testID="bulk-single-add"
             />

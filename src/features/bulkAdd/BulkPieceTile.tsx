@@ -1,10 +1,14 @@
 import { memo } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import type { BulkPiece } from '@/api/models';
+import { useQueryClient } from '@tanstack/react-query';
+
+import type { BulkPiece, CategoryNode } from '@/api/models';
+import { queryKeys } from '@/api/queryKeys';
 import { AppImage } from '@/components/AppImage';
 import { Icon } from '@/components/Icon';
 import { colorLabels } from '@/features/catalog/filters';
+import { leaves } from '@/features/wardrobe/ItemFields';
 import { tr } from '@/i18n/tr';
 import { theme } from '@/theme';
 import { colorTint } from '@/theme/colorNames';
@@ -12,8 +16,15 @@ import { lines } from '@/utils/a11y';
 
 import type { PieceDraft } from './flow';
 
-/** The name a piece goes by: the category the user picked (or the server's), else "Parça". */
-export function pieceName(piece: BulkPiece, draft: PieceDraft): string {
+/**
+ * The name a piece goes by: the category the user picked (or the server's), named by the server's candidates or, for
+ * a slug picked from the full "Diğer" list, by the category tree; else "Parça". Never the raw (English) slug.
+ */
+export function pieceName(
+  piece: BulkPiece,
+  draft: PieceDraft,
+  tree: readonly CategoryNode[] = [],
+): string {
   const slug = draft.categorySlug;
   if (slug === null) {
     return tr.bulkPieceFallback;
@@ -23,7 +34,7 @@ export function pieceName(piece: BulkPiece, draft: PieceDraft): string {
   }
   return (
     piece.categoryCandidates.find((candidate) => candidate.slug === slug)?.name ??
-    slug.split('/').pop() ??
+    leaves(tree).find((leaf) => leaf.slug === slug)?.name ??
     tr.bulkPieceFallback
   );
 }
@@ -34,6 +45,14 @@ interface BulkPieceTileProps {
   width: number;
   onChange: (id: string, patch: Partial<PieceDraft>) => void;
   onOpen: (id: string) => void;
+}
+
+/**
+ * The category tree as the cache holds it, without asking for it: a slug outside the candidates can only come from the
+ * sheet's "Diğer" list, which loaded the tree.
+ */
+export function useCachedCategoryTree(): readonly CategoryNode[] {
+  return useQueryClient().getQueryData<CategoryNode[]>(queryKeys.categories) ?? [];
 }
 
 /**
@@ -49,7 +68,7 @@ export const BulkPieceTile = memo(function BulkPieceTile({
   onChange,
   onOpen,
 }: BulkPieceTileProps) {
-  const name = pieceName(piece, draft);
+  const name = pieceName(piece, draft, useCachedCategoryTree());
   const reason = draft.ticked ? null : (piece.reasons[0]?.message ?? null);
   const duplicate = piece.likelyDuplicate;
   const spoken = [`${name}, ${colorLabels[draft.color]}`, reason, duplicate?.message]

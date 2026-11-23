@@ -17,6 +17,7 @@ import type { BulkBatch } from '@/api/models';
 import { queryKeys } from '@/api/queryKeys';
 import { useToastStore } from '@/components/toastStore';
 import { BulkAddScreen } from '@/features/bulkAdd/BulkAddScreen';
+import { pieceName } from '@/features/bulkAdd/BulkPieceTile';
 import { useBulkStore } from '@/features/bulkAdd/bulkStore';
 import { tr } from '@/i18n/tr';
 
@@ -309,7 +310,7 @@ describe('review (Ready)', () => {
     expect(router.back).not.toHaveBeenCalled();
   });
 
-  it('a confirm 503 shows the server sentence above the same button', async () => {
+  it('a confirm 503 shows its own line (never the English detail) above the same button', async () => {
     confirmMock.mockRejectedValueOnce(
       apiError(503, 'Wardrobe.StorageUnavailable', 'English server sentence.'),
     );
@@ -321,7 +322,7 @@ describe('review (Ready)', () => {
     expect(router.back).not.toHaveBeenCalled();
   });
 
-  it('a confirm 409 shows the server sentence and offers a new photo', async () => {
+  it('a confirm 409 says the photo is over (never the English detail) and offers a new photo', async () => {
     confirmMock.mockRejectedValueOnce(
       apiError(409, 'Wardrobe.BulkExpired', 'English server sentence.'),
     );
@@ -331,6 +332,34 @@ describe('review (Ready)', () => {
     expect(await screen.findByText(tr.bulkExpired)).toBeTruthy();
     expect(screen.getByRole('button', { name: tr.bulkNewPhoto })).toBeTruthy();
     expect(router.back).not.toHaveBeenCalled();
+  });
+
+  it('a confirm 400 (unknown piece or category) keeps the review with a fitting line', async () => {
+    confirmMock.mockRejectedValueOnce(apiError(400, 'Wardrobe.UnknownCategory', 'English.'));
+    await startWith(twoPieces());
+    await screen.findByTestId('bulk-review');
+    await fireEvent.press(screen.getByRole('button', { name: tr.bulkConfirm(1) }));
+    expect(await screen.findByText(tr.bulkConfirmRejected)).toBeTruthy();
+    expect(screen.getByTestId('bulk-review')).toBeTruthy();
+    expect(screen.queryByText(tr.bulkUnreadable)).toBeNull();
+    expect(cancelMock).not.toHaveBeenCalled();
+  });
+
+  it('a second tap on confirm while the first is on its way sends nothing', async () => {
+    let answer: (value: BulkBatch) => void = () => undefined;
+    confirmMock.mockImplementationOnce(
+      () => new Promise<BulkBatch>((resolve) => (answer = resolve)),
+    );
+    await startWith(twoPieces());
+    await screen.findByTestId('bulk-review');
+    const button = screen.getByTestId('bulk-confirm');
+    await act(async () => {
+      fireEvent.press(button);
+      fireEvent.press(button);
+    });
+    expect(confirmMock).toHaveBeenCalledTimes(1);
+    await act(async () => answer(batch({ status: 'Confirmed' })));
+    await waitFor(() => expect(router.back).toHaveBeenCalled());
   });
 
   it('counts the confirmed items of the answer in the quiet line', async () => {
@@ -416,6 +445,68 @@ describe('settled problems', () => {
     expect(await screen.findByText(tr.bulkExpired)).toBeTruthy();
   });
 
+  it('a poll refused with a 4xx stops polling and sends no false Timeout', async () => {
+    jest.useFakeTimers();
+    try {
+      await startWith(apiError(404, 'Wardrobe.BulkNotFound'));
+      await act(() => jest.advanceTimersByTimeAsync(0));
+      expect(screen.getByText(tr.bulkExpired)).toBeTruthy();
+      await act(() => jest.advanceTimersByTimeAsync(70_000));
+      expect(statusMock).toHaveBeenCalledTimes(1);
+      expect(tracked('bulk_add_result')).toEqual([]);
+    } finally {
+      jest.useRealTimers();
+    }
+  });
+
+  it('a poll answered 429 waits for Retry-After and keeps the batch', async () => {
+    jest.useFakeTimers();
+    try {
+      await startWith(
+        new ApiError({
+          status: 429,
+          errorCode: 'RateLimited',
+          detail: null,
+          correlationId: 'test',
+          retryAfterSeconds: 5,
+        }),
+        twoPieces(),
+      );
+      await act(() => jest.advanceTimersByTimeAsync(0));
+      expect(screen.getByTestId('bulk-waiting')).toBeTruthy();
+      expect(screen.queryByTestId('bulk-problem')).toBeNull();
+      await act(() => jest.advanceTimersByTimeAsync(2_000));
+      expect(statusMock).toHaveBeenCalledTimes(1);
+      await act(() => jest.advanceTimersByTimeAsync(3_500));
+      expect(screen.getByTestId('bulk-review')).toBeTruthy();
+      expect(cancelMock).not.toHaveBeenCalled();
+    } finally {
+      jest.useRealTimers();
+    }
+  });
+
+  it('"Tekrar dene" tapped twice processes once', async () => {
+    let processed: () => void = () => undefined;
+    statusMock.mockResolvedValueOnce(
+      batch({
+        status: 'Failed',
+        failure: { code: 'VisionBusy', message: 'Şu an yoğunuz.', retryable: true },
+      }),
+    );
+    await startWith();
+    expect(await screen.findByText('Şu an yoğunuz.')).toBeTruthy();
+    processMock.mockImplementationOnce(
+      () => new Promise((resolve) => (processed = () => resolve(undefined as never))),
+    );
+    const button = screen.getByRole('button', { name: tr.retry });
+    await act(async () => {
+      fireEvent.press(button);
+      fireEvent.press(button);
+    });
+    expect(processMock).toHaveBeenCalledTimes(2);
+    await act(async () => processed());
+  });
+
   it('404 BulkDisabled on any route closes the screen and hides the entry, without a word', async () => {
     const view = await startWith(apiError(404, 'Wardrobe.BulkDisabled'));
     await waitFor(() => expect(router.back).toHaveBeenCalled());
@@ -438,6 +529,19 @@ describe('request refusals', () => {
     await startWith();
     expect(await screen.findByText(tr.bulkTooManyOpen)).toBeTruthy();
     expect(screen.getByRole('button', { name: tr.bulkSingleAdd })).toBeTruthy();
+  });
+
+  it('leaving during the photo upload never asks the server to process the batch', async () => {
+    let uploaded: () => void = () => undefined;
+    putMock.mockImplementationOnce(
+      () => new Promise((resolve) => (uploaded = () => resolve(undefined as never))),
+    );
+    const view = await startWith();
+    await waitFor(() => expect(putMock).toHaveBeenCalled());
+    await view.unmount();
+    expect(cancelMock).toHaveBeenCalledWith('batch-1');
+    await act(async () => uploaded());
+    expect(processMock).not.toHaveBeenCalled();
   });
 
   it('a failed upload offers to send the same photo again', async () => {
@@ -481,5 +585,22 @@ describe('analytics', () => {
         if (typeof value === 'string') expect(value).toMatch(/^[A-Za-z_]+$/);
       }
     }
+  });
+});
+
+describe('piece names', () => {
+  const tree = [
+    {
+      slug: 'ust-giyim',
+      name: 'Üst giyim',
+      children: [{ slug: 'ust-giyim/gomlek', name: 'Gömlek', children: [] }],
+    },
+  ] as never;
+  const draft = { ticked: true, categorySlug: 'ust-giyim/gomlek', color: 'Black' } as const;
+
+  it('names a category picked from the full list by the category tree, never by its slug', () => {
+    const bare = piece({ category: null, categoryCandidates: [] });
+    expect(pieceName(bare, draft, tree)).toBe('Gömlek');
+    expect(pieceName(bare, draft)).toBe(tr.bulkPieceFallback);
   });
 });

@@ -5,7 +5,7 @@ import type { BulkBatch } from '@/api/models';
 import { queryKeys } from '@/api/queryKeys';
 import { useSession } from '@/session/useSession';
 
-import { POLL_INTERVAL_MS, msUntilUrlRefresh } from './flow';
+import { POLL_INTERVAL_MS, msUntilUrlRefresh, pollBackoffMs, pollErrorKind } from './flow';
 
 /** The server's switch is a state of its configuration: asked once, kept 10 minutes (like the league's `null`). */
 const AVAILABLE_STALE_MS = 10 * 60_000;
@@ -34,7 +34,7 @@ function isWaiting(batch: BulkBatch | undefined): boolean {
 
 /**
  * The status answer of one batch: polled every second while the server separates the pieces (unless `paused`, after
- * the wait limit), then asked again only to refresh the picture links before they expire. Never kept after the
+ * the wait limit; a 429 backs off, any other 4xx stops it), then asked again only to refresh the picture links before they expire. Never kept after the
  * screen leaves (`gcTime: 0`): the links are private and an hour long.
  */
 export function useBulkBatch(id: string | null, paused: boolean) {
@@ -47,6 +47,10 @@ export function useBulkBatch(id: string | null, paused: boolean) {
     retry: false,
     refetchOnWindowFocus: false,
     refetchInterval: (query) => {
+      // A refused poll: a 429 waits and keeps the batch, any other 4xx ends the polling for good.
+      const failure = pollErrorKind(query.state.error);
+      if (failure === 'stop') return false;
+      if (failure === 'backoff') return paused ? false : pollBackoffMs(query.state.error);
       const batch = query.state.data;
       if (isWaiting(batch)) {
         return paused ? false : POLL_INTERVAL_MS;

@@ -10,7 +10,7 @@ import { tr } from '@/i18n/tr';
 import { theme } from '@/theme';
 import { colorTint } from '@/theme/colorNames';
 
-import { pieceName } from './BulkPieceTile';
+import { pieceName, useCachedCategoryTree } from './BulkPieceTile';
 import type { PieceDraft } from './flow';
 
 interface PieceSheetProps {
@@ -26,10 +26,11 @@ interface PieceSheetProps {
  */
 export function PieceSheet({ piece, draft, onChange, onClose }: PieceSheetProps) {
   const open = piece !== null && draft !== null;
+  const tree = useCachedCategoryTree();
   return (
     <BottomSheet
       visible={open}
-      title={open ? pieceName(piece, draft) : tr.bulkPieceFallback}
+      title={open ? pieceName(piece, draft, tree) : tr.bulkPieceFallback}
       onClose={onClose}
     >
       {open ? (

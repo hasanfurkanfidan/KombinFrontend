@@ -13,11 +13,11 @@ event (cancel), never a half-left flow across routes.
 |---|---|---|
 | Entry (Dolap) | an outlined "Toplu ekle" beside the green "Parça ekle" | opens the screen |
 | Capture, first time | title, the drawing (three garments apart, seen from above, a chalk dashed span between two), the six advice lines in the brief's order | "Fotoğraf çek" (+ quiet "Galeriden seç") |
-| Capture, later | title, the drawing, one line, quiet "İpuçlarını göster" (opens the six lines in place) | "Fotoğraf çek" (+ quiet "Galeriden seç") |
-| Waiting | the user's own photo, a still scrim, the shimmer band, "Parçalar ayrılıyor"; after 10 s a second line "Biraz daha sürüyor" | none (✕ cancels) |
-| Review | sentences above the grid (unseparated, cut-off) with "Tek tek ekle"; a 2-column grid | "{n} parçayı ekle", disabled at 0 |
+| Capture, later | title, the drawing, one line, quiet "Nasıl çekilir" (opens the six lines in place) | "Fotoğraf çek" (+ quiet "Galeriden seç") |
+| Waiting | the user's own photo (whole, `contain`, so no garment is cut at the edge), the shimmer band, "Parçalar ayrılıyor"; after 10 s a second line "Biraz daha sürüyor" | none (✕ cancels) |
+| Review | sentences above the grid (unseparated, cut-off) with a quiet "Tek tek ekle" (text button, so the grid starts high); a 2-column grid | "{n} parçayı ekle", disabled at 0 |
 | Piece sheet | the larger cut-out, its reasons, the duplicate's thumb, the single add's category chips and colour swatches, a tick row | "Tamam" |
-| Problem | the server's sentence (refusal, failure) or the app's line (limits, upload) | "Başka fotoğraf" or "Tekrar dene" |
+| Problem | the server's sentence (refusal, failure) or the app's line (limits, upload) | "Başka fotoğraf çek" or "Tekrar dene" |
 | Done | back in Dolap, the list refetched, a toast "{n} parça dolabına eklendi" | none |
 
 **Web:** the camera primary becomes "Galeriden seç" (no camera step), so review on web needs no camera.
@@ -36,7 +36,7 @@ app's "Bu fotoğrafın süresi doldu" + "Başka fotoğraf". 404 `BulkDisabled` o
 429 `BulkDailyLimit` → "Bugünlük toplu ekleme hakkın doldu; yarın yeniden dene." + "Tek tek ekle"; the `Created` batch is cancelled.
 409 `BulkTooManyOpen` → "Yarım kalan toplu eklemelerin var; bir gün içinde kendiliğinden kapanırlar." + "Tek tek ekle". Upload or
 network failure → "Fotoğraf yüklenemedi." + "Tekrar dene" (same photo). 400 image errors → the Lens line + "Başka fotoğraf". Other
-429 → `rateLimitMessage`. Confirm failure (503, network) → the review stays with a line above the button and the same button.
+429 → `rateLimitMessage`. Confirm failure (503, network) → the review stays with a line above the button and the same button. **A poll** answered 429 keeps the batch and the waiting view and asks again after `Retry-After` (10 s without it); any other 4xx on a poll stops the polling at once (no false `Timeout`) and shows its problem. A second tap on "{n} parçayı ekle" or "Tekrar dene" while the first is on its way sends nothing (a ref, not only the button state); leaving during the photo upload never calls `process`.
 
 ## Decisions
 
@@ -44,16 +44,17 @@ network failure → "Fotoğraf yüklenemedi." + "Tekrar dene" (same photo). 400 
   `useBulkAvailable` asks it once per session (10 min stale, like the league's `null`); anything but `BulkNotFound` hides the entry.
 - **Tap count** for a clean photo, from Dolap: "Toplu ekle" → "Fotoğraf çek" → shutter (and iOS "Use photo") → "{n} parçayı ekle".
   The advice screen is the capture screen, so a first-timer pays no extra tap.
-- **Tile:** tap toggles the tick (role `checkbox`, state announced); a long press or the corner "Ayrıntılar" button (a sibling, not
-  nested) opens the sheet. A ticked tile has a green 2 pt edge and a filled green check square; unticked a `control` edge and an empty
+- **Tile:** tap toggles the tick (role `checkbox`, state announced); a long press or the corner "Büyüt ve düzenle" button (sliders icon; spoken "{name}: büyüt ve düzenle") (a sibling, not
+  nested) opens the sheet. A ticked tile has a green 2 pt edge and a filled green check square; unticked a `line` hairline edge and an empty
   square, plus the first reason's sentence under it. Colour never alone: the check mark and the spoken state carry it.
 - **Duplicate hint:** "Dolabında benzeri var." under the piece with the existing item's thumb beside it; the tick is left as vision set it.
 - **Unticking a wrong pre-tick is one tap**; nothing else changes on that tap.
 - **"Tek tek ekle"** opens the single add's own sheet (`AddItemSheet`) on top of the review: single adds run in the background as
   today, so the review is not lost.
-- **Leaving** (✕, back, unmount, sign-out) before confirm sends `DELETE` and `bulk_add_cancel` with `Processing` or `Review`.
+- **Leaving** (✕, back, unmount, sign-out) before confirm sends `DELETE` (on sign-out the `DELETE` may go after the token is gone: there is no pre-sign-out hook; the batch then expires on the server within a day) and `bulk_add_cancel` with `Processing` or `Review`.
 - **Disk:** the picked and the re-encoded photo are deleted after the upload and on leave (`discardTempFile`); the single add's sheet is mounted only when "Tek tek ekle" is pressed; every staged picture is
   `AppImage private` (memory only). The advice flag is the only thing kept: memory in `bulkStore`, reset at sign-out with the rest.
+- **Names:** a category picked from the full "Diğer" list is named from the cached category tree (tile, sheet title, spoken label), never by its slug.
 - **Edits** are kept per piece id; only changed fields are sent (`categorySlug`, `primaryColor`), like the single add's PATCH. A ticked
   piece without a category is allowed (the item then asks for it in Dolap, as a single add's `needsCategory` does).
 - **Thumb links expire** at `urlsExpireAt`: the review asks the status again a minute before; ticks and edits are kept by piece id.
@@ -61,7 +62,7 @@ network failure → "Fotoğraf yüklenemedi." + "Tekrar dene" (same photo). 400 
   test host (hence `servers: http://localhost/` and `
 ` inside descriptions); against the previous copy only the bulk routes
   and the 13 `Bulk*` schemas changed. Nothing in it or in `types.gen.ts` is hand-written (`api:check` passes).
-- **Confirm and cancel** are in the contract now (backend BA4, regenerated the same way from its test host: `POST /bulk/{id}/confirm` takes `BulkConfirmRequest`, answers `BulkBatchResponse`; `DELETE /bulk/{id}` answers 204). Both calls live in `api/endpoints/bulkAdd.ts`. After confirm the app reads the answer's `items` for the count and still refetches the wardrobe so the items show in Dolap. A confirm 409 or 503 shows the server's own sentence (409: new photo, 503: same button again).
+- **Confirm and cancel** are in the contract now (backend BA4, regenerated the same way from its test host: `POST /bulk/{id}/confirm` takes `BulkConfirmRequest`, answers `BulkBatchResponse`; `DELETE /bulk/{id}` answers 204). Both calls live in `api/endpoints/bulkAdd.ts`. After confirm the app reads the answer's `items` for the count and still refetches the wardrobe so the items show in Dolap. A confirm 409 or 503 shows the app's own Turkish line, never the server's English `detail` (409: "Bu fotoğrafın süresi doldu" + new photo; 503: `bulkStorageUnavailable` above the same button). A confirm 400 (`BulkUnknownPiece`, `UnknownCategory`) keeps the review with "Bazı parçalar eklenemedi. Parçaların türünü kontrol edip tekrar dene." above the same button.
 - **Analytics:** `bulk_add_start`, `bulk_add_result`, `bulk_add_confirm`, `bulk_add_cancel`, counts clamped to 0-12, enums only.
 
 ## League follow-up
