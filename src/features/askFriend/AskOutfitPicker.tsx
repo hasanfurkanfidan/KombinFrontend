@@ -31,7 +31,8 @@ export function AskOutfitPicker({ excludeId, onPick, onBack }: AskOutfitPickerPr
 
   const today = daily.data?.outfit;
   const todayShown = askable(today, excludeId) ? today : null;
-  const savedShown = (saved.data?.pages.flatMap((page) => page.items) ?? []).filter(
+  // First page only (like the other sheet pickers): a plain map inside the sheet's scroll view stays bounded.
+  const savedShown = (saved.data?.pages[0]?.items ?? []).filter(
     (outfit) => askable(outfit, excludeId) && outfit.id !== todayShown?.id,
   );
   const settled = !daily.isPending && !saved.isPending;
@@ -56,15 +57,6 @@ export function AskOutfitPicker({ excludeId, onPick, onBack }: AskOutfitPickerPr
           {savedShown.map((outfit) => (
             <PickRow key={outfit.id} outfit={outfit} onPick={onPick} />
           ))}
-          {saved.hasNextPage ? (
-            <Button
-              variant="quiet"
-              label={tr.askPickMore}
-              loading={saved.isFetchingNextPage}
-              onPress={() => void saved.fetchNextPage()}
-              testID="ask-picker-more"
-            />
-          ) : null}
         </View>
       ) : null}
 

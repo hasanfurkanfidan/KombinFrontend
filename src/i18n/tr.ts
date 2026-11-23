@@ -1343,7 +1343,6 @@ export const tr = {
   askPickToday: 'Bugünün kombini',
   askPickSaved: 'Kaydedilen kombinler',
   askPickEmpty: 'Seçebileceğin başka kombin yok; bir kombini kaydedince burada çıkar.',
-  askPickMore: 'Daha fazla göster',
   askPickOutfitA11y: (text: string) => `Bu kombini seç: ${text}`,
   askErrorAge: 'Bu özellik yaşın için açık değil.',
   askErrorConsent: 'Paylaşmadan önce onayını almamız gerekiyor. Tekrar dene.',

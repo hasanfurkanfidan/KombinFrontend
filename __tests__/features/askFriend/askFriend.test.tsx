@@ -66,7 +66,7 @@ beforeEach(async () => {
   jest.clearAllMocks();
   await resetSession();
   await signedInSession();
-  shareSpy.mockResolvedValue({ action: Share.sharedAction });
+  shareSpy.mockResolvedValue({ action: Share.sharedAction, activityType: undefined });
   consentMock.mockResolvedValue(consent());
   createMock.mockResolvedValue(ask());
 });
@@ -117,7 +117,7 @@ describe('Arkadaşına sor: create and share', () => {
   });
 
   it('tracks ask_create but not ask_share when the share sheet is dismissed', async () => {
-    shareSpy.mockResolvedValue({ action: Share.dismissedAction });
+    shareSpy.mockResolvedValue({ action: Share.dismissedAction, activityType: undefined });
     await openSheet();
     await pressShare();
 
@@ -159,15 +159,18 @@ describe('Arkadaşına sor: error lines', () => {
     ['503 StorageUnavailable', 503, 'AskFriend.StorageUnavailable', tr.askErrorStorage],
   ];
 
-  it.each(cases)('%s renders its Turkish line and does not share', async (_n, status, code, line) => {
-    createMock.mockRejectedValue(problem(status, code));
-    await openSheet();
-    await pressShare();
+  it.each(cases)(
+    '%s renders its Turkish line and does not share',
+    async (_n, status, code, line) => {
+      createMock.mockRejectedValue(problem(status, code));
+      await openSheet();
+      await pressShare();
 
-    expect(await screen.findByText(line)).toBeTruthy();
-    expect(shareSpy).not.toHaveBeenCalled();
-    expect(track).not.toHaveBeenCalledWith('ask_create', expect.anything());
-  });
+      expect(await screen.findByText(line)).toBeTruthy();
+      expect(shareSpy).not.toHaveBeenCalled();
+      expect(track).not.toHaveBeenCalledWith('ask_create', expect.anything());
+    },
+  );
 
   it('409 ConsentRequired fetches the consent again', async () => {
     createMock.mockRejectedValue(problem(409, 'AskFriend.ConsentRequired'));
