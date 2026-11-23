@@ -301,8 +301,6 @@ describe('problemFromError', () => {
     for (const code of [
       'Wardrobe.BulkNotFound',
       'Wardrobe.BulkExpired',
-      'Wardrobe.BulkNotReady',
-      'Wardrobe.BulkAlreadyConfirmed',
       'Wardrobe.UploadMissing',
     ]) {
       expect(problemFromError(api(404, code), 'poll')).toEqual({
@@ -366,20 +364,54 @@ describe('msUntilUrlRefresh', () => {
     expect(msUntilUrlRefresh(answer, now)).toBe(30_000);
   });
 
-  it('uses the server sentence for a confirm 409 (start over) and 503 (try again), the local one without it', () => {
-    const withDetail = (status: number, detail: string | null) =>
-      new ApiError({ status, errorCode: 'X', detail, correlationId: 'c' });
-    expect(problemFromError(withDetail(409, 'Grup süresi doldu.'), 'confirm')).toEqual({
-      message: 'Grup süresi doldu.',
-      action: 'newPhoto',
+  describe('confirm answers never show the English server detail', () => {
+    const confirmError = (status: number, errorCode: string | null) =>
+      new ApiError({ status, errorCode, detail: 'English server sentence.', correlationId: 'c' });
+
+    it('BulkAlreadyConfirmed: already added, take a new photo', () => {
+      expect(problemFromError(confirmError(409, 'Wardrobe.BulkAlreadyConfirmed'), 'confirm')).toEqual({
+        message: tr.bulkAlreadyConfirmed,
+        action: 'newPhoto',
+      });
     });
-    expect(problemFromError(withDetail(503, 'Şimdi saklanamadı.'), 'confirm')).toEqual({
-      message: 'Şimdi saklanamadı.',
-      action: 'retry',
+
+    it('BulkNotReady: nothing to add yet, take a new photo', () => {
+      expect(problemFromError(confirmError(409, 'Wardrobe.BulkNotReady'), 'confirm')).toEqual({
+        message: tr.bulkNotReady,
+        action: 'newPhoto',
+      });
     });
-    expect(problemFromError(withDetail(503, null), 'confirm')).toEqual({
-      message: tr.bulkConfirmFailed,
-      action: 'retry',
+
+    it('BulkExpired: expired, take a new photo', () => {
+      expect(problemFromError(confirmError(409, 'Wardrobe.BulkExpired'), 'confirm')).toEqual({
+        message: tr.bulkExpired,
+        action: 'newPhoto',
+      });
+    });
+
+    it('BulkTooManyOpen: the single add is offered', () => {
+      expect(problemFromError(confirmError(409, 'Wardrobe.BulkTooManyOpen'), 'confirm')).toEqual({
+        message: tr.bulkTooManyOpen,
+        action: 'single',
+      });
+    });
+
+    it('StorageUnavailable: try again', () => {
+      expect(problemFromError(confirmError(503, 'Wardrobe.StorageUnavailable'), 'confirm')).toEqual({
+        message: tr.bulkStorageUnavailable,
+        action: 'retry',
+      });
+    });
+
+    it('an unknown 409 or 503 falls back to local Turkish texts', () => {
+      expect(problemFromError(confirmError(409, 'X'), 'confirm')).toEqual({
+        message: tr.bulkExpired,
+        action: 'newPhoto',
+      });
+      expect(problemFromError(confirmError(503, 'X'), 'confirm')).toEqual({
+        message: tr.bulkConfirmFailed,
+        action: 'retry',
+      });
     });
   });
 });

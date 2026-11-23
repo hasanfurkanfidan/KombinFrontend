@@ -215,27 +215,29 @@ export function problemFromError(error: unknown, stage: RequestStage): Problem |
     return 'disabled';
   }
   if (error instanceof ApiError) {
-    if (stage === 'confirm' && error.detail) {
-      // The server's own sentence: 409 the batch cannot be confirmed any more (start over), 503 the photos could not be
-      // stored right now (the same button tries again).
-      if (error.status === 409) return { message: error.detail, action: 'newPhoto' };
-      if (error.status === 503) return { message: error.detail, action: 'retry' };
-    }
     switch (error.errorCode) {
       case 'Wardrobe.BulkDailyLimit':
         return { message: tr.bulkDailyLimit, action: 'single' };
       case 'Wardrobe.BulkTooManyOpen':
         return { message: tr.bulkTooManyOpen, action: 'single' };
+      case 'Wardrobe.BulkAlreadyConfirmed':
+        return { message: tr.bulkAlreadyConfirmed, action: 'newPhoto' };
+      case 'Wardrobe.BulkNotReady':
+        return { message: tr.bulkNotReady, action: 'newPhoto' };
+      case 'Wardrobe.StorageUnavailable':
+        return { message: tr.bulkStorageUnavailable, action: 'retry' };
       case 'Wardrobe.BulkNotFound':
       case 'Wardrobe.BulkExpired':
-      case 'Wardrobe.BulkNotReady':
-      case 'Wardrobe.BulkAlreadyConfirmed':
       case 'Wardrobe.UploadMissing':
         return { message: tr.bulkExpired, action: 'newPhoto' };
       case 'Wardrobe.ImageTooLarge':
         return { message: tr.bulkUnreadable, action: 'newPhoto' };
       default:
         break;
+    }
+    // The server's `detail` is English (only the refusal and failure messages of a batch come in Turkish): never shown.
+    if (stage === 'confirm' && error.status === 409) {
+      return { message: tr.bulkExpired, action: 'newPhoto' };
     }
     const limited = rateLimitedText(error);
     if (limited) {

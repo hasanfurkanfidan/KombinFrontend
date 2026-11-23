@@ -311,24 +311,24 @@ describe('review (Ready)', () => {
 
   it('a confirm 503 shows the server sentence above the same button', async () => {
     confirmMock.mockRejectedValueOnce(
-      apiError(503, 'Wardrobe.StorageUnavailable', 'Fotoğraflar şu an saklanamadı.'),
+      apiError(503, 'Wardrobe.StorageUnavailable', 'English server sentence.'),
     );
     await startWith(twoPieces());
     await screen.findByTestId('bulk-review');
     await fireEvent.press(screen.getByRole('button', { name: tr.bulkConfirm(1) }));
-    expect(await screen.findByText('Fotoğraflar şu an saklanamadı.')).toBeTruthy();
+    expect(await screen.findByText(tr.bulkStorageUnavailable)).toBeTruthy();
     expect(screen.getByRole('button', { name: tr.bulkConfirm(1) })).toBeTruthy();
     expect(router.back).not.toHaveBeenCalled();
   });
 
   it('a confirm 409 shows the server sentence and offers a new photo', async () => {
     confirmMock.mockRejectedValueOnce(
-      apiError(409, 'Wardrobe.BulkExpired', 'Grup iptal edildi ya da süresi doldu.'),
+      apiError(409, 'Wardrobe.BulkExpired', 'English server sentence.'),
     );
     await startWith(twoPieces());
     await screen.findByTestId('bulk-review');
     await fireEvent.press(screen.getByRole('button', { name: tr.bulkConfirm(1) }));
-    expect(await screen.findByText('Grup iptal edildi ya da süresi doldu.')).toBeTruthy();
+    expect(await screen.findByText(tr.bulkExpired)).toBeTruthy();
     expect(screen.getByRole('button', { name: tr.bulkNewPhoto })).toBeTruthy();
     expect(router.back).not.toHaveBeenCalled();
   });

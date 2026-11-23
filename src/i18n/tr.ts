@@ -1362,6 +1362,9 @@ export const tr = {
   bulkUploadFailed: 'Fotoğraf yüklenemedi. Bağlantını kontrol edip tekrar dene.',
   bulkUnreadable: 'Bu fotoğrafı okuyamadık, başka bir tane dene.',
   bulkExpired: 'Bu fotoğrafın süresi doldu; yeni bir fotoğraf çek.',
+  bulkAlreadyConfirmed: 'Bu parçalar zaten dolabına eklendi.',
+  bulkNotReady: 'Bu fotoğrafta henüz eklenecek parça yok; yeni bir fotoğraf çek.',
+  bulkStorageUnavailable: 'Fotoğraflar şu an kaydedilemedi. Biraz sonra tekrar dene.',
   bulkDailyLimit:
     'Bugünlük toplu ekleme hakkın doldu; yarın yeniden deneyebilirsin. Bugün parçaları tek tek ekleyebilirsin.',
   bulkTooManyOpen:
