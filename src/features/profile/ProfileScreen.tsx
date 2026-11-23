@@ -11,6 +11,11 @@ import { Icon } from '@/components/Icon';
 import { Screen } from '@/components/Screen';
 import { Skeleton } from '@/components/Skeleton';
 import { ToggleRow } from '@/components/ToggleRow';
+import {
+  isErrorReportingAvailable,
+  setErrorReportingEnabled,
+  useErrorReportingEnabled,
+} from '@/errorReporting';
 import { MAX_PERSONAS, usePersonas } from '@/features/personas/hooks';
 import { personaCaption } from '@/features/personas/caption';
 import { openLegalPage } from '@/features/legal/legal';
@@ -51,6 +56,9 @@ export function ProfileScreen() {
   const [preferencesOpen, setPreferencesOpen] = useState(false);
   // Only when the league exists: the server answers 404 while it is switched off, and then the row is not there.
   const league = useLeagueState();
+  // Error reports: only when there is something to turn off (a DSN, on a phone). The switch is the device's.
+  const reportingAvailable = isErrorReportingAvailable();
+  const errorReportsOn = useErrorReportingEnabled();
 
   const handleSignOut = async () => {
     setSigningOut(true);
@@ -219,7 +227,8 @@ export function ProfileScreen() {
         </>
       )}
 
-      {/* The legal pages are public: they show signed out too. Logout and deletion need an account. */}
+      {/* The legal pages and the error-report switch (the device's, not the account's) show signed out too. Logout and
+          deletion need an account. */}
       <View style={styles.section} testID="profile-account">
         <Text accessibilityRole="header" style={styles.sectionTitle}>
           {tr.profileAccount}
@@ -236,6 +245,17 @@ export function ProfileScreen() {
             divider
             testID="profile-terms"
           />
+          {reportingAvailable ? (
+            <View style={[styles.toggleRow, styles.settingsDivider]}>
+              <ToggleRow
+                title={tr.errorReportsToggle}
+                caption={tr.errorReportsToggleCaption}
+                value={errorReportsOn}
+                onChange={(enabled) => void setErrorReportingEnabled(enabled)}
+                testID="profile-error-reports"
+              />
+            </View>
+          ) : null}
         </View>
         {isSignedIn ? (
           <>

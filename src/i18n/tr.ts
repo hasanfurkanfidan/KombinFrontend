@@ -14,6 +14,7 @@ export const tr = {
   retry: 'Tekrar dene',
   errorTitle: 'Bir şeyler ters gitti',
   errorBody: 'Lütfen biraz sonra tekrar dene.',
+  rootErrorBody: 'Tekrar denemek işe yaramazsa uygulamayı kapatıp yeniden aç.',
   errorNetwork: 'Sunucuya ulaşılamadı. İnternet bağlantını kontrol et.',
   rateLimited: (amount: number | string, unit: string) =>
     `Çok fazla deneme yaptın. ${amount} ${unit} sonra tekrar dene.`,
@@ -70,6 +71,9 @@ export const tr = {
 
   // Account: delete, pending deletion
   profileAccount: 'Hesap',
+  errorReportsToggle: 'Hata raporları',
+  errorReportsToggleCaption:
+    'Uygulamada bir hata olursa ne olduğunu bize bildirir; adın, e-postan, fotoğrafların ve yazdıkların gönderilmez.',
   profileDeleteAccount: 'Hesabımı sil',
   deleteTitle: 'Hesabını sil',
   deleteIntro: 'Hesabını silmeyi seçersen şunlar olur:',
